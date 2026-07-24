@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- ====== Favicon ====== -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <!-- ====== Responsive ====== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- ====== Theme Color ====== -->
+    <meta name="theme-color" content="#0b1120" />
+
+    <!-- ====== App Title & Description ====== -->
+    <title>KneeGuide – Knee Rehab & Recovery</title>
+    <meta
+      name="description"
+      content="KneeGuide is an advanced AI-powered rehabilitation system designed to monitor knee recovery, track exercises, measure ROM, and connect patients with orthopedic specialists."
+    />
+
+    <!-- ====== SEO Keywords (optional but recommended) ====== -->
+    <meta
+      name="keywords"
+      content="knee rehab, ACL recovery, physiotherapy app, ROM tracking, knee injury, orthopedic tools, rehabilitation system"
+    />
+
+    <!-- ====== Social Preview (Open Graph) ====== -->
+    <meta property="og:title" content="KneeGuide – Smart Knee Rehab System" />
+    <meta
+      property="og:description"
+      content="Track knee recovery, measure ROM, complete exercises, and sync with orthopedic specialists."
+    />
+    <meta property="og:image" content="%PUBLIC_URL%/og-preview.png" />
+    <meta property="og:type" content="website" />
+
+    <!-- ====== Apple Touch Icon ====== -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+    <!-- ====== Manifest (PWA) ====== -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- ====== Google Fonts (English + Arabic) ====== -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ====== Default Direction Handling ====== -->
+    <script>
+      (function () {
+        const savedLang = localStorage.getItem("i18nextLng") || "en";
+        document.documentElement.lang = savedLang;
+        document.documentElement.dir = savedLang === "ar" ? "rtl" : "ltr";
+        document.body?.classList.add(savedLang === "ar" ? "rtl" : "ltr");
+      })();
+    </script>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this application.</noscript>
+
+    <div id="root"></div>
+
+    <!-- Scripts injected by React Build -->
+  </body>
+</html>

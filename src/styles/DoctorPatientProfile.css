@@ -1,0 +1,369 @@
+/* ===============================
+   PAGE WRAPPER – ULTRA ADMIN DARK
+================================*/
+.dpp-page {
+  padding: 20px 30px;
+  background: #050509;
+  min-height: 100vh;
+  color: #e5e5e5;
+}
+
+/* ===============================
+   HEADER
+================================*/
+.dpp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.dpp-header-main {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dpp-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1f2937;
+}
+
+.dpp-name {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.dpp-subtext {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* HEADER ACTION BUTTONS */
+.dpp-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.dpp-primary-btn {
+  background: linear-gradient(90deg, #7d5bff, #4c1d95);
+  border: none;
+  padding: 10px 16px;
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.15s;
+}
+
+.dpp-primary-btn:hover {
+  opacity: 0.9;
+}
+
+.dpp-secondary-btn {
+  background: #111827;
+  border: 1px solid #1f2937;
+  padding: 10px 16px;
+  color: #c7d2fe;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.15s;
+}
+
+.dpp-secondary-btn:hover {
+  border-color: #7d5bff;
+  color: #e0e7ff;
+}
+
+/* ===============================
+   CARD LAYOUTS
+================================*/
+.dpp-card {
+  background: #0b0b11;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid #111827;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+  margin-bottom: 25px;
+  transition: 0.2s;
+}
+
+.dpp-card:hover {
+  border-color: #4338ca;
+  box-shadow: 0px 8px 24px rgba(125, 91, 255, 0.15);
+}
+
+.dpp-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
+}
+
+.dpp-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .dpp-grid-3, .dpp-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===============================
+   CARD CONTENT
+================================*/
+.dpp-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #fff;
+}
+
+.dpp-info-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+.dpp-info-list strong {
+  color: #f3f4f6;
+}
+
+/* RISK COLORS – DARK MODE */
+.risk-high {
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+.risk-medium {
+  color: #fde68a;
+  font-weight: 700;
+}
+
+.risk-low {
+  color: #bbf7d0;
+  font-weight: 700;
+}
+
+/* ===============================
+   PAIN BAR – DARK PURPLE
+================================*/
+.dpp-pain-bar {
+  background: #111827;
+  height: 12px;
+  border-radius: 50px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.dpp-pain-bar div {
+  background: linear-gradient(90deg, #7d5bff, #4c1d95);
+  height: 100%;
+  border-radius: 50px;
+}
+
+.dpp-pain-label {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* ===============================
+   NOTES & FILES
+================================*/
+.dpp-notes-card,
+.dpp-files-card {
+  height: 330px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dpp-notes-list,
+.dpp-files-list {
+  overflow-y: auto;
+  margin-top: 12px;
+}
+
+/* ROW ITEMS */
+.dpp-note-row,
+.dpp-file-row {
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #0f0f17;
+  border: 1px solid #1f2937;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  transition: .15s;
+}
+
+.dpp-note-row:hover,
+.dpp-file-row:hover {
+  background: #151520;
+  border-color: #7d5bff;
+}
+
+.dpp-note-title {
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.dpp-note-date,
+.dpp-file-meta {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* ===============================
+   EXERCISES
+================================*/
+.dpp-exercise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.dpp-ex-progress {
+  width: 50%;
+  background: #111827;
+  height: 8px;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.dpp-ex-progress div {
+  height: 100%;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #7d5bff, #4c1d95);
+}
+
+.dpp-ex-percent {
+  width: 40px;
+  text-align: right;
+  font-weight: 600;
+  color: #c7d2fe;
+}
+
+/* ===============================
+   VISITS TABLE – DARK
+================================*/
+.dpp-visits-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.dpp-visits-table th,
+.dpp-visits-table td {
+  padding: 12px;
+  border-bottom: 1px solid #1f2937;
+}
+
+.dpp-visits-table th {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.dpp-status {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* STATUS COLORS */
+.dpp-status-completed {
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.dpp-status-upcoming {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde68a;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+}
+
+.dpp-status-cancelled {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+}
+
+/* ===============================
+   MODAL – DARK MODE
+================================*/
+.dpp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn .25s ease;
+  z-index: 500;
+}
+
+.dpp-modal {
+  background: #0b0b11;
+  padding: 25px;
+  width: 480px;
+  border-radius: 18px;
+  border: 1px solid #1f2937;
+  animation: scaleIn .25s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+  color: #e5e5e5;
+}
+
+.dpp-modal-body {
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.dpp-close-btn {
+  background: #111827;
+  color: #c7d2fe;
+  border: 1px solid #1f2937;
+  padding: 10px 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.dpp-close-btn:hover {
+  border-color: #7d5bff;
+  color: #e0e7ff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+

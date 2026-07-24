@@ -1,0 +1,242 @@
+.doctor-dashboard {
+  width: 100%;
+  padding: 30px;
+  color: #eee;
+}
+
+/* ============================
+   HEADER
+============================ */
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.dash-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.dash-header p {
+  color: #9ca3af;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+/* QUICK ACTION BUTTONS */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.qa-btn {
+  padding: 10px 16px;
+  background: #7d5bff;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.25s ease;
+}
+
+.qa-btn:hover {
+  background: #6c4be3;
+  transform: translateY(-2px);
+}
+
+/* ============================
+   STAT CARDS
+============================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #0b0b11;
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid #161622;
+  position: relative;
+  overflow: hidden;
+  transition: 0.25s ease;
+}
+
+.stat-card:hover {
+  background: #101019;
+  transform: translateY(-4px);
+}
+
+.stat-icon {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  color: #7d5bff;
+  opacity: 0.8;
+}
+
+.stat-card h3 {
+  font-size: 34px;
+  font-weight: 700;
+  color: #7d5bff;
+  margin-bottom: 6px;
+}
+
+.stat-card p {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ============================
+   MAIN CHART CARD
+============================ */
+.chart-card {
+  background: #0b0b11;
+  padding: 25px;
+  border-radius: 18px;
+  border: 1px solid #161622;
+  margin-bottom: 35px;
+}
+
+.chart-card h2 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #e5e5e5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ============================
+   LOWER GRID
+============================ */
+.dashboard-lower {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 25px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-lower {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   APPOINTMENTS TABLE
+============================ */
+.appointments-card {
+  background: #0b0b11;
+  padding: 25px;
+  border-radius: 18px;
+  border: 1px solid #161622;
+}
+
+.appointments-card h2 {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th {
+  text-align: left;
+  padding: 10px 0;
+  color: #9ca3af;
+  border-bottom: 1px solid #1f1f2b;
+  font-size: 13px;
+}
+
+table td {
+  padding: 14px 0;
+  color: #e5e5e5;
+  border-bottom: 1px solid #161622;
+  font-size: 14px;
+}
+
+/* Patient Image */
+.patient-with-img {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.patient-with-img img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.date-cell {
+  color: #9ca3af;
+}
+
+/* ============================
+   RIGHT COLUMN
+============================ */
+.side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* RISK PIE CARD */
+.quick-patients-card {
+  background: #0b0b11;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid #161622;
+}
+
+.quick-patients-card h2 {
+  margin-bottom: 10px;
+  font-size: 17px;
+  color: #e5e5e5;
+}
+
+/* ============================
+   ACTIVITY FEED
+============================ */
+.activity-card {
+  background: #0b0b11;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid #161622;
+}
+
+.activity-card h2 {
+  margin-bottom: 15px;
+  font-size: 17px;
+}
+
+.activity-row {
+  padding: 12px 10px;
+  border-bottom: 1px solid #161622;
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-row:last-child {
+  border-bottom: none;
+}
+
+.activity-row p {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+.activity-row span {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 4px;
+}

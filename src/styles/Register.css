@@ -1,0 +1,232 @@
+/* ================================
+   PAGE LAYOUT
+================================ */
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* عمودي */
+  align-items: center;      /* أفقي */
+  padding: 20px;
+  background: #0f0f0f; /* خلفية داكنة */
+  color: #e5e5e5;
+}
+
+/* ================================
+   PAGE TITLE
+================================ */
+.register-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  margin-top: -30px; /* رفع العنوان فوق قليلاً */
+  color: #ffffff;
+}
+
+/* ================================
+   GLOBAL ERROR BOX
+================================ */
+.register-error {
+  background: rgba(255, 87, 87, 0.15);
+  color: #ff6b6b;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  width: 420px;
+  text-align: center;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 80, 80, 0.4);
+}
+
+/* ================================
+   STEPPER BOX WRAPPER
+================================ */
+.register-stepper-box {
+  width: 100%;
+  max-width: 420px; /* حجم صندوق الستبر */
+}
+
+/* ================================
+   STEP TITLES
+================================ */
+.step-title {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ================================
+   ROLE PICKER
+================================ */
+.role-picker {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.role-card {
+  width: 145px;
+  padding: 18px;
+  border-radius: 12px;
+  background: #1a1a1a;
+  border: 2px solid #2a2a2a;
+  transition: 0.25s ease-in-out;
+  cursor: pointer;
+  text-align: center;
+}
+
+.role-card:hover {
+  border-color: #6c47ff;
+  background: #26223a;
+  transform: translateY(-4px);
+}
+
+.role-card.selected {
+  border-color: #7d5bff;
+  background: #1f1635;
+}
+
+.role-card .emoji {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+
+.role-card h4 {
+  margin: 8px 0 4px;
+  font-size: 17px;
+  color: #fff;
+}
+
+.role-card p {
+  font-size: 14px;
+  color: #999;
+}
+
+/* ================================
+   FORM INPUTS
+================================ */
+.form-two-column {
+  display: flex;
+  gap: 12px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #cfcfcf;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #161616;
+  color: #e5e5e5;
+  transition: 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #7d5bff;
+  outline: none;
+}
+
+/* ================================
+   EMAIL ALREADY EXISTS BOX
+================================ */
+.email-warning {
+  background: rgba(255, 80, 80, 0.15);
+  border: 1px solid rgba(255, 80, 80, 0.4);
+  padding: 10px;
+  border-radius: 8px;
+  color: #ff6b6b;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.go-login {
+  color: #8d6bff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.go-login:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+/* ================================
+   REVIEW BOX
+================================ */
+.review-box {
+  background: #161616;
+  border: 1px solid #333;
+  padding: 18px;
+  border-radius: 10px;
+  color: #ddd;
+}
+
+.review-box p {
+  margin: 8px 0;
+}
+
+/* ================================
+   OVERRIDES FOR STEPPER BUTTONS
+================================ */
+.back-button {
+  border: 1px solid #8a8a8a;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 12px;
+  color: #cfcfcf;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.back-button:hover {
+  background: #292929;
+  border-color: #b3b3b3;
+}
+
+.next-button {
+  background: #7d5bff;
+  border-radius: 12px !important;
+  padding: 10px 20px;
+  border: none;
+  transition: 0.2s;
+}
+
+.next-button:hover {
+  background: #6b49f9;
+}
+
+.password-hint {
+  margin-top: -5px;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.password-warning {
+  background: rgba(255, 150, 50, 0.15);
+  border: 1px solid rgba(255, 150, 50, 0.35);
+  padding: 10px;
+  border-radius: 8px;
+  color: #ffb67a;
+  margin-bottom: 12px;
+  text-align: center;
+  font-size: 14px;
+}
+

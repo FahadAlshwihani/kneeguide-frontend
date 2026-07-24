@@ -1,0 +1,825 @@
+{
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Login to continue",
+    "email": "Email",
+    "email_placeholder": "example@mail.com",
+    "password": "Password",
+    "button": "Login",
+    "no_account": "Don't have an account?",
+    "signup": "Create one",
+    "loading": "Logging you in...",
+    "error_required": "Please enter your email and password.",
+    "error_invalid": "Invalid email or password."
+  },
+  
+  "register": {
+    "title": "Create Your Account",
+    "loader": "Creating your account...",
+    "step1Title": "Choose Your Role",
+    "step2Title": "Basic Information",
+    "step3Title": "Contact Details",
+    "step4Title": "Set Your Password",
+    "step5Title": "Review Your Information",
+
+    "rolePatient": "Patient",
+    "roleDoctor": "Doctor",
+    "rolePatientDesc": "Basic user",
+    "roleDoctorDesc": "Admin approval required",
+
+    "labels": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "dob": "Date of Birth",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "example@mail.com",
+      "phone": "0555555555"
+    },
+
+    "emailExists": "This email is already registered.",
+    "goToLogin": "Go to login",
+
+    "passwordHintTitle": "Password must contain:",
+    "passwordHintUpper": "Uppercase letter",
+    "passwordHintLower": "Lowercase letter",
+    "passwordHintNumber": "Number",
+    "passwordHintSymbol": "Special symbol",
+    "passwordHintLength": "Minimum 8 characters",
+
+    "review": {
+      "role": "Role",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "dob": "Date of Birth"
+    },
+
+    "errors": {
+      "selectRole": "Please select your role.",
+      "fullName": "Please enter your full name.",
+      "contactRequired": "Please fill all contact information.",
+      "emailExists": "This email is already registered.",
+      "passwordRequired": "Please enter your password and confirm it.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordWeak": "Your password must include uppercase, lowercase, number, symbol, and be at least 8 characters.",
+      "genericFail": "Registration failed. Try again."
+    }
+  },
+
+  "buttons": {
+    "back": "Back",
+    "continue": "Continue",
+    "complete": "Create Account"
+  },
+
+  "calendar": {
+    "header": {
+      "title": "Schedule",
+      "subtitle": "Manage all your appointments in one calendar view.",
+      "totalEvents": "Total events",
+      "newAppointment": "+ New appointment"
+    },
+
+    "controls": {
+      "month": "Month",
+      "agenda": "Agenda",
+      "prev": "←",
+      "next": "→"
+    },
+
+    "weekdays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+
+    "sidepanel": {
+      "selectedDay": "Selected day",
+      "noEvents": "No events for this date.",
+      "addAppointment": "+ Add appointment on this day",
+
+      "summary": "Summary",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+
+    "agenda": {
+      "empty": "No events scheduled."
+    },
+
+    "modal": {
+      "close": "Close",
+
+      "details": {
+        "location": "Location",
+        "date": "Date",
+        "patient": "Patient"
+      },
+
+      "notesTitle": "Notes",
+      "notesEmpty": "No additional notes in this mock event."
+    },
+
+    "createModal": {
+      "title": "New appointment",
+      "subtitle": "Mock creation — saved in local state only.",
+
+      "form": {
+        "title": "Title",
+        "titlePlaceholder": "e.g. ACL follow-up",
+
+        "patientName": "Patient name",
+        "patientPlaceholder": "e.g. Ahmed Ali",
+
+        "date": "Date",
+        "start": "Start time",
+        "end": "End time",
+
+        "type": "Type",
+        "status": "Status",
+        "location": "Location",
+        "locationPlaceholder": "KneeGuide Clinic - Room 1",
+
+        "notes": "Notes",
+        "notesPlaceholder": "Any extra details about this appointment..."
+      },
+
+      "buttons": {
+        "cancel": "Cancel",
+        "save": "Save (mock)"
+      }
+    },
+
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+
+    "types": {
+      "followUp": "Follow-up",
+      "initial": "Initial assessment",
+      "postOp": "Post-op review",
+      "rehab": "Rehab session",
+      "check": "Progress Check"
+    }
+  },
+
+  "doctorDashboard": {
+  "header": {
+    "title": "Welcome, Doctor"
+  },
+  "actions": {
+    "newAppointment": "+ New Appointment",
+    "newReport": "+ New Report",
+    "viewPatients": "View Patients"
+  },
+  "stats": {
+    "activePatients": "Active Patients",
+    "todayAppointments": "Today's Appointments",
+    "newReports": "New Reports"
+  },
+  "chart": {
+    "title": "Patient Improvement Overview"
+  },
+  "appointments": {
+    "title": "Latest Appointments",
+    "columns": {
+      "patient": "Patient",
+      "condition": "Condition",
+      "date": "Date"
+    }
+  },
+  "patients": {
+    "title": "Patients Overview",
+    "lastVisitLabel": "Last visit:"
+  }
+},
+
+"doctorExercises": {
+  "header": {
+    "title": "Exercise Program",
+    "subtitle": "Assigned exercises for patient ID:"
+  },
+  "table": {
+    "title": "Active Exercises",
+    "subtitle": "Track patient adherence & difficulty."
+  },
+  "columns": {
+    "exercise": "Exercise",
+    "progress": "Progress",
+    "difficulty": "Difficulty"
+  }
+},
+"doctorNewAppointment": {
+  "header": {
+    "title": "New Appointment",
+    "subtitle": "Create an appointment for patient ID:"
+  },
+  "section": {
+    "title": "Appointment Details",
+    "subtitle": "Fill the required information below."
+  },
+  "form": {
+    "date": "Date",
+    "time": "Time",
+    "visitType": "Visit Type",
+    "notes": "Notes",
+    "submit": "Create Appointment"
+  },
+  "types": {
+    "initial": "Initial Assessment",
+    "follow": "Follow-up",
+    "rehab": "Rehab Session"
+  }
+},
+
+"doctorPatientProfile": {
+  "header": {
+    "patientIdLabel": "Patient ID:",
+    "buttons": {
+      "newReport": "New Report",
+      "assignExercises": "Assign Exercises",
+      "newAppointment": "New Appointment"
+    }
+  },
+  "cards": {
+    "basicInfo": {
+      "title": "Basic Info",
+      "age": "Age",
+      "gender": "Gender",
+      "phone": "Phone",
+      "email": "Email",
+      "male": "Male",
+      "female": "Female"
+    },
+    "clinicalStatus": {
+      "title": "Clinical Status",
+      "diagnosis": "Diagnosis",
+      "stage": "Rehab Stage",
+      "riskLevel": "Risk Level",
+      "lastVisit": "Last Visit",
+      "risk": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "pain": {
+      "title": "Pain Level",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "timelineTitle": "Pain Timeline",
+      "chartLabel": "Pain level"
+    }
+  },
+  "kneeModel": {
+    "title": "3D Knee Model (Beta)",
+    "description": "Click the card to toggle range-of-motion details. Rotate the model to explain movement.",
+    "info": {
+      "currentAngle": "Current angle",
+      "exercise": "Exercise",
+      "flexionRange": "Flexion range",
+      "phase": "Phase"
+    },
+    "legend": {
+      "safe": "Safe range",
+      "caution": "Caution",
+      "highRisk": "High risk"
+    }
+  },
+  "sections": {
+    "notes": "Clinical Notes",
+    "files": "Medical Files",
+    "exerciseProgram": "Exercise Program",
+    "exerciseFeedback": "Exercise feedback",
+    "visits": "Visits History"
+  },
+  "feedback": {
+    "labels": {
+      "exercise": "Exercise",
+      "rating": "Rating (1–10)",
+      "current": "Current:",
+      "note": "Note (optional)"
+    },
+    "placeholder": "Clinical note about how the patient performs this exercise...",
+    "button": "Save feedback (mock)",
+    "saved": "Mock: exercise feedback saved (console.log)."
+  },
+  "visits": {
+    "table": {
+      "date": "Date",
+      "type": "Type",
+      "status": "Status"
+    }
+  },
+  "modal": {
+    "close": "Close"
+  }
+},
+
+"doctorReports": {
+  "header": {
+    "title": "Clinical Reports",
+    "subtitle": "Review and manage all patient reports in one place."
+  },
+
+  "meta": {
+    "total": "Total: {{count}}",
+    "pending": "Pending: {{count}}"
+  },
+
+  "filters": {
+    "searchPlaceholder": "Search by patient, report ID, or patient ID...",
+    "statusAll": "All statuses",
+    "statusPending": "Pending",
+    "statusReviewed": "Reviewed",
+    "severityAll": "All severity",
+    "severityLow": "Low",
+    "severityMedium": "Medium",
+    "severityHigh": "High"
+  },
+
+  "table": {
+    "columns": {
+      "report": "Report",
+      "patient": "Patient",
+      "date": "Date",
+      "type": "Type",
+      "pain": "Pain",
+      "status": "Status",
+      "severity": "Severity",
+      "lastUpdated": "Last updated",
+      "actions": ""
+    },
+    "noResults": "No reports match your filters."
+  },
+
+  "status": {
+    "pendingShort": "Pending",
+    "reviewedShort": "Reviewed",
+    "pendingLong": "Pending clinical review",
+    "reviewedLong": "Reviewed"
+  },
+
+  "severity": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "labelWithValue": "Severity: {{value}}"
+  },
+
+  "painPill": "Pain: {{value}} / 10",
+
+  "modal": {
+    "titlePrefix": "Report",
+    "summaryTitle": "Summary",
+    "detailsTitle": "Report Details",
+    "doctorNotesTitle": "Doctor Notes (mock)",
+    "doctorNotesBody": "In a real implementation, this section will contain full subjective and objective clinical notes from the backend.",
+    "doctorNotesBullets": {
+      "trackRehab": "Track rehabilitation progress over time.",
+      "comparePain": "Compare pain levels with previous clinical reports.",
+      "planNext": "Plan next visit and exercise load progression."
+    },
+
+    "details": {
+      "date": "Date",
+      "type": "Type",
+      "painLevel": "Pain level",
+      "lastUpdated": "Last updated"
+    },
+
+    "noSummary": "No summary available in this mock data.",
+
+    "actions": {
+      "markReviewed": "Mark as reviewed",
+      "close": "Close",
+      "view": "View"
+    }
+  }
+},
+
+"doctorPatients": {
+  "title": "Patient List",
+  "subtitle": "Manage and review all patients under your care.",
+  "total": "Total",
+  "search": "Search by patient name...",
+  "id": "ID",
+  "age": "Age",
+  "email": "Email",
+  "phone": "Phone",
+  "lastVisit": "Last visit",
+  "recovery": "recovery",
+
+  "risk": {
+    "low": "Low risk",
+    "medium": "Medium risk",
+    "high": "High risk"
+  },
+
+  "actions": {
+    "profile": "View Profile",
+    "reports": "Reports",
+    "exercises": "Exercises",
+    "newAppointment": "New Appointment"
+  }
+},
+
+"doctorProfile": {
+  "title": "Doctor Profile",
+  "subtitle": "Manage your professional information, contact details, and availability.",
+
+  "liveProfile": "Live profile",
+  "lastSynced": "Last synced: 2 min ago (mock)",
+
+  "saveMockMessage": "Profile updated (mock). In real app, this will be saved to backend.",
+
+  "professionalDetails": "Professional details",
+  "visibleToAdmins": "Visible to clinic admins",
+
+  "contactAvailability": "Contact & availability",
+
+  "labels": {
+    "fullName": "Full name",
+    "specialty": "Specialty",
+    "yearsExperience": "Years of experience",
+    "licenseNumber": "Medical license number",
+    "clinicName": "Clinic / hospital",
+    "bio": "Short bio",
+    "email": "Email",
+    "phone": "Phone",
+    "location": "Location / city",
+    "availabilityStatus": "Availability status"
+  },
+
+  "placeholders": {
+    "bio": "Describe your expertise, approach, and focus areas."
+  },
+
+  "status": {
+    "available": "Available for appointments",
+    "busy": "Busy / in sessions",
+    "away": "Away"
+  },
+
+  "workHoursTitle": "Working hours (mock)",
+  "workHoursNote": "In real implementation, working hours will be editable and connected to appointment booking rules.",
+
+  "saveChangesTitle": "Save changes",
+  "saveChangesSubtitle": "These settings affect how your profile appears in KneeGuide system.",
+
+  "saveProfile": "Save profile",
+  "saving": "Saving...",
+  "reset": "Reset to default (mock)",
+
+  "changePhoto": "Change photo (mock)",
+
+  "mockNote": "* This page currently uses mock data only. Later it will be bound to real API endpoints."
+},
+
+"patientDashboard": {
+  "header": {
+    "greeting": "Hi, {{name}}",
+    "subtitle": "Here’s a detailed overview of your knee rehab today.",
+    "role": "Patient",
+    "logout": "Logout",
+    "fallbackName": "there"
+  },
+
+  "common": {
+    "withDoctorPrefix": "With"
+  },
+
+  "topCards": {
+    "nextAppointment": {
+      "label": "Next appointment"
+    },
+    "lastReportStatus": {
+      "label": "Last report status",
+      "submittedOn": "Submitted on"
+    },
+    "currentPain": {
+      "label": "Current pain level (last report)",
+      "footer": "Based on your last clinical report"
+    }
+  },
+
+  "painSection": {
+    "title": "Today's pain",
+    "lastReportPainLabel": "Last report pain",
+    "trendLabel": "Trend",
+    "trendImproving": "Improving",
+    "trendHigher": "Slightly higher",
+    "noteLabel": "Optional note for your doctor about today's pain",
+    "notePlaceholder": "E.g. Pain increases when going downstairs, better when resting...",
+    "noteHint": "This is mock only — later it can be sent with your daily report."
+  },
+
+  "todaySummary": {
+    "title": "Today’s summary",
+    "exercisesLabel": "Exercises assigned today",
+    "exercisesSub": "Based on your current rehab program",
+    "nextAppointmentLabel": "Next appointment",
+    "nextAppointmentSub": "In {{days}} days",
+    "adherenceLabel": "Program adherence",
+    "adherenceSub": "Keep your streak going"
+  },
+
+  "lastReport": {
+    "title": "Last clinical report",
+    "tagPrefix": "#",
+    "dateLabel": "Date",
+    "painLabel": "Pain level",
+    "statusLabel": "Status",
+    "viewButton": "View full report"
+  },
+
+  "appointment": {
+    "title": "Next appointment",
+    "reschedule": "Reschedule",
+    "viewAll": "View all appointments"
+  },
+
+  "exercises": {
+    "title": "Today's exercises",
+    "assignedCount": "{{count}} assigned",
+    "openProgram": "Open exercise program",
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "pending": "Pending"
+    }
+  },
+
+  "recentReports": {
+    "title": "Recent reports",
+    "table": {
+      "date": "Date",
+      "status": "Status",
+      "summary": "Summary"
+    },
+    "viewAll": "View all reports",
+    "statusReviewed": "Reviewed",
+    "scoreStable": "Stable",
+    "scoreImproving": "Improving"
+  },
+
+  "adherence": {
+    "title": "Rehab adherence",
+    "currentStreakLabel": "Current streak",
+    "currentStreakSub": "Days you’ve logged exercises in a row",
+    "currentStreakValue": "{{days}} days",
+    "weeklyRateLabel": "Weekly completion rate",
+    "weeklyRateSub": "Percentage of done exercises this week",
+    "missedLabel": "Missed sessions",
+    "missedSub": "Try to keep this as low as possible"
+  },
+
+  "mock": {
+    "nextAppointment": {
+      "type": "Follow-up session",
+      "location": "KneeGuide Clinic - Room 4"
+    },
+    "lastReport": {
+      "status": "Reviewed",
+      "notes": "Good improvement in range of motion. Continue current plan."
+    }
+  }
+},
+"patientExercises": {
+  "header": {
+    "title": "Your Exercise Program",
+    "subtitle": "Follow your daily routine to support knee recovery."
+  },
+
+  "tabs": {
+    "today": "Today",
+    "all": "All Exercises"
+  },
+
+  "labels": {
+    "lastDone": "Last done"
+  },
+
+  "buttons": {
+    "start": "Start exercise",
+    "close": "Close"
+  },
+
+  "mock": {
+    "quadSets": {
+      "name": "Quad Sets",
+      "lastDone": "Yesterday",
+      "description": "Strengthens the quadriceps to support knee stability."
+    },
+    "legRaises": {
+      "name": "Straight Leg Raises",
+      "lastDone": "Today",
+      "description": "Improves thigh control and reduces knee pressure."
+    },
+    "heelSlides": {
+      "name": "Heel Slides",
+      "lastDone": "2 days ago",
+      "description": "Enhances knee flexion and mobility safely."
+    },
+    "hamstring": {
+      "name": "Hamstring Stretch",
+      "lastDone": "5 days ago",
+      "description": "Reduces tightness behind the knee."
+    },
+    "calfRaises": {
+      "name": "Calf Raises",
+      "lastDone": "1 week ago",
+      "description": "Strengthens lower leg muscles for stability."
+    }
+  }
+},
+"patientReports": {
+  "header": {
+    "title": "Your Recovery Reports",
+    "subtitle": "A full visual summary of your knee rehab progress."
+  },
+
+  "filters": {
+    "range": "Time Range",
+    "sortBy": "Sort By"
+  },
+
+  "range": {
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "last90": "Last 3 months"
+  },
+
+  "sort": {
+    "newest": "Newest first",
+    "oldest": "Oldest first",
+    "painHigh": "Pain (High → Low)",
+    "painLow": "Pain (Low → High)"
+  },
+
+  "summary": {
+    "avgPain": "Avg Pain",
+    "hintSessions": "Across last sessions",
+
+    "flexion": "Flexion Gain",
+    "hintImprovement": "Overall improvement",
+
+    "completion": "Completion Rate",
+    "hintCompletion": "Finished sessions"
+  },
+
+  "table": {
+    "title": "Sessions Log",
+    "subtitle": "Your complete rehab tracking history.",
+
+    "headers": {
+      "date": "Date",
+      "pain": "Pain",
+      "flexion": "Flexion",
+      "extension": "Extension",
+      "status": "Status"
+    }
+  },
+
+  "status": {
+    "completed": "Completed",
+    "pending": "Pending"
+  },
+
+  "chart": {
+    "title": "Trend Overview",
+    "subtitle": "Visual comparison of pain & flexion.",
+
+    "legend": {
+      "flexion": "Flexion",
+      "pain": "Pain"
+    }
+  }
+},
+
+"verifyOtp": {
+  "title": "Verify Your Email",
+  "subtitle": "Enter the 6-digit code sent to your email address.",
+  "loader": "Verifying your code...",
+
+  "errors": {
+    "codeRequired": "Please enter the full 6-digit code.",
+    "invalid": "Invalid or expired OTP.",
+    "failedResend": "Failed to resend OTP."
+  },
+
+  "success": {
+    "verified": "Verified successfully! Redirecting...",
+    "resent": "A new OTP has been sent."
+  },
+
+  "buttons": {
+    "verify": "Verify"
+  },
+
+  "resend": {
+    "in": "Resend available in",
+    "button": "Resend Code"
+  },
+
+  "backToLogin": "Back to Login"
+},
+
+"doctorSidebar": {
+  "title": "Doctor Panel",
+  "dashboard": "Dashboard",
+  "patients": "Patients",
+  "appointments": "Appointments",
+  "reports": "Reports",
+  "profile": "Profile",
+  "logout": "Logout"
+},
+
+"patientBottomNav": {
+  "home": "Home",
+  "exercises": "Exercises",
+  "reports": "Reports",
+  "profile": "Profile"
+},
+"painWheel": {
+  "noPain": "No pain",
+  "mild": "Mild",
+  "severe": "Severe",
+  "label": "{{label}} pain",
+  "low": "Low",
+  "moderate": "Moderate",
+  "high": "High"
+},
+"kneeModel": {
+  "title": "Knee ROM Visualizer",
+  "currentFlexion": "Current flexion",
+  "footerNote": "3D mock view – in real implementation this will sync with measured ROM values from reports / sensors.",
+  "exercises": {
+    "heelSlides": "Heel Slides",
+    "quadSets": "Quad Sets",
+    "straightLegRaise": "Straight Leg Raises"
+  }
+},
+
+"doctorReportsPage": {
+  "title": "Patient Reports",
+  "subtitle": "Reports for patient ID:",
+  
+  "summary": {
+    "total": "Total Reports",
+    "reviewed": "Reviewed",
+    "pending": "Pending"
+  },
+
+  "table": {
+    "title": "Reports List",
+    "subtitle": "All clinical reports for this patient.",
+
+    "headers": {
+      "id": "Report ID",
+      "date": "Date",
+      "type": "Type",
+      "pain": "Pain",
+      "status": "Status",
+      "severity": "Severity",
+      "updated": "Last Updated"
+    }
+  },
+
+  "status": {
+    "reviewed": "Reviewed",
+    "pending": "Pending"
+  },
+
+  "severity": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+
+  "view": "View",
+  
+  "modal": {
+    "report": "Report",
+    "close": "Close"
+  }
+}
+
+
+}

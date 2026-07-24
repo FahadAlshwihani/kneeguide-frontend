@@ -1,0 +1,62 @@
+.pain-emoji-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.emoji-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.emoji-item {
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  transition: 0.25s ease;
+}
+
+.emoji-item:hover {
+  transform: translateY(-3px);
+  border-color: #c7d2fe;
+}
+
+.emoji-item.active {
+  background: #eef2ff;
+  border-color: #818cf8;
+  box-shadow: 0px 6px 18px rgba(129, 140, 248, 0.25);
+}
+
+.emoji-icon {
+  font-size: 28px;
+  display: block;
+}
+
+.emoji-label {
+  font-size: 13px;
+  margin-top: 6px;
+  color: #4b5563;
+}
+
+/* Note input */
+.pain-note-input {
+  width: 100%;
+  min-height: 80px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+  resize: none;
+}
+
+.pain-note-input:focus {
+  border-color: #818cf8;
+  background: #fff;
+}

@@ -1,0 +1,52 @@
+/* ============= GLOBAL RTL/LTR SYSTEM ============= */
+
+/* LTR (English) */
+body.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* RTL (Arabic) */
+body.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+/* ============= ELEMENTS THAT MUST ALWAYS STAY CENTER ============= */
+
+.text-center-permanent,
+.text-center-permanent * {
+  text-align: center !important;
+}
+
+/* ================= INPUT FIX ================= */
+body.rtl input,
+body.rtl textarea,
+body.rtl select {
+  text-align: right !important;
+}
+
+body.ltr input,
+body.ltr textarea,
+body.ltr select {
+  text-align: left !important;
+}
+
+/* ================= FLEX FIX ================= */
+
+body.rtl .rtl-row {
+  flex-direction: row-reverse !important;
+}
+
+body.ltr .rtl-row {
+  flex-direction: row !important;
+}
+
+body.rtl .text-center-permanent {
+    text-align: center !important;
+}
+/* FORCE STEP TITLES TO ALWAYS BE CENTER */
+.step-title {
+  text-align: center !important;
+}
+

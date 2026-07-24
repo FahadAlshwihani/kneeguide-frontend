@@ -1,0 +1,73 @@
+.doctor-sidebar {
+  width: 240px;
+  height: 100vh;
+  background: #111;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+  border-right: 1px solid #222;
+}
+
+.sidebar-header {
+  text-align: center;
+}
+
+.sidebar-header h2 {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.sidebar-menu {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-item {
+  width: 100%;
+  background: #1a1a1a;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-size: 15px;
+}
+
+.menu-item:hover {
+  background: #282828;
+}
+
+.menu-item.active {
+  background: #7d5bff;
+  color: #fff;
+  font-weight: 600;
+}
+
+.logout-btn {
+  width: 100%;
+  background: #222;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  color: #ff7575;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #ff4444;
+  color: #fff;
+}

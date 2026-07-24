@@ -1,0 +1,101 @@
+.pw-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.pw-wheel {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #020617 0, #020617 60%, #020617 100%);
+  border: 1px solid #1f2937;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.pw-fill {
+  position: absolute;
+  inset: 0;
+}
+
+.pw-center {
+  position: absolute;
+  inset: 20%;
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #020617 0, #020617 70%);
+  border: 1px solid #1f2937;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.pw-emoji {
+  font-size: 26px;
+}
+
+.pw-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.pw-label {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Knob pointer */
+.pw-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 50%;
+  height: 2px;
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.pw-knob-dot {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.4);
+}
+
+/* Legend */
+.pw-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.pw-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.pw-low {
+  background: #22c55e;
+}
+
+.pw-mid {
+  background: #eab308;
+}
+
+.pw-high {
+  background: #ef4444;
+}

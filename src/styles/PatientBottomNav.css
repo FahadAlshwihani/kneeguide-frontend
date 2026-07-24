@@ -1,0 +1,62 @@
+.pbn-wrapper {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 520px;
+  padding: 0 16px;
+  z-index: 200;
+}
+
+.pbn-inner {
+  background: rgba(15, 23, 42, 0.86);
+  backdrop-filter: blur(18px);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+}
+
+.pbn-item {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.pbn-item .pbn-icon {
+  font-size: 17px;
+  margin-bottom: 2px;
+}
+
+.pbn-item.active {
+  background: radial-gradient(circle at top, rgba(129, 140, 248, 0.45), rgba(30, 64, 175, 0.7));
+  color: #e5e7eb;
+}
+
+.pbn-item.active .pbn-icon {
+  transform: translateY(-1px);
+}
+
+.pbn-label {
+  font-size: 10px;
+}
+.pbn-lang-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px; 
+  margin: 0 4px;
+}

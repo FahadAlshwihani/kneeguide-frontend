@@ -1,0 +1,103 @@
+/* ================================
+   PAGE BACKGROUND
+================================ */
+.login-page {
+  min-height: 100vh;
+  background: #0f0f0f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* ================================
+   LOGIN BOX
+================================ */
+.login-box {
+  width: 420px;
+  padding: 32px;
+  border-radius: 14px;
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  box-shadow: 0 0 25px rgba(82, 39, 255, 0.08);
+  text-align: center;
+  color: #e5e5e5;
+}
+
+.login-box h2 {
+  margin-bottom: 6px;
+  font-size: 28px;
+  color: #fff;
+}
+
+.subtitle {
+  color: #999;
+  margin-bottom: 28px;
+  font-size: 15px;
+}
+
+/* ================================
+   INPUTS
+================================ */
+.form-group {
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #cfcfcf;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #0d0d0d;
+  color: #e5e5e5;
+  transition: 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #7d5bff;
+  box-shadow: 0 0 0 2px rgba(125, 91, 255, 0.3);
+}
+
+/* ================================
+   ERROR BOX
+================================ */
+.login-error {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff6b6b;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 80, 80, 0.4);
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+/* ================================
+   EXTRA LINKS
+================================ */
+.login-extra {
+  margin-top: 20px;
+  text-align: center;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.signup-link {
+  color: #8d6bff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+

@@ -1,0 +1,153 @@
+/* ============================
+   STEPPER MAIN WRAPPER
+============================ */
+.outer-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+}
+
+/* ============================
+   STEPPER BOX (Fixed width)
+============================ */
+.step-circle-container {
+  width: 100%;
+  max-width: 450px; /* ⬅ أعرض قليلاً لاستيعاب رسائل الخطأ */
+  background: #141414;
+  border-radius: 16px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border: 1px solid #222;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+
+  /* منع تحرك العناصر مع الخطأ */
+  box-sizing: border-box;
+}
+
+/* ============================
+   STEP INDICATORS HEADER
+============================ */
+.step-indicator-row {
+  display: flex;
+  align-items: center;       /* ⬅ يخلي الخط والنقاط بنفس المحاذاة */
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 25px 25px;
+}
+
+/* Indicator dot */
+.step-indicator {
+  display: flex;
+  align-items: center;       /* ⬅ محاذاة كاملة */
+  justify-content: center;
+}
+
+/* Circle style */
+.step-indicator-inner {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s ease;
+}
+
+/* Inactive */
+.step-indicator[animate="inactive"] .step-indicator-inner {
+  background: #222;
+  color: #888;
+}
+
+/* Active */
+.step-indicator[animate="active"] .step-indicator-inner {
+  background: #7d5bff;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* Complete */
+.step-indicator[animate="complete"] .step-indicator-inner {
+  background: #7d5bff;
+  color: #fff;
+}
+
+/* ============================
+   CONNECTOR
+============================ */
+.step-connector {
+  flex: 1;
+  height: 4px;                 /* ⬅ خط سميك قليلاً لرؤية أوضح */
+  background: #333;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0 5px;               /* ⬅ محاذاة أدق */
+}
+
+.step-connector-inner {
+  height: 100%;
+  background: #7d5bff;
+  width: 0;
+  transition: width 0.3s ease;
+}
+
+/* ============================
+   CONTENT AREA
+============================ */
+.step-content-default {
+  overflow: hidden;
+  padding: 0 25px;
+}
+
+/* ============================
+   FOOTER BUTTONS
+============================ */
+.footer-container {
+  padding: 0 25px;
+  margin-top: 15px;
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: flex-end !important; /* ⬅ ALWAYS align to right */
+  margin-top: 18px;
+}
+.footer-nav {
+  gap: 140px; /* يفصل الزرين */
+}
+
+
+/* Back */
+.back-button {
+  border: 1px solid #7b7b7b;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 10px;
+  color: #d0d0d0;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-right: auto; /* ⬅ يجبره يكون يسار ويترك continue يمين */
+}
+
+.back-button:hover {
+  background: #262626;
+  border-color: #b3b3b3;
+}
+
+/* Next / Continue / Complete */
+.next-button {
+  background: #7d5bff;
+  padding: 10px 22px;
+  border-radius: 10px !important;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.next-button:hover {
+  background: #6b49f9;
+}

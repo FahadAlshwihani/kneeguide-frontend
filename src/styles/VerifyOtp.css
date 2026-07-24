@@ -1,0 +1,125 @@
+/* ================================
+   PAGE CONTAINER
+================================ */
+.otp-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f0f0f;
+  padding: 20px;
+  color: #e5e5e5;
+}
+
+/* ================================
+   OTP BOX
+================================ */
+.otp-box {
+  width: 100%;
+  max-width: 420px;
+  background: #161616;
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid #2a2a2a;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.otp-box h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.otp-subtitle {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #cfcfcf;
+}
+
+.otp-email {
+  margin-top: 6px;
+  color: #8d6bff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ================================
+   MESSAGE BOX
+================================ */
+.otp-message {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(125, 91, 255, 0.15);
+  border: 1px solid rgba(125, 91, 255, 0.35);
+  color: #d8c8ff;
+  border-radius: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ================================
+   OTP INPUTS
+================================ */
+.otp-input-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 25px 0;
+}
+
+.otp-input {
+  width: 48px;
+  height: 55px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid #3a3a3a;
+  background: #0f0f0f;
+  outline: none;
+  transition: 0.2s;
+}
+
+.otp-input:focus {
+  border-color: #7d5bff;
+  box-shadow: 0 0 8px rgba(125, 91, 255, 0.6);
+}
+
+/* ================================
+   RESEND BOX
+================================ */
+.otp-resend {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #bbbbbb;
+}
+
+.resend-btn {
+  background: none;
+  border: none;
+  color: #8d6bff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.resend-btn:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+/* ================================
+   BACK TO LOGIN
+================================ */
+.otp-back-login {
+  margin-top: 25px;
+  cursor: pointer;
+  color: #bbbbbb;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.otp-back-login:hover {
+  color: #8d6bff;
+}
