@@ -1,6 +1,6 @@
-/* Extracted verbatim from PatientExercises.css .pe-card/.pe-img/.pe-card-body/
-   .pe-ex-*/.pe-progress*/.pe-start-btn so this is a pixel-identical drop-in
-   — the source of truth now lives here. */
+/* Extracted verbatim from PatientExercises.css's exercise card rules
+   (pe-card, pe-img, pe-card-body, pe-ex-name, pe-progress, pe-start-btn)
+   so this is a pixel-identical drop-in — the source of truth now lives here. */
 
 .exercise-card-root {
   background: #050814;
