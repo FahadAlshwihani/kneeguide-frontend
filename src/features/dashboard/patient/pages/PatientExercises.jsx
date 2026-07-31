@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import "../styles/PatientExercises.css";
 import PatientBottomNav from "../components/PatientBottomNav";
+import ExerciseCard from "../../shared/components/ExerciseCard";
 import { useTranslation } from "react-i18next";
 
 const PatientExercises = () => {
