@@ -1,0 +1,33 @@
+/* Extracted verbatim from PatientDashboard.css .pd-card.pd-card-lg + .pd-section-header
+   so this is a pixel-identical drop-in — the source of truth now lives here. */
+
+.dashboard-card-root {
+  background: #050814;
+  border: 1px solid #111827;
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  margin-top: 20px;
+}
+
+.dashboard-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.dashboard-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dashboard-card-tag {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.2);
+  color: #a5f3fc;
+  white-space: nowrap;
+}

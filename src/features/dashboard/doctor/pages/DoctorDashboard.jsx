@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import DoctorLayout from "../components/DoctorLayout";
 import AvatarLetters from "../../../../components/common/AvatarLetters";
+import MetricCard from "../../shared/components/MetricCard";
 import "../styles/DoctorDashboard.css";
 
 import { ROUTES } from "../../../../utils/routes";
@@ -106,20 +107,9 @@ const DoctorDashboard = () => {
 
         {/* STAT CARDS */}
         <div className="stats-grid">
-          <div className="stat-card">
-            <h3>{stats.patients}</h3>
-            <p>{t("doctorDashboard.stats.activePatients")}</p>
-          </div>
-
-          <div className="stat-card">
-            <h3>{stats.todayAppointments}</h3>
-            <p>{t("doctorDashboard.stats.todayAppointments")}</p>
-          </div>
-
-          <div className="stat-card">
-            <h3>{stats.newReports}</h3>
-            <p>{t("doctorDashboard.stats.newReports")}</p>
-          </div>
+          <MetricCard value={stats.patients} label={t("doctorDashboard.stats.activePatients")} />
+          <MetricCard value={stats.todayAppointments} label={t("doctorDashboard.stats.todayAppointments")} />
+          <MetricCard value={stats.newReports} label={t("doctorDashboard.stats.newReports")} />
         </div>
 
         {/* CHART */}

@@ -1,0 +1,78 @@
+/* Extracted verbatim from DoctorDashboard.css .stat-card / .stat-icon
+   so this is a pixel-identical drop-in — the source of truth now lives here. */
+
+.metric-card-root {
+  background: #0b0b11;
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid #161622;
+  position: relative;
+  overflow: hidden;
+  transition: 0.25s ease;
+  display: block;
+  text-align: start;
+  width: 100%;
+  font-family: inherit;
+}
+
+.metric-card-root:hover {
+  background: #101019;
+  transform: translateY(-4px);
+}
+
+.metric-card-interactive {
+  cursor: pointer;
+}
+
+.metric-card-icon {
+  position: absolute;
+  inset-inline-end: 18px;
+  top: 18px;
+  color: #7d5bff;
+  opacity: 0.8;
+  font-size: 1.1rem;
+  display: flex;
+}
+
+.metric-card-value {
+  display: block;
+  font-size: 34px;
+  font-weight: 700;
+  color: #7d5bff;
+  margin-bottom: 6px;
+}
+
+.metric-card-label {
+  display: block;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.metric-card-trend {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Additive status variants — not present on the original .stat-card,
+   used for alert/success-style tiles (e.g. Hero's "recent alert" preview). */
+.metric-card-status-alert {
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.metric-card-status-alert .metric-card-icon {
+  color: #f87171;
+}
+
+.metric-card-status-alert .metric-card-trend {
+  color: #fca5a5;
+}
+
+.metric-card-status-success {
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.metric-card-status-success .metric-card-icon {
+  color: #4ade80;
+}
