@@ -81,43 +81,20 @@
   z-index: 2;
 }
 
+/* Below 1180px there isn't reliable room for the layered overlap composition
+   (the two-column Hero grid itself is already narrowing the right column),
+   so it converts to a clean, non-overlapping vertical stack instead of
+   trying to preserve pixel-tuned overlap at every intermediate width. This
+   covers both real tablets and mobile — "reduce card overlaps" on tablet,
+   "clean vertical stack" on mobile, with the same safe layout. */
 @media (max-width: 1180px) {
-  .hero-dashboard-preview-root {
-    max-width: 400px;
-    min-height: 580px;
-  }
-
-  .hero-dashboard-preview-primary-doctor {
-    width: 260px;
-  }
-
-  .hero-dashboard-preview-primary-patient {
-    width: 200px;
-  }
-
-  .hero-dashboard-preview-doctor-progress,
-  .hero-dashboard-preview-patient-progress {
-    width: 230px;
-  }
-}
-
-/* Tablet: keep layering but tighten the stage */
-@media (max-width: 960px) {
-  .hero-dashboard-preview-root {
-    max-width: 480px;
-    min-height: 560px;
-    margin: 0 auto;
-  }
-}
-
-/* Mobile: convert the layered composition into a clean vertical stack */
-@media (max-width: 640px) {
   .hero-dashboard-preview-root {
     min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 16px;
     max-width: 420px;
+    margin: 0 auto;
   }
 
   .hero-dashboard-preview-layer {
