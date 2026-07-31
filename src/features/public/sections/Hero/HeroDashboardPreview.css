@@ -1,0 +1,131 @@
+/* Uses global design tokens from src/index.css for the surrounding stage;
+   the cards inside (MetricCard, ProgressCard, AppointmentCard, ExerciseCard,
+   DashboardCard) own their own scoped styles — never overridden here. */
+
+.hero-dashboard-preview-root {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  min-height: 640px;
+}
+
+.hero-dashboard-preview-layer {
+  position: absolute;
+}
+
+.hero-dashboard-preview-card {
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-dashboard-preview-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: var(--color-primary);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.hero-dashboard-preview-tag-patient {
+  background: var(--color-secondary);
+}
+
+/* Primary: Doctor's upcoming appointment */
+.hero-dashboard-preview-primary-doctor {
+  top: 0;
+  inset-inline-start: 0;
+  width: 300px;
+  z-index: 2;
+}
+
+/* Supporting: Active patients metric */
+.hero-dashboard-preview-metric {
+  top: 40px;
+  inset-inline-end: 0;
+  width: 150px;
+  z-index: 4;
+}
+
+/* Supporting: doctor rehab progress */
+.hero-dashboard-preview-doctor-progress {
+  top: 258px;
+  inset-inline-start: 30px;
+  width: 260px;
+  z-index: 1;
+}
+
+/* Small alert card */
+.hero-dashboard-preview-alert {
+  top: 190px;
+  inset-inline-end: 16px;
+  width: 190px;
+  z-index: 5;
+}
+
+/* Primary: patient exercise */
+.hero-dashboard-preview-primary-patient {
+  bottom: 130px;
+  inset-inline-end: 0;
+  width: 220px;
+  z-index: 3;
+}
+
+/* Supporting: patient ROM + adherence */
+.hero-dashboard-preview-patient-progress {
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 270px;
+  z-index: 2;
+}
+
+@media (max-width: 1180px) {
+  .hero-dashboard-preview-root {
+    max-width: 400px;
+    min-height: 580px;
+  }
+
+  .hero-dashboard-preview-primary-doctor {
+    width: 260px;
+  }
+
+  .hero-dashboard-preview-primary-patient {
+    width: 200px;
+  }
+
+  .hero-dashboard-preview-doctor-progress,
+  .hero-dashboard-preview-patient-progress {
+    width: 230px;
+  }
+}
+
+/* Tablet: keep layering but tighten the stage */
+@media (max-width: 960px) {
+  .hero-dashboard-preview-root {
+    max-width: 480px;
+    min-height: 560px;
+    margin: 0 auto;
+  }
+}
+
+/* Mobile: convert the layered composition into a clean vertical stack */
+@media (max-width: 640px) {
+  .hero-dashboard-preview-root {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 420px;
+  }
+
+  .hero-dashboard-preview-layer {
+    position: static;
+    width: 100% !important;
+  }
+
+  .hero-dashboard-preview-alert {
+    order: -1;
+  }
+}
