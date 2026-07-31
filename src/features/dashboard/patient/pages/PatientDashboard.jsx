@@ -249,58 +249,27 @@ const PatientDashboard = () => {
           </div>
 
           {/* Today summary */}
-          <div className="pd-card pd-card-lg">
-            <div className="pd-section-header">
-              <h2>{t("patientDashboard.todaySummary.title")}</h2>
+          <DashboardCard title={t("patientDashboard.todaySummary.title")}>
+            <div className="progress-card-list">
+              <ProgressCard
+                label={t("patientDashboard.todaySummary.exercisesLabel")}
+                sub={t("patientDashboard.todaySummary.exercisesSub")}
+                value={todayExercises.length}
+              />
+              <ProgressCard
+                label={t("patientDashboard.todaySummary.nextAppointmentLabel")}
+                sub={t("patientDashboard.todaySummary.nextAppointmentSub", {
+                  days: daysUntilAppointment,
+                })}
+                value={nextAppointment.time}
+              />
+              <ProgressCard
+                label={t("patientDashboard.todaySummary.adherenceLabel")}
+                sub={t("patientDashboard.todaySummary.adherenceSub")}
+                value={`${adherence.completionPercentage}%`}
+              />
             </div>
-
-            <div className="pd-summary-list">
-              <div className="pd-summary-row">
-                <div>
-                  <div className="pd-summary-label">
-                    {t("patientDashboard.todaySummary.exercisesLabel")}
-                  </div>
-                  <div className="pd-summary-sub">
-                    {t("patientDashboard.todaySummary.exercisesSub")}
-                  </div>
-                </div>
-                <div className="pd-summary-value">
-                  {todayExercises.length}
-                </div>
-              </div>
-
-              <div className="pd-summary-row">
-                <div>
-                  <div className="pd-summary-label">
-                    {t("patientDashboard.todaySummary.nextAppointmentLabel")}
-                  </div>
-                  <div className="pd-summary-sub">
-                    {t(
-                      "patientDashboard.todaySummary.nextAppointmentSub",
-                      { days: daysUntilAppointment }
-                    )}
-                  </div>
-                </div>
-                <div className="pd-summary-value">
-                  {nextAppointment.time}
-                </div>
-              </div>
-
-              <div className="pd-summary-row">
-                <div>
-                  <div className="pd-summary-label">
-                    {t("patientDashboard.todaySummary.adherenceLabel")}
-                  </div>
-                  <div className="pd-summary-sub">
-                    {t("patientDashboard.todaySummary.adherenceSub")}
-                  </div>
-                </div>
-                <div className="pd-summary-value">
-                  {adherence.completionPercentage}%
-                </div>
-              </div>
-            </div>
-          </div>
+          </DashboardCard>
         </section>
 
         {/* ==========================
@@ -356,57 +325,19 @@ const PatientDashboard = () => {
             </button>
           </div>
 
-          <div className="pd-card pd-card-lg">
-            <div className="pd-section-header">
-              <h2>{t("patientDashboard.appointment.title")}</h2>
-            </div>
-
-            <div className="pd-appointment-main">
-              <div className="pd-appointment-date">
-                <span className="pd-appointment-day">
-                  {new Date(nextAppointment.date).toLocaleDateString(
-                    "en-US",
-                    {
-                      day: "2-digit",
-                    }
-                  )}
-                </span>
-                <span className="pd-appointment-month">
-                  {new Date(nextAppointment.date).toLocaleDateString(
-                    "en-US",
-                    {
-                      month: "short",
-                    }
-                  )}
-                </span>
-              </div>
-
-              <div className="pd-appointment-info">
-                <div className="pd-appointment-time">
-                  {nextAppointment.time}
-                </div>
-                <div className="pd-appointment-type">
-                  {nextAppointment.type}
-                </div>
-                <div className="pd-appointment-doctor">
-                  {t("patientDashboard.common.withDoctorPrefix")}{" "}
-                  {nextAppointment.doctor}
-                </div>
-                <div className="pd-appointment-location">
-                  {nextAppointment.location}
-                </div>
-              </div>
-            </div>
-
-            <div className="pd-appointment-actions">
-              <button className="pd-primary-button-outline">
-                {t("patientDashboard.appointment.reschedule")}
-              </button>
-              <button className="pd-ghost-button">
-                {t("patientDashboard.appointment.viewAll")}
-              </button>
-            </div>
-          </div>
+          <DashboardCard title={t("patientDashboard.appointment.title")}>
+            <AppointmentCard
+              dateDay={new Date(nextAppointment.date).toLocaleDateString("en-US", { day: "2-digit" })}
+              dateMonth={new Date(nextAppointment.date).toLocaleDateString("en-US", { month: "short" })}
+              time={nextAppointment.time}
+              type={nextAppointment.type}
+              withLabel={t("patientDashboard.common.withDoctorPrefix")}
+              withName={nextAppointment.doctor}
+              location={nextAppointment.location}
+              primaryActionLabel={t("patientDashboard.appointment.reschedule")}
+              secondaryActionLabel={t("patientDashboard.appointment.viewAll")}
+            />
+          </DashboardCard>
         </section>
 
         {/* ==========================
@@ -494,57 +425,27 @@ const PatientDashboard = () => {
         {/* ==========================
             ADHERENCE / STREAK CARD
         =========================== */}
-        <section className="pd-card pd-card-lg pd-block">
-          <div className="pd-section-header">
-            <h2>{t("patientDashboard.adherence.title")}</h2>
+        <DashboardCard title={t("patientDashboard.adherence.title")}>
+          <div className="progress-card-list">
+            <ProgressCard
+              label={t("patientDashboard.adherence.currentStreakLabel")}
+              sub={t("patientDashboard.adherence.currentStreakSub")}
+              value={t("patientDashboard.adherence.currentStreakValue", {
+                days: adherence.streakDays,
+              })}
+            />
+            <ProgressCard
+              label={t("patientDashboard.adherence.weeklyRateLabel")}
+              sub={t("patientDashboard.adherence.weeklyRateSub")}
+              value={`${adherence.completionPercentage}%`}
+            />
+            <ProgressCard
+              label={t("patientDashboard.adherence.missedLabel")}
+              sub={t("patientDashboard.adherence.missedSub")}
+              value={adherence.missedThisWeek}
+            />
           </div>
-
-          <div className="pd-summary-list">
-            <div className="pd-summary-row">
-              <div>
-                <div className="pd-summary-label">
-                  {t("patientDashboard.adherence.currentStreakLabel")}
-                </div>
-                <div className="pd-summary-sub">
-                  {t("patientDashboard.adherence.currentStreakSub")}
-                </div>
-              </div>
-              <div className="pd-summary-value">
-                {t("patientDashboard.adherence.currentStreakValue", {
-                  days: adherence.streakDays,
-                })}
-              </div>
-            </div>
-
-            <div className="pd-summary-row">
-              <div>
-                <div className="pd-summary-label">
-                  {t("patientDashboard.adherence.weeklyRateLabel")}
-                </div>
-                <div className="pd-summary-sub">
-                  {t("patientDashboard.adherence.weeklyRateSub")}
-                </div>
-              </div>
-              <div className="pd-summary-value">
-                {adherence.completionPercentage}%
-              </div>
-            </div>
-
-            <div className="pd-summary-row">
-              <div>
-                <div className="pd-summary-label">
-                  {t("patientDashboard.adherence.missedLabel")}
-                </div>
-                <div className="pd-summary-sub">
-                  {t("patientDashboard.adherence.missedSub")}
-                </div>
-              </div>
-              <div className="pd-summary-value">
-                {adherence.missedThisWeek}
-              </div>
-            </div>
-          </div>
-        </section>
+        </DashboardCard>
       </div>
 
       {/* BOTTOM NAV */}
