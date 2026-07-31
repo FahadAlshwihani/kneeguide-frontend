@@ -114,7 +114,8 @@
     max-width: 60ch;
   }
 
+  /* Text and CTA first, dashboard preview cards below (mobile requirement) */
   .hero-preview {
-    order: -1;
+    margin-top: 32px;
   }
 }

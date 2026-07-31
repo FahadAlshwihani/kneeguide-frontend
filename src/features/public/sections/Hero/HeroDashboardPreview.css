@@ -51,9 +51,9 @@
 
 /* Supporting: doctor rehab progress */
 .hero-dashboard-preview-doctor-progress {
-  top: 258px;
-  inset-inline-start: 30px;
-  width: 260px;
+  top: 330px;
+  inset-inline-start: 10px;
+  width: 240px;
   z-index: 1;
 }
 

@@ -25,6 +25,8 @@ export const getHeroPreviewData = (t) => {
         type: p("appointmentType"),
         withLabel: p("withPatientPrefix"),
         withName: "Ahmed Ali",
+        primaryActionLabel: p("reschedule"),
+        secondaryActionLabel: p("viewAll"),
       },
       progress: {
         label: p("progressLabel"),
@@ -45,6 +47,7 @@ export const getHeroPreviewData = (t) => {
         lastDoneLabel: p("lastDoneLabel"),
         lastDone: p("exerciseLastDone"),
         progress: 60,
+        startLabel: p("start"),
       },
       rom: {
         label: p("romLabel"),
@@ -66,6 +69,8 @@ export const getHeroPreviewData = (t) => {
         type: p("appointmentType"),
         withLabel: p("withDoctorPrefix"),
         withName: "Sarah Ahmed",
+        primaryActionLabel: p("reschedule"),
+        secondaryActionLabel: p("viewAll"),
       },
     },
   };
