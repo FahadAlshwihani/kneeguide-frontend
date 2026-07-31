@@ -1,0 +1,36 @@
+import React from "react";
+import "./HomePage.css";
+
+import Hero from "../sections/Hero";
+import Problem from "../sections/Problem";
+import Solution from "../sections/Solution";
+import Technology from "../sections/Technology";
+import HowItWorks from "../sections/HowItWorks";
+import Platform from "../sections/Platform";
+import DoctorDashboard from "../sections/DoctorDashboard";
+import PatientDashboard from "../sections/PatientDashboard";
+import AI from "../sections/AI";
+import Roadmap from "../sections/Roadmap";
+import FAQ from "../sections/FAQ";
+import CTA from "../sections/CTA";
+
+const HomePage = () => {
+  return (
+    <div className="home-root">
+      <Hero />
+      <Problem />
+      <Solution />
+      <Technology />
+      <HowItWorks />
+      <Platform />
+      <DoctorDashboard />
+      <PatientDashboard />
+      <AI />
+      <Roadmap />
+      <FAQ />
+      <CTA />
+    </div>
+  );
+};
+
+export default HomePage;

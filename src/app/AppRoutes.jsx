@@ -5,7 +5,7 @@ import { ROUTES } from "../utils/routes";
 import PublicRoutes from "../routes/PublicRoutes";
 import DashboardRoutes from "../routes/DashboardRoutes";
 
-import NotFound from "../pages/NotFound";
+import NotFound from "../features/public/pages/NotFound";
 
 const AppRoutes = () => {
   return (

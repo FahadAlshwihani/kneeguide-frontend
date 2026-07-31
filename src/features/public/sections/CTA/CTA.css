@@ -1,0 +1,75 @@
+/* Uses global design tokens from src/index.css */
+
+.cta-root {
+  padding: var(--section-padding) 0;
+}
+
+.cta-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.cta-content {
+  background: var(--gradient-brand);
+  border-radius: var(--radius-xl);
+  padding: clamp(48px, 8vw, 80px) clamp(24px, 6vw, 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  box-shadow: var(--shadow-lg);
+}
+
+.cta-title {
+  font-size: clamp(1.85rem, 3.8vw, 2.6rem);
+  font-weight: 700;
+  color: #ffffff;
+  text-wrap: balance;
+}
+
+.cta-description {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 52ch;
+}
+
+.cta-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.cta-btn-primary,
+.cta-btn-secondary {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 13px 28px;
+  border-radius: 999px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cta-btn-primary {
+  color: var(--color-primary);
+  background: #ffffff;
+}
+
+.cta-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.cta-btn-secondary {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.cta-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.22);
+}

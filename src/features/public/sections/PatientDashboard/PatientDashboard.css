@@ -1,0 +1,180 @@
+/* Uses global design tokens from src/index.css */
+
+.patient-preview-root {
+  padding: var(--section-padding) 0;
+  background: var(--color-surface-soft);
+}
+
+.patient-preview-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(32px, 6vw, 64px);
+}
+
+.patient-preview-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.patient-preview-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+.patient-preview-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+  font-weight: 600;
+  color: var(--color-heading);
+  text-wrap: balance;
+}
+
+.patient-preview-description {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--color-text);
+}
+
+.patient-preview-points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.patient-preview-points li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.patient-preview-points svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.patient-preview-mock {
+  display: flex;
+  justify-content: center;
+}
+
+.patient-preview-mock-card {
+  width: 100%;
+  max-width: 340px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.patient-preview-mock-header {
+  width: 100%;
+}
+
+.patient-preview-mock-title {
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.patient-preview-mock-dial {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: conic-gradient(var(--color-primary) 0deg 108deg, var(--color-border) 108deg 360deg);
+}
+
+.patient-preview-mock-dial::before {
+  content: "";
+}
+
+.patient-preview-mock-dial-value {
+  background: var(--color-surface);
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-preview-mock-dial-value span {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.1;
+}
+
+.patient-preview-mock-dial-value small {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+}
+
+.patient-preview-mock-checklist {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.patient-preview-mock-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.patient-preview-mock-item-done {
+  color: var(--color-text);
+}
+
+.patient-preview-mock-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 2px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.patient-preview-mock-item-done .patient-preview-mock-check {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+@media (max-width: 900px) {
+  .patient-preview-container {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-preview-mock {
+    order: -1;
+  }
+
+  .patient-preview-copy {
+    align-items: center;
+    text-align: center;
+  }
+}

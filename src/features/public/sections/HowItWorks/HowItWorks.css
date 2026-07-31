@@ -1,0 +1,84 @@
+/* Uses global design tokens from src/index.css */
+
+.hiw-root {
+  padding: var(--section-padding) 0;
+  background: var(--color-surface-soft);
+}
+
+.hiw-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hiw-header {
+  max-width: 640px;
+  margin: 0 auto 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.hiw-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+.hiw-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 600;
+  color: var(--color-heading);
+  text-wrap: balance;
+}
+
+.hiw-description {
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+.hiw-steps {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hiw-step {
+  display: flex;
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.hiw-step:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hiw-step-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 48px;
+}
+
+.hiw-step-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  margin-bottom: 6px;
+}
+
+.hiw-step-description {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}

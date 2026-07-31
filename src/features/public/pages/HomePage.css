@@ -1,0 +1,5 @@
+/* Uses global design tokens from src/index.css */
+
+.home-root {
+  display: block;
+}

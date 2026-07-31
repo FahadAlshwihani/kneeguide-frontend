@@ -5,23 +5,23 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 // Patient
-import PatientDashboard from "../pages/PatientDashboard";
-import Reports from "../pages/Reports";
-import PatientExercises from "../pages/PatientExercises";
-import PatientProfile from "../pages/PatientProfile";
+import PatientDashboard from "../features/dashboard/patient/pages/PatientDashboard";
+import Reports from "../features/dashboard/patient/pages/Reports";
+import PatientExercises from "../features/dashboard/patient/pages/PatientExercises";
+import PatientProfile from "../features/dashboard/patient/pages/PatientProfile";
 
 // Doctor
-import DoctorDashboard from "../pages/DoctorDashboard";
-import DoctorPatients from "../pages/DoctorPatients";
-import DoctorReports from "../pages/DoctorReports";
-import DoctorCalendar from "../pages/DoctorCalendar";
-import DoctorProfile from "../pages/DoctorProfile";
-import DoctorPatientProfile from "../pages/DoctorPatientProfile";
+import DoctorDashboard from "../features/dashboard/doctor/pages/DoctorDashboard";
+import DoctorPatients from "../features/dashboard/doctor/pages/DoctorPatients";
+import DoctorReports from "../features/dashboard/doctor/pages/DoctorReports";
+import DoctorCalendar from "../features/dashboard/doctor/pages/DoctorCalendar";
+import DoctorProfile from "../features/dashboard/doctor/pages/DoctorProfile";
+import DoctorPatientProfile from "../features/dashboard/doctor/pages/DoctorPatientProfile";
 
 // Doctor patient tools
-import DoctorPatientReportsPage from "../pages/DoctorPatientReportsPage";
-import DoctorPatientExercisesPage from "../pages/DoctorPatientExercisesPage";
-import DoctorPatientNewAppointmentPage from "../pages/DoctorPatientNewAppointmentPage";
+import DoctorPatientReportsPage from "../features/dashboard/doctor/pages/DoctorPatientReportsPage";
+import DoctorPatientExercisesPage from "../features/dashboard/doctor/pages/DoctorPatientExercisesPage";
+import DoctorPatientNewAppointmentPage from "../features/dashboard/doctor/pages/DoctorPatientNewAppointmentPage";
 
 const DashboardRoutes = (
   <Route element={<DashboardLayout />}>

@@ -1,0 +1,7 @@
+/* Uses global design tokens from src/index.css */
+
+.about-root {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: var(--section-padding) 24px;
+}

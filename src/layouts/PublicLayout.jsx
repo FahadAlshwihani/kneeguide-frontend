@@ -1,15 +1,15 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from "../components/public/Header/Header";
-import Footer from "../components/public/Footer/Footer";
+import Header from "../features/public/components/Header";
+import Footer from "../features/public/components/Footer";
 
 const PublicLayout = () => {
   return (
-    <>
+    <div className="public-root">
       <Header />
       <Outlet />
       <Footer />
-    </>
+    </div>
   );
 };
 

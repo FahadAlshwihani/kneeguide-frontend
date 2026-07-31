@@ -1,0 +1,11 @@
+/* Uses global design tokens from src/index.css */
+
+.footer-section-root {
+  padding: var(--section-padding) 0;
+}
+
+.footer-section-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}

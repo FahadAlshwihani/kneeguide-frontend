@@ -1,0 +1,157 @@
+/* Uses global design tokens from src/index.css */
+
+.doctor-preview-root {
+  padding: var(--section-padding) 0;
+}
+
+.doctor-preview-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(32px, 6vw, 64px);
+}
+
+.doctor-preview-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.doctor-preview-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+.doctor-preview-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+  font-weight: 600;
+  color: var(--color-heading);
+  text-wrap: balance;
+}
+
+.doctor-preview-description {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--color-text);
+}
+
+.doctor-preview-points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.doctor-preview-points li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.doctor-preview-points svg {
+  color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+.doctor-preview-mock {
+  display: flex;
+  justify-content: center;
+}
+
+.doctor-preview-mock-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+}
+
+.doctor-preview-mock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.doctor-preview-mock-title {
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.doctor-preview-mock-tag {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.doctor-preview-mock-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.doctor-preview-mock-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doctor-preview-mock-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.doctor-preview-mock-dot-ok {
+  background: var(--color-secondary);
+}
+
+.doctor-preview-mock-dot-alert {
+  background: var(--color-primary);
+}
+
+.doctor-preview-mock-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-surface-soft);
+  position: relative;
+  flex: 1;
+}
+
+.doctor-preview-mock-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--gradient-brand);
+  opacity: 0.85;
+}
+
+@media (max-width: 900px) {
+  .doctor-preview-container {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-preview-copy {
+    align-items: center;
+    text-align: center;
+  }
+}

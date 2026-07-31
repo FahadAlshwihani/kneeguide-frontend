@@ -5,17 +5,17 @@ import { ROUTES } from "../utils/routes";
 import PublicLayout from "../layouts/PublicLayout";
 
 // Public pages
-import HomePage from "../pages/public/HomePage";
-import AboutPage from "../pages/public/AboutPage";
-import TechnologyPage from "../pages/public/TechnologyPage";
-import FeaturesPage from "../pages/public/FeaturesPage";
-import HowItWorksPage from "../pages/public/HowItWorksPage";
-import ContactPage from "../pages/public/ContactPage";
+import HomePage from "../features/public/pages/HomePage";
+import AboutPage from "../features/public/pages/AboutPage";
+import TechnologyPage from "../features/public/pages/TechnologyPage";
+import FeaturesPage from "../features/public/pages/FeaturesPage";
+import HowItWorksPage from "../features/public/pages/HowItWorksPage";
+import ContactPage from "../features/public/pages/ContactPage";
 
 // Existing auth pages (kept exactly as-is, rendered standalone)
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import VerifyOtp from "../pages/VerifyOtp";
+import Login from "../features/auth/pages/Login";
+import Register from "../features/auth/pages/Register";
+import VerifyOtp from "../features/auth/pages/VerifyOtp";
 
 const PublicRoutes = (
   <>

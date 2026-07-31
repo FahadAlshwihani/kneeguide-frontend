@@ -1,0 +1,93 @@
+/* Uses global design tokens from src/index.css */
+
+.solution-root {
+  padding: var(--section-padding) 0;
+  background: var(--color-surface-soft);
+}
+
+.solution-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.solution-header {
+  max-width: 640px;
+  margin: 0 auto 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.solution-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+.solution-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 600;
+  color: var(--color-heading);
+  text-wrap: balance;
+}
+
+.solution-description {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--color-text);
+}
+
+.solution-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.solution-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.solution-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-brand);
+  color: #ffffff;
+  font-size: 1.15rem;
+}
+
+.solution-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.solution-card-description {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+@media (max-width: 960px) {
+  .solution-grid {
+    grid-template-columns: 1fr;
+  }
+}
