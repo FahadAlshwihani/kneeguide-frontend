@@ -28,7 +28,7 @@ const CAPABILITIES = [
 
 const Platform = () => {
   return (
-    <section className="platform-root">
+    <section className="platform-root" id="platform">
       <div className="platform-container">
         <Reveal className="platform-header">
           <span className="platform-badge">The Platform</span>
