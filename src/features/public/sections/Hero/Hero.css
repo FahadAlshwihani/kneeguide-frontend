@@ -60,16 +60,22 @@
 
 .hero-btn-primary,
 .hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;
   padding: 13px 28px;
   border-radius: 999px;
+  cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .hero-btn-primary {
   color: #ffffff;
   background: var(--gradient-brand);
+  border: none;
   box-shadow: var(--shadow-md);
 }
 
@@ -89,7 +95,7 @@
   color: var(--color-primary);
 }
 
-.hero-visual-col {
+.hero-preview {
   display: flex;
   justify-content: center;
 }
@@ -108,7 +114,7 @@
     max-width: 60ch;
   }
 
-  .hero-visual-col {
+  .hero-preview {
     order: -1;
   }
 }
