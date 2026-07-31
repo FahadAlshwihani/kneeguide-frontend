@@ -104,31 +104,17 @@ const PatientExercises = () => {
         {/* EXERCISE LIST */}
         <div className="pe-list">
           {list.map((ex, idx) => (
-            <div key={idx} className="pe-card">
-              <img src={ex.image} alt="" className="pe-img" />
-
-              <div className="pe-card-body">
-                <h3 className="pe-ex-name">{ex.name}</h3>
-                <p className="pe-ex-meta">{ex.reps}</p>
-                <p className="pe-ex-last">
-                  {t("patientExercises.labels.lastDone")}: {ex.lastDone}
-                </p>
-
-                <div className="pe-progress">
-                  <div
-                    className="pe-progress-inner"
-                    style={{ width: `${ex.progress}%` }}
-                  />
-                </div>
-
-                <button
-                  className="pe-start-btn"
-                  onClick={() => setActiveExercise(ex)}
-                >
-                  {t("patientExercises.buttons.start")}
-                </button>
-              </div>
-            </div>
+            <ExerciseCard
+              key={idx}
+              name={ex.name}
+              reps={ex.reps}
+              lastDoneLabel={t("patientExercises.labels.lastDone")}
+              lastDone={ex.lastDone}
+              progress={ex.progress}
+              image={ex.image}
+              startLabel={t("patientExercises.buttons.start")}
+              onStart={() => setActiveExercise(ex)}
+            />
           ))}
         </div>
 
