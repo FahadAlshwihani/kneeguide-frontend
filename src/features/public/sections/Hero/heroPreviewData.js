@@ -1,0 +1,72 @@
+/**
+ * Static, clearly-fictional preview data for the Hero's dashboard-card
+ * composition. No API calls, no real patient data — just enough to make
+ * the shared cards look like a real product. Values are fixed (not
+ * randomized) so the Hero renders identically on every load.
+ *
+ * `t` is the react-i18next translate function, passed in by the caller so
+ * this stays a plain data module rather than a hook.
+ */
+export const getHeroPreviewData = (t) => {
+  const p = (key, options) => t(`publicHero.preview.${key}`, options);
+
+  return {
+    doctor: {
+      badge: p("doctorBadge"),
+      metric: {
+        value: 42,
+        label: p("activePatientsLabel"),
+      },
+      appointment: {
+        title: p("upcomingAppointmentTitle"),
+        dateDay: p("appointmentDateDay"),
+        dateMonth: p("appointmentDateMonth"),
+        time: p("appointmentTime"),
+        type: p("appointmentType"),
+        withLabel: p("withPatientPrefix"),
+        withName: "Ahmed Ali",
+      },
+      progress: {
+        label: p("progressLabel"),
+        sub: p("progressSub"),
+        value: "78%",
+        progress: 78,
+      },
+      alert: {
+        label: p("alertLabel"),
+        sub: p("alertSub"),
+      },
+    },
+    patient: {
+      badge: p("patientBadge"),
+      exercise: {
+        name: p("exerciseName"),
+        reps: p("exerciseReps"),
+        lastDoneLabel: p("lastDoneLabel"),
+        lastDone: p("exerciseLastDone"),
+        progress: 60,
+      },
+      rom: {
+        label: p("romLabel"),
+        sub: p("romSub"),
+        value: p("romValue"),
+        progress: 82,
+      },
+      adherence: {
+        label: p("adherenceLabel"),
+        sub: p("adherenceSub"),
+        value: p("adherenceValue"),
+        progress: 76,
+      },
+      appointment: {
+        title: p("upcomingAppointmentTitle"),
+        dateDay: p("appointmentDateDay"),
+        dateMonth: p("appointmentDateMonth"),
+        time: p("appointmentTime"),
+        type: p("appointmentType"),
+        withLabel: p("withDoctorPrefix"),
+        withName: "Sarah Ahmed",
+      },
+    },
+  };
+};

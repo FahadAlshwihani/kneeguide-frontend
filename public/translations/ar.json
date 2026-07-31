@@ -743,13 +743,19 @@
       "exerciseReps": "3 × 15",
       "exerciseLastDone": "الأمس",
       "romLabel": "مدى الحركة",
-      "romSub": "هذا الأسبوع",
+      "romSub": "مدى البسط",
       "adherenceLabel": "الالتزام الأسبوعي",
       "adherenceSub": "5 أيام متتالية",
       "appointmentType": "متابعة",
       "reschedule": "إعادة الجدولة",
       "viewAll": "عرض الكل",
-      "start": "ابدأ"
+      "start": "ابدأ",
+      "lastDoneLabel": "آخر مرة",
+      "romValue": "82°",
+      "adherenceValue": "76%",
+      "appointmentDateDay": "25",
+      "appointmentDateMonth": "نوفمبر",
+      "appointmentTime": "3:30 م"
     }
   }
 }

@@ -743,13 +743,19 @@
       "exerciseReps": "3 × 15",
       "exerciseLastDone": "Yesterday",
       "romLabel": "Range of motion",
-      "romSub": "This week",
+      "romSub": "Extension range",
       "adherenceLabel": "Weekly adherence",
       "adherenceSub": "5-day streak",
       "appointmentType": "Follow-up",
       "reschedule": "Reschedule",
       "viewAll": "View all",
-      "start": "Start"
+      "start": "Start",
+      "lastDoneLabel": "Last done",
+      "romValue": "82°",
+      "adherenceValue": "76%",
+      "appointmentDateDay": "25",
+      "appointmentDateMonth": "Nov",
+      "appointmentTime": "3:30 PM"
     }
   }
 }
