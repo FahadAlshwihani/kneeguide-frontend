@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 const TIERS = [
-  { name: "ultrawide", minWidth: 1600, cardCount: 8 },
-  { name: "desktop", minWidth: 1200, cardCount: 6 },
-  { name: "laptop", minWidth: 992, cardCount: 5 },
-  { name: "tablet", minWidth: 640, cardCount: 3 },
+  { name: "ultrawide", minWidth: 1600, cardCount: 9 },
+  { name: "desktop", minWidth: 1200, cardCount: 7 },
+  { name: "laptop", minWidth: 992, cardCount: 6 },
+  { name: "tablet", minWidth: 640, cardCount: 4 },
   { name: "mobile", minWidth: 0, cardCount: 1 },
 ];
 
