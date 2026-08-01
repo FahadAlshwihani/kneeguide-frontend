@@ -1,12 +1,13 @@
-import React from "react";
-import DotGrid from "./DotGrid";
+import React, { useState, useEffect } from "react";
+import Beams from "./Beams";
 import "./PublicBackground.css";
 
 /**
- * Shared, reusable public-site background: a soft gradient wash beneath a
- * subtle DotGrid texture (React Bits, recolored to the dashboard's own
- * design tokens — no new colors introduced). Meant to sit behind a
- * section's content as an absolutely-positioned backdrop:
+ * Shared, reusable Hero background: React Bits' Beams (Three.js), recolored
+ * to the dashboard's own navy/blue palette — no new colors introduced (see
+ * Beams.jsx for the two hardcoded tones changed from the demo's black).
+ * Tuned specifically for KneeGuide: slow, quiet, low-noise — a texture to
+ * notice subconsciously, not a foreground effect.
  *
  *   <section style={{ position: "relative" }}>
  *     <PublicBackground />
@@ -14,26 +15,36 @@ import "./PublicBackground.css";
  *   </section>
  *
  * Purely decorative — non-interactive content should never depend on it,
- * and it never intercepts clicks (pointer-events: none throughout).
+ * and it never intercepts clicks (pointer-events: none throughout). Skips
+ * the animated canvas entirely for prefers-reduced-motion.
  */
 const PublicBackground = ({ className = "" }) => {
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(query.matches);
+    const onChange = (e) => setReducedMotion(e.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
   return (
     <div className={`public-bg-root ${className}`.trim()} aria-hidden="true">
-      {/* Dots sit behind the gradient wash — a texture to notice
-          subconsciously, not a foreground effect. */}
-      <DotGrid
-        className="public-bg-dotgrid"
-        dotSize={2.5}
-        gap={30}
-        baseColor="#cbd5e1"
-        activeColor="#60a5fa"
-        proximity={110}
-        shockRadius={140}
-        shockStrength={1.5}
-        resistance={750}
-        returnDuration={1.5}
-      />
-      <div className="public-bg-wash" />
+      {reducedMotion ? (
+        <div className="public-bg-static-fallback" />
+      ) : (
+        <Beams
+          beamWidth={1.8}
+          beamHeight={32}
+          beamNumber={8}
+          lightColor="#ffffff"
+          speed={0.4}
+          noiseIntensity={0.6}
+          scale={0.15}
+          rotation={18}
+        />
+      )}
     </div>
   );
 };
