@@ -12,7 +12,7 @@ i18n
   .use(Backend)
   .use(initReactI18next)
   .init({
-    lng: "ar", // لغة افتراضية (TEMP: reverted after RTL verification screenshot)
+    lng: "en", // لغة افتراضية
     fallbackLng: "en",
     debug: false,
 
