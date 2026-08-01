@@ -12,18 +12,21 @@
   position: absolute;
   inset: 0;
   /* Sits in front of the dot grid, veiling it — no solid base layer, so the
-     dots still read through outside the glow radius. */
+     dots still read through everywhere. Two blue-family glows only (no
+     green) — a single, deliberate navy/blue identity, Lumofy-style. */
   background:
-    radial-gradient(circle at 15% 10%, var(--color-primary-soft) 0%, transparent 55%),
-    radial-gradient(circle at 85% 30%, var(--color-secondary-soft) 0%, transparent 50%);
+    radial-gradient(circle at 12% 8%, var(--color-primary-soft) 0%, transparent 55%),
+    radial-gradient(circle at 88% 90%, rgba(96, 165, 250, 0.12) 0%, transparent 55%);
 }
 
 .public-bg-dotgrid {
   position: absolute;
   inset: 0;
-  opacity: 0.4;
-  -webkit-mask-image: radial-gradient(ellipse 55% 40% at 50% 0%, #000 35%, transparent 75%);
-  mask-image: radial-gradient(ellipse 55% 40% at 50% 0%, #000 35%, transparent 75%);
+  opacity: 0.45;
+  /* Full edge-to-edge coverage — no mask. A very gentle vignette only,
+     so corners don't feel harshly clipped, without hiding most of the grid. */
+  -webkit-mask-image: radial-gradient(ellipse 120% 120% at 50% 40%, #000 70%, rgba(0, 0, 0, 0.6) 100%);
+  mask-image: radial-gradient(ellipse 120% 120% at 50% 40%, #000 70%, rgba(0, 0, 0, 0.6) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
