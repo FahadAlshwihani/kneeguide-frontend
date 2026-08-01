@@ -13,25 +13,16 @@ import { getHeroPreviewData } from "./heroPreviewData";
 import useViewportTier from "./useViewportTier";
 import "./HeroDashboardPreview.css";
 
-// Small per-slot resting offset/rotation so the grid reads as naturally
-// composed floating widgets rather than a rigid grid — set as the actual
-// Motion animation target (not a plain CSS transform) since Motion's own
-// inline transform would otherwise win over a CSS one at rest.
-const FLOAT_PATTERN = [
-  { y: -8, rotate: -0.6 },
-  { y: 10, rotate: 0.8 },
-  { y: -4, rotate: 0.4 },
-  { y: 14, rotate: -0.9 },
-  { y: -10, rotate: 0.5 },
-];
-
+// Cards settle at rest (y:0, rotate:0) — an intentional, aligned grid, not
+// a scattered/floating composition. Only the entrance is animated; nothing
+// rests at a permanent offset, so cards can never drift toward the CTAs
+// or heading above.
 const cardEntrance = {
-  hidden: ({ floatY }) => ({ opacity: 0, y: floatY + 22, rotate: 0 }),
-  visible: ({ delay, floatY, floatRotate }) => ({
+  hidden: { opacity: 0, y: 18 },
+  visible: (delay = 0) => ({
     opacity: 1,
-    y: floatY,
-    rotate: floatRotate,
-    transition: { duration: 0.55, delay, ease: "easeOut" },
+    y: 0,
+    transition: { duration: 0.5, delay, ease: "easeOut" },
   }),
 };
 
@@ -169,22 +160,19 @@ const HeroDashboardPreview = () => {
 
   return (
     <div className="hero-dashboard-preview-root">
-      {visible.map((item, index) => {
-        const float = FLOAT_PATTERN[index % FLOAT_PATTERN.length];
-        return (
-          <motion.div
-            key={item.id}
-            className={`hero-dashboard-preview-item hero-dashboard-preview-item--${item.size}`}
-            variants={cardEntrance}
-            initial="hidden"
-            animate="visible"
-            custom={{ delay: index * 0.06, floatY: float.y, floatRotate: float.rotate }}
-            whileHover={{ y: float.y - 6, transition: { duration: 0.2 } }}
-          >
-            {item.node}
-          </motion.div>
-        );
-      })}
+      {visible.map((item, index) => (
+        <motion.div
+          key={item.id}
+          className={`hero-dashboard-preview-item hero-dashboard-preview-item--${item.size}`}
+          variants={cardEntrance}
+          initial="hidden"
+          animate="visible"
+          custom={index * 0.05}
+          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+        >
+          {item.node}
+        </motion.div>
+      ))}
     </div>
   );
 };
