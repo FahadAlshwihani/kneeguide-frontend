@@ -2,7 +2,11 @@
 
 .hiw-root {
   padding: var(--section-padding) 0;
-  background: var(--color-surface-soft);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--gradient-tint-blue);
 }
 
 .hiw-container {
