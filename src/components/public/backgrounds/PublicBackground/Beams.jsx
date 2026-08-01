@@ -142,12 +142,12 @@ float cnoise(vec3 P){
 `;
 
 /**
- * React Bits' Beams, tuned for KneeGuide: the demo's black beam material
- * and black scene backdrop are replaced with the dashboard's own navy
- * background (#070F1A) and primary blue (#2563EB), so the lit beam
- * highlights read as "soft blue", not grayscale. Props default to a much
- * slower, quieter configuration than the original demo — see
- * PublicBackground.jsx for the actual tuned values used in the Hero.
+ * React Bits' Beams, matching the official demo's look (dark beam material
+ * lit by a white directional light — grayscale, not tinted) rather than
+ * reinterpreting it. The only change from the demo source: the hardcoded
+ * black is swapped for the site's own near-black token value (#050505), so
+ * blue never appears as a background — it stays an accent elsewhere (CTAs,
+ * badges, icons). See PublicBackground.jsx for the tuned prop values.
  */
 const Beams = ({
   beamWidth = 2,
@@ -207,10 +207,10 @@ const Beams = ({
         },
         material: { fog: true },
         uniforms: {
-          // Deep blue base (dashboard --color-primary) instead of the demo's
-          // black, so the beams themselves read as blue under the white
-          // directional light, not grayscale.
-          diffuse: new THREE.Color(...hexToNormalizedRGB("#2563EB")),
+          // Matches the demo's black beam material almost exactly — just the
+          // site's own near-black token (#050505) instead of pure #000000 —
+          // so the beams stay monochrome, lit only by the white light below.
+          diffuse: new THREE.Color(...hexToNormalizedRGB("#050505")),
           time: { shared: true, mixed: true, linked: true, value: 0 },
           roughness: 0.3,
           metalness: 0.3,
@@ -237,8 +237,8 @@ const Beams = ({
         <DirLight color={lightColor} intensity={lightIntensity} position={[0, 3, 10]} />
       </group>
       <ambientLight intensity={ambientIntensity} />
-      {/* Dashboard's own deep navy background, not the demo's pure black. */}
-      <color attach="background" args={["#070F1A"]} />
+      {/* The site's own near-black token, not the demo's pure #000000. */}
+      <color attach="background" args={["#050505"]} />
       <PerspectiveCamera makeDefault position={[0, 0, 20]} fov={30} />
     </CanvasWrapper>
   );
