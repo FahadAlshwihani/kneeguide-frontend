@@ -1,0 +1,32 @@
+/* Uses global design tokens from src/index.css */
+
+.public-bg-root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.public-bg-wash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 10%, var(--color-primary-soft) 0%, transparent 45%),
+    radial-gradient(circle at 85% 30%, var(--color-secondary-soft) 0%, transparent 40%),
+    var(--color-background);
+}
+
+.public-bg-dotgrid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 50%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 50%, transparent 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-bg-dotgrid {
+    display: none;
+  }
+}

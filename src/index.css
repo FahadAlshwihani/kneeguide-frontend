@@ -305,6 +305,14 @@ body.ltr .form-group label {
   --color-surface-soft: #f3f7fb;
   --color-border: #e3e9f1;
 
+  /* Semantic status colors — named aliases for hues already used across the
+     dashboard (MetricCard status accents, progress bars, PainWheel states),
+     not new colors. --color-danger is already defined above and reused as-is. */
+  --color-primary-hover: var(--color-primary-strong);
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-info: #6366f1;
+
   /* Soft brand gradient + glass, used sparingly (hero glow, header) */
   --gradient-brand: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   --glass-bg: rgba(255, 255, 255, 0.72);
