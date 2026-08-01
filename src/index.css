@@ -294,19 +294,19 @@ body.ltr .form-group label {
   --font-en: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-ar: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Colors — the public site inherits the dashboard's own dark palette.
-     Backgrounds stay aliased to the dashboard's literal tokens (--color-bg /
-     --color-bg-elevated / --color-bg-soft, defined above) so there is zero
-     drift between dashboard and public surfaces — one product, one source
-     of truth. Text/border tones are tuned brighter (Lumofy-inspired polish
-     pass) but stay within the same navy/blue family, not a new palette. */
-  --color-text: #cbd5e1;
+  /* Colors — premium monochrome identity (Vercel/Linear/Notion-inspired):
+     near-black surfaces, white headings, neutral gray body/muted text.
+     Blue (--color-primary, already defined above) is kept strictly as an
+     ACCENT — never a background or section tint. Dashboard card internals
+     are untouched (their own hardcoded near-blacks already sit close to
+     this same neutral-dark family, so nothing clashes). */
+  --color-text: #c9c9c9;
   --color-heading: #ffffff;
-  --color-muted: #94a3b8;
-  --color-background: var(--color-bg);
-  --color-surface: var(--color-bg-elevated);
-  --color-surface-soft: var(--color-bg-soft);
-  --color-border: rgba(59, 130, 246, 0.15);
+  --color-muted: #8a8a8a;
+  --color-background: #050505;
+  --color-surface: #0b0b0b;
+  --color-surface-soft: #111111;
+  --color-border: rgba(255, 255, 255, 0.08);
 
   /* Semantic status colors — named aliases for hues already used across the
      dashboard (MetricCard status accents, progress bars, PainWheel states),
@@ -319,15 +319,15 @@ body.ltr .form-group label {
 
   /* Soft brand gradient + glass, used sparingly (hero glow, header) */
   --gradient-brand: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-  --glass-bg: rgba(7, 11, 18, 0.72);
-  --glass-border: rgba(148, 163, 184, 0.18);
+  --glass-bg: rgba(5, 5, 5, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: blur(16px);
 
-  /* Tinted section backgrounds — same dark base + the existing soft brand
-     tints (--color-primary-soft / --color-secondary-soft), used to vary the
-     "temperature" of a section without ever leaving the dashboard palette. */
-  --gradient-tint-blue: radial-gradient(circle at 20% 20%, var(--color-primary-soft), transparent 60%), var(--color-surface-soft);
-  --gradient-tint-green: radial-gradient(circle at 80% 25%, var(--color-secondary-soft), transparent 60%), var(--color-surface-soft);
+  /* Neutral section tint — a quiet white glow, not a color tint. Sections
+     never get a large blue/green wash; only small accents (badges, icons,
+     buttons) use the brand hues. */
+  --gradient-tint-blue: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.035), transparent 60%), var(--color-surface-soft);
+  --gradient-tint-green: radial-gradient(circle at 80% 25%, rgba(255, 255, 255, 0.035), transparent 60%), var(--color-surface-soft);
 
   /* Layout */
   --container-width: var(--max-width);
