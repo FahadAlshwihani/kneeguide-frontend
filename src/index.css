@@ -294,23 +294,25 @@ body.ltr .form-group label {
   --font-en: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-ar: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Colors — the public site now inherits the dashboard's own dark palette
-     directly (--color-bg / --color-bg-elevated / --color-bg-soft /
-     --color-text-main / --color-text-soft / --color-border-subtle are all
-     defined above already). No new colors — these are aliases only, so the
-     public site and dashboard share one literal color system. */
-  --color-text: var(--color-text-soft);
-  --color-heading: var(--color-text-main);
-  --color-muted: var(--color-text-muted);
+  /* Colors — the public site inherits the dashboard's own dark palette.
+     Backgrounds stay aliased to the dashboard's literal tokens (--color-bg /
+     --color-bg-elevated / --color-bg-soft, defined above) so there is zero
+     drift between dashboard and public surfaces — one product, one source
+     of truth. Text/border tones are tuned brighter (Lumofy-inspired polish
+     pass) but stay within the same navy/blue family, not a new palette. */
+  --color-text: #cbd5e1;
+  --color-heading: #ffffff;
+  --color-muted: #94a3b8;
   --color-background: var(--color-bg);
   --color-surface: var(--color-bg-elevated);
   --color-surface-soft: var(--color-bg-soft);
-  --color-border: var(--color-border-subtle);
+  --color-border: rgba(59, 130, 246, 0.15);
 
   /* Semantic status colors — named aliases for hues already used across the
      dashboard (MetricCard status accents, progress bars, PainWheel states),
      not new colors. --color-danger is already defined above and reused as-is. */
-  --color-primary-hover: var(--color-primary-strong);
+  --color-primary-hover: #3b82f6;
+  --color-accent: #60a5fa;
   --color-success: #22c55e;
   --color-warning: #eab308;
   --color-info: #6366f1;
