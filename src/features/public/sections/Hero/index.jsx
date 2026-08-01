@@ -22,6 +22,7 @@ const Hero = () => {
   return (
     <section className="hero-root">
       <PublicBackground />
+      <div className="hero-vignette" aria-hidden="true" />
 
       <div className="hero-container">
         <motion.div className="hero-content" initial="hidden" animate="visible">

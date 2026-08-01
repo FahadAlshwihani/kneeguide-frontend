@@ -42,7 +42,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(14px, 2.2svh, 24px);
+  gap: clamp(16px, 2.8svh, 30px);
   flex-shrink: 0;
   padding-top: clamp(8px, 2svh, 24px);
 }
@@ -122,19 +122,40 @@
 }
 
 /* Dashboard preview: a fixed-height window flush with the Hero's bottom
-   edge, occupying roughly the lower 35-40% of the Hero. It never floats
-   near the copy and never resizes to fit its content — instead it clips,
-   deliberately, so only the top of the preview is visible: like a real
-   application dashboard sitting just below the fold. The rest of the
-   composition (cards further down the grid) is intentionally hidden. */
+   edge. It never floats near the copy and never resizes to fit its
+   content — instead it clips, deliberately, so only the top of the preview
+   is visible: like a real application dashboard sitting just below the
+   fold. The rest of the composition (cards further down the grid) is
+   intentionally hidden. Sized smaller than the space it's given so
+   `.hero-container`'s space-between reads as a deliberate gap above it
+   (the "floating near the bottom" look) rather than the preview touching
+   the CTAs. */
 .hero-preview-wrap {
   width: 100%;
   flex: 0 0 auto;
-  height: clamp(170px, 37svh, 360px);
+  height: clamp(140px, 30svh, 300px);
   overflow: hidden;
   display: flex;
   align-items: flex-start;
   justify-content: center;
+}
+
+/* Radial vignette above the Beams canvas, below the content: fades the
+   frame's edges toward pure black while keeping the center — right behind
+   the heading — brighter, for the cinematic framing of the reference
+   composition. Purely a darkening overlay; never opaque enough to affect
+   text contrast, which already has its own color against the background. */
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 38%,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.25) 55%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
 }
 
 @media (max-width: 640px) {

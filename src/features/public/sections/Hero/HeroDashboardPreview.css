@@ -6,7 +6,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 13vw, 210px), 1fr));
   grid-auto-flow: dense;
-  gap: clamp(12px, 1.8vw, 24px);
+  gap: clamp(10px, 1.4vw, 18px);
   align-items: start;
   /* Top-aligned, not centered: the first row sits right at the window's
      top edge, and everything below (later rows, the bottom of tall cards)
@@ -18,6 +18,13 @@
   max-width: 1600px;
   margin: 0 auto;
   padding: 6px 6px 0;
+  /* The preview is a supporting element, not the focal point — scaled down
+     so it reads as secondary to the heading above it. Scaling (rather than
+     shrinking the cards' own internal sizing, which lives in the shared
+     dashboard components) keeps every card and interaction identical to
+     the real dashboard; only its footprint here is smaller. */
+  transform: scale(0.83);
+  transform-origin: top center;
 }
 
 .hero-dashboard-preview-item {
@@ -26,11 +33,11 @@
 }
 
 .hero-dashboard-preview-item > * {
-  filter: drop-shadow(var(--shadow-md));
+  filter: drop-shadow(0 6px 16px rgba(15, 23, 42, 0.32));
 }
 
 .hero-dashboard-preview-item:hover > * {
-  filter: drop-shadow(var(--shadow-lg));
+  filter: drop-shadow(0 10px 24px rgba(15, 23, 42, 0.42));
 }
 
 /* Different sizes so the composition doesn't read as a uniform grid */
