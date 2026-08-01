@@ -19,19 +19,21 @@ import "./PublicBackground.css";
 const PublicBackground = ({ className = "" }) => {
   return (
     <div className={`public-bg-root ${className}`.trim()} aria-hidden="true">
-      <div className="public-bg-wash" />
+      {/* Dots sit behind the gradient wash — a texture to notice
+          subconsciously, not a foreground effect. */}
       <DotGrid
         className="public-bg-dotgrid"
-        dotSize={3}
-        gap={26}
-        baseColor="#e3e9f1"
+        dotSize={2.5}
+        gap={30}
+        baseColor="#1e293b"
         activeColor="#2563eb"
-        proximity={110}
-        shockRadius={160}
-        shockStrength={2}
+        proximity={100}
+        shockRadius={140}
+        shockStrength={1.5}
         resistance={750}
         returnDuration={1.5}
       />
+      <div className="public-bg-wash" />
     </div>
   );
 };

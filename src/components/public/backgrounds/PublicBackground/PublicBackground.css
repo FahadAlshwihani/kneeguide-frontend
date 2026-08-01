@@ -11,18 +11,19 @@
 .public-bg-wash {
   position: absolute;
   inset: 0;
+  /* Sits in front of the dot grid, veiling it — no solid base layer, so the
+     dots still read through outside the glow radius. */
   background:
-    radial-gradient(circle at 15% 10%, var(--color-primary-soft) 0%, transparent 45%),
-    radial-gradient(circle at 85% 30%, var(--color-secondary-soft) 0%, transparent 40%),
-    var(--color-background);
+    radial-gradient(circle at 15% 10%, var(--color-primary-soft) 0%, transparent 55%),
+    radial-gradient(circle at 85% 30%, var(--color-secondary-soft) 0%, transparent 50%);
 }
 
 .public-bg-dotgrid {
   position: absolute;
   inset: 0;
-  opacity: 0.6;
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 50%, transparent 100%);
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 50%, transparent 100%);
+  opacity: 0.28;
+  -webkit-mask-image: radial-gradient(ellipse 55% 40% at 50% 0%, #000 35%, transparent 75%);
+  mask-image: radial-gradient(ellipse 55% 40% at 50% 0%, #000 35%, transparent 75%);
 }
 
 @media (prefers-reduced-motion: reduce) {
