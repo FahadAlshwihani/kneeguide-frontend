@@ -122,11 +122,16 @@
    text column's reading-width constraint. Takes the remaining vertical
    space after the copy/CTAs and never forces the Hero past 100svh.
    No overflow clipping here — card shadows and hover lift need real room
-   to breathe; the grid is sized to fit rather than clipped to fit. */
+   to breathe; the grid is sized to fit rather than clipped to fit.
+
+   The preview is the visual ending of the Hero, never a layer floating
+   over the copy — a guaranteed minimum gap keeps it clear of the CTAs
+   even at the tightest clamp() values above. */
 .hero-preview-wrap {
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
+  margin-top: clamp(16px, 2.4svh, 32px);
   display: flex;
   align-items: center;
   justify-content: center;
