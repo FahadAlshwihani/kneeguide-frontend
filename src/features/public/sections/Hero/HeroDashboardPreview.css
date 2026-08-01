@@ -8,15 +8,16 @@
   grid-auto-flow: dense;
   gap: clamp(12px, 1.8vw, 24px);
   align-items: start;
-  align-content: center;
+  /* Top-aligned, not centered: the first row sits right at the window's
+     top edge, and everything below (later rows, the bottom of tall cards)
+     runs on past the visible window and is clipped by the parent's
+     overflow:hidden — that clip is the "emerging from below" effect. */
+  align-content: start;
   justify-content: center;
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  /* No overflow/max-height clip here — card shadows and the hover lift
-     need real space to render; fit comes from sizing (grid + count),
-     never from cropping. */
-  padding: 6px;
+  padding: 6px 6px 0;
 }
 
 .hero-dashboard-preview-item {
