@@ -1,20 +1,37 @@
-/* Uses global design tokens from src/index.css for the surrounding stage;
+/* Uses global design tokens from src/index.css for the grid/spacing;
    the cards inside (MetricCard, ProgressCard, AppointmentCard, ExerciseCard,
    DashboardCard) own their own scoped styles — never overridden here. */
 
 .hero-dashboard-preview-root {
-  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-auto-flow: dense;
+  gap: clamp(20px, 3vw, 32px);
+  align-items: start;
   width: 100%;
-  max-width: 460px;
-  min-height: 640px;
 }
 
-.hero-dashboard-preview-layer {
-  position: absolute;
+.hero-dashboard-preview-item {
+  min-width: 0;
+  transition: filter var(--transition-fast);
 }
 
-.hero-dashboard-preview-card {
-  box-shadow: var(--shadow-lg);
+.hero-dashboard-preview-item > * {
+  filter: drop-shadow(var(--shadow-md));
+}
+
+.hero-dashboard-preview-item:hover > * {
+  filter: drop-shadow(var(--shadow-lg));
+}
+
+/* Different sizes so the composition doesn't read as a uniform grid */
+.hero-dashboard-preview-item--lg {
+  grid-column: span 2;
+}
+
+.hero-dashboard-preview-item--md,
+.hero-dashboard-preview-item--sm {
+  grid-column: span 1;
 }
 
 .hero-dashboard-preview-tag {
@@ -33,76 +50,25 @@
   background: var(--color-secondary);
 }
 
-/* Primary: Doctor's upcoming appointment */
-.hero-dashboard-preview-primary-doctor {
-  top: 0;
-  inset-inline-start: 0;
-  width: 300px;
-  z-index: 2;
-}
+@media (max-width: 960px) {
+  .hero-dashboard-preview-item--lg {
+    grid-column: span 2;
+  }
 
-/* Supporting: Active patients metric */
-.hero-dashboard-preview-metric {
-  top: 40px;
-  inset-inline-end: 0;
-  width: 150px;
-  z-index: 4;
-}
-
-/* Supporting: doctor rehab progress */
-.hero-dashboard-preview-doctor-progress {
-  top: 330px;
-  inset-inline-start: 10px;
-  width: 240px;
-  z-index: 1;
-}
-
-/* Small alert card */
-.hero-dashboard-preview-alert {
-  top: 190px;
-  inset-inline-end: 16px;
-  width: 190px;
-  z-index: 5;
-}
-
-/* Primary: patient exercise */
-.hero-dashboard-preview-primary-patient {
-  bottom: 130px;
-  inset-inline-end: 0;
-  width: 220px;
-  z-index: 3;
-}
-
-/* Supporting: patient ROM + adherence */
-.hero-dashboard-preview-patient-progress {
-  bottom: 0;
-  inset-inline-start: 0;
-  width: 270px;
-  z-index: 2;
-}
-
-/* Below 1180px there isn't reliable room for the layered overlap composition
-   (the two-column Hero grid itself is already narrowing the right column),
-   so it converts to a clean, non-overlapping vertical stack instead of
-   trying to preserve pixel-tuned overlap at every intermediate width. This
-   covers both real tablets and mobile — "reduce card overlaps" on tablet,
-   "clean vertical stack" on mobile, with the same safe layout. */
-@media (max-width: 1180px) {
   .hero-dashboard-preview-root {
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 420px;
-    margin: 0 auto;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-dashboard-preview-root {
+    grid-template-columns: 1fr;
   }
 
-  .hero-dashboard-preview-layer {
-    position: static;
-    width: 100% !important;
-  }
-
-  .hero-dashboard-preview-alert {
-    order: -1;
+  .hero-dashboard-preview-item,
+  .hero-dashboard-preview-item--lg,
+  .hero-dashboard-preview-item--md,
+  .hero-dashboard-preview-item--sm {
+    grid-column: span 1;
   }
 }
