@@ -17,6 +17,14 @@ export const getHeroPreviewData = (t) => {
         value: 42,
         label: p("activePatientsLabel"),
       },
+      todayAppointments: {
+        value: 7,
+        label: p("todayAppointmentsLabel"),
+      },
+      newReports: {
+        value: 4,
+        label: p("newReportsLabel"),
+      },
       appointment: {
         title: p("upcomingAppointmentTitle"),
         dateDay: p("appointmentDateDay"),
