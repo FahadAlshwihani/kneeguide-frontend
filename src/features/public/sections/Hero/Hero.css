@@ -32,7 +32,6 @@
   align-items: center;
   justify-content: center;
   gap: clamp(12px, 2.4svh, 28px);
-  overflow: hidden;
 }
 
 .hero-content {
@@ -115,13 +114,15 @@
 }
 
 .hero-btn-secondary:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: var(--color-primary-hover);
+  color: var(--color-primary-hover);
 }
 
 /* Dashboard preview: almost the full width of the Hero, well beyond the
    text column's reading-width constraint. Takes the remaining vertical
-   space after the copy/CTAs and never forces the Hero past 100svh. */
+   space after the copy/CTAs and never forces the Hero past 100svh.
+   No overflow clipping here — card shadows and hover lift need real room
+   to breathe; the grid is sized to fit rather than clipped to fit. */
 .hero-preview-wrap {
   width: 100%;
   flex: 1 1 auto;
@@ -129,7 +130,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 @media (max-width: 640px) {
