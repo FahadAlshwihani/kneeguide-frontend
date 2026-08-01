@@ -49,6 +49,10 @@ export const getHeroPreviewData = (t) => {
     },
     patient: {
       badge: p("patientBadge"),
+      exercisesAssigned: {
+        value: 3,
+        label: p("exercisesAssignedLabel"),
+      },
       exercise: {
         name: p("exerciseName"),
         reps: p("exerciseReps"),
