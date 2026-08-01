@@ -25,9 +25,9 @@ const PublicBackground = ({ className = "" }) => {
         className="public-bg-dotgrid"
         dotSize={2.5}
         gap={30}
-        baseColor="#9ca3af"
-        activeColor="#2563eb"
-        proximity={100}
+        baseColor="#cbd5e1"
+        activeColor="#60a5fa"
+        proximity={110}
         shockRadius={140}
         shockStrength={1.5}
         resistance={750}
