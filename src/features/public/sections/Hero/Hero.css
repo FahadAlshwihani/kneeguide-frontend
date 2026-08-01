@@ -30,10 +30,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Content sits near the top, the preview is flush with the bottom edge —
-     the space between is the "large empty breathing space", and it grows
-     or shrinks naturally with whatever room the viewport has. */
-  justify-content: space-between;
+}
+
+/* React Bits' composition reads as: navbar, then a large breathing gap,
+   then the copy block, then another large gap, then content emerging from
+   the bottom. Two flexible spacers (never a fixed margin) carry that
+   rhythm — they grow when there's room and shrink toward 0 first when the
+   viewport is short, so the 100svh fit never breaks. The bottom spacer is
+   weighted slightly larger, matching the demo's especially generous gap
+   right before its screenshot emerges. */
+.hero-spacer {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.hero-spacer-bottom {
+  flex-grow: 1.3;
 }
 
 .hero-content {
@@ -44,7 +56,6 @@
   text-align: center;
   gap: clamp(16px, 2.8svh, 30px);
   flex-shrink: 0;
-  padding-top: clamp(8px, 2svh, 24px);
 }
 
 .hero-badge {
@@ -140,22 +151,25 @@
   justify-content: center;
 }
 
-/* Radial vignette above the Beams canvas, below the content: fades the
-   frame's edges toward pure black while keeping the center — right behind
-   the heading — brighter, for the cinematic framing of the reference
-   composition. Purely a darkening overlay; never opaque enough to affect
-   text contrast, which already has its own color against the background. */
+/* Two stacked darkening layers above the Beams canvas, below the content:
+   a flat, soft black wash (evens out the whole frame and guarantees text
+   contrast) plus a radial vignette on top of it (fades the edges toward
+   pure black while keeping the center — behind the heading — brighter).
+   Together they give the atmospheric, cinematic framing of the reference
+   composition instead of a flat, evenly-lit canvas. */
 .hero-vignette {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse 70% 60% at 50% 38%,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.25) 55%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
+  background:
+    radial-gradient(
+      ellipse 75% 65% at 50% 42%,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.3) 55%,
+      rgba(0, 0, 0, 0.85) 100%
+    ),
+    rgba(0, 0, 0, 0.25);
 }
 
 @media (max-width: 640px) {

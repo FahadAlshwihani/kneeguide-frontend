@@ -25,6 +25,8 @@ const Hero = () => {
       <div className="hero-vignette" aria-hidden="true" />
 
       <div className="hero-container">
+        <div className="hero-spacer hero-spacer-top" aria-hidden="true" />
+
         <motion.div className="hero-content" initial="hidden" animate="visible">
           <motion.span className="hero-badge" variants={fadeUp} custom={0}>
             {t("publicHero.badge")}
@@ -49,6 +51,8 @@ const Hero = () => {
             </Link>
           </motion.div>
         </motion.div>
+
+        <div className="hero-spacer hero-spacer-bottom" aria-hidden="true" />
 
         <div className="hero-preview-wrap">
           <HeroDashboardPreview />

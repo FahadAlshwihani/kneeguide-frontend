@@ -32,14 +32,14 @@ const PublicBackground = ({ className = "" }) => {
         <div className="public-bg-static-fallback" />
       ) : (
         <Beams
-          beamWidth={2}
-          beamHeight={15}
-          beamNumber={12}
+          beamWidth={3}
+          beamHeight={30}
+          beamNumber={20}
           lightColor="#ffffff"
           speed={2}
           noiseIntensity={1.75}
           scale={0.2}
-          rotation={0}
+          rotation={20}
         />
       )}
     </div>
