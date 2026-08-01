@@ -1,13 +1,13 @@
 /* eslint-disable react/no-unknown-property */
-import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo } from "react";
+import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo } from 'react';
 
-import * as THREE from "three";
+import * as THREE from 'three';
 
-import { Canvas, useFrame } from "@react-three/fiber";
-import { PerspectiveCamera } from "@react-three/drei";
-import { degToRad } from "three/src/math/MathUtils.js";
+import { Canvas, useFrame } from '@react-three/fiber';
+import { PerspectiveCamera } from '@react-three/drei';
+import { degToRad } from 'three/src/math/MathUtils.js';
 
-import "./Beams.css";
+import './Beams.css';
 
 function extendMaterial(BaseMaterial, cfg) {
   const physical = THREE.ShaderLib.physical;
@@ -19,17 +19,17 @@ function extendMaterial(BaseMaterial, cfg) {
   const defaults = new BaseMaterial(cfg.material || {});
 
   if (defaults.color) uniforms.diffuse.value = defaults.color;
-  if ("roughness" in defaults) uniforms.roughness.value = defaults.roughness;
-  if ("metalness" in defaults) uniforms.metalness.value = defaults.metalness;
-  if ("envMap" in defaults) uniforms.envMap.value = defaults.envMap;
-  if ("envMapIntensity" in defaults) uniforms.envMapIntensity.value = defaults.envMapIntensity;
+  if ('roughness' in defaults) uniforms.roughness.value = defaults.roughness;
+  if ('metalness' in defaults) uniforms.metalness.value = defaults.metalness;
+  if ('envMap' in defaults) uniforms.envMap.value = defaults.envMap;
+  if ('envMapIntensity' in defaults) uniforms.envMapIntensity.value = defaults.envMapIntensity;
 
   Object.entries(cfg.uniforms ?? {}).forEach(([key, u]) => {
-    uniforms[key] = u !== null && typeof u === "object" && "value" in u ? u : { value: u };
+    uniforms[key] = u !== null && typeof u === 'object' && 'value' in u ? u : { value: u };
   });
 
-  let vert = `${cfg.header}\n${cfg.vertexHeader ?? ""}\n${baseVert}`;
-  let frag = `${cfg.header}\n${cfg.fragmentHeader ?? ""}\n${baseFrag}`;
+  let vert = `${cfg.header}\n${cfg.vertexHeader ?? ''}\n${baseVert}`;
+  let frag = `${cfg.header}\n${cfg.fragmentHeader ?? ''}\n${baseFrag}`;
 
   for (const [inc, code] of Object.entries(cfg.vertex ?? {})) {
     vert = vert.replace(inc, `${inc}\n${code}`);
@@ -44,7 +44,7 @@ function extendMaterial(BaseMaterial, cfg) {
     vertexShader: vert,
     fragmentShader: frag,
     lights: true,
-    fog: !!cfg.material?.fog,
+    fog: !!cfg.material?.fog
   });
 
   return mat;
@@ -56,8 +56,8 @@ const CanvasWrapper = ({ children }) => (
   </Canvas>
 );
 
-const hexToNormalizedRGB = (hex) => {
-  const clean = hex.replace("#", "");
+const hexToNormalizedRGB = hex => {
+  const clean = hex.replace('#', '');
   const r = parseInt(clean.substring(0, 2), 16);
   const g = parseInt(clean.substring(2, 4), 16);
   const b = parseInt(clean.substring(4, 6), 16);
@@ -141,26 +141,15 @@ float cnoise(vec3 P){
 }
 `;
 
-/**
- * React Bits' Beams, matching the official demo's look (dark beam material
- * lit by a white directional light — grayscale, not tinted) rather than
- * reinterpreting it. The only change from the demo source: the hardcoded
- * black is swapped for the site's own near-black token value (#050505), so
- * blue never appears as a background — it stays an accent elsewhere (CTAs,
- * badges, icons). See PublicBackground.jsx for the tuned prop values.
- */
 const Beams = ({
   beamWidth = 2,
   beamHeight = 15,
   beamNumber = 12,
-  beamSpacing = 3,
-  lightColor = "#ffffff",
-  lightIntensity = 1,
-  ambientIntensity = 0.6,
+  lightColor = '#ffffff',
   speed = 2,
   noiseIntensity = 1.75,
   scale = 0.2,
-  rotation = 0,
+  rotation = 0
 }) => {
   const meshRef = useRef(null);
   const beamMaterial = useMemo(
@@ -195,30 +184,27 @@ const Beams = ({
     vec3 tangentZ = normalize(nextposZ - curpos);
     return normalize(cross(tangentZ, tangentX));
   }`,
-        fragmentHeader: "",
+        fragmentHeader: '',
         vertex: {
-          "#include <begin_vertex>": `transformed.z += getPos(transformed.xyz);`,
-          "#include <beginnormal_vertex>": `objectNormal = getNormal(position.xyz);`,
+          '#include <begin_vertex>': `transformed.z += getPos(transformed.xyz);`,
+          '#include <beginnormal_vertex>': `objectNormal = getNormal(position.xyz);`
         },
         fragment: {
-          "#include <dithering_fragment>": `
+          '#include <dithering_fragment>': `
     float randomNoise = noise(gl_FragCoord.xy);
-    gl_FragColor.rgb -= randomNoise / 15. * uNoiseIntensity;`,
+    gl_FragColor.rgb -= randomNoise / 15. * uNoiseIntensity;`
         },
         material: { fog: true },
         uniforms: {
-          // Matches the demo's black beam material almost exactly — just the
-          // site's own near-black token (#050505) instead of pure #000000 —
-          // so the beams stay monochrome, lit only by the white light below.
-          diffuse: new THREE.Color(...hexToNormalizedRGB("#050505")),
+          diffuse: new THREE.Color(...hexToNormalizedRGB('#000000')),
           time: { shared: true, mixed: true, linked: true, value: 0 },
           roughness: 0.3,
           metalness: 0.3,
           uSpeed: { shared: true, mixed: true, linked: true, value: speed },
           envMapIntensity: 10,
           uNoiseIntensity: noiseIntensity,
-          uScale: scale,
-        },
+          uScale: scale
+        }
       }),
     [speed, noiseIntensity, scale]
   );
@@ -226,19 +212,11 @@ const Beams = ({
   return (
     <CanvasWrapper>
       <group rotation={[0, 0, degToRad(rotation)]}>
-        <PlaneNoise
-          ref={meshRef}
-          material={beamMaterial}
-          count={beamNumber}
-          width={beamWidth}
-          height={beamHeight}
-          spacing={beamSpacing}
-        />
-        <DirLight color={lightColor} intensity={lightIntensity} position={[0, 3, 10]} />
+        <PlaneNoise ref={meshRef} material={beamMaterial} count={beamNumber} width={beamWidth} height={beamHeight} />
+        <DirLight color={lightColor} position={[0, 3, 10]} />
       </group>
-      <ambientLight intensity={ambientIntensity} />
-      {/* The site's own near-black token, not the demo's pure #000000. */}
-      <color attach="background" args={["#050505"]} />
+      <ambientLight intensity={1} />
+      <color attach="background" args={['#000000']} />
       <PerspectiveCamera makeDefault position={[0, 0, 20]} fov={30} />
     </CanvasWrapper>
   );
@@ -285,40 +263,33 @@ function createStackedPlanesBufferGeometry(n, width, height, spacing, heightSegm
     }
   }
 
-  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
   geometry.setIndex(new THREE.BufferAttribute(indices, 1));
   geometry.computeVertexNormals();
   return geometry;
 }
 
-const MergedPlanes = forwardRef(({ material, width, count, height, spacing }, ref) => {
+const MergedPlanes = forwardRef(({ material, width, count, height }, ref) => {
   const mesh = useRef(null);
   useImperativeHandle(ref, () => mesh.current);
   const geometry = useMemo(
-    () => createStackedPlanesBufferGeometry(count, width, height, spacing, 100),
-    [count, width, height, spacing]
+    () => createStackedPlanesBufferGeometry(count, width, height, 0, 100),
+    [count, width, height]
   );
   useFrame((_, delta) => {
     mesh.current.material.uniforms.time.value += 0.1 * delta;
   });
   return <mesh ref={mesh} geometry={geometry} material={material} />;
 });
-MergedPlanes.displayName = "MergedPlanes";
+MergedPlanes.displayName = 'MergedPlanes';
 
 const PlaneNoise = forwardRef((props, ref) => (
-  <MergedPlanes
-    ref={ref}
-    material={props.material}
-    width={props.width}
-    count={props.count}
-    height={props.height}
-    spacing={props.spacing}
-  />
+  <MergedPlanes ref={ref} material={props.material} width={props.width} count={props.count} height={props.height} />
 ));
-PlaneNoise.displayName = "PlaneNoise";
+PlaneNoise.displayName = 'PlaneNoise';
 
-const DirLight = ({ position, color, intensity }) => {
+const DirLight = ({ position, color }) => {
   const dir = useRef(null);
   useEffect(() => {
     if (!dir.current) return;
@@ -331,7 +302,7 @@ const DirLight = ({ position, color, intensity }) => {
     cam.far = 64;
     dir.current.shadow.bias = -0.004;
   }, []);
-  return <directionalLight ref={dir} color={color} intensity={intensity} position={position} />;
+  return <directionalLight ref={dir} color={color} intensity={1} position={position} />;
 };
 
 export default Beams;
