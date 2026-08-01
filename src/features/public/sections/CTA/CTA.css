@@ -2,6 +2,11 @@
 
 .cta-root {
   padding: var(--section-padding) 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--color-background);
 }
 
 .cta-container {
