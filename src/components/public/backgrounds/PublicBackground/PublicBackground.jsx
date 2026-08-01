@@ -3,11 +3,11 @@ import Beams from "./Beams";
 import "./PublicBackground.css";
 
 /**
- * Shared, reusable Hero background: React Bits' Beams (Three.js), recolored
- * to the dashboard's own navy/blue palette — no new colors introduced (see
- * Beams.jsx for the two hardcoded tones changed from the demo's black).
- * Tuned specifically for KneeGuide: slow, quiet, low-noise — a texture to
- * notice subconsciously, not a foreground effect.
+ * Shared, reusable Hero background: React Bits' Beams (Three.js), matching
+ * the official demo's grayscale look (dark beams, white light) rather than
+ * a reinterpretation — the only change is swapping the demo's pure black
+ * for the site's own near-black token. Wide, few, well-spaced beams plus a
+ * CSS blur keep it cinematic rather than a tiled/repetitive pattern.
  *
  *   <section style={{ position: "relative" }}>
  *     <PublicBackground />
