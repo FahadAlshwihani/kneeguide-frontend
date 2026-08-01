@@ -30,8 +30,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: clamp(12px, 2.4svh, 28px);
+  /* Content sits near the top, the preview is flush with the bottom edge —
+     the space between is the "large empty breathing space", and it grows
+     or shrinks naturally with whatever room the viewport has. */
+  justify-content: space-between;
 }
 
 .hero-content {
@@ -40,8 +42,9 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(8px, 1.4svh, 16px);
+  gap: clamp(14px, 2.2svh, 24px);
   flex-shrink: 0;
+  padding-top: clamp(8px, 2svh, 24px);
 }
 
 .hero-badge {
@@ -58,16 +61,16 @@
 }
 
 .hero-title {
-  font-size: clamp(1.5rem, 3.2svh + 1vw, 3rem);
+  font-size: clamp(1.75rem, 3.4svh + 1.2vw, 3.75rem);
   font-weight: 700;
-  line-height: 1.12;
+  line-height: 1.1;
   color: var(--color-heading);
   text-wrap: balance;
 }
 
 .hero-description {
-  font-size: clamp(0.85rem, 1.6svh, 1.1rem);
-  line-height: 1.55;
+  font-size: clamp(0.9rem, 1.6svh, 1.15rem);
+  line-height: 1.6;
   color: var(--color-text);
   max-width: 56ch;
 }
@@ -78,7 +81,7 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: clamp(2px, 0.6svh, 8px);
+  margin-top: clamp(4px, 0.8svh, 10px);
 }
 
 .hero-btn-primary,
