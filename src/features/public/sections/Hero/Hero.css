@@ -8,12 +8,15 @@
 .hero-root {
   position: relative;
   overflow: hidden;
-  height: 100svh;
-  max-height: 100svh;
+  /* The sticky Header sits above this in normal flow (~65-70px), so the
+     Hero itself must be shorter than 100svh by that amount, or the two
+     together push past the fold and force a scroll. */
+  height: calc(100svh - 72px);
+  max-height: calc(100svh - 72px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(64px, 8svh, 88px) 0 clamp(12px, 2svh, 20px);
+  padding: clamp(16px, 3svh, 32px) 0;
 }
 
 .hero-container {
