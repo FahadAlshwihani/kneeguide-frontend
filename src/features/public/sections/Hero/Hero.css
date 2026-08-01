@@ -1,28 +1,35 @@
 /* Uses global design tokens from src/index.css */
 
 /* The entire Hero — copy, CTAs and the dashboard preview — is one single
-   ~100svh section. The preview is never split into its own section; it
-   starts immediately below the CTAs inside this same block. */
+   section that must never exceed 100svh (strict). The preview is never
+   split into its own section; it starts immediately below the CTAs inside
+   this same block. Every measurement below is fluid (clamp, svh-relative)
+   so the whole thing compresses to fit rather than growing past the fold. */
 .hero-root {
   position: relative;
   overflow: hidden;
-  min-height: 100svh;
+  height: 100svh;
+  max-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(96px, 12vh, 140px) 0 clamp(32px, 5vh, 56px);
+  padding: clamp(64px, 8svh, 88px) 0 clamp(12px, 2svh, 20px);
 }
 
 .hero-container {
   position: relative;
   z-index: 1;
   max-width: 1680px;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
   padding: 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(32px, 4vh, 48px);
+  justify-content: center;
+  gap: clamp(12px, 2.4svh, 28px);
+  overflow: hidden;
 }
 
 .hero-content {
@@ -31,24 +38,25 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
+  gap: clamp(8px, 1.4svh, 16px);
+  flex-shrink: 0;
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 1.4svh, 0.8rem);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--color-primary);
   background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
-  padding: 6px 16px;
+  padding: clamp(4px, 0.8svh, 6px) 16px;
   border-radius: 999px;
 }
 
 .hero-title {
-  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-size: clamp(1.5rem, 3.2svh + 1vw, 3rem);
   font-weight: 700;
   line-height: 1.12;
   color: var(--color-heading);
@@ -56,8 +64,8 @@
 }
 
 .hero-description {
-  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
-  line-height: 1.65;
+  font-size: clamp(0.85rem, 1.6svh, 1.1rem);
+  line-height: 1.55;
   color: var(--color-text);
   max-width: 56ch;
 }
@@ -67,8 +75,8 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: clamp(2px, 0.6svh, 8px);
 }
 
 .hero-btn-primary,
@@ -77,9 +85,9 @@
   align-items: center;
   justify-content: center;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: clamp(0.82rem, 1.4svh, 0.95rem);
   font-weight: 600;
-  padding: 13px 28px;
+  padding: clamp(8px, 1.4svh, 13px) clamp(18px, 2.4vw, 28px);
   border-radius: 999px;
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
