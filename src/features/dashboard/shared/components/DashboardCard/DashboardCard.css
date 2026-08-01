@@ -18,10 +18,11 @@
   gap: 12px;
 }
 
-.dashboard-card-title {
+h2.dashboard-card-title {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
+  color: #e5e7eb;
 }
 
 .dashboard-card-tag {

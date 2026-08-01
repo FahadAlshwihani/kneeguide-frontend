@@ -7,6 +7,7 @@
   border: 1px solid #111827;
   border-radius: 18px;
   overflow: hidden;
+  color: #e5e7eb;
 }
 
 .exercise-card-image {
@@ -20,10 +21,11 @@
   padding: 14px;
 }
 
-.exercise-card-name {
+h3.exercise-card-name {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
+  color: #e5e7eb;
 }
 
 .exercise-card-meta {
