@@ -40,8 +40,8 @@ const PublicBackground = ({ className = "" }) => {
           beamNumber={6}
           beamSpacing={4.5}
           lightColor="#ffffff"
-          lightIntensity={0.45}
-          ambientIntensity={0.22}
+          lightIntensity={0.3}
+          ambientIntensity={0.12}
           speed={0.3}
           noiseIntensity={0.4}
           scale={0.2}
