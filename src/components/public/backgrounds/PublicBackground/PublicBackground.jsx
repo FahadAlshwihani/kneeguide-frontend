@@ -3,11 +3,8 @@ import Beams from "./Beams";
 import "./PublicBackground.css";
 
 /**
- * Shared, reusable Hero background: React Bits' Beams (Three.js), matching
- * the official demo's grayscale look (dark beams, white light) rather than
- * a reinterpretation — the only change is swapping the demo's pure black
- * for the site's own near-black token. Wide, few, well-spaced beams plus a
- * CSS blur keep it cinematic rather than a tiled/repetitive pattern.
+ * Shared, reusable Hero background: React Bits' Beams (Three.js), used
+ * unmodified — only its props are set at the call site, never its internals.
  *
  *   <section style={{ position: "relative" }}>
  *     <PublicBackground />
@@ -35,15 +32,12 @@ const PublicBackground = ({ className = "" }) => {
         <div className="public-bg-static-fallback" />
       ) : (
         <Beams
-          beamWidth={3}
-          beamHeight={45}
-          beamNumber={4}
-          beamSpacing={6}
+          beamWidth={2}
+          beamHeight={15}
+          beamNumber={12}
           lightColor="#ffffff"
-          lightIntensity={0.7}
-          ambientIntensity={0.4}
-          speed={0.5}
-          noiseIntensity={0.6}
+          speed={2}
+          noiseIntensity={1.75}
           scale={0.2}
           rotation={0}
         />

@@ -2,11 +2,4 @@
   position: relative;
   width: 100%;
   height: 100%;
-  pointer-events: none;
-  /* Soft, cinematic light — not sharp geometric planes. The blur is what
-     turns individual beam edges into a hazy glow (React Bits' own demo
-     reads soft like this because the beams sit further from camera and
-     get atmospheric falloff; blur approximates that cheaply). */
-  filter: blur(22px);
-  opacity: 0.75;
 }
