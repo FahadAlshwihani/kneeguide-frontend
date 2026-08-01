@@ -294,16 +294,18 @@ body.ltr .form-group label {
   --font-en: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-ar: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Colors — calm healthcare palette for the public site.
-     --color-primary (blue) / --color-secondary (emerald) are already defined
-     above and reused as-is; only the surface/text layer is new here. */
-  --color-text: #47536b;
-  --color-heading: #101b2d;
-  --color-muted: #8a97ac;
-  --color-background: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-soft: #f3f7fb;
-  --color-border: #e3e9f1;
+  /* Colors — the public site now inherits the dashboard's own dark palette
+     directly (--color-bg / --color-bg-elevated / --color-bg-soft /
+     --color-text-main / --color-text-soft / --color-border-subtle are all
+     defined above already). No new colors — these are aliases only, so the
+     public site and dashboard share one literal color system. */
+  --color-text: var(--color-text-soft);
+  --color-heading: var(--color-text-main);
+  --color-muted: var(--color-text-muted);
+  --color-background: var(--color-bg);
+  --color-surface: var(--color-bg-elevated);
+  --color-surface-soft: var(--color-bg-soft);
+  --color-border: var(--color-border-subtle);
 
   /* Semantic status colors — named aliases for hues already used across the
      dashboard (MetricCard status accents, progress bars, PainWheel states),
@@ -315,9 +317,15 @@ body.ltr .form-group label {
 
   /* Soft brand gradient + glass, used sparingly (hero glow, header) */
   --gradient-brand: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-bg: rgba(7, 11, 18, 0.72);
+  --glass-border: rgba(148, 163, 184, 0.18);
   --glass-blur: blur(16px);
+
+  /* Tinted section backgrounds — same dark base + the existing soft brand
+     tints (--color-primary-soft / --color-secondary-soft), used to vary the
+     "temperature" of a section without ever leaving the dashboard palette. */
+  --gradient-tint-blue: radial-gradient(circle at 20% 20%, var(--color-primary-soft), transparent 60%), var(--color-surface-soft);
+  --gradient-tint-green: radial-gradient(circle at 80% 25%, var(--color-secondary-soft), transparent 60%), var(--color-surface-soft);
 
   /* Layout */
   --container-width: var(--max-width);
@@ -325,11 +333,12 @@ body.ltr .form-group label {
 
   /* Radius — --radius-sm/md/lg/xl are already defined above and reused as-is. */
 
-  /* Shadows — new 3-tier scale, tuned for light surfaces (additive to the
-     existing dark-tuned --shadow-soft/--shadow-subtle used elsewhere) */
-  --shadow-sm: 0 2px 8px rgba(16, 27, 45, 0.06);
-  --shadow-md: 0 12px 32px rgba(16, 27, 45, 0.08);
-  --shadow-lg: 0 32px 64px rgba(16, 27, 45, 0.12);
+  /* Shadows — 3-tier scale reusing the dashboard's own dark-tuned shadows
+     (--shadow-soft / --shadow-subtle, defined above) rather than inventing
+     light-surface values. */
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-md: var(--shadow-subtle);
+  --shadow-lg: var(--shadow-soft);
 
   /* Transitions */
   --transition-fast: 150ms ease;
