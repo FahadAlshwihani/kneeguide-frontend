@@ -726,7 +726,7 @@
     "headingLine1": "تأهيل أكثر دقة.",
     "headingLine2": "استقلالية أكبر.",
     "description": "منصة رقمية تربط المريض بالمختص، وتحوّل بيانات الحركة إلى متابعة واضحة وتنبيهات لحظية تساعد على تحسين جودة التأهيل المنزلي.",
-    "ctaPrimary": "استكشف المنصة",
+    "ctaPrimary": "ابدأ الآن",
     "ctaSecondary": "تسجيل الدخول",
     "preview": {
       "doctorBadge": "واجهة الطبيب",
@@ -755,7 +755,10 @@
       "adherenceValue": "76%",
       "appointmentDateDay": "25",
       "appointmentDateMonth": "نوفمبر",
-      "appointmentTime": "3:30 م"
+      "appointmentTime": "3:30 م",
+      "todayAppointmentsLabel": "مواعيد اليوم",
+      "newReportsLabel": "تقارير جديدة",
+      "exercisesAssignedLabel": "التمارين المخصصة اليوم"
     }
   }
 }

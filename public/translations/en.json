@@ -726,7 +726,7 @@
     "headingLine1": "More precise rehabilitation.",
     "headingLine2": "Greater independence.",
     "description": "A connected platform that brings patients and clinicians together, turning movement data into clear progress tracking and real-time rehabilitation feedback.",
-    "ctaPrimary": "Explore Platform",
+    "ctaPrimary": "Get Started",
     "ctaSecondary": "Login",
     "preview": {
       "doctorBadge": "Doctor view",
@@ -755,7 +755,10 @@
       "adherenceValue": "76%",
       "appointmentDateDay": "25",
       "appointmentDateMonth": "Nov",
-      "appointmentTime": "3:30 PM"
+      "appointmentTime": "3:30 PM",
+      "todayAppointmentsLabel": "Today's Appointments",
+      "newReportsLabel": "New Reports",
+      "exercisesAssignedLabel": "Exercises Assigned Today"
     }
   }
 }
