@@ -36,7 +36,7 @@ const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="faq-root">
+    <section className="faq-root" id="faq">
       <div className="faq-container">
         <Reveal className="faq-header">
           <span className="faq-badge">Common Questions</span>

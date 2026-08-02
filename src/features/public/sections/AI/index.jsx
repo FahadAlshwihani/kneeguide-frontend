@@ -26,7 +26,7 @@ const HIGHLIGHTS = [
 
 const AI = () => {
   return (
-    <section className="ai-root">
+    <section className="ai-root" id="ai-assistant">
       <div className="ai-container">
         <Reveal className="ai-header">
           <span className="ai-badge">AI Analysis</span>

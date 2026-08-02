@@ -27,7 +27,7 @@ const MILESTONES = [
 
 const Roadmap = () => {
   return (
-    <section className="roadmap-root">
+    <section className="roadmap-root" id="roadmap">
       <div className="roadmap-container">
         <Reveal className="roadmap-header">
           <span className="roadmap-badge">What&apos;s Next</span>
