@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
-import { LuLanguages } from "react-icons/lu";
+import { LuLanguages, LuLayoutDashboard, LuCpu, LuBuilding2 } from "react-icons/lu";
 import { ROUTES } from "../../../utils/routes";
 import SecondaryButton from "../../../components/ui/SecondaryButton";
 import ButtonArrow from "../../../components/ui/ButtonArrow";
@@ -17,6 +17,7 @@ const MENU_SECTIONS = [
   {
     key: "platform",
     colorClass: "header-menu-card--platform",
+    Icon: LuLayoutDashboard,
     links: [
       { key: "overview", to: "/#platform" },
       { key: "patientDashboard", to: "/#patient-portal" },
@@ -26,6 +27,7 @@ const MENU_SECTIONS = [
   {
     key: "technology",
     colorClass: "header-menu-card--technology",
+    Icon: LuCpu,
     links: [
       { key: "motionTracking", to: "/#technology" },
       { key: "aiAssistant", to: "/#ai-assistant" },
@@ -35,6 +37,7 @@ const MENU_SECTIONS = [
   {
     key: "company",
     colorClass: "header-menu-card--company",
+    Icon: LuBuilding2,
     links: [
       { key: "roadmap", to: "/#roadmap" },
       { key: "contact", to: "/contact" },
@@ -304,7 +307,12 @@ const Header = () => {
                   ref={setCardRef(index)}
                   className={`header-menu-card ${section.colorClass}`}
                 >
-                  <div className="header-menu-card-label">{t(`publicHeader.menu.${section.key}.title`)}</div>
+                  <div className="header-menu-card-title">
+                    <section.Icon className="header-menu-card-icon" aria-hidden="true" strokeWidth={2} />
+                    <span className="header-menu-card-label">
+                      {t(`publicHeader.menu.${section.key}.title`)}
+                    </span>
+                  </div>
                   <div className="header-menu-card-links">
                     {section.links.map((link) => (
                       <Link key={link.key} to={link.to} className="header-menu-card-link" onClick={closeMenu}>
