@@ -298,10 +298,14 @@
 /* Mobile top bar: only hamburger / logo / Login — the language switcher
    moves into the panel (see .header-lang-toggle--menu) so the bar stays
    just those three. Switched from the desktop's absolute-positioned logo
-   to a real `1fr auto 1fr` grid: with two equal flanking columns, the
-   logo lands exactly centered no matter how much wider Login is than the
+   to a real grid: with two flanking columns sharing the remaining space,
+   the logo lands centered no matter how much wider Login is than the
    hamburger button, which absolute-centering against the whole bar can't
-   guarantee on its own. */
+   guarantee on its own. The two flanking columns are deliberately uneven
+   (0.9fr / 1.1fr, not 1fr / 1fr) — Login is visually heavier than the
+   hamburger even at its smaller mobile size below, so giving its column a
+   little more share nudges the logo a few px toward the hamburger, which
+   is what actually reads as centered rather than mathematically centered. */
 @media (max-width: 768px) {
   .header-root {
     padding: 10px 16px 0;
@@ -309,9 +313,9 @@
 
   .header-top {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 0.9fr auto 1.1fr;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 8px;
   }
 
   .header-menu-toggle {
@@ -329,13 +333,24 @@
     justify-self: end;
   }
 
+  /* Smaller than the shared SecondaryButton `sm` size, mobile only — the
+     component itself is untouched, this just overrides its footprint
+     here via the passed-through `.header-cta` class. */
+  .header-actions .header-cta {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+  }
+
   .header-lang-toggle--topbar {
     display: none;
   }
 
+  /* Last item in the panel, not first — styled as a quiet footer action
+     (centered, generous top gap) rather than another nav entry. */
   .header-lang-toggle--menu {
     display: inline-flex;
-    align-self: flex-start;
+    align-self: center;
+    margin-top: 12px;
   }
 
   .header-menu-panel {
