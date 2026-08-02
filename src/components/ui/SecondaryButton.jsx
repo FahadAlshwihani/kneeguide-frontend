@@ -1,10 +1,7 @@
 import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
+import ButtonArrow from "./ButtonArrow";
 import "./SecondaryButton.css";
-
-// A literal typographic character, not an SVG/icon — see PrimaryButton.jsx
-// for the full rationale.
-const ARROW = "↗"; // ↗
 
 /**
  * The public marketing site's only secondary button — the same flat
@@ -33,7 +30,7 @@ const SecondaryButton = forwardRef(
     ref
   ) => {
     const isInert = disabled || loading;
-    const resolvedIcon = icon ?? (showArrow ? ARROW : null);
+    const resolvedIcon = icon ?? (showArrow ? <ButtonArrow /> : null);
 
     const classes = [
       "ui-secondary-btn",

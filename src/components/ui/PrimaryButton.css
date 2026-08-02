@@ -71,22 +71,44 @@
   font-size: 1rem;
 }
 
-/* A literal character (↗), not an icon — it's a plain flex/text sibling
-   of the label, so the row's own `align-items: center` (above) aligns it
-   with the label naturally. No margin/align-self/transform-based vertical
-   offset: only font-size and font-weight distinguish it as typography
-   rather than a small standalone element. Inherits `color`, so it fades
-   white-to-black for free as part of the button's own transition above. */
+/* The arrow SVG's wrapper — a plain centered flex item of the button's own
+   `align-items: center` row (above). No margin/align-self/translateY/
+   absolute-positioning: centering comes entirely from that one rule. */
 .ui-primary-btn-icon {
-  font-size: 1.4em;
-  font-weight: 800;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
 }
 
-/* RTL: mirror the glyph (↗ becomes ↖), a static flip — resolves
+.ui-primary-btn-icon svg {
+  display: block;
+  flex: 0 0 auto;
+}
+
+/* Explicit px per button size (not em) so the arrow stays visually
+   consistent across Arabic/English fonts instead of tracking font-size. */
+.ui-primary-btn--sm .ui-primary-btn-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ui-primary-btn--md .ui-primary-btn-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.ui-primary-btn--lg .ui-primary-btn-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* RTL: mirror the SVG (↗ becomes ↖), a static flip — resolves
    automatically from the ancestor `dir`, no separate component or JS
-   branch, and is never itself animated. */
-[dir="rtl"] .ui-primary-btn-icon {
+   branch, and is never itself animated. Color (`stroke="currentColor"`)
+   rides the button's own `color` transition, so the arrow never animates
+   independently — no translate/rotate/scale on hover. */
+[dir="rtl"] .ui-primary-btn-icon svg {
   transform: scaleX(-1);
 }
 
