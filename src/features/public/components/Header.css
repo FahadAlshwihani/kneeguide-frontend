@@ -59,20 +59,8 @@
   color: var(--color-primary);
 }
 
-.header-cta {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #ffffff;
-  background: var(--color-primary);
-  padding: 9px 20px;
-  border-radius: 999px;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.header-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
+/* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css)
+   — this class only exists here for the mobile layout tweak below. */
 
 .header-menu-toggle {
   display: none;
