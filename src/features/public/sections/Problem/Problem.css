@@ -1,15 +1,84 @@
-/* Uses global design tokens from src/index.css */
+/* Uses global design tokens from src/index.css for layout only — colors
+   are defined locally below rather than through the shared dark tokens
+   (--color-heading/--color-text/etc.), since this section is deliberately
+   the site's first light surface: those globals are the public site's
+   dark identity and stay untouched everywhere else. */
 
 .problem-root {
+  position: relative;
+  overflow: hidden;
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--color-surface-soft);
+  background: #faf8f4;
+  --problem-heading: #14161a;
+  --problem-text: #52525b;
+  --problem-muted: #7a7a7a;
+  --problem-border: rgba(20, 20, 20, 0.08);
+  --problem-card-bg: #ffffff;
+}
+
+/* ===================================================================
+   Hero → Problem transition: a purely decorative underlay bridging the
+   dark Beams canvas above into this section's warm-white surface. Not
+   one gradient — three separate layers, each doing a different job, so
+   the seam reads as depth rather than a printed edge:
+
+     1. base   — the actual dark → transparent dissolve (two overlapping
+                 gradients at different shapes, not a single linear one)
+     2. beams  — a faint echo of the Hero's diagonal beam pattern,
+                 rendered in plain CSS (Beams.jsx itself is untouched),
+                 gray-on-light via multiply, confined by its own mask
+     3. glow   — a soft blended highlight at the seam for extra depth
+
+   Sized to fit inside the section's own top padding rather than pushing
+   into it, so no spacing changes were needed anywhere. */
+.problem-transition {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(180px, 22vw, 300px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.problem-transition-base {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 140% 90% at 50% -15%, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.62) 32%, rgba(0, 0, 0, 0) 68%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.32) 40%, rgba(0, 0, 0, 0) 72%);
+}
+
+.problem-transition-beams {
+  position: absolute;
+  inset: -15% -10%;
+  background: repeating-linear-gradient(
+    112deg,
+    rgba(90, 90, 100, 0.22) 0px,
+    rgba(90, 90, 100, 0.22) 2px,
+    transparent 2px,
+    transparent 36px
+  );
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 48%, transparent 78%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 48%, transparent 78%);
+  mix-blend-mode: multiply;
+  opacity: 0.8;
+}
+
+.problem-transition-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 90% 55% at 50% 0%, rgba(255, 255, 255, 0.55), transparent 72%);
+  mix-blend-mode: soft-light;
+  opacity: 0.7;
 }
 
 .problem-container {
+  position: relative;
+  z-index: 1;
   max-width: var(--container-width);
   margin: 0 auto;
   padding: 0 24px;
@@ -30,8 +99,8 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--color-primary);
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.18);
   padding: 6px 16px;
   border-radius: 999px;
 }
@@ -39,14 +108,14 @@
 .problem-title {
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 600;
-  color: var(--color-heading);
+  color: var(--problem-heading);
   text-wrap: balance;
 }
 
 .problem-description {
   font-size: 1.05rem;
   line-height: 1.65;
-  color: var(--color-text);
+  color: var(--problem-text);
 }
 
 .problem-grid {
@@ -56,8 +125,8 @@
 }
 
 .problem-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--problem-card-bg);
+  border: 1px solid var(--problem-border);
   border-radius: var(--radius-lg);
   padding: 32px 28px;
   display: flex;
@@ -72,7 +141,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface-soft);
+  background: rgba(37, 99, 235, 0.08);
   color: var(--color-primary);
   font-size: 1.15rem;
 }
@@ -80,13 +149,13 @@
 .problem-card-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--color-heading);
+  color: var(--problem-heading);
 }
 
 .problem-card-description {
   font-size: 0.92rem;
   line-height: 1.6;
-  color: var(--color-muted);
+  color: var(--problem-muted);
 }
 
 @media (max-width: 960px) {
