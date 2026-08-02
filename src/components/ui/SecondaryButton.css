@@ -21,25 +21,27 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease,
-    opacity 180ms ease;
+  transition: transform 220ms ease, background 220ms ease, border-color 220ms ease, opacity 180ms ease;
 }
 
-.ui-secondary-btn:hover:not(:disabled) {
+/* Hover is deliberately restrained — brighten the border, lift a touch,
+   let a bit more white into the glass. No fill, no shadow: that
+   distinction is what keeps this read as secondary next to PrimaryButton. */
+.ui-secondary-btn:hover:not(:disabled),
+.ui-secondary-btn:focus-visible {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.6);
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .ui-secondary-btn:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .ui-secondary-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
 }
 
 .ui-secondary-btn:disabled,
@@ -47,7 +49,6 @@
   opacity: 0.45;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
 .ui-secondary-btn--full {

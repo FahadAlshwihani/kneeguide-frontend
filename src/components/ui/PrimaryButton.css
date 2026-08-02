@@ -1,43 +1,77 @@
-/* Public-website Primary Button — solid monochrome pill (white/near-black
-   text), the primary marketing CTA style across the whole public site
-   (Hero, CTA section, and anywhere else a primary action appears). Every
-   public page composes this instead of defining its own button CSS —
-   see SecondaryButton.css for the paired lower-emphasis style. Structure
-   and sizes are mirrored 1:1 between the two files on purpose, so
-   swapping <PrimaryButton> for <SecondaryButton> never shifts layout. */
+/* Public-website Primary Button — glass by default, same as
+   SecondaryButton at rest. The only difference between the two lives in
+   the hover interaction: Primary fills white via a sliding pseudo-element
+   (::before), never a background-color flip, so the fill visibly grows
+   into the pill instead of popping. See SecondaryButton.css for the
+   paired lower-emphasis style — sizes are mirrored 1:1 between the two
+   files on purpose, so swapping <PrimaryButton> for <SecondaryButton>
+   never shifts layout. */
 
 .ui-primary-btn {
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: inherit;
   font-weight: 600;
-  color: #14181f;
-  background: linear-gradient(180deg, #ffffff 0%, #e3e7ed 100%);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, opacity 180ms ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: color 380ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease, transform 220ms ease,
+    filter 220ms ease, opacity 180ms ease;
 }
 
-.ui-primary-btn:hover:not(:disabled) {
-  background: linear-gradient(180deg, #ffffff 0%, #d5dae2 100%);
+/* The fill itself: a plain white pill (border-radius: inherit, same size
+   as the button) parked just below it and slid up into place on hover —
+   `overflow: hidden` on the button keeps it from ever bleeding past the
+   pill shape mid-slide. `isolation: isolate` + z-index below give the
+   label/icon (z-index: 1) their own layer above it, so text is legible
+   throughout the animation, not just at the two endpoints. */
+.ui-primary-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ffffff;
+  border-radius: inherit;
+  transform: translateY(101%);
+  transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ui-primary-btn:hover:not(:disabled)::before,
+.ui-primary-btn:focus-visible::before {
+  transform: translateY(0);
+}
+
+.ui-primary-btn:hover:not(:disabled),
+.ui-primary-btn:focus-visible {
+  color: #14181f;
+  border-color: rgba(255, 255, 255, 0.7);
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  /* box-shadow would be clipped by this element's own overflow: hidden
+     (needed above to contain the fill), so the hover "soft shadow" is a
+     drop-shadow filter instead — filter effects render outside the
+     overflow-clip region, box-shadow does not. */
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.4));
 }
 
 .ui-primary-btn:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.3));
 }
 
 .ui-primary-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 2px;
 }
 
 .ui-primary-btn:disabled,
@@ -45,7 +79,7 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
+  filter: none;
 }
 
 .ui-primary-btn--full {
@@ -71,6 +105,14 @@
   font-size: 1rem;
 }
 
+/* Above the ::before fill layer at every step of the animation. */
+.ui-primary-btn-icon,
+.ui-primary-btn-label,
+.ui-primary-btn-spinner {
+  position: relative;
+  z-index: 1;
+}
+
 .ui-primary-btn-icon {
   display: inline-flex;
   align-items: center;
@@ -92,8 +134,8 @@
   width: 1em;
   height: 1em;
   border-radius: 50%;
-  border: 2px solid rgba(20, 24, 31, 0.25);
-  border-top-color: #14181f;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
   animation: ui-primary-btn-spin 700ms linear infinite;
 }
 
@@ -104,6 +146,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ui-primary-btn,
+  .ui-primary-btn::before {
+    transition-duration: 1ms;
+  }
+
   .ui-primary-btn-spinner {
     animation-duration: 1400ms;
   }
