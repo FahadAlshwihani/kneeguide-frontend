@@ -1,0 +1,80 @@
+/* Hero + Problem as one continuous animated scene: a single Beams canvas
+   (PublicBackground, unmodified) absolutely positioned behind both
+   sections, with a layered treatment overlay — three separate layers,
+   never one flat gradient — doing the dark-cinematic-Hero to
+   warm-white-Problem color shift while the same animation keeps running
+   underneath, uninterrupted.
+
+   Stacking note: none of the elements below (or Hero's/Problem's own
+   section roots) set an explicit z-index, and only .scene-beams-layer
+   and the treatment divs use `position: absolute`. Per the CSS stacking
+   spec, positioned descendants with z-index either 0 or auto paint
+   together in DOM order — so simply keeping the background layers first
+   in markup and <Hero />/<Problem /> last is what guarantees the real
+   content always paints on top, with no z-index arithmetic needed (and
+   no risk of a positive z-index accidentally jumping a treatment layer
+   above the content, which is what an earlier draft of this got wrong). */
+
+.hero-problem-scene {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Layer 0 — the shared canvas itself. PublicBackground's own CSS sizes
+   and oversizes it (percentage-based insets) relative to whatever
+   container it's placed in — here, that's this wrapper's full combined
+   height instead of just Hero's, so it automatically stretches to cover
+   both sections with zero changes to PublicBackground.jsx/css. */
+.scene-beams-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Layer 1 — Hero's own cinematic vignette, moved here unchanged from the
+   old Hero.css, confined to exactly Hero's own height so it never bleeds
+   into Problem. */
+.scene-hero-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100svh - 72px);
+  pointer-events: none;
+  background: radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 55%, rgba(0, 0, 0, 0.85) 100%),
+    rgba(0, 0, 0, 0.25);
+}
+
+/* Layer 2 — the actual dark → warm-white dissolve, centered on the exact
+   Hero/Problem seam (Hero's height is a fixed calc(), a reliable anchor —
+   Problem's is only a min-height) with a 300px band split evenly either
+   side of it, inside the requested 220-360px range. Both ends stay
+   non-opaque (0.94 / 0.93 alpha, never solid black or solid white) so the
+   same moving beam pattern reads through at both extremes, just at very
+   different contrast — high in the Hero zone, barely-there in Problem's. */
+.scene-crossfade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(4, 4, 5, 0.94) 0%,
+    rgba(4, 4, 5, 0.94) calc(100svh - 72px - 150px),
+    rgba(250, 248, 244, 0.93) calc(100svh - 72px + 150px),
+    rgba(250, 248, 244, 0.93) 100%
+  );
+}
+
+/* Layer 3 — a soft blended highlight confined to the Problem zone only,
+   for depth rather than a flat wash. */
+.scene-problem-glow {
+  position: absolute;
+  top: calc(100svh - 72px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255, 255, 255, 0.5), transparent 70%);
+  mix-blend-mode: soft-light;
+}
