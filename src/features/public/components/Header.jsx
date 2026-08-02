@@ -71,30 +71,53 @@ const Header = () => {
     panelExpandedRef.current = panelExpanded;
   }, [panelExpanded]);
 
-  // Lock page scroll behind the fullscreen overlay while the menu is open;
-  // restore it the moment it isn't (covers both the close-button path and
-  // any future unmount). `overflow: hidden` alone removes the scrollbar,
-  // which widens the viewport by the scrollbar's own width and shifts
-  // everything horizontally — measuring that width *before* hiding it and
-  // adding it back as `padding-right` keeps the content area's width (and
-  // therefore every centered/full-width element in it) identical on both
-  // sides of the toggle. On platforms with an overlay scrollbar (no
-  // layout width), this measures to 0 and the padding is a no-op.
+  // Lock page scroll behind the fullscreen overlay while the menu is open.
+  // `overflow: hidden` alone removes the scrollbar, which widens the
+  // content area by the scrollbar's own width and shifts everything
+  // horizontally unless compensated — but *which side* to pad depends on
+  // direction: browsers render the vertical scrollbar on the physical
+  // right in LTR documents and on the physical left in RTL ones, so a
+  // hardcoded `padding-right` only ever cancels the shift in one of the
+  // two directions (this is what caused the RTL bug). `html` also carries
+  // a permanent `scrollbar-gutter: stable` (index.css) that already
+  // prevents this shift entirely in supporting browsers — there,
+  // `clientWidth` is unaffected by the lock and this measures ~0, so nothing
+  // below actually applies; this stays purely as the fallback for browsers
+  // that don't support it.
+  //
+  // Original inline values are captured as local consts (not assumed to
+  // be empty strings) and restored by this exact effect run's own cleanup
+  // closure — so it's automatically exact whether the menu closes
+  // normally, the component unmounts while open, or (since `i18n.language`
+  // is a dependency) the direction flips mid-open: React tears down the
+  // old lock (restoring the true pre-lock styles) before re-running this
+  // effect to re-measure and re-lock for the new direction.
   useEffect(() => {
-    if (panelExpanded) {
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.overflow = "hidden";
-      document.body.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : "";
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
+    if (!panelExpanded) return undefined;
+
+    const body = document.body;
+    const originalOverflow = body.style.overflow;
+    const originalPaddingRight = body.style.paddingRight;
+    const originalPaddingLeft = body.style.paddingLeft;
+
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const isRTL = document.documentElement.dir === "rtl";
+
+    body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      if (isRTL) {
+        body.style.paddingLeft = `${scrollbarWidth}px`;
+      } else {
+        body.style.paddingRight = `${scrollbarWidth}px`;
+      }
     }
 
     return () => {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
+      body.style.overflow = originalOverflow;
+      body.style.paddingRight = originalPaddingRight;
+      body.style.paddingLeft = originalPaddingLeft;
     };
-  }, [panelExpanded]);
+  }, [panelExpanded, i18n.language]);
 
   const measureExpandedHeight = () => {
     const panelEl = panelRef.current;

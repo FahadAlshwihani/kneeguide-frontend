@@ -68,6 +68,16 @@ body,
   height: 100%;
 }
 
+/* Reserves the scrollbar's track permanently (in supporting browsers)
+   instead of only when content actually overflows, so the page's content
+   width never changes when something temporarily sets `overflow: hidden`
+   on the document — e.g. the public Header's expanded-menu scroll lock.
+   Unsupported browsers (older Safari) silently ignore this and fall back
+   to that lock's own JS-measured compensation instead. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   font-family: var(--font-main);
