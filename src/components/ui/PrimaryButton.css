@@ -1,0 +1,110 @@
+/* Public-website Primary Button — solid monochrome pill (white/near-black
+   text), the primary marketing CTA style across the whole public site
+   (Hero, CTA section, and anywhere else a primary action appears). Every
+   public page composes this instead of defining its own button CSS —
+   see SecondaryButton.css for the paired lower-emphasis style. Structure
+   and sizes are mirrored 1:1 between the two files on purpose, so
+   swapping <PrimaryButton> for <SecondaryButton> never shifts layout. */
+
+.ui-primary-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 600;
+  color: #14181f;
+  background: linear-gradient(180deg, #ffffff 0%, #e3e7ed 100%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, opacity 180ms ease;
+}
+
+.ui-primary-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #ffffff 0%, #d5dae2 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.ui-primary-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.ui-primary-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.ui-primary-btn:disabled,
+.ui-primary-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.ui-primary-btn--full {
+  width: 100%;
+}
+
+/* Sizes */
+.ui-primary-btn--sm {
+  gap: 6px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+}
+
+.ui-primary-btn--md {
+  gap: 8px;
+  padding: 11px 24px;
+  font-size: 0.92rem;
+}
+
+.ui-primary-btn--lg {
+  gap: 10px;
+  padding: 14px 30px;
+  font-size: 1rem;
+}
+
+.ui-primary-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.05em;
+}
+
+.ui-primary-btn-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Loading — spinner replaces the icon slot; label stays put so the button
+   never changes width when a future async action wires `loading` in. */
+.ui-primary-btn--loading {
+  cursor: progress;
+}
+
+.ui-primary-btn-spinner {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid rgba(20, 24, 31, 0.25);
+  border-top-color: #14181f;
+  animation: ui-primary-btn-spin 700ms linear infinite;
+}
+
+@keyframes ui-primary-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-primary-btn-spinner {
+    animation-duration: 1400ms;
+  }
+}
