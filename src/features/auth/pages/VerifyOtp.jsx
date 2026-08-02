@@ -4,7 +4,7 @@ import "../styles/VerifyOtp.css";
 
 import { verifyOtp, resendOtp } from "../../../api/auth";
 import Loader from "../../../components/common/Loader";
-import PrimaryButton from "../../../components/ui/PrimaryButton";
+import AppPrimaryButton from "../../../components/ui/AppPrimaryButton";
 import { useTranslation } from "react-i18next";
 
 const VerifyOtp = () => {

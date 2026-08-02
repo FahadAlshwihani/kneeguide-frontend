@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
 import "../styles/Login.css";
-import PrimaryButton from "../../../components/ui/PrimaryButton";
+import AppPrimaryButton from "../../../components/ui/AppPrimaryButton";
 import Loader from "../../../components/common/Loader";
 
 import { useTranslation } from "react-i18next";
@@ -99,9 +99,9 @@ const Login = () => {
                 </div>
 
                 {/* Button */}
-                <PrimaryButton type="submit" disabled={loading} className="btn-full">
+                <AppPrimaryButton type="submit" disabled={loading} className="btn-full">
                     {t("login.button")}
-                </PrimaryButton>
+                </AppPrimaryButton>
 
                 {/* ALWAYS CENTERED */}
                 <div className="login-extra text-center-permanent">
