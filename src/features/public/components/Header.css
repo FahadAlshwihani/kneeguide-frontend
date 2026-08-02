@@ -153,6 +153,13 @@
   height: 16px;
 }
 
+/* Desktop shows the top-bar copy, mobile shows the in-panel copy — see
+   the "Mobile top bar" note below for why there are two instead of one
+   element that moves. */
+.header-lang-toggle--menu {
+  display: none;
+}
+
 /* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css). */
 
 /* The expanding content: always in the DOM (never conditionally mounted)
@@ -165,9 +172,9 @@
   right: 0;
   top: 64px;
   padding: 8px 14px 14px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   visibility: hidden;
   pointer-events: none;
   z-index: 1;
@@ -178,6 +185,14 @@
   pointer-events: auto;
 }
 
+.header-menu-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* Each card's own muted, dark-tinted identity — subtle enough to stay
+   monochrome-first, distinct enough to tell the three apart at a glance. */
 .header-menu-card {
   border-radius: 10px;
   padding: 16px 18px;
@@ -185,13 +200,22 @@
   flex-direction: column;
   gap: 8px;
   min-height: 128px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   user-select: none;
 }
 
-.header-menu-card:nth-child(even) {
-  background: rgba(255, 255, 255, 0.07);
+.header-menu-card--platform {
+  background: #0d1420;
+  border: 1px solid rgba(96, 140, 190, 0.18);
+}
+
+.header-menu-card--technology {
+  background: #12151a;
+  border: 1px solid rgba(150, 160, 170, 0.14);
+}
+
+.header-menu-card--company {
+  background: #160f1e;
+  border: 1px solid rgba(150, 110, 180, 0.18);
 }
 
 .header-menu-card-label {
