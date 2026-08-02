@@ -40,7 +40,11 @@ const PrimaryButton = forwardRef(
     ref
   ) => {
     const isInert = disabled || loading;
-    const resolvedIcon = icon ?? (showArrow ? <LuArrowUpRight /> : null);
+    // Smaller and thinner than the icon default (18/2) so it reads as part
+    // of the typography rather than a standalone icon; uses `currentColor`
+    // (react-icons/lu default), so it fades with the label's own color
+    // transition instead of animating on its own.
+    const resolvedIcon = icon ?? (showArrow ? <LuArrowUpRight size="0.8em" strokeWidth={1.75} /> : null);
 
     const classes = [
       "ui-primary-btn",

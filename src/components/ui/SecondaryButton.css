@@ -1,9 +1,7 @@
-/* Public-website Secondary Button — flat, minimal rectangle (not a pill),
-   for lower-emphasis actions beside a PrimaryButton (Login, "I'm a
-   Clinician", etc.). Same resting look as PrimaryButton — transparent,
-   1px white-ish border, white text — but hover stays restrained: brighten
-   the border, let a little white into the background. No fill, no color
-   inversion; that's what keeps it reading as secondary. See
+/* Public-website Secondary Button — near-square outlined rectangle, same
+   resting look as PrimaryButton. Hover is a simple background fade only —
+   no border-color change, no fill, no color inversion; that restraint is
+   what keeps it reading as secondary next to Primary's fade-to-white. See
    PrimaryButton.css for the paired primary style; sizes/shape are
    mirrored 1:1 on purpose. */
 
@@ -15,20 +13,18 @@
   font-family: inherit;
   font-weight: 600;
   color: #ffffff;
-  background: transparent;
+  background-color: transparent;
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition: background 300ms cubic-bezier(0.22, 0.61, 0.36, 1), border-color 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 200ms ease;
+  transition: background-color 200ms ease, opacity 200ms ease;
 }
 
 .ui-secondary-btn:hover:not(:disabled),
 .ui-secondary-btn:focus-visible {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .ui-secondary-btn:active:not(:disabled) {
@@ -70,29 +66,17 @@
 }
 
 /* Sits like a superscript — pinned to the top of the flex row instead of
-   the row's vertical center. Mirroring/hover-motion mirrors
-   PrimaryButton.css exactly — see there for why one translate value works
-   for both LTR and RTL. */
+   the row's vertical center. No transition of its own: the icon uses
+   `currentColor` (see SecondaryButton.jsx) so any future color change
+   rides the button's own transition — it never animates independently. */
 .ui-secondary-btn-icon {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
-  font-size: 1em;
-  transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 [dir="rtl"] .ui-secondary-btn-icon {
   transform: scaleX(-1);
-}
-
-.ui-secondary-btn:hover:not(:disabled) .ui-secondary-btn-icon,
-.ui-secondary-btn:focus-visible .ui-secondary-btn-icon {
-  transform: translate(3px, -3px);
-}
-
-[dir="rtl"] .ui-secondary-btn:hover:not(:disabled) .ui-secondary-btn-icon,
-[dir="rtl"] .ui-secondary-btn:focus-visible .ui-secondary-btn-icon {
-  transform: scaleX(-1) translate(3px, -3px);
 }
 
 .ui-secondary-btn-label {
@@ -120,8 +104,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ui-secondary-btn,
-  .ui-secondary-btn-icon {
+  .ui-secondary-btn {
     transition-duration: 1ms;
   }
 
