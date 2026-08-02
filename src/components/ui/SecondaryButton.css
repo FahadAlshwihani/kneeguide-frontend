@@ -1,8 +1,11 @@
-/* Public-website Secondary Button — transparent glass pill with a thin
-   white border, for lower-emphasis actions beside a PrimaryButton (Login,
-   "I'm a Clinician", etc.) across the whole public site. See
-   PrimaryButton.css for the paired primary style; structure and sizes are
-   mirrored 1:1 between the two files on purpose. */
+/* Public-website Secondary Button — flat, minimal rectangle (not a pill),
+   for lower-emphasis actions beside a PrimaryButton (Login, "I'm a
+   Clinician", etc.). Same resting look as PrimaryButton — transparent,
+   1px white-ish border, white text — but hover stays restrained: brighten
+   the border, let a little white into the background. No fill, no color
+   inversion; that's what keeps it reading as secondary. See
+   PrimaryButton.css for the paired primary style; sizes/shape are
+   mirrored 1:1 on purpose. */
 
 .ui-secondary-btn {
   position: relative;
@@ -12,35 +15,28 @@
   font-family: inherit;
   font-weight: 600;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: transform 220ms ease, background 220ms ease, border-color 220ms ease, opacity 180ms ease;
+  transition: background 300ms cubic-bezier(0.22, 0.61, 0.36, 1), border-color 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 200ms ease;
 }
 
-/* Hover is deliberately restrained — brighten the border, lift a touch,
-   let a bit more white into the glass. No fill, no shadow: that
-   distinction is what keeps this read as secondary next to PrimaryButton. */
 .ui-secondary-btn:hover:not(:disabled),
 .ui-secondary-btn:focus-visible {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
 }
 
 .ui-secondary-btn:active:not(:disabled) {
-  transform: translateY(0);
-  background: rgba(255, 255, 255, 0.1);
+  opacity: 0.85;
 }
 
 .ui-secondary-btn:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline: 2px solid rgba(255, 255, 255, 0.7);
   outline-offset: 2px;
 }
 
@@ -48,7 +44,6 @@
 .ui-secondary-btn[aria-disabled="true"] {
   opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
 }
 
 .ui-secondary-btn--full {
@@ -93,7 +88,7 @@
   width: 1em;
   height: 1em;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #ffffff;
   animation: ui-secondary-btn-spin 700ms linear infinite;
 }

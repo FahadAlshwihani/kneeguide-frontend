@@ -1,11 +1,13 @@
-/* Public-website Primary Button — glass by default, same as
-   SecondaryButton at rest. The only difference between the two lives in
-   the hover interaction: Primary fills white via a sliding pseudo-element
-   (::before), never a background-color flip, so the fill visibly grows
-   into the pill instead of popping. See SecondaryButton.css for the
-   paired lower-emphasis style — sizes are mirrored 1:1 between the two
-   files on purpose, so swapping <PrimaryButton> for <SecondaryButton>
-   never shifts layout. */
+/* Public-website Primary Button — flat, minimal rectangle (not a pill).
+   Transparent by default, the same resting weight as SecondaryButton; the
+   only distinction is the hover interaction: a plain white layer
+   (::before) sweeps in edge-to-edge under the text, direction-aware via
+   the CSS logical property `inset-inline-start` — it resolves to the left
+   edge in LTR and the right edge in RTL automatically, following the
+   ancestor `dir`/`direction`, so the fill direction flips for Arabic with
+   zero JS and no separate component. See SecondaryButton.css for the
+   paired lower-emphasis style; sizes/shape are mirrored 1:1 on purpose,
+   so swapping <PrimaryButton> for <SecondaryButton> never shifts layout. */
 
 .ui-primary-btn {
   position: relative;
@@ -17,60 +19,48 @@
   font-family: inherit;
   font-weight: 600;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: color 380ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease, transform 220ms ease,
-    filter 220ms ease, opacity 180ms ease;
+  transition: color 300ms cubic-bezier(0.22, 0.61, 0.36, 1), border-color 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 200ms ease;
 }
 
-/* The fill itself: a plain white pill (border-radius: inherit, same size
-   as the button) parked just below it and slid up into place on hover —
-   `overflow: hidden` on the button keeps it from ever bleeding past the
-   pill shape mid-slide. `isolation: isolate` + z-index below give the
-   label/icon (z-index: 1) their own layer above it, so text is legible
-   throughout the animation, not just at the two endpoints. */
+/* The fill itself: a plain white layer, full height, anchored to the
+   inline-start edge and animated purely via `width` (0% -> 100%) — never
+   a background-color flip, never a transform. */
 .ui-primary-btn::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset-block: 0;
+  inset-inline-start: 0;
   z-index: 0;
+  width: 0%;
   background: #ffffff;
   border-radius: inherit;
-  transform: translateY(101%);
-  transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .ui-primary-btn:hover:not(:disabled)::before,
 .ui-primary-btn:focus-visible::before {
-  transform: translateY(0);
+  width: 100%;
 }
 
 .ui-primary-btn:hover:not(:disabled),
 .ui-primary-btn:focus-visible {
-  color: #14181f;
-  border-color: rgba(255, 255, 255, 0.7);
-  transform: translateY(-2px);
-  /* box-shadow would be clipped by this element's own overflow: hidden
-     (needed above to contain the fill), so the hover "soft shadow" is a
-     drop-shadow filter instead — filter effects render outside the
-     overflow-clip region, box-shadow does not. */
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.4));
+  color: #0a0a0c;
+  border-color: #ffffff;
 }
 
 .ui-primary-btn:active:not(:disabled) {
-  transform: translateY(0);
-  filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.3));
+  opacity: 0.85;
 }
 
 .ui-primary-btn:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline: 2px solid rgba(255, 255, 255, 0.9);
   outline-offset: 2px;
 }
 
@@ -78,8 +68,6 @@
 .ui-primary-btn[aria-disabled="true"] {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
-  filter: none;
 }
 
 .ui-primary-btn--full {
