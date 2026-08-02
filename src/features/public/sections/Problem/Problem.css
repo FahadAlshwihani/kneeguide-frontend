@@ -2,78 +2,27 @@
    are defined locally below rather than through the shared dark tokens
    (--color-heading/--color-text/etc.), since this section is deliberately
    the site's first light surface: those globals are the public site's
-   dark identity and stay untouched everywhere else. */
+   dark identity and stay untouched everywhere else.
 
+   No background of its own: this section sits on top of the shared,
+   continuous Beams canvas + dark→light treatment rendered once by the
+   HeroProblemScene wrapper around both Hero and Problem — see
+   HeroProblemScene.css. .problem-root stays transparent so that shared
+   background (already warm-white by the time it reaches here) shows
+   through instead of being covered by a second, separate background. */
 .problem-root {
   position: relative;
-  overflow: hidden;
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #faf8f4;
-  --problem-heading: #14161a;
-  --problem-text: #52525b;
-  --problem-muted: #7a7a7a;
-  --problem-border: rgba(20, 20, 20, 0.08);
-  --problem-card-bg: #ffffff;
-}
-
-/* ===================================================================
-   Hero → Problem transition: a purely decorative underlay bridging the
-   dark Beams canvas above into this section's warm-white surface. Not
-   one gradient — three separate layers, each doing a different job, so
-   the seam reads as depth rather than a printed edge:
-
-     1. base   — the actual dark → transparent dissolve (two overlapping
-                 gradients at different shapes, not a single linear one)
-     2. beams  — a faint echo of the Hero's diagonal beam pattern,
-                 rendered in plain CSS (Beams.jsx itself is untouched),
-                 gray-on-light via multiply, confined by its own mask
-     3. glow   — a soft blended highlight at the seam for extra depth
-
-   Sized to fit inside the section's own top padding rather than pushing
-   into it, so no spacing changes were needed anywhere. */
-.problem-transition {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: clamp(180px, 22vw, 300px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.problem-transition-base {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 140% 90% at 50% -15%, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.62) 32%, rgba(0, 0, 0, 0) 68%),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.32) 40%, rgba(0, 0, 0, 0) 72%);
-}
-
-.problem-transition-beams {
-  position: absolute;
-  inset: -15% -10%;
-  background: repeating-linear-gradient(
-    112deg,
-    rgba(90, 90, 100, 0.22) 0px,
-    rgba(90, 90, 100, 0.22) 2px,
-    transparent 2px,
-    transparent 36px
-  );
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 48%, transparent 78%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 48%, transparent 78%);
-  mix-blend-mode: multiply;
-  opacity: 0.8;
-}
-
-.problem-transition-glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 90% 55% at 50% 0%, rgba(255, 255, 255, 0.55), transparent 72%);
-  mix-blend-mode: soft-light;
-  opacity: 0.7;
+  background: transparent;
+  --problem-heading: #141414;
+  --problem-text: #4b4b4b;
+  --problem-muted: #6b6b6b;
+  --problem-border: rgba(20, 20, 20, 0.1);
+  --problem-card-bg: #fffdf9;
 }
 
 .problem-container {
@@ -98,9 +47,9 @@
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--color-primary);
-  background: rgba(37, 99, 235, 0.08);
-  border: 1px solid rgba(37, 99, 235, 0.18);
+  color: var(--problem-heading);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--problem-border);
   padding: 6px 16px;
   border-radius: 999px;
 }

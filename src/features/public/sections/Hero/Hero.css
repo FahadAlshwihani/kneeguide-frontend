@@ -123,26 +123,11 @@
   justify-content: center;
 }
 
-/* Two stacked darkening layers above the Beams canvas, below the content:
-   a flat, soft black wash (evens out the whole frame and guarantees text
-   contrast) plus a radial vignette on top of it (fades the edges toward
-   pure black while keeping the center — behind the heading — brighter).
-   Together they give the atmospheric, cinematic framing of the reference
-   composition instead of a flat, evenly-lit canvas. */
-.hero-vignette {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      ellipse 75% 65% at 50% 42%,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.3) 55%,
-      rgba(0, 0, 0, 0.85) 100%
-    ),
-    rgba(0, 0, 0, 0.25);
-}
+/* The Beams canvas and its dark vignette treatment used to live directly
+   inside .hero-root; both now live one level up, in the shared
+   HeroProblemScene wrapper (spanning Hero + Problem's combined height as
+   one continuous canvas/animation) — see HeroProblemScene.css. .hero-root
+   itself stays transparent so that shared background shows through. */
 
 @media (max-width: 640px) {
   .hero-description {

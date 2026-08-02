@@ -27,16 +27,6 @@ const PROBLEMS = [
 const Problem = () => {
   return (
     <section className="problem-root">
-      {/* Purely decorative bridge from the Hero's dark Beams canvas into
-          this section's own light surface — see Problem.css for the
-          layered gradients/mask/blend-modes. Never affects layout: it's
-          an absolutely positioned underlay, not part of document flow. */}
-      <div className="problem-transition" aria-hidden="true">
-        <div className="problem-transition-base" />
-        <div className="problem-transition-beams" />
-        <div className="problem-transition-glow" />
-      </div>
-
       <div className="problem-container">
         <Reveal className="problem-header">
           <span className="problem-badge">The Challenge</span>
