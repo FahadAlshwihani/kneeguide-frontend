@@ -82,13 +82,13 @@
 }
 
 .ui-primary-btn--md {
-  gap: 8px;
+  gap: 7px;
   padding: 11px 24px;
   font-size: 0.92rem;
 }
 
 .ui-primary-btn--lg {
-  gap: 10px;
+  gap: 8px;
   padding: 14px 30px;
   font-size: 1rem;
 }
@@ -101,10 +101,35 @@
   z-index: 1;
 }
 
+/* Sits like a superscript — pinned to the top of the flex row instead of
+   the row's vertical center — and animates on its own, independent of the
+   fill/color/border transitions above. */
 .ui-primary-btn-icon {
   display: inline-flex;
   align-items: center;
-  font-size: 1.05em;
+  align-self: flex-start;
+  font-size: 1em;
+  transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* RTL: mirror the glyph (↗ becomes ↖) — resolves automatically from the
+   ancestor `dir`, no separate component or JS branch. */
+[dir="rtl"] .ui-primary-btn-icon {
+  transform: scaleX(-1);
+}
+
+/* Hover/focus: nudge the arrow toward where it's pointing. In RTL the
+   translate is composed *after* the mirror in the transform list, so the
+   same translate(3px, -3px) value visually moves left instead of right —
+   see PrimaryButton.jsx for why one value works for both directions. */
+.ui-primary-btn:hover:not(:disabled) .ui-primary-btn-icon,
+.ui-primary-btn:focus-visible .ui-primary-btn-icon {
+  transform: translate(3px, -3px);
+}
+
+[dir="rtl"] .ui-primary-btn:hover:not(:disabled) .ui-primary-btn-icon,
+[dir="rtl"] .ui-primary-btn:focus-visible .ui-primary-btn-icon {
+  transform: scaleX(-1) translate(3px, -3px);
 }
 
 .ui-primary-btn-label {
@@ -135,7 +160,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ui-primary-btn,
-  .ui-primary-btn::before {
+  .ui-primary-btn::before,
+  .ui-primary-btn-icon {
     transition-duration: 1ms;
   }
 

@@ -1,12 +1,14 @@
 import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
+import { LuArrowUpRight } from "react-icons/lu";
 import "./SecondaryButton.css";
 
 /**
- * The public marketing site's only secondary button. Transparent glass
- * pill with a thin white border — used for lower-emphasis actions (Login,
- * "I'm a Clinician", etc.) beside a PrimaryButton. See PrimaryButton.jsx
- * for the shared render-as-Link/anchor/button contract.
+ * The public marketing site's only secondary button — the same flat
+ * outlined rectangle as PrimaryButton, minus the hover fill. Used for
+ * lower-emphasis actions (Login, "I'm a Clinician", etc.) beside a
+ * PrimaryButton. See PrimaryButton.jsx for the shared render-as-Link/
+ * anchor/button contract and the `showArrow` default.
  */
 const SecondaryButton = forwardRef(
   (
@@ -17,6 +19,7 @@ const SecondaryButton = forwardRef(
       size = "md",
       icon,
       iconPosition = "right",
+      showArrow = true,
       loading = false,
       disabled = false,
       fullWidth = false,
@@ -27,6 +30,7 @@ const SecondaryButton = forwardRef(
     ref
   ) => {
     const isInert = disabled || loading;
+    const resolvedIcon = icon ?? (showArrow ? <LuArrowUpRight /> : null);
 
     const classes = [
       "ui-secondary-btn",
@@ -41,15 +45,15 @@ const SecondaryButton = forwardRef(
     const content = (
       <>
         {loading && <span className="ui-secondary-btn-spinner" aria-hidden="true" />}
-        {!loading && icon && iconPosition === "left" && (
+        {!loading && resolvedIcon && iconPosition === "left" && (
           <span className="ui-secondary-btn-icon" aria-hidden="true">
-            {icon}
+            {resolvedIcon}
           </span>
         )}
         <span className="ui-secondary-btn-label">{children}</span>
-        {!loading && icon && iconPosition === "right" && (
+        {!loading && resolvedIcon && iconPosition === "right" && (
           <span className="ui-secondary-btn-icon" aria-hidden="true">
-            {icon}
+            {resolvedIcon}
           </span>
         )}
       </>
