@@ -252,18 +252,55 @@
   flex: 0 0 auto;
 }
 
+/* Mobile top bar: only hamburger / logo / Login — the language switcher
+   moves into the panel (see .header-lang-toggle--menu) so the bar stays
+   just those three. Switched from the desktop's absolute-positioned logo
+   to a real `1fr auto 1fr` grid: with two equal flanking columns, the
+   logo lands exactly centered no matter how much wider Login is than the
+   hamburger button, which absolute-centering against the whole bar can't
+   guarantee on its own. */
 @media (max-width: 768px) {
   .header-root {
     padding: 10px 16px 0;
   }
 
   .header-top {
-    padding: 0 8px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .header-menu-toggle {
+    justify-self: start;
+  }
+
+  .header-logo {
+    position: static;
+    transform: none;
+    justify-self: center;
+  }
+
+  .header-actions {
+    margin-inline-start: 0;
+    justify-self: end;
+  }
+
+  .header-lang-toggle--topbar {
+    display: none;
+  }
+
+  .header-lang-toggle--menu {
+    display: inline-flex;
+    align-self: flex-start;
   }
 
   .header-menu-panel {
-    grid-template-columns: 1fr;
     padding: 8px 12px 12px;
+  }
+
+  .header-menu-cards {
+    grid-template-columns: 1fr;
   }
 
   .header-menu-card {
