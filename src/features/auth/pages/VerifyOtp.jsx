@@ -118,9 +118,9 @@ const VerifyOtp = () => {
             ))}
           </div>
 
-          <PrimaryButton className="btn-full" type="submit">
+          <AppPrimaryButton className="btn-full" type="submit">
             {t("verifyOtp.buttons.verify")}
-          </PrimaryButton>
+          </AppPrimaryButton>
         </form>
 
         <div className="otp-resend">
