@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
@@ -46,6 +46,7 @@ const MENU_SECTIONS = [
 const TOP_BAR_HEIGHT = 64;
 const PANEL_BOTTOM_GAP = 16;
 const MENU_EASE = "power3.out";
+const HIDE_SCROLL_THRESHOLD = 96;
 
 const Header = () => {
   const { t, i18n } = useTranslation();
@@ -58,10 +59,27 @@ const Header = () => {
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
   const [panelExpanded, setPanelExpanded] = useState(false);
 
+  const headerRef = useRef(null);
   const navRef = useRef(null);
   const panelRef = useRef(null);
+  const overlayRef = useRef(null);
   const cardRefs = useRef([]);
   const timelineRef = useRef(null);
+  const panelExpandedRef = useRef(false);
+
+  useEffect(() => {
+    panelExpandedRef.current = panelExpanded;
+  }, [panelExpanded]);
+
+  // Lock page scroll behind the fullscreen overlay while the menu is open;
+  // restore it the moment it isn't (covers both the close-button path and
+  // any future unmount).
+  useEffect(() => {
+    document.body.style.overflow = panelExpanded ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [panelExpanded]);
 
   const measureExpandedHeight = () => {
     const panelEl = panelRef.current;
@@ -75,9 +93,13 @@ const Header = () => {
 
     gsap.set(navEl, { height: TOP_BAR_HEIGHT });
     gsap.set(cardRefs.current, { y: 40, opacity: 0 });
+    if (overlayRef.current) gsap.set(overlayRef.current, { opacity: 0 });
 
     const tl = gsap.timeline({ paused: true });
-    tl.to(navEl, { height: measureExpandedHeight, duration: 0.45, ease: MENU_EASE });
+    tl.to(navEl, { height: measureExpandedHeight, duration: 0.45, ease: MENU_EASE }, 0);
+    if (overlayRef.current) {
+      tl.to(overlayRef.current, { opacity: 1, duration: 0.3, ease: MENU_EASE }, 0);
+    }
     tl.to(cardRefs.current, { y: 0, opacity: 1, duration: 0.4, ease: MENU_EASE, stagger: 0.06 }, "-=0.15");
     return tl;
   };
@@ -117,6 +139,39 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [panelExpanded]);
 
+  // Header hide-on-scroll-down / reveal-on-scroll-up — animates `transform`
+  // via GSAP (never `display`), so it's always a smooth slide. Skips while
+  // the menu is open (scroll is locked then anyway, see above) so the
+  // header never slides away mid-interaction. Mount-once listener (a ref
+  // tracks the latest `panelExpanded` instead of a dependency) so it isn't
+  // torn down and rebuilt on every open/close.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        if (!panelExpandedRef.current) {
+          const scrollingDown = currentY > lastY;
+          const pastThreshold = currentY > HIDE_SCROLL_THRESHOLD;
+          gsap.to(headerRef.current, {
+            y: scrollingDown && pastThreshold ? "-130%" : "0%",
+            duration: 0.35,
+            ease: "power2.out",
+          });
+        }
+        lastY = currentY;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const toggleMenu = () => {
     const tl = timelineRef.current;
     if (!tl) return;
@@ -152,80 +207,94 @@ const Header = () => {
   const langToggleText = t("publicHeader.languageSwitchTo");
 
   return (
-    <header className="header-root">
-      <div ref={navRef} className={`header-nav${panelExpanded ? " header-nav-expanded" : ""}`}>
-        <div className="header-top">
-          <button
-            type="button"
-            className={`header-menu-toggle${hamburgerOpen ? " open" : ""}`}
-            onClick={toggleMenu}
-            aria-expanded={hamburgerOpen}
-            aria-label={t(hamburgerOpen ? "publicHeader.menuToggleClose" : "publicHeader.menuToggleOpen")}
-          >
-            <span className="header-menu-toggle-line" />
-            <span className="header-menu-toggle-line" />
-          </button>
+    <>
+      {/* Rendered as a sibling of .header-root, not a child — .header-root
+          gets a GSAP `transform` for the scroll-hide behavior, and a
+          transformed ancestor would turn this `position: fixed` overlay
+          into one scoped to that ancestor's box instead of the real
+          viewport. Keeping it outside sidesteps that entirely. */}
+      <div
+        ref={overlayRef}
+        className={`header-overlay${panelExpanded ? " header-overlay-visible" : ""}`}
+        onClick={closeMenu}
+        aria-hidden={!panelExpanded}
+      />
 
-          <Link className="header-logo" to="/" onClick={closeMenu}>
-            <span className="header-logo-mark">KG</span>
-            KneeGuide
-          </Link>
-
-          <div className="header-actions">
-            {/* Desktop only (hidden on mobile via CSS) — the mobile copy
-                lives inside the menu panel instead, see below. */}
+      <header className="header-root" ref={headerRef}>
+        <div ref={navRef} className={`header-nav${panelExpanded ? " header-nav-expanded" : ""}`}>
+          <div className="header-top">
             <button
               type="button"
-              className="header-lang-toggle header-lang-toggle--topbar"
+              className={`header-menu-toggle${hamburgerOpen ? " open" : ""}`}
+              onClick={toggleMenu}
+              aria-expanded={hamburgerOpen}
+              aria-label={t(hamburgerOpen ? "publicHeader.menuToggleClose" : "publicHeader.menuToggleOpen")}
+            >
+              <span className="header-menu-toggle-line" />
+              <span className="header-menu-toggle-line" />
+            </button>
+
+            <Link className="header-logo" to="/" onClick={closeMenu}>
+              <span className="header-logo-mark">KG</span>
+              KneeGuide
+            </Link>
+
+            <div className="header-actions">
+              {/* Desktop only (hidden on mobile via CSS) — the mobile copy
+                  lives at the end of the menu panel instead, see below. */}
+              <button
+                type="button"
+                className="header-lang-toggle header-lang-toggle--topbar"
+                onClick={toggleLanguage}
+                aria-label={langToggleLabel}
+              >
+                <LuLanguages aria-hidden="true" />
+                {langToggleText}
+              </button>
+
+              <SecondaryButton to={ROUTES.LOGIN} size="sm" className="header-cta">
+                {t("publicHeader.login")}
+              </SecondaryButton>
+            </div>
+          </div>
+
+          <div ref={panelRef} className="header-menu-panel" aria-hidden={!panelExpanded}>
+            <div className="header-menu-cards">
+              {MENU_SECTIONS.map((section, index) => (
+                <div
+                  key={section.key}
+                  ref={setCardRef(index)}
+                  className={`header-menu-card ${section.colorClass}`}
+                >
+                  <div className="header-menu-card-label">{t(`publicHeader.menu.${section.key}.title`)}</div>
+                  <div className="header-menu-card-links">
+                    {section.links.map((link) => (
+                      <Link key={link.key} to={link.to} className="header-menu-card-link" onClick={closeMenu}>
+                        <ButtonArrow />
+                        {t(`publicHeader.menu.${section.key}.links.${link.key}`)}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile only (hidden on desktop via CSS, where the top-bar
+                copy above covers it) — last element in the panel, styled
+                as a footer action rather than another nav item. */}
+            <button
+              type="button"
+              className="header-lang-toggle header-lang-toggle--menu"
               onClick={toggleLanguage}
               aria-label={langToggleLabel}
             >
               <LuLanguages aria-hidden="true" />
               {langToggleText}
             </button>
-
-            <SecondaryButton to={ROUTES.LOGIN} size="sm" className="header-cta">
-              {t("publicHeader.login")}
-            </SecondaryButton>
           </div>
         </div>
-
-        <div ref={panelRef} className="header-menu-panel" aria-hidden={!panelExpanded}>
-          {/* Mobile only (hidden on desktop via CSS) — the top-bar copy
-              above covers desktop instead. First item in the panel, per
-              spec. Not part of the staggered card reveal. */}
-          <button
-            type="button"
-            className="header-lang-toggle header-lang-toggle--menu"
-            onClick={toggleLanguage}
-            aria-label={langToggleLabel}
-          >
-            <LuLanguages aria-hidden="true" />
-            {langToggleText}
-          </button>
-
-          <div className="header-menu-cards">
-            {MENU_SECTIONS.map((section, index) => (
-              <div
-                key={section.key}
-                ref={setCardRef(index)}
-                className={`header-menu-card ${section.colorClass}`}
-              >
-                <div className="header-menu-card-label">{t(`publicHeader.menu.${section.key}.title`)}</div>
-                <div className="header-menu-card-links">
-                  {section.links.map((link) => (
-                    <Link key={link.key} to={link.to} className="header-menu-card-link" onClick={closeMenu}>
-                      <ButtonArrow />
-                      {t(`publicHeader.menu.${section.key}.links.${link.key}`)}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };
 

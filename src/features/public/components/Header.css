@@ -23,6 +23,32 @@
   top: 0;
   z-index: var(--z-header);
   padding: 12px 20px 0;
+  will-change: transform;
+}
+
+/* Fullscreen scrim behind the expanded menu — a sibling of .header-root
+   (see Header.jsx for why), so it's always positioned against the real
+   viewport regardless of the header's own scroll-hide transform. Opacity
+   is GSAP-driven (part of the same timeline as the panel/cards);
+   visibility/pointer-events flip instantly with the class, same pattern
+   as .header-menu-panel. Also the click target for "click outside closes
+   the menu" — it covers the whole viewport except the nav card itself,
+   which sits above it via z-index. */
+.header-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-header) - 1);
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.header-overlay-visible {
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .header-nav {
@@ -204,18 +230,35 @@
 }
 
 .header-menu-card--platform {
-  background: #0d1420;
-  border: 1px solid rgba(96, 140, 190, 0.18);
+  background: #0a1424;
+  border: 1px solid rgba(96, 140, 190, 0.2);
 }
 
 .header-menu-card--technology {
-  background: #12151a;
+  background: #17181b;
   border: 1px solid rgba(150, 160, 170, 0.14);
 }
 
+/* The one bright card, deliberately — near-white instead of another dark
+   tint, for contrast against the other two. Text/links/arrow all flip to
+   dark since they'd be unreadable on a light background otherwise; the
+   arrow needs no rule of its own, it inherits the link's `color` via
+   `currentColor` the same way it does on the dark cards. */
 .header-menu-card--company {
-  background: #160f1e;
-  border: 1px solid rgba(150, 110, 180, 0.18);
+  background: #f1efe9;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.header-menu-card--company .header-menu-card-label {
+  color: #14161a;
+}
+
+.header-menu-card--company .header-menu-card-link {
+  color: rgba(20, 22, 26, 0.65);
+}
+
+.header-menu-card--company .header-menu-card-link:hover {
+  color: #14161a;
 }
 
 .header-menu-card-label {
