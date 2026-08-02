@@ -8,58 +8,37 @@ import SecondaryButton from "../../../components/ui/SecondaryButton";
 import ButtonArrow from "../../../components/ui/ButtonArrow";
 import "./Header.css";
 
-// Six KneeGuide menu cards. Sub-items without a dedicated page/anchor of
-// their own point at the closest existing destination (e.g. all three
-// Technology sub-items go to the existing /technology page) rather than
-// inventing new routes — this is a visual/interaction rebuild only, no
-// new application logic or pages.
+// Three cards — KneeGuide is a single-scroll landing page, not a
+// multi-page corporate site, so almost every link below points at a
+// homepage section anchor rather than a dedicated route. The only
+// dedicated pages kept are ones that already existed (/technology,
+// /contact) — no new routes were added.
 const MENU_SECTIONS = [
   {
     key: "platform",
+    colorClass: "header-menu-card--platform",
     links: [
       { key: "overview", to: "/#platform" },
-      { key: "patientPortal", to: "/#patient-portal" },
+      { key: "patientDashboard", to: "/#patient-portal" },
       { key: "doctorDashboard", to: "/#doctor-dashboard" },
     ],
   },
   {
     key: "technology",
+    colorClass: "header-menu-card--technology",
     links: [
-      { key: "motionTracking", to: "/technology" },
-      { key: "wearableIntegration", to: "/technology" },
-      { key: "security", to: "/technology" },
+      { key: "motionTracking", to: "/#technology" },
+      { key: "aiAssistant", to: "/#ai-assistant" },
+      { key: "wearables", to: "/#technology" },
     ],
   },
   {
-    key: "aiAssistant",
+    key: "company",
+    colorClass: "header-menu-card--company",
     links: [
-      { key: "smartAnalysis", to: "/#ai-assistant" },
-      { key: "exerciseRecommendations", to: "/#ai-assistant" },
-      { key: "progressReports", to: "/#ai-assistant" },
-    ],
-  },
-  {
-    key: "howItWorks",
-    links: [
-      { key: "patientJourney", to: "/how-it-works" },
-      { key: "doctorWorkflow", to: "/how-it-works" },
-      { key: "rehabilitationProcess", to: "/how-it-works" },
-    ],
-  },
-  {
-    key: "roadmap",
-    links: [
-      { key: "currentVersion", to: "/#roadmap" },
-      { key: "upcomingFeatures", to: "/#roadmap" },
-      { key: "futureVision", to: "/#roadmap" },
-    ],
-  },
-  {
-    key: "contact",
-    links: [
-      { key: "contactUs", to: "/contact" },
-      { key: "documentation", to: "/contact" },
-      { key: "support", to: "/contact" },
+      { key: "roadmap", to: "/#roadmap" },
+      { key: "contact", to: "/contact" },
+      { key: "documentation", to: "/#faq" },
     ],
   },
 ];
@@ -103,14 +82,23 @@ const Header = () => {
     return tl;
   };
 
+  // Rebuilding the timeline (language change alters card text, so the
+  // measured height changes) used to just `gsap.set` everything back to
+  // its collapsed starting point — even if the menu was open at the time,
+  // silently desyncing the DOM's visual state from `panelExpanded`, which
+  // is what made the hamburger stop responding afterward. Jumping the
+  // fresh timeline straight to its end (`progress(1)`) when the menu was
+  // already open keeps the two in sync, exactly like the resize handler
+  // below already does.
   useLayoutEffect(() => {
-    timelineRef.current = buildTimeline();
+    const tl = buildTimeline();
+    timelineRef.current = tl;
+    if (tl && panelExpanded) tl.progress(1);
+
     return () => {
       timelineRef.current?.kill();
       timelineRef.current = null;
     };
-    // Rebuild on language change too — card label lengths differ enough
-    // between English and Arabic to shift the measured panel height.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18n.language]);
 
@@ -160,6 +148,9 @@ const Header = () => {
     cardRefs.current[index] = el;
   };
 
+  const langToggleLabel = t("publicHeader.languageSwitchLabel");
+  const langToggleText = t("publicHeader.languageSwitchTo");
+
   return (
     <header className="header-root">
       <div ref={navRef} className={`header-nav${panelExpanded ? " header-nav-expanded" : ""}`}>
@@ -181,14 +172,16 @@ const Header = () => {
           </Link>
 
           <div className="header-actions">
+            {/* Desktop only (hidden on mobile via CSS) — the mobile copy
+                lives inside the menu panel instead, see below. */}
             <button
               type="button"
-              className="header-lang-toggle"
+              className="header-lang-toggle header-lang-toggle--topbar"
               onClick={toggleLanguage}
-              aria-label={t("publicHeader.languageSwitchLabel")}
+              aria-label={langToggleLabel}
             >
               <LuLanguages aria-hidden="true" />
-              {t("publicHeader.languageSwitchTo")}
+              {langToggleText}
             </button>
 
             <SecondaryButton to={ROUTES.LOGIN} size="sm" className="header-cta">
@@ -198,19 +191,38 @@ const Header = () => {
         </div>
 
         <div ref={panelRef} className="header-menu-panel" aria-hidden={!panelExpanded}>
-          {MENU_SECTIONS.map((section, index) => (
-            <div key={section.key} ref={setCardRef(index)} className="header-menu-card">
-              <div className="header-menu-card-label">{t(`publicHeader.menu.${section.key}.title`)}</div>
-              <div className="header-menu-card-links">
-                {section.links.map((link) => (
-                  <Link key={link.key} to={link.to} className="header-menu-card-link" onClick={closeMenu}>
-                    <ButtonArrow />
-                    {t(`publicHeader.menu.${section.key}.links.${link.key}`)}
-                  </Link>
-                ))}
+          {/* Mobile only (hidden on desktop via CSS) — the top-bar copy
+              above covers desktop instead. First item in the panel, per
+              spec. Not part of the staggered card reveal. */}
+          <button
+            type="button"
+            className="header-lang-toggle header-lang-toggle--menu"
+            onClick={toggleLanguage}
+            aria-label={langToggleLabel}
+          >
+            <LuLanguages aria-hidden="true" />
+            {langToggleText}
+          </button>
+
+          <div className="header-menu-cards">
+            {MENU_SECTIONS.map((section, index) => (
+              <div
+                key={section.key}
+                ref={setCardRef(index)}
+                className={`header-menu-card ${section.colorClass}`}
+              >
+                <div className="header-menu-card-label">{t(`publicHeader.menu.${section.key}.title`)}</div>
+                <div className="header-menu-card-links">
+                  {section.links.map((link) => (
+                    <Link key={link.key} to={link.to} className="header-menu-card-link" onClick={closeMenu}>
+                      <ButtonArrow />
+                      {t(`publicHeader.menu.${section.key}.links.${link.key}`)}
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </header>
