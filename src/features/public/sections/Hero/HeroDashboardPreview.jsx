@@ -16,8 +16,12 @@ import "./HeroDashboardPreview.css";
 // Cards settle at a small, deterministic vertical offset (never at a
 // shared y:0) — an intentionally layered composition, not a rigid,
 // perfectly aligned grid. The offset is bounded (see overlapOffsetFor) and
-// only ever nudges a card *up toward its row above*, never down toward
-// nothing — so it can't drift into the CTAs above the preview.
+// only ever nudges a card *down toward its row below*, never up — pushing
+// up risks poking a first-row card above the preview box entirely (where
+// the wrap's overflow:hidden safety net would clip it), while pushing
+// down only ever overlaps into content the preview already owns, and
+// worst case adds a few px the fit loop below simply measures and
+// accounts for like any other content.
 const cardEntrance = {
   hidden: { opacity: 0, y: 18 },
   visible: ({ delay = 0, restY = 0 } = {}) => ({
@@ -30,16 +34,15 @@ const cardEntrance = {
 // Small, stable per-card overlap so neighboring rows read as a loosely
 // layered stack (Apple-style floating previews) instead of a spreadsheet
 // grid. Deterministic from the card's id — same card always gets the same
-// nudge, never a fresh random value per render. First-row cards (even
-// index in the visible set) sit at rest; every other card is pulled up by
-// 8–20px into the gap above it, which is the full extent of the "overlap"
-// — bounded, and it only ever moves a card toward its neighbor, not
-// toward the copy above the whole preview.
+// nudge, never a fresh random value per render. The anchor card (index 0)
+// sits at rest; every other card is pushed down by 8–20px into the row
+// below it, which is the full extent of the "overlap" — bounded, and
+// always downward so it can never escape the preview box upward.
 const overlapOffsetFor = (id, index) => {
   if (index === 0) return 0;
   const hash = Array.from(id).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
   const magnitude = 8 + (hash % 13); // 8–20px
-  return index % 2 === 0 ? 0 : -magnitude;
+  return index % 2 === 0 ? 0 : magnitude;
 };
 
 /**
