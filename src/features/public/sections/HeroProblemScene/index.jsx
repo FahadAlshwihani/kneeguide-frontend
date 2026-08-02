@@ -18,8 +18,14 @@ import "./HeroProblemScene.css";
  * The dark-Hero → warm-white-Problem color shift is implemented entirely
  * as overlay layers on top of that one canvas (see HeroProblemScene.css)
  * — never by touching the canvas, restarting it, or mounting a second
- * instance. Hero and Problem below render only their own foreground
- * content; neither owns a background anymore.
+ * instance. Hero stays fully cinematic through its own height AND
+ * roughly the first half of Problem (the shift only actually starts deep
+ * inside Problem, not at the seam) via a warm-white layer blended with
+ * `mix-blend-mode: exclusion` — that inverts the beams' own brightness
+ * rather than just dimming them, which is how they stay visible as soft
+ * gray shapes on the light background instead of fading to nothing.
+ * Hero and Problem below render only their own foreground content;
+ * neither owns a background anymore.
  */
 const HeroProblemScene = () => {
   return (
@@ -29,8 +35,8 @@ const HeroProblemScene = () => {
       </div>
 
       <div className="scene-hero-vignette" aria-hidden="true" />
-      <div className="scene-crossfade" aria-hidden="true" />
-      <div className="scene-problem-glow" aria-hidden="true" />
+      <div className="scene-dark-continuation" aria-hidden="true" />
+      <div className="scene-invert-lighten" aria-hidden="true" />
 
       <Hero />
       <Problem />

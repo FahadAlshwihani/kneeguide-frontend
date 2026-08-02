@@ -1,9 +1,7 @@
 /* Hero + Problem as one continuous animated scene: a single Beams canvas
    (PublicBackground, unmodified) absolutely positioned behind both
-   sections, with a layered treatment overlay — three separate layers,
-   never one flat gradient — doing the dark-cinematic-Hero to
-   warm-white-Problem color shift while the same animation keeps running
-   underneath, uninterrupted.
+   sections, with a layered treatment overlay doing the atmosphere shift
+   while the same animation keeps running underneath, uninterrupted.
 
    Stacking note: none of the elements below (or Hero's/Problem's own
    section roots) set an explicit z-index, and only .scene-beams-layer
@@ -11,9 +9,7 @@
    spec, positioned descendants with z-index either 0 or auto paint
    together in DOM order — so simply keeping the background layers first
    in markup and <Hero />/<Problem /> last is what guarantees the real
-   content always paints on top, with no z-index arithmetic needed (and
-   no risk of a positive z-index accidentally jumping a treatment layer
-   above the content, which is what an earlier draft of this got wrong). */
+   content always paints on top, with no z-index arithmetic needed. */
 
 .hero-problem-scene {
   position: relative;
@@ -32,9 +28,12 @@
   pointer-events: none;
 }
 
-/* Layer 1 — Hero's own cinematic vignette, moved here unchanged from the
-   old Hero.css, confined to exactly Hero's own height so it never bleeds
-   into Problem. */
+/* Layer 1 — Hero's own cinematic vignette, byte-identical to the old
+   Hero.css rule, confined to exactly Hero's own height. This is the
+   *only* treatment covering Hero — nothing else below is allowed to
+   overlap it, which is what keeps Hero's beams exactly as bright/sharp
+   as before instead of accumulating a second, redundant dark layer on
+   top (that stacking bug is what caused the "washed out" regression). */
 .scene-hero-vignette {
   position: absolute;
   top: 0;
@@ -46,35 +45,58 @@
     rgba(0, 0, 0, 0.25);
 }
 
-/* Layer 2 — the actual dark → warm-white dissolve, centered on the exact
-   Hero/Problem seam (Hero's height is a fixed calc(), a reliable anchor —
-   Problem's is only a min-height) with a 300px band split evenly either
-   side of it, inside the requested 220-360px range. Both ends stay
-   non-opaque (0.94 / 0.93 alpha, never solid black or solid white) so the
-   same moving beam pattern reads through at both extremes, just at very
-   different contrast — high in the Hero zone, barely-there in Problem's. */
-.scene-crossfade {
+/* Layer 2 — a flat continuation of that same dark atmosphere, starting
+   exactly where the vignette ends (never overlapping it) and running
+   through roughly Problem's first half. Its own bottom edge is feathered
+   (via mask-image, not a hard cutoff) so it hands off to Layer 3 below
+   without a seam of its own. Tuned to ~0.87 alpha to match the vignette's
+   own outer-edge darkness, so the Hero → Problem join is invisible. */
+.scene-dark-continuation {
   position: absolute;
-  inset: 0;
+  top: calc(100svh - 72px);
+  left: 0;
+  right: 0;
+  height: 58svh;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(4, 4, 5, 0.94) 0%,
-    rgba(4, 4, 5, 0.94) calc(100svh - 72px - 150px),
-    rgba(250, 248, 244, 0.93) calc(100svh - 72px + 150px),
-    rgba(250, 248, 244, 0.93) 100%
-  );
+  background: rgba(0, 0, 0, 0.87);
+  mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 92%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 92%);
 }
 
-/* Layer 3 — a soft blended highlight confined to the Problem zone only,
-   for depth rather than a flat wash. */
-.scene-problem-glow {
+/* Layer 3 — the actual atmosphere shift, and where the beams visually
+   invert rather than dim. A warm-white fill blended with
+   `mix-blend-mode: exclusion`: where the canvas underneath is near-black
+   (empty space between beams), exclusion against a near-white leaves the
+   result near-white; where the canvas is a bright beam, the same
+   operation flips it dark — so the beams don't fade away, they swap from
+   bright-on-black to soft-gray-on-warm-white, still clearly moving.
+   `opacity` is capped below 1 so the inversion never turns fully harsh
+   black/white, staying soft.
+
+   Its own mask is two off-center radial ellipses (asymmetric left/right,
+   not a mirror of each other) unioned with a slow, many-stop linear
+   trend — deliberately not a single gradient band. The union of a
+   soft-edged radial shape with an independent radial elsewhere never
+   produces one identifiable straight edge the eye can track, which a
+   lone linear gradient's start/end offsets always do to some degree.
+   Effectively inert for roughly Problem's first half (mask alpha ~0
+   there), so nothing changes while the user is still near the top of
+   Problem — the shift only develops deep into the section, well past
+   its midpoint, finishing softly by its bottom edge. */
+.scene-invert-lighten {
   position: absolute;
   top: calc(100svh - 72px);
   left: 0;
   right: 0;
   bottom: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255, 255, 255, 0.5), transparent 70%);
-  mix-blend-mode: soft-light;
+  background: #f9f4ea;
+  mix-blend-mode: exclusion;
+  opacity: 0.86;
+  mask-image: radial-gradient(ellipse 120% 65% at 28% 100%, black 0%, transparent 80%),
+    radial-gradient(ellipse 120% 65% at 74% 100%, black 0%, transparent 80%),
+    linear-gradient(to bottom, transparent 0%, transparent 46%, black 82%, black 100%);
+  -webkit-mask-image: radial-gradient(ellipse 120% 65% at 28% 100%, black 0%, transparent 80%),
+    radial-gradient(ellipse 120% 65% at 74% 100%, black 0%, transparent 80%),
+    linear-gradient(to bottom, transparent 0%, transparent 46%, black 82%, black 100%);
 }
