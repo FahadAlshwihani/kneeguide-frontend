@@ -770,5 +770,20 @@
       "romImprovementLabel": "ROM improvement",
       "romImprovementSub": "This month"
     }
+  },
+  "publicHeader": {
+    "nav": {
+      "home": "Home",
+      "platform": "Platform",
+      "technology": "Technology",
+      "aiAssistant": "AI Assistant",
+      "howItWorks": "How It Works",
+      "roadmap": "Roadmap",
+      "faq": "FAQ",
+      "contact": "Contact"
+    },
+    "login": "Login",
+    "languageSwitchLabel": "Switch language",
+    "languageSwitchTo": "AR"
   }
 }

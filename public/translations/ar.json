@@ -770,5 +770,20 @@
       "romImprovementLabel": "تحسّن مدى الحركة",
       "romImprovementSub": "هذا الشهر"
     }
+  },
+  "publicHeader": {
+    "nav": {
+      "home": "الرئيسية",
+      "platform": "المنصة",
+      "technology": "التقنيات",
+      "aiAssistant": "المساعد الذكي",
+      "howItWorks": "آلية العمل",
+      "roadmap": "خارطة الطريق",
+      "faq": "الأسئلة الشائعة",
+      "contact": "تواصل معنا"
+    },
+    "login": "تسجيل الدخول",
+    "languageSwitchLabel": "تغيير اللغة",
+    "languageSwitchTo": "EN"
   }
 }
