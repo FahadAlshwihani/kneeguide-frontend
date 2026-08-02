@@ -161,18 +161,19 @@ const SCALE_STEP = 0.04;
  * `previewMode` so they stay focusable/keyboard-accessible but perform no
  * real action.
  *
- * Card *count* is width-responsive (ultra-wide down to a single mobile
- * card) via `useViewportTier` — that's the ceiling. Below that, this
- * component fits what it's actually given: it measures `wrapRef` (the
- * fixed-height box the Hero handed it) against its own rendered height and,
- * if it doesn't fit, first shrinks its scale, then — only if still too
- * tall at the minimum scale — drops cards from the end of the (already
- * least-to-most-essential-ordered) pool. Every card that ends up on screen
- * is always shown whole; nothing is ever clipped mid-card.
+ * Card count is never bucketed by viewport width — this component measures
+ * `wrapRef` (the box the Hero handed it) against its own rendered height
+ * and fits however many cards actually belong there: it starts from the
+ * full pool and, if that overflows, first shrinks scale, then — only if
+ * still too tall at the minimum scale — drops cards from the end of the
+ * (already least-to-most-essential-ordered) pool. Every card that ends up
+ * on screen is always shown whole; nothing is ever clipped mid-card. The
+ * one deliberate exception is mobile (see `useIsMobile`), which always
+ * shows exactly one card by product decision, not by measurement.
  */
 const HeroDashboardPreview = ({ wrapRef }) => {
   const { t } = useTranslation();
-  const tier = useViewportTier();
+  const isMobile = useIsMobile();
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
 
@@ -180,25 +181,26 @@ const HeroDashboardPreview = ({ wrapRef }) => {
   // every resize) — no slider, no carousel, no autoplay.
   const [mobilePick] = useState(() => Math.floor(Math.random() * pool.length));
 
-  const candidates =
-    tier.name === "mobile" ? [pool[mobilePick]] : pool.slice(0, tier.cardCount);
+  const candidates = isMobile ? [pool[mobilePick]] : pool;
 
   const gridRef = useRef(null);
   const [visibleCount, setVisibleCount] = useState(candidates.length);
   const [scale, setScale] = useState(SCALE_MAX);
 
-  // A new width tier (or a fresh mobile pick) changes the candidate set —
-  // start over at full size/count and let the fit pass below trim it back
-  // down if the available height doesn't allow it.
+  // The candidate set itself changed (mobile toggled, or a fresh mobile
+  // pick) — start over at full size/count and let the fit pass below trim
+  // it back down if the available space doesn't allow it.
   useLayoutEffect(() => {
     setVisibleCount(candidates.length);
     setScale(SCALE_MAX);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tier.name, candidates.length]);
+  }, [isMobile, candidates.length]);
 
-  // When the box we've been given resizes (viewport height change), give
-  // the full candidate set another chance before re-measuring — it may
-  // now fit more (or less) than it did before.
+  // When the box we've been given resizes (viewport width or height
+  // change), give the full candidate set another chance before
+  // re-measuring — it may now fit more (or less) than it did before. This
+  // is the *only* thing that decides how many cards render on desktop/
+  // tablet — there is no width-bucketed count anywhere in this file.
   useLayoutEffect(() => {
     const wrap = wrapRef?.current;
     if (!wrap || typeof ResizeObserver === "undefined") return undefined;
@@ -242,19 +244,22 @@ const HeroDashboardPreview = ({ wrapRef }) => {
       className="hero-dashboard-preview-root"
       style={{ transform: `scale(${scale})` }}
     >
-      {visible.map((item, index) => (
-        <motion.div
-          key={item.id}
-          className={`hero-dashboard-preview-item hero-dashboard-preview-item--${item.size}`}
-          variants={cardEntrance}
-          initial="hidden"
-          animate="visible"
-          custom={index * 0.05}
-          whileHover={{ y: -4, transition: { duration: 0.2 } }}
-        >
-          {item.node}
-        </motion.div>
-      ))}
+      {visible.map((item, index) => {
+        const restY = overlapOffsetFor(item.id, index);
+        return (
+          <motion.div
+            key={item.id}
+            className={`hero-dashboard-preview-item hero-dashboard-preview-item--${item.size}`}
+            variants={cardEntrance}
+            initial="hidden"
+            animate="visible"
+            custom={{ delay: index * 0.05, restY }}
+            whileHover={{ y: restY - 4, transition: { duration: 0.2 } }}
+          >
+            {item.node}
+          </motion.div>
+        );
+      })}
     </div>
   );
 };

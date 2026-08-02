@@ -34,18 +34,25 @@
 
 /* React Bits' composition reads as: navbar, then a large breathing gap,
    then the copy block, then another large gap, then content emerging from
-   the bottom. Two flexible spacers (never a fixed margin) carry that
-   rhythm — they grow when there's room and shrink toward 0 first when the
-   viewport is short, so the 100svh fit never breaks. The bottom spacer is
-   weighted slightly larger, matching the demo's especially generous gap
-   right before its screenshot emerges. */
+   the bottom. Two flexible spacers (never a fixed margin, never a top
+   padding) carry that rhythm — they grow when there's room and shrink
+   toward 0 first when the viewport is short, so the 100svh fit never
+   breaks. The top spacer is weighted larger than the bottom one: it's the
+   whole lever for how far the copy block sits from the navbar, and giving
+   it the bigger share is what settles the copy's visual center a little
+   below the Hero's true vertical middle instead of hugging the top —
+   Apple/Stripe/Linear read exactly this way. */
 .hero-spacer {
   flex: 1 1 0;
   min-height: 0;
 }
 
+.hero-spacer-top {
+  flex-grow: 1.35;
+}
+
 .hero-spacer-bottom {
-  flex-grow: 1.3;
+  flex-grow: 1;
 }
 
 .hero-content {
