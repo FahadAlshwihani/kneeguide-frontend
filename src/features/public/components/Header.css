@@ -1,47 +1,105 @@
 /* Uses global design tokens from src/index.css.
 
-   Full visual rebuild, React Bits' CardNav as the reference language —
-   the header reads as one floating glass card. Nothing here is CardNav's
-   own JSX/CSS: it's this header's existing routing/state/mobile-toggle
-   logic (Header.jsx is otherwise untouched), restyled and, for the
-   desktop layout only, given three real grid zones instead of a
-   two-group flex row so the nav links can be truly centered.
+   Navigation philosophy rebuilt from scratch, React Bits' CardNav as the
+   interaction reference: a single floating card that expands in place to
+   reveal a grid of content cards, instead of a conventional link bar.
+   This is a from-scratch implementation of that same interaction (see
+   Header.jsx for the GSAP timeline, written independently) — no CardNav
+   CSS was copied, though the underlying technique for a smooth
+   auto-height reveal is the same for any implementation of this pattern:
+   the top bar is `position: absolute` so the nav's own `height` (GSAP-
+   driven, not CSS `height: auto`) can animate independently of it, and
+   the content panel stays permanently in the DOM at `visibility: hidden`
+   rather than being mounted/unmounted, so its height is always
+   measurable and its own reveal (opacity/y, staggered per card) can run
+   alongside the nav's height tween.
 
-   `.header-root` stays `position: sticky` — unchanged positioning
-   behavior, so Hero.css's `calc(100svh - 72px)` doesn't need to change
-   for this. The floating-card look comes from `.header-root`'s top
-   padding around a separately bordered/rounded/shadowed `.header-nav`,
-   not from detaching it out of flow. */
+   `.header-root` stays `position: sticky` and the collapsed nav height
+   (64px) plus its wrapper padding keeps the total close to Hero.css's
+   `calc(100svh - 72px)` assumption, so nothing there needs to change. */
 
 .header-root {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  padding: 14px 20px 0;
+  padding: 12px 20px 0;
 }
 
 .header-nav {
   position: relative;
   max-width: var(--container-width);
   margin: 0 auto;
-  padding: 12px 24px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 20px;
+  height: 64px;
+  overflow: hidden;
   background: var(--glass-bg);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  will-change: height;
 }
 
-.header-logo-wrap {
-  justify-self: start;
+/* Absolutely positioned so it never reflows as `.header-nav`'s own height
+   is tweened — same reasoning CardNav uses for its top bar, and true of
+   any GSAP height-tween implementation of this pattern. */
+.header-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px 0 10px;
+  z-index: 2;
 }
 
+.header-menu-toggle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.header-menu-toggle:hover .header-menu-toggle-line {
+  opacity: 0.75;
+}
+
+.header-menu-toggle-line {
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-heading);
+  transition: transform 250ms ease, opacity 200ms ease, margin 250ms ease;
+  transform-origin: 50% 50%;
+}
+
+.header-menu-toggle.open .header-menu-toggle-line:first-child {
+  transform: translateY(4px) rotate(45deg);
+}
+
+.header-menu-toggle.open .header-menu-toggle-line:last-child {
+  transform: translateY(-4px) rotate(-45deg);
+}
+
+/* Centered against the whole bar, like CardNav's logo — the hamburger and
+   actions group are pinned to the two ends via absolute positioning, not
+   flex, so the logo's own centering never has to account for their
+   widths. */
 .header-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -63,46 +121,13 @@
   font-weight: 700;
 }
 
-/* Desktop only: dissolves into its two children (.header-links,
-   .header-actions), which then become direct grid items of `.header-nav`
-   — the actual mechanism behind the balanced 3-zone layout (logo / links
-   / actions), each its own column, none dependent on the other's width.
-   `justify-content: space-between` alone can't do this: it only balances
-   two things around the *remaining* space next to the logo, not around
-   the bar's true center. Reverts to a normal block below 768px, where it
-   becomes the single mobile dropdown panel instead (see media query). */
-.header-mobile-panel {
-  display: contents;
-}
-
-.header-links {
-  justify-self: center;
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
-
-.header-link {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.65);
-  white-space: nowrap;
-  transition: color 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.header-link:hover {
-  color: var(--color-heading);
-}
-
 .header-actions {
-  justify-self: end;
+  margin-inline-start: auto;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
-/* Styled to read as another nav action (same font weight/size/hover
-   family as .header-link), not a form control. */
 .header-lang-toggle {
   display: inline-flex;
   align-items: center;
@@ -128,28 +153,79 @@
   height: 16px;
 }
 
-/* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css)
-   — this class only exists here for the mobile layout tweak below. */
+/* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css). */
 
-.header-menu-toggle {
-  display: none;
+/* The expanding content: always in the DOM (never conditionally mounted)
+   so its height is measurable and GSAP can animate it — hidden via
+   visibility/pointer-events, not display, exactly so that measurement
+   keeps working while it's closed. */
+.header-menu-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 64px;
+  padding: 8px 14px 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.header-nav-expanded .header-menu-panel {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.header-menu-card {
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 8px;
-  background: none;
-  border: none;
-  transition: opacity 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  gap: 8px;
+  min-height: 128px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  user-select: none;
 }
 
-.header-menu-toggle:hover {
-  opacity: 0.75;
+.header-menu-card:nth-child(even) {
+  background: rgba(255, 255, 255, 0.07);
 }
 
-.header-menu-toggle span {
-  width: 20px;
-  height: 2px;
-  background: var(--color-heading);
-  border-radius: 2px;
+.header-menu-card-label {
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  color: var(--color-heading);
+}
+
+.header-menu-card-links {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-menu-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: color 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.header-menu-card-link:hover {
+  color: var(--color-heading);
+}
+
+.header-menu-card-link svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
@@ -157,65 +233,16 @@
     padding: 10px 16px 0;
   }
 
-  .header-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
+  .header-top {
+    padding: 0 8px;
   }
 
-  .header-menu-toggle {
-    display: flex;
+  .header-menu-panel {
+    grid-template-columns: 1fr;
+    padding: 8px 12px 12px;
   }
 
-  .header-mobile-panel {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 16px;
-    right: 16px;
-    margin-top: 8px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-    padding: 12px 20px 16px;
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  }
-
-  .header-mobile-panel.header-links-open {
-    display: flex;
-  }
-
-  .header-links {
-    justify-self: auto;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .header-link {
-    width: 100%;
-    padding: 10px 0;
-  }
-
-  .header-actions {
-    justify-self: auto;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    margin-top: 8px;
-  }
-
-  .header-lang-toggle {
-    padding: 8px 0;
-  }
-
-  .header-cta {
-    width: 100%;
+  .header-menu-card {
+    min-height: 0;
   }
 }

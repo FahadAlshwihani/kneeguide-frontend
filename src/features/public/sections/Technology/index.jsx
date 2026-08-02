@@ -28,7 +28,7 @@ const TECH = [
 
 const Technology = () => {
   return (
-    <section className="tech-root">
+    <section className="tech-root" id="technology">
       <div className="tech-container">
         <Reveal className="tech-header">
           <span className="tech-badge">Built On</span>

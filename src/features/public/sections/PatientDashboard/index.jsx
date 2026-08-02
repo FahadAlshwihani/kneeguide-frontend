@@ -17,7 +17,7 @@ const CHECKLIST = [
 
 const PatientDashboard = () => {
   return (
-    <section className="patient-preview-root">
+    <section className="patient-preview-root" id="patient-portal">
       <div className="patient-preview-container">
         <Reveal as="div" className="patient-preview-mock">
           <div className="patient-preview-mock-card">

@@ -11,7 +11,7 @@ const POINTS = [
 
 const DoctorDashboard = () => {
   return (
-    <section className="doctor-preview-root">
+    <section className="doctor-preview-root" id="doctor-dashboard">
       <div className="doctor-preview-container">
         <Reveal className="doctor-preview-copy">
           <span className="doctor-preview-badge">For Clinicians</span>

@@ -772,18 +772,60 @@
     }
   },
   "publicHeader": {
-    "nav": {
-      "home": "Home",
-      "platform": "Platform",
-      "technology": "Technology",
-      "aiAssistant": "AI Assistant",
-      "howItWorks": "How It Works",
-      "roadmap": "Roadmap",
-      "faq": "FAQ",
-      "contact": "Contact"
-    },
+    "menuToggleOpen": "Open menu",
+    "menuToggleClose": "Close menu",
     "login": "Login",
     "languageSwitchLabel": "Switch language",
-    "languageSwitchTo": "AR"
+    "languageSwitchTo": "AR",
+    "menu": {
+      "platform": {
+        "title": "Platform",
+        "links": {
+          "overview": "Overview",
+          "patientPortal": "Patient Portal",
+          "doctorDashboard": "Doctor Dashboard"
+        }
+      },
+      "technology": {
+        "title": "Technology",
+        "links": {
+          "motionTracking": "Motion Tracking",
+          "wearableIntegration": "Wearable Integration",
+          "security": "Security"
+        }
+      },
+      "aiAssistant": {
+        "title": "AI Assistant",
+        "links": {
+          "smartAnalysis": "Smart Analysis",
+          "exerciseRecommendations": "Exercise Recommendations",
+          "progressReports": "Progress Reports"
+        }
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "links": {
+          "patientJourney": "Patient Journey",
+          "doctorWorkflow": "Doctor Workflow",
+          "rehabilitationProcess": "Rehabilitation Process"
+        }
+      },
+      "roadmap": {
+        "title": "Roadmap",
+        "links": {
+          "currentVersion": "Current Version",
+          "upcomingFeatures": "Upcoming Features",
+          "futureVision": "Future Vision"
+        }
+      },
+      "contact": {
+        "title": "Contact",
+        "links": {
+          "contactUs": "Contact Us",
+          "documentation": "Documentation",
+          "support": "Support"
+        }
+      }
+    }
   }
 }

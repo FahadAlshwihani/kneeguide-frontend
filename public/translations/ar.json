@@ -772,18 +772,60 @@
     }
   },
   "publicHeader": {
-    "nav": {
-      "home": "الرئيسية",
-      "platform": "المنصة",
-      "technology": "التقنيات",
-      "aiAssistant": "المساعد الذكي",
-      "howItWorks": "آلية العمل",
-      "roadmap": "خارطة الطريق",
-      "faq": "الأسئلة الشائعة",
-      "contact": "تواصل معنا"
-    },
+    "menuToggleOpen": "فتح القائمة",
+    "menuToggleClose": "إغلاق القائمة",
     "login": "تسجيل الدخول",
     "languageSwitchLabel": "تغيير اللغة",
-    "languageSwitchTo": "EN"
+    "languageSwitchTo": "EN",
+    "menu": {
+      "platform": {
+        "title": "المنصة",
+        "links": {
+          "overview": "نظرة عامة",
+          "patientPortal": "بوابة المريض",
+          "doctorDashboard": "لوحة تحكم الطبيب"
+        }
+      },
+      "technology": {
+        "title": "التقنيات",
+        "links": {
+          "motionTracking": "تتبع الحركة",
+          "wearableIntegration": "دمج الأجهزة القابلة للارتداء",
+          "security": "الأمان"
+        }
+      },
+      "aiAssistant": {
+        "title": "المساعد الذكي",
+        "links": {
+          "smartAnalysis": "تحليل ذكي",
+          "exerciseRecommendations": "توصيات التمارين",
+          "progressReports": "تقارير التقدم"
+        }
+      },
+      "howItWorks": {
+        "title": "آلية العمل",
+        "links": {
+          "patientJourney": "رحلة المريض",
+          "doctorWorkflow": "سير عمل الطبيب",
+          "rehabilitationProcess": "عملية إعادة التأهيل"
+        }
+      },
+      "roadmap": {
+        "title": "خارطة الطريق",
+        "links": {
+          "currentVersion": "الإصدار الحالي",
+          "upcomingFeatures": "ميزات قادمة",
+          "futureVision": "الرؤية المستقبلية"
+        }
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "links": {
+          "contactUs": "اتصل بنا",
+          "documentation": "التوثيق",
+          "support": "الدعم"
+        }
+      }
+    }
   }
 }
