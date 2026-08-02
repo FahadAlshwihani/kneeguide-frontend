@@ -71,17 +71,16 @@
   font-size: 1rem;
 }
 
-/* Part of the typography, not a standalone icon: larger and thinner than
-   a default icon, sitting slightly above the text's baseline (superscript
-   feel) rather than vertically centered. No transition of its own — it
-   uses `currentColor` (see PrimaryButton.jsx), so it fades white-to-black
-   for free as part of the button's own `color` transition above, and
-   never animates independently. */
+/* A literal character (↗), not an icon — it's a plain flex/text sibling
+   of the label, so the row's own `align-items: center` (above) aligns it
+   with the label naturally. No margin/align-self/transform-based vertical
+   offset: only font-size and font-weight distinguish it as typography
+   rather than a small standalone element. Inherits `color`, so it fades
+   white-to-black for free as part of the button's own transition above. */
 .ui-primary-btn-icon {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  margin-top: -0.2em;
+  font-size: 1.4em;
+  font-weight: 800;
+  line-height: 1;
 }
 
 /* RTL: mirror the glyph (↗ becomes ↖), a static flip — resolves

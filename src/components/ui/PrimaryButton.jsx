@@ -1,7 +1,11 @@
 import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
-import { LuArrowUpRight } from "react-icons/lu";
 import "./PrimaryButton.css";
+
+// A literal typographic character, not an SVG/icon — it sits in normal
+// text flow so it shares the label's baseline/vertical center for free,
+// with no manual offset. CSS mirrors it for RTL (see PrimaryButton.css).
+const ARROW = "↗"; // ↗
 
 /**
  * The public marketing site's only primary button — a near-square
@@ -16,11 +20,12 @@ import "./PrimaryButton.css";
  * as a `<button>` regardless of `to`/`href`, since a disabled link isn't a
  * real HTML concept.
  *
- * Shows a diagonal arrow (Lucide ArrowUpRight) by default — pass
+ * Shows a diagonal arrow character (↗, not an icon) by default — pass
  * `showArrow={false}` to omit it, or `icon`/`iconPosition` for a custom
- * one instead. The arrow's RTL mirroring (a static flip, not animated) is
- * handled entirely in PrimaryButton.css via the ancestor `dir`, not here;
- * its color rides the button's own color transition via `currentColor`.
+ * one instead. As plain text it sits in normal flow beside the label, so
+ * it needs no manual vertical alignment. The arrow's RTL mirroring (a
+ * static flip, not animated) is handled entirely in PrimaryButton.css via
+ * the ancestor `dir`, not here.
  */
 const PrimaryButton = forwardRef(
   (
@@ -42,12 +47,7 @@ const PrimaryButton = forwardRef(
     ref
   ) => {
     const isInert = disabled || loading;
-    // Larger than the label text but thinner-stroked than the icon default
-    // (18/2), so it reads as an oversized character in the word rather
-    // than a standalone icon; uses `currentColor` (react-icons/lu
-    // default), so it fades with the label's own color transition instead
-    // of animating on its own.
-    const resolvedIcon = icon ?? (showArrow ? <LuArrowUpRight size="1.15em" strokeWidth={1.5} /> : null);
+    const resolvedIcon = icon ?? (showArrow ? ARROW : null);
 
     const classes = [
       "ui-primary-btn",
