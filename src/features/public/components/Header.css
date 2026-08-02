@@ -230,35 +230,18 @@
 }
 
 .header-menu-card--platform {
-  background: #0a1424;
-  border: 1px solid rgba(96, 140, 190, 0.2);
+  background: #0a2540;
+  border: 1px solid rgba(96, 150, 210, 0.22);
 }
 
 .header-menu-card--technology {
-  background: #17181b;
-  border: 1px solid rgba(150, 160, 170, 0.14);
+  background: #2a1f4f;
+  border: 1px solid rgba(150, 130, 220, 0.22);
 }
 
-/* The one bright card, deliberately — near-white instead of another dark
-   tint, for contrast against the other two. Text/links/arrow all flip to
-   dark since they'd be unreadable on a light background otherwise; the
-   arrow needs no rule of its own, it inherits the link's `color` via
-   `currentColor` the same way it does on the dark cards. */
 .header-menu-card--company {
-  background: #f1efe9;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.header-menu-card--company .header-menu-card-label {
-  color: #14161a;
-}
-
-.header-menu-card--company .header-menu-card-link {
-  color: rgba(20, 22, 26, 0.65);
-}
-
-.header-menu-card--company .header-menu-card-link:hover {
-  color: #14161a;
+  background: #123c3a;
+  border: 1px solid rgba(90, 190, 175, 0.22);
 }
 
 .header-menu-card-label {

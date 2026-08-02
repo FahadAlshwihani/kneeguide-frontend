@@ -73,11 +73,26 @@ const Header = () => {
 
   // Lock page scroll behind the fullscreen overlay while the menu is open;
   // restore it the moment it isn't (covers both the close-button path and
-  // any future unmount).
+  // any future unmount). `overflow: hidden` alone removes the scrollbar,
+  // which widens the viewport by the scrollbar's own width and shifts
+  // everything horizontally — measuring that width *before* hiding it and
+  // adding it back as `padding-right` keeps the content area's width (and
+  // therefore every centered/full-width element in it) identical on both
+  // sides of the toggle. On platforms with an overlay scrollbar (no
+  // layout width), this measures to 0 and the padding is a no-op.
   useEffect(() => {
-    document.body.style.overflow = panelExpanded ? "hidden" : "";
+    if (panelExpanded) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : "";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    }
+
     return () => {
       document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     };
   }, [panelExpanded]);
 
