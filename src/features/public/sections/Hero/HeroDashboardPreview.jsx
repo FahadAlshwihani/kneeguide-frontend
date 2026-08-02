@@ -1,7 +1,18 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
-import { FaUsers, FaCalendarCheck, FaFileLines, FaTriangleExclamation, FaListCheck } from "react-icons/fa6";
+import {
+  FaUsers,
+  FaCalendarCheck,
+  FaFileLines,
+  FaTriangleExclamation,
+  FaListCheck,
+  FaComments,
+  FaNoteSticky,
+  FaClipboardCheck,
+  FaStopwatch,
+  FaArrowTrendUp,
+} from "react-icons/fa6";
 
 import MetricCard from "../../../dashboard/shared/components/MetricCard";
 import ProgressCard from "../../../dashboard/shared/components/ProgressCard";
@@ -150,6 +161,52 @@ const buildPool = (data) => [
       />
     ),
   },
+  {
+    id: "doctor-messages",
+    size: "sm",
+    node: (
+      <MetricCard icon={FaComments} value={data.doctor.messages.value} label={data.doctor.messages.label} />
+    ),
+  },
+  {
+    id: "doctor-notes",
+    size: "sm",
+    node: <MetricCard icon={FaNoteSticky} value={data.doctor.notes.value} label={data.doctor.notes.label} />,
+  },
+  {
+    id: "patient-session-completion",
+    size: "sm",
+    node: (
+      <MetricCard
+        icon={FaClipboardCheck}
+        value={data.patient.sessionCompletion.value}
+        label={data.patient.sessionCompletion.label}
+      />
+    ),
+  },
+  {
+    id: "patient-avg-exercise-time",
+    size: "sm",
+    node: (
+      <MetricCard
+        icon={FaStopwatch}
+        value={data.patient.avgExerciseTime.value}
+        label={data.patient.avgExerciseTime.label}
+      />
+    ),
+  },
+  {
+    id: "patient-rom-improvement",
+    size: "sm",
+    node: (
+      <MetricCard
+        icon={FaArrowTrendUp}
+        value={data.patient.romImprovement.value}
+        label={data.patient.romImprovement.label}
+        status="success"
+      />
+    ),
+  },
 ];
 
 const SCALE_MAX = 0.83;
@@ -217,10 +274,20 @@ const HeroDashboardPreview = ({ wrapRef }) => {
   }, [candidates.length]);
 
   // Runs after every render (no deps): measures the current render against
-  // the available box and, if it overflows, nudges scale down a step, or —
-  // once at the scale floor — drops the least-essential visible card. Each
-  // nudge causes a re-render, which runs this effect again, converging
-  // before the browser ever paints the intermediate (overflowing) frame.
+  // the available box. Two passes, both strictly monotonic (only ever
+  // trim, never grow, within this effect) so there's no risk of a
+  // grow/shrink render loop that never settles:
+  //
+  //   1. Overflow: nudges scale down a step, or — once at the scale floor
+  //      — drops the least-essential visible card.
+  //   2. Once height fits: checks whether the last row is a sparse,
+  //      mostly-empty remainder (the "gap on the right" a rigid card-count
+  //      leaves behind) rather than a reasonably full row, and trims down
+  //      to the last complete row so the composition never ends in a
+  //      dangling, half-empty row. Never trims below one full row.
+  //
+  // Each trim causes a re-render, which runs this effect again, converging
+  // before the browser ever paints an intermediate frame.
   useLayoutEffect(() => {
     const wrap = wrapRef?.current;
     const grid = gridRef.current;
@@ -230,11 +297,27 @@ const HeroDashboardPreview = ({ wrapRef }) => {
     if (available <= 0) return;
 
     const needed = grid.getBoundingClientRect().height;
-    if (needed <= available + 0.5) return;
+    if (needed > available + 0.5) {
+      if (scale > SCALE_MIN + 0.001) {
+        setScale((s) => Math.max(SCALE_MIN, +(s - SCALE_STEP).toFixed(2)));
+      } else if (visibleCount > 1) {
+        setVisibleCount((c) => c - 1);
+      }
+      return;
+    }
 
-    if (scale > SCALE_MIN + 0.001) {
-      setScale((s) => Math.max(SCALE_MIN, +(s - SCALE_STEP).toFixed(2)));
-    } else if (visibleCount > 1) {
+    if (visibleCount <= 1) return;
+    const columnCount = window
+      .getComputedStyle(grid)
+      .gridTemplateColumns.split(" ")
+      .filter(Boolean).length;
+    if (columnCount <= 1) return;
+
+    const shown = candidates.slice(0, visibleCount);
+    const totalSpan = shown.reduce((sum, item) => sum + (item.size === "lg" ? 2 : 1), 0);
+    const remainder = totalSpan % columnCount;
+    const rowIsMostlyEmpty = remainder !== 0 && remainder < columnCount / 2;
+    if (rowIsMostlyEmpty && visibleCount - 1 >= columnCount) {
       setVisibleCount((c) => c - 1);
     }
   });
@@ -253,6 +336,7 @@ const HeroDashboardPreview = ({ wrapRef }) => {
           <motion.div
             key={item.id}
             className={`hero-dashboard-preview-item hero-dashboard-preview-item--${item.size}`}
+            style={{ zIndex: restY === 0 ? 1 : 2 }}
             variants={cardEntrance}
             initial="hidden"
             animate="visible"

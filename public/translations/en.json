@@ -758,7 +758,17 @@
       "appointmentTime": "3:30 PM",
       "todayAppointmentsLabel": "Today's Appointments",
       "newReportsLabel": "New Reports",
-      "exercisesAssignedLabel": "Exercises Assigned Today"
+      "exercisesAssignedLabel": "Exercises Assigned Today",
+      "messagesLabel": "Messages",
+      "messagesSub": "Unread messages",
+      "notesLabel": "Notes",
+      "notesSub": "Recent notes",
+      "sessionCompletionLabel": "Session completion",
+      "sessionCompletionSub": "This week",
+      "avgExerciseTimeLabel": "Avg. exercise time",
+      "avgExerciseTimeSub": "This week",
+      "romImprovementLabel": "ROM improvement",
+      "romImprovementSub": "This month"
     }
   }
 }

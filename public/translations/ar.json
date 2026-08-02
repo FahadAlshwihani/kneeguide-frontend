@@ -758,7 +758,17 @@
       "appointmentTime": "3:30 م",
       "todayAppointmentsLabel": "مواعيد اليوم",
       "newReportsLabel": "تقارير جديدة",
-      "exercisesAssignedLabel": "التمارين المخصصة اليوم"
+      "exercisesAssignedLabel": "التمارين المخصصة اليوم",
+      "messagesLabel": "الرسائل",
+      "messagesSub": "رسائل غير مقروءة",
+      "notesLabel": "الملاحظات",
+      "notesSub": "ملاحظات حديثة",
+      "sessionCompletionLabel": "نسبة إتمام الجلسات",
+      "sessionCompletionSub": "هذا الأسبوع",
+      "avgExerciseTimeLabel": "متوسط وقت التمرين",
+      "avgExerciseTimeSub": "هذا الأسبوع",
+      "romImprovementLabel": "تحسّن مدى الحركة",
+      "romImprovementSub": "هذا الشهر"
     }
   }
 }

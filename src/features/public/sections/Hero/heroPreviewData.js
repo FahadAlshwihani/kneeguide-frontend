@@ -46,12 +46,37 @@ export const getHeroPreviewData = (t) => {
         label: p("alertLabel"),
         sub: p("alertSub"),
       },
+      messages: {
+        value: 3,
+        label: p("messagesLabel"),
+        sub: p("messagesSub"),
+      },
+      notes: {
+        value: 5,
+        label: p("notesLabel"),
+        sub: p("notesSub"),
+      },
     },
     patient: {
       badge: p("patientBadge"),
       exercisesAssigned: {
         value: 3,
         label: p("exercisesAssignedLabel"),
+      },
+      sessionCompletion: {
+        value: "84%",
+        label: p("sessionCompletionLabel"),
+        sub: p("sessionCompletionSub"),
+      },
+      avgExerciseTime: {
+        value: "28m",
+        label: p("avgExerciseTimeLabel"),
+        sub: p("avgExerciseTimeSub"),
+      },
+      romImprovement: {
+        value: "+12%",
+        label: p("romImprovementLabel"),
+        sub: p("romImprovementSub"),
       },
       exercise: {
         name: p("exerciseName"),
