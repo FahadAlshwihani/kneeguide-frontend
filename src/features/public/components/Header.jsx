@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../utils/routes";
+import SecondaryButton from "../../../components/ui/SecondaryButton";
 import "./Header.css";
 
 const NAV_LINKS = [
@@ -41,9 +42,9 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
-          <Link className="header-cta" to={ROUTES.LOGIN}>
+          <SecondaryButton to={ROUTES.LOGIN} size="sm" className="header-cta">
             Login
-          </Link>
+          </SecondaryButton>
         </div>
       </nav>
     </header>

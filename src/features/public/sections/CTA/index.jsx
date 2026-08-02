@@ -16,12 +16,12 @@ const CTA = () => {
             every day of recovery count.
           </p>
           <div className="cta-actions">
-            <Link to={ROUTES.REGISTER} className="cta-btn-primary">
+            <PrimaryButton to={ROUTES.REGISTER} size="lg">
               Start Your Recovery
-            </Link>
-            <Link to={ROUTES.LOGIN} className="cta-btn-secondary">
+            </PrimaryButton>
+            <SecondaryButton to={ROUTES.LOGIN} size="lg">
               I&apos;m a Clinician
-            </Link>
+            </SecondaryButton>
           </div>
         </Reveal>
       </div>

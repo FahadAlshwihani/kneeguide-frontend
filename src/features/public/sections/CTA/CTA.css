@@ -41,6 +41,9 @@
   max-width: 52ch;
 }
 
+/* Button styling itself lives in components/ui/PrimaryButton.css and
+   SecondaryButton.css (the public site's shared button design system) —
+   this only lays out the pair of them side by side. */
 .cta-actions {
   display: flex;
   align-items: center;
@@ -48,33 +51,4 @@
   justify-content: center;
   gap: 14px;
   margin-top: 8px;
-}
-
-.cta-btn-primary,
-.cta-btn-secondary {
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 13px 28px;
-  border-radius: 999px;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.cta-btn-primary {
-  color: var(--color-primary);
-  background: #ffffff;
-}
-
-.cta-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.cta-btn-secondary {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-.cta-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.22);
 }
