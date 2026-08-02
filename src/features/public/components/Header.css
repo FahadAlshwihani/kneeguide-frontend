@@ -1,26 +1,51 @@
-/* Uses global design tokens from src/index.css */
+/* Uses global design tokens from src/index.css.
+
+   Visual language only, borrowed from React Bits' CardNav — floating,
+   glass, generously rounded, softly shadowed — reimplemented from scratch
+   for this header's own existing structure/routing/state. Nothing here
+   copies CardNav's JSX, its hamburger-to-cards expand logic, or its API;
+   it's the same three building blocks this header already had (root,
+   nav, links) restyled to read as the same design family. `.header-root`
+   stays `position: sticky` (unchanged from before) so it still reserves
+   its own space in normal flow — Hero.css's `calc(100svh - 72px)` keeps
+   working without needing to change anything outside this file. The
+   "floating pill" look comes from `.header-root`'s top padding around a
+   bordered/rounded/shadowed `.header-nav`, not from detaching it out of
+   flow. */
 
 .header-root {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--color-border);
+  padding: 12px 20px 0;
 }
 
 .header-nav {
+  position: relative;
   max-width: var(--container-width);
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+/* Centered like CardNav's logo — absolutely positioned against the nav's
+   own box so it stays dead-center regardless of how much the link/CTA
+   group on the right ends up weighing. Reverts to normal left-aligned
+   flow on mobile (see media query) where there's no room for a 3-zone
+   layout, matching CardNav's own mobile behavior. */
 .header-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -30,19 +55,23 @@
 }
 
 .header-logo-mark {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
   background: var(--gradient-brand);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
 }
 
+/* Pushed to the far right regardless of how many other flex children are
+   visible (the logo is out of flow, and the hamburger only shows on
+   mobile), instead of relying on `justify-content: space-between`. */
 .header-links {
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 28px;
@@ -51,12 +80,12 @@
 .header-link {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--color-text);
-  transition: color var(--transition-fast);
+  color: rgba(255, 255, 255, 0.65);
+  transition: color 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .header-link:hover {
-  color: var(--color-primary);
+  color: var(--color-heading);
 }
 
 /* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css)
@@ -69,31 +98,58 @@
   padding: 8px;
   background: none;
   border: none;
+  transition: opacity 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.header-menu-toggle:hover {
+  opacity: 0.75;
 }
 
 .header-menu-toggle span {
-  width: 22px;
+  width: 20px;
   height: 2px;
   background: var(--color-heading);
   border-radius: 2px;
 }
 
 @media (max-width: 768px) {
+  .header-root {
+    padding: 10px 16px 0;
+  }
+
+  .header-nav {
+    padding: 10px 16px;
+  }
+
   .header-menu-toggle {
     display: flex;
+  }
+
+  /* Reverts to normal flow, left-aligned next to the hamburger — matches
+     CardNav's own mobile behavior of un-centering the logo once there's
+     no room for a 3-zone layout. */
+  .header-logo {
+    position: static;
+    transform: none;
   }
 
   .header-links {
     position: absolute;
     top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
+    left: 16px;
+    right: 16px;
+    margin-left: 0;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    margin-top: 8px;
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
-    padding: 12px 24px 20px;
+    padding: 12px 20px 16px;
     display: none;
   }
 
