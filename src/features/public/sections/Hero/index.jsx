@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "../../../../utils/routes";
-import PublicBackground from "../../../../components/public/backgrounds/PublicBackground";
 import PrimaryButton from "../../../../components/ui/PrimaryButton";
 import SecondaryButton from "../../../../components/ui/SecondaryButton";
 import HeroDashboardPreview from "./HeroDashboardPreview";
@@ -23,9 +22,6 @@ const Hero = () => {
 
   return (
     <section className="hero-root">
-      <PublicBackground />
-      <div className="hero-vignette" aria-hidden="true" />
-
       <div className="hero-container">
         <div className="hero-spacer hero-spacer-top" aria-hidden="true" />
 
