@@ -116,16 +116,21 @@
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
+/* Monochrome, not the dashboard's blue gradient — this button sits on the
+   Beams canvas, not on a light app surface, so it reads as a solid white
+   pill (subtle top-to-bottom fade for a bit of material depth) rather than
+   a brand-colored one. Login stays secondary/outlined beside it. */
 .hero-btn-primary {
-  color: #ffffff;
-  background: var(--gradient-brand);
-  border: none;
-  box-shadow: var(--shadow-md);
+  color: #14181f;
+  background: linear-gradient(180deg, #ffffff 0%, #e3e7ed 100%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .hero-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  background: linear-gradient(180deg, #ffffff 0%, #d5dae2 100%);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .hero-btn-secondary {
@@ -140,7 +145,7 @@
 }
 
 /* Dashboard preview: takes whatever room is left below the copy once the
-   two spacers above have claimed their share (their 1 : 1.3 ratio to each
+   two spacers above have claimed their share (their 1.35 : 1 ratio to each
    other — the actual spacing hierarchy — is untouched; this just joins
    them as a third flexible claimant so the preview gets real space instead
    of a fixed clamp()). That final, measured height is what
