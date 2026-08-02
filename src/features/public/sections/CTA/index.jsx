@@ -1,7 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { ROUTES } from "../../../../utils/routes";
 import Reveal from "../../components/Reveal";
+import PrimaryButton from "../../../../components/ui/PrimaryButton";
+import SecondaryButton from "../../../../components/ui/SecondaryButton";
 import "./CTA.css";
 
 const CTA = () => {

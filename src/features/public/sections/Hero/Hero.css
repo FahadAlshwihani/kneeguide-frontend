@@ -93,6 +93,9 @@
   max-width: 56ch;
 }
 
+/* Button styling itself lives in components/ui/PrimaryButton.css and
+   SecondaryButton.css (the public site's shared button design system) —
+   this only lays out the pair of them side by side. */
 .hero-actions {
   display: flex;
   align-items: center;
@@ -100,48 +103,6 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: clamp(4px, 0.8svh, 10px);
-}
-
-.hero-btn-primary,
-.hero-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: inherit;
-  font-size: clamp(0.82rem, 1.4svh, 0.95rem);
-  font-weight: 600;
-  padding: clamp(8px, 1.4svh, 13px) clamp(18px, 2.4vw, 28px);
-  border-radius: 999px;
-  cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
-}
-
-/* Monochrome, not the dashboard's blue gradient — this button sits on the
-   Beams canvas, not on a light app surface, so it reads as a solid white
-   pill (subtle top-to-bottom fade for a bit of material depth) rather than
-   a brand-colored one. Login stays secondary/outlined beside it. */
-.hero-btn-primary {
-  color: #14181f;
-  background: linear-gradient(180deg, #ffffff 0%, #e3e7ed 100%);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-
-.hero-btn-primary:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(180deg, #ffffff 0%, #d5dae2 100%);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-
-.hero-btn-secondary {
-  color: var(--color-heading);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-}
-
-.hero-btn-secondary:hover {
-  border-color: var(--color-primary-hover);
-  color: var(--color-primary-hover);
 }
 
 /* Dashboard preview: takes whatever room is left below the copy once the
