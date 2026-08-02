@@ -1,26 +1,34 @@
-/* Hero + Problem as one continuous animated scene: a single Beams canvas
-   (PublicBackground, unmodified) absolutely positioned behind both
-   sections, with a layered treatment overlay doing the atmosphere shift
-   while the same animation keeps running underneath, uninterrupted.
+/* Hero + Problem + Solution as one continuous animated scene: a single
+   Beams canvas (PublicBackground, unmodified) absolutely positioned
+   behind all three sections, with a layered treatment overlay doing the
+   atmosphere journey while the same animation keeps running underneath,
+   uninterrupted, start to finish.
 
-   Stacking note: none of the elements below (or Hero's/Problem's own
-   section roots) set an explicit z-index, and only .scene-beams-layer
-   and the treatment divs use `position: absolute`. Per the CSS stacking
-   spec, positioned descendants with z-index either 0 or auto paint
-   together in DOM order — so simply keeping the background layers first
-   in markup and <Hero />/<Problem /> last is what guarantees the real
-   content always paints on top, with no z-index arithmetic needed. */
+   Stacking note: none of the elements below (or Hero's/Problem's/
+   Solution's own section roots) set an explicit z-index, and only
+   .scene-beams-layer and the treatment divs use `position: absolute`.
+   Per the CSS stacking spec, positioned descendants with z-index either
+   0 or auto paint together in DOM order — so simply keeping the
+   background layers first in markup and <Hero />/<Problem />/<Solution />
+   last is what guarantees the real content always paints on top, with no
+   z-index arithmetic needed. */
 
 .hero-problem-scene {
   position: relative;
   isolation: isolate;
+  /* Hero has a fixed height; Problem is only min-height, so this is an
+     approximation (assumes Problem's content doesn't force it taller
+     than 100svh, which it doesn't) — the best a CSS-only anchor can do
+     without JS layout measurement. */
+  --hero-h: calc(100svh - 72px);
+  --problem-h: 100svh;
 }
 
 /* Layer 0 — the shared canvas itself. PublicBackground's own CSS sizes
    and oversizes it (percentage-based insets) relative to whatever
    container it's placed in — here, that's this wrapper's full combined
    height instead of just Hero's, so it automatically stretches to cover
-   both sections with zero changes to PublicBackground.jsx/css. */
+   all three sections with zero changes to PublicBackground.jsx/css. */
 .scene-beams-layer {
   position: absolute;
   inset: 0;
@@ -32,71 +40,77 @@
    Hero.css rule, confined to exactly Hero's own height. This is the
    *only* treatment covering Hero — nothing else below is allowed to
    overlap it, which is what keeps Hero's beams exactly as bright/sharp
-   as before instead of accumulating a second, redundant dark layer on
-   top (that stacking bug is what caused the "washed out" regression). */
+   as before instead of accumulating a second, redundant dark layer. */
 .scene-hero-vignette {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: calc(100svh - 72px);
+  height: var(--hero-h);
   pointer-events: none;
   background: radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 55%, rgba(0, 0, 0, 0.85) 100%),
     rgba(0, 0, 0, 0.25);
 }
 
-/* Layer 2 — a flat continuation of that same dark atmosphere, starting
-   exactly where the vignette ends (never overlapping it) and running
-   through roughly Problem's first half. Its own bottom edge is feathered
-   (via mask-image, not a hard cutoff) so it hands off to Layer 3 below
-   without a seam of its own. Tuned to ~0.87 alpha to match the vignette's
-   own outer-edge darkness, so the Hero → Problem join is invisible. */
-.scene-dark-continuation {
-  position: absolute;
-  top: calc(100svh - 72px);
-  left: 0;
-  right: 0;
-  height: 58svh;
-  pointer-events: none;
-  background: rgba(0, 0, 0, 0.87);
-  mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 92%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 92%);
-}
-
-/* Layer 3 — the actual atmosphere shift, and where the beams visually
-   invert rather than dim. A warm-white fill blended with
+/* Layer 2 — the atmosphere shift, and where the beams visually invert
+   rather than dim. A warm-white fill blended with
    `mix-blend-mode: exclusion`: where the canvas underneath is near-black
    (empty space between beams), exclusion against a near-white leaves the
    result near-white; where the canvas is a bright beam, the same
-   operation flips it dark — so the beams don't fade away, they swap from
-   bright-on-black to soft-gray-on-warm-white, still clearly moving.
-   `opacity` is capped below 1 so the inversion never turns fully harsh
-   black/white, staying soft.
+   operation flips it dark — so the beams don't fade away here, they
+   swap from bright-on-black to soft-gray-on-warm-white, still clearly
+   moving and just as visible, only recolored.
 
-   Its own mask is two off-center radial ellipses (asymmetric left/right,
-   not a mirror of each other) unioned with a slow, many-stop linear
-   trend — deliberately not a single gradient band. The union of a
-   soft-edged radial shape with an independent radial elsewhere never
-   produces one identifiable straight edge the eye can track, which a
-   lone linear gradient's start/end offsets always do to some degree.
-   Effectively inert for roughly Problem's first half (mask alpha ~0
-   there), so nothing changes while the user is still near the top of
-   Problem — the shift only develops deep into the section, well past
-   its midpoint, finishing softly by its bottom edge. */
+   Spans from exactly where the vignette ends through to the very bottom
+   of Solution (never overlapping Hero), but its own mask only *ramps*
+   across roughly the Problem portion of that span (~0 to ~48%) then
+   holds fully applied for the rest (the Solution portion) — so the light
+   atmosphere established by the end of Problem carries over as
+   Solution's starting state, exactly as Layer 3 below needs it. The
+   ramp itself is a union of two off-center, asymmetric radial ellipses
+   plus a slow linear trend — never a single hard-edged band — so there
+   is no one identifiable line the eye can track from dark to light. */
 .scene-invert-lighten {
   position: absolute;
-  top: calc(100svh - 72px);
+  top: var(--hero-h);
+  left: 0;
+  right: 0;
+  /* Problem + Solution combined (both ≈100svh) — Problem occupies the
+     first half of this layer's own box, Solution the second, which is
+     what the mask percentages below are calibrated against. */
+  height: calc(var(--problem-h) * 2);
+  pointer-events: none;
+  background: #f9f4ea;
+  mix-blend-mode: exclusion;
+  opacity: 0.86;
+  mask-image: radial-gradient(ellipse 130% 90% at 35% 16%, black 0%, transparent 38%),
+    radial-gradient(ellipse 130% 90% at 68% 24%, black 0%, transparent 40%),
+    linear-gradient(to bottom, transparent 0%, black 46%, black 100%);
+  -webkit-mask-image: radial-gradient(ellipse 130% 90% at 35% 16%, black 0%, transparent 38%),
+    radial-gradient(ellipse 130% 90% at 68% 24%, black 0%, transparent 40%),
+    linear-gradient(to bottom, transparent 0%, black 46%, black 100%);
+}
+
+/* Layer 3 — confined to Solution's own height only: a plain (no blend
+   mode) warm-white cover that progressively paints over the canvas,
+   fading the now-light-and-gray beams out entirely by Solution's bottom
+   edge, leaving the same clean flat warm-white the rest of the site
+   already uses. Roughly 100% beam visibility at Solution's top, ~50% by
+   its middle, essentially gone near its bottom — again via a mask union
+   of off-center radials plus a slow linear trend rather than one
+   straight fade line. */
+.scene-beam-fadeout {
+  position: absolute;
+  top: calc(var(--hero-h) + var(--problem-h));
   left: 0;
   right: 0;
   bottom: 0;
   pointer-events: none;
   background: #f9f4ea;
-  mix-blend-mode: exclusion;
-  opacity: 0.86;
-  mask-image: radial-gradient(ellipse 120% 65% at 28% 100%, black 0%, transparent 80%),
-    radial-gradient(ellipse 120% 65% at 74% 100%, black 0%, transparent 80%),
-    linear-gradient(to bottom, transparent 0%, transparent 46%, black 82%, black 100%);
-  -webkit-mask-image: radial-gradient(ellipse 120% 65% at 28% 100%, black 0%, transparent 80%),
-    radial-gradient(ellipse 120% 65% at 74% 100%, black 0%, transparent 80%),
-    linear-gradient(to bottom, transparent 0%, transparent 46%, black 82%, black 100%);
+  mask-image: radial-gradient(ellipse 130% 85% at 40% 100%, black 0%, transparent 62%),
+    radial-gradient(ellipse 130% 85% at 66% 100%, black 0%, transparent 64%),
+    linear-gradient(to bottom, transparent 0%, transparent 14%, black 90%, black 100%);
+  -webkit-mask-image: radial-gradient(ellipse 130% 85% at 40% 100%, black 0%, transparent 62%),
+    radial-gradient(ellipse 130% 85% at 66% 100%, black 0%, transparent 64%),
+    linear-gradient(to bottom, transparent 0%, transparent 14%, black 90%, black 100%);
 }

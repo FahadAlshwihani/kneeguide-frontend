@@ -2,7 +2,6 @@ import React from "react";
 import "./HomePage.css";
 
 import HeroProblemScene from "../sections/HeroProblemScene";
-import Solution from "../sections/Solution";
 import Technology from "../sections/Technology";
 import HowItWorks from "../sections/HowItWorks";
 import Platform from "../sections/Platform";
@@ -17,7 +16,6 @@ const HomePage = () => {
   return (
     <div className="home-root">
       <HeroProblemScene />
-      <Solution />
       <Technology />
       <HowItWorks />
       <Platform />
