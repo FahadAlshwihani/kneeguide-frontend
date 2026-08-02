@@ -30,11 +30,12 @@ const SecondaryButton = forwardRef(
     ref
   ) => {
     const isInert = disabled || loading;
-    // Smaller and thinner than the icon default (18/2) so it reads as part
-    // of the typography rather than a standalone icon; uses `currentColor`
-    // (react-icons/lu default), so it fades with the label's own color
-    // transition instead of animating on its own.
-    const resolvedIcon = icon ?? (showArrow ? <LuArrowUpRight size="0.8em" strokeWidth={1.75} /> : null);
+    // Larger than the label text but thinner-stroked than the icon default
+    // (18/2), so it reads as an oversized character in the word rather
+    // than a standalone icon; uses `currentColor` (react-icons/lu
+    // default), so it fades with the label's own color transition instead
+    // of animating on its own.
+    const resolvedIcon = icon ?? (showArrow ? <LuArrowUpRight size="1.15em" strokeWidth={1.5} /> : null);
 
     const classes = [
       "ui-secondary-btn",
