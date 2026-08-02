@@ -120,6 +120,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ui-secondary-btn,
+  .ui-secondary-btn-icon {
+    transition-duration: 1ms;
+  }
+
   .ui-secondary-btn-spinner {
     animation-duration: 1400ms;
   }

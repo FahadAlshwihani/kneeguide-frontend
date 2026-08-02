@@ -1,56 +1,29 @@
-/* Public-website Primary Button — flat, minimal rectangle (not a pill).
-   Transparent by default, the same resting weight as SecondaryButton; the
-   only distinction is the hover interaction: a plain white layer
-   (::before) sweeps in edge-to-edge under the text, direction-aware via
-   the CSS logical property `inset-inline-start` — it resolves to the left
-   edge in LTR and the right edge in RTL automatically, following the
-   ancestor `dir`/`direction`, so the fill direction flips for Arabic with
-   zero JS and no separate component. See SecondaryButton.css for the
-   paired lower-emphasis style; sizes/shape are mirrored 1:1 on purpose,
-   so swapping <PrimaryButton> for <SecondaryButton> never shifts layout. */
+/* Public-website Primary Button — near-square outlined rectangle. Simple
+   color fade on hover (background-color/color/border-color), no fill
+   sweep, no movement. See SecondaryButton.css for the paired lower-
+   emphasis style; sizes/shape are mirrored 1:1 on purpose, so swapping
+   <PrimaryButton> for <SecondaryButton> never shifts layout. */
 
 .ui-primary-btn {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: inherit;
   font-weight: 600;
   color: #ffffff;
-  background: transparent;
+  background-color: transparent;
   border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition: color 300ms cubic-bezier(0.22, 0.61, 0.36, 1), border-color 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 200ms ease;
-}
-
-/* The fill itself: a plain white layer, full height, anchored to the
-   inline-start edge and animated purely via `width` (0% -> 100%) — never
-   a background-color flip, never a transform. */
-.ui-primary-btn::before {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  z-index: 0;
-  width: 0%;
-  background: #ffffff;
-  border-radius: inherit;
-  transition: width 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.ui-primary-btn:hover:not(:disabled)::before,
-.ui-primary-btn:focus-visible::before {
-  width: 100%;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, opacity 200ms ease;
 }
 
 .ui-primary-btn:hover:not(:disabled),
 .ui-primary-btn:focus-visible {
+  background-color: #ffffff;
   color: #0a0a0c;
   border-color: #ffffff;
 }
@@ -93,43 +66,22 @@
   font-size: 1rem;
 }
 
-/* Above the ::before fill layer at every step of the animation. */
-.ui-primary-btn-icon,
-.ui-primary-btn-label,
-.ui-primary-btn-spinner {
-  position: relative;
-  z-index: 1;
-}
-
 /* Sits like a superscript — pinned to the top of the flex row instead of
-   the row's vertical center — and animates on its own, independent of the
-   fill/color/border transitions above. */
+   the row's vertical center. No transition of its own: the icon uses
+   `currentColor` (see PrimaryButton.jsx), so it fades between white and
+   black automatically as part of the button's own `color` transition
+   above — it never animates independently (no translate/rotate/scale). */
 .ui-primary-btn-icon {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
-  font-size: 1em;
-  transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* RTL: mirror the glyph (↗ becomes ↖) — resolves automatically from the
-   ancestor `dir`, no separate component or JS branch. */
+/* RTL: mirror the glyph (↗ becomes ↖), a static flip — resolves
+   automatically from the ancestor `dir`, no separate component or JS
+   branch, and is never itself animated. */
 [dir="rtl"] .ui-primary-btn-icon {
   transform: scaleX(-1);
-}
-
-/* Hover/focus: nudge the arrow toward where it's pointing. In RTL the
-   translate is composed *after* the mirror in the transform list, so the
-   same translate(3px, -3px) value visually moves left instead of right —
-   see PrimaryButton.jsx for why one value works for both directions. */
-.ui-primary-btn:hover:not(:disabled) .ui-primary-btn-icon,
-.ui-primary-btn:focus-visible .ui-primary-btn-icon {
-  transform: translate(3px, -3px);
-}
-
-[dir="rtl"] .ui-primary-btn:hover:not(:disabled) .ui-primary-btn-icon,
-[dir="rtl"] .ui-primary-btn:focus-visible .ui-primary-btn-icon {
-  transform: scaleX(-1) translate(3px, -3px);
 }
 
 .ui-primary-btn-label {
@@ -159,9 +111,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ui-primary-btn,
-  .ui-primary-btn::before,
-  .ui-primary-btn-icon {
+  .ui-primary-btn {
     transition-duration: 1ms;
   }
 
