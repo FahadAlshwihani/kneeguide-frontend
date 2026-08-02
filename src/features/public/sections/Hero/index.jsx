@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "../../../../utils/routes";
 import PublicBackground from "../../../../components/public/backgrounds/PublicBackground";
+import PrimaryButton from "../../../../components/ui/PrimaryButton";
+import SecondaryButton from "../../../../components/ui/SecondaryButton";
 import HeroDashboardPreview from "./HeroDashboardPreview";
 import "./Hero.css";
 
@@ -44,12 +46,12 @@ const Hero = () => {
           </motion.p>
 
           <motion.div className="hero-actions" variants={fadeUp} custom={0.24}>
-            <Link to={ROUTES.REGISTER} className="hero-btn-primary">
+            <PrimaryButton to={ROUTES.REGISTER} size="lg">
               {t("publicHero.ctaPrimary")}
-            </Link>
-            <Link to={ROUTES.LOGIN} className="hero-btn-secondary">
+            </PrimaryButton>
+            <SecondaryButton to={ROUTES.LOGIN} size="lg">
               {t("publicHero.ctaSecondary")}
-            </Link>
+            </SecondaryButton>
           </motion.div>
         </motion.div>
 
