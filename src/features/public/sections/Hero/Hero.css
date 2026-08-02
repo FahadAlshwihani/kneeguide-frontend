@@ -132,19 +132,18 @@
   color: var(--color-primary-hover);
 }
 
-/* Dashboard preview: a fixed-height window flush with the Hero's bottom
-   edge. It never floats near the copy and never resizes to fit its
-   content — instead it clips, deliberately, so only the top of the preview
-   is visible: like a real application dashboard sitting just below the
-   fold. The rest of the composition (cards further down the grid) is
-   intentionally hidden. Sized smaller than the space it's given so
-   `.hero-container`'s space-between reads as a deliberate gap above it
-   (the "floating near the bottom" look) rather than the preview touching
-   the CTAs. */
+/* Dashboard preview: takes whatever room is left below the copy once the
+   two spacers above have claimed their share (their 1 : 1.3 ratio to each
+   other — the actual spacing hierarchy — is untouched; this just joins
+   them as a third flexible claimant so the preview gets real space instead
+   of a fixed clamp()). That final, measured height is what
+   HeroDashboardPreview fits its card count/scale to at runtime, so every
+   card shown is always fully visible — `overflow: hidden` here is a 1px
+   rounding safety net, never the mechanism that decides what's shown. */
 .hero-preview-wrap {
   width: 100%;
-  flex: 0 0 auto;
-  height: clamp(140px, 30svh, 300px);
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   display: flex;
   align-items: flex-start;

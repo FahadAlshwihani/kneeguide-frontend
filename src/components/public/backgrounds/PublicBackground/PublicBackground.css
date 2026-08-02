@@ -2,17 +2,27 @@
 
 .public-bg-root {
   position: absolute;
-  inset: 0;
+  /* Beams itself is untouched — this only repositions its wrapper. A CSS
+     `transform: scale()` on a live WebGL canvas forces the browser to
+     resample its raster every single frame (extra GPU work on top of the
+     shader itself), which is heavy enough to visibly stutter the
+     animation — and it only stretches pixels that were already there, so
+     the "empty edges" never actually gain new beam content. Oversizing
+     the box itself instead makes the R3F canvas genuinely larger and lets
+     the scene render its own extra edges natively, so the beams reach
+     every side at full sharpness and the section's own `overflow: hidden`
+     is what quietly crops it back — the pattern always continues past
+     what's visible instead of running out at a border. Top/bottom bias
+     kept asymmetric (vs. the even left/right split) so the densest part
+     of the pattern still sits behind the heading, not dead-center of the
+     whole section. */
+  top: -20%;
+  right: -23%;
+  bottom: -26%;
+  left: -23%;
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
-  /* Beams itself is untouched — this only repositions its wrapper. The
-     scale overfills the frame so the diagonal (rotated) beams reach every
-     edge/corner with no gaps, and the origin bias keeps the brightest
-     overlap concentrated behind the heading rather than dead-center of the
-     whole (taller) Hero section. */
-  transform: scale(1.4);
-  transform-origin: 50% 42%;
 }
 
 /* Reduced-motion fallback: the same navy the Beams scene renders, no

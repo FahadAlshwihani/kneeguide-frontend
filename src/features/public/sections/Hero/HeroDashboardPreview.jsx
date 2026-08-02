@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { FaUsers, FaCalendarCheck, FaFileLines, FaTriangleExclamation, FaListCheck } from "react-icons/fa6";
@@ -133,6 +133,10 @@ const buildPool = (data) => [
   },
 ];
 
+const SCALE_MAX = 0.83;
+const SCALE_MIN = 0.6;
+const SCALE_STEP = 0.04;
+
 /**
  * Composes real, shared dashboard cards (the same components the Doctor
  * and Patient dashboards render) into an organic, floating-widget preview
@@ -141,11 +145,16 @@ const buildPool = (data) => [
  * `previewMode` so they stay focusable/keyboard-accessible but perform no
  * real action.
  *
- * Card *count* is responsive (ultra-wide down to a single mobile card);
- * layout stays CSS Grid the whole way — only how many pool items are
- * sliced in changes.
+ * Card *count* is width-responsive (ultra-wide down to a single mobile
+ * card) via `useViewportTier` — that's the ceiling. Below that, this
+ * component fits what it's actually given: it measures `wrapRef` (the
+ * fixed-height box the Hero handed it) against its own rendered height and,
+ * if it doesn't fit, first shrinks its scale, then — only if still too
+ * tall at the minimum scale — drops cards from the end of the (already
+ * least-to-most-essential-ordered) pool. Every card that ends up on screen
+ * is always shown whole; nothing is ever clipped mid-card.
  */
-const HeroDashboardPreview = () => {
+const HeroDashboardPreview = ({ wrapRef }) => {
   const { t } = useTranslation();
   const tier = useViewportTier();
   const data = useMemo(() => getHeroPreviewData(t), [t]);
@@ -155,11 +164,68 @@ const HeroDashboardPreview = () => {
   // every resize) — no slider, no carousel, no autoplay.
   const [mobilePick] = useState(() => Math.floor(Math.random() * pool.length));
 
-  const visible =
+  const candidates =
     tier.name === "mobile" ? [pool[mobilePick]] : pool.slice(0, tier.cardCount);
 
+  const gridRef = useRef(null);
+  const [visibleCount, setVisibleCount] = useState(candidates.length);
+  const [scale, setScale] = useState(SCALE_MAX);
+
+  // A new width tier (or a fresh mobile pick) changes the candidate set —
+  // start over at full size/count and let the fit pass below trim it back
+  // down if the available height doesn't allow it.
+  useLayoutEffect(() => {
+    setVisibleCount(candidates.length);
+    setScale(SCALE_MAX);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tier.name, candidates.length]);
+
+  // When the box we've been given resizes (viewport height change), give
+  // the full candidate set another chance before re-measuring — it may
+  // now fit more (or less) than it did before.
+  useLayoutEffect(() => {
+    const wrap = wrapRef?.current;
+    if (!wrap || typeof ResizeObserver === "undefined") return undefined;
+    const observer = new ResizeObserver(() => {
+      setVisibleCount(candidates.length);
+      setScale(SCALE_MAX);
+    });
+    observer.observe(wrap);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [candidates.length]);
+
+  // Runs after every render (no deps): measures the current render against
+  // the available box and, if it overflows, nudges scale down a step, or —
+  // once at the scale floor — drops the least-essential visible card. Each
+  // nudge causes a re-render, which runs this effect again, converging
+  // before the browser ever paints the intermediate (overflowing) frame.
+  useLayoutEffect(() => {
+    const wrap = wrapRef?.current;
+    const grid = gridRef.current;
+    if (!wrap || !grid) return;
+
+    const available = wrap.clientHeight;
+    if (available <= 0) return;
+
+    const needed = grid.getBoundingClientRect().height;
+    if (needed <= available + 0.5) return;
+
+    if (scale > SCALE_MIN + 0.001) {
+      setScale((s) => Math.max(SCALE_MIN, +(s - SCALE_STEP).toFixed(2)));
+    } else if (visibleCount > 1) {
+      setVisibleCount((c) => c - 1);
+    }
+  });
+
+  const visible = candidates.slice(0, Math.min(visibleCount, candidates.length));
+
   return (
-    <div className="hero-dashboard-preview-root">
+    <div
+      ref={gridRef}
+      className="hero-dashboard-preview-root"
+      style={{ transform: `scale(${scale})` }}
+    >
       {visible.map((item, index) => (
         <motion.div
           key={item.id}

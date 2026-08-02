@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 
-// The preview window now has a fixed height and clips deliberately (the
-// "peek below the fold" effect), so card count no longer has to be tuned
-// to avoid overflow — it's purely how much depth/richness shows through
-// the top of the window. Width tier alone decides the count.
+// Width tier sets the *ceiling* on card count — how much depth/richness
+// the preview could show at this screen width. HeroDashboardPreview then
+// measures the actual (height-constrained) box it's given and trims that
+// ceiling down further if needed, so the real on-screen count is always
+// whatever fits without cropping, never just this table's number.
 const TIERS = [
   { name: "ultrawide", minWidth: 1600, cardCount: 10 },
   { name: "desktop", minWidth: 1200, cardCount: 8 },

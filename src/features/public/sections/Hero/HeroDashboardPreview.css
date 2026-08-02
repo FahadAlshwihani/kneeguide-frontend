@@ -22,8 +22,10 @@
      so it reads as secondary to the heading above it. Scaling (rather than
      shrinking the cards' own internal sizing, which lives in the shared
      dashboard components) keeps every card and interaction identical to
-     the real dashboard; only its footprint here is smaller. */
-  transform: scale(0.83);
+     the real dashboard; only its footprint here is smaller. The scale
+     itself is set inline by HeroDashboardPreview.jsx (starts at the same
+     0.83 default this rule used to hard-code) — it's one of the two levers
+     the fit algorithm uses to guarantee nothing is ever cropped. */
   transform-origin: top center;
 }
 
