@@ -782,7 +782,7 @@
         "title": "Platform",
         "links": {
           "overview": "Overview",
-          "patientPortal": "Patient Portal",
+          "patientDashboard": "Patient Dashboard",
           "doctorDashboard": "Doctor Dashboard"
         }
       },
@@ -790,40 +790,16 @@
         "title": "Technology",
         "links": {
           "motionTracking": "Motion Tracking",
-          "wearableIntegration": "Wearable Integration",
-          "security": "Security"
+          "aiAssistant": "AI Assistant",
+          "wearables": "Wearables"
         }
       },
-      "aiAssistant": {
-        "title": "AI Assistant",
+      "company": {
+        "title": "Company",
         "links": {
-          "smartAnalysis": "Smart Analysis",
-          "exerciseRecommendations": "Exercise Recommendations",
-          "progressReports": "Progress Reports"
-        }
-      },
-      "howItWorks": {
-        "title": "How It Works",
-        "links": {
-          "patientJourney": "Patient Journey",
-          "doctorWorkflow": "Doctor Workflow",
-          "rehabilitationProcess": "Rehabilitation Process"
-        }
-      },
-      "roadmap": {
-        "title": "Roadmap",
-        "links": {
-          "currentVersion": "Current Version",
-          "upcomingFeatures": "Upcoming Features",
-          "futureVision": "Future Vision"
-        }
-      },
-      "contact": {
-        "title": "Contact",
-        "links": {
-          "contactUs": "Contact Us",
-          "documentation": "Documentation",
-          "support": "Support"
+          "roadmap": "Roadmap",
+          "contact": "Contact",
+          "documentation": "Documentation"
         }
       }
     }

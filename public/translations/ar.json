@@ -782,7 +782,7 @@
         "title": "المنصة",
         "links": {
           "overview": "نظرة عامة",
-          "patientPortal": "بوابة المريض",
+          "patientDashboard": "لوحة المريض",
           "doctorDashboard": "لوحة تحكم الطبيب"
         }
       },
@@ -790,40 +790,16 @@
         "title": "التقنيات",
         "links": {
           "motionTracking": "تتبع الحركة",
-          "wearableIntegration": "دمج الأجهزة القابلة للارتداء",
-          "security": "الأمان"
+          "aiAssistant": "المساعد الذكي",
+          "wearables": "الأجهزة القابلة للارتداء"
         }
       },
-      "aiAssistant": {
-        "title": "المساعد الذكي",
+      "company": {
+        "title": "الشركة",
         "links": {
-          "smartAnalysis": "تحليل ذكي",
-          "exerciseRecommendations": "توصيات التمارين",
-          "progressReports": "تقارير التقدم"
-        }
-      },
-      "howItWorks": {
-        "title": "آلية العمل",
-        "links": {
-          "patientJourney": "رحلة المريض",
-          "doctorWorkflow": "سير عمل الطبيب",
-          "rehabilitationProcess": "عملية إعادة التأهيل"
-        }
-      },
-      "roadmap": {
-        "title": "خارطة الطريق",
-        "links": {
-          "currentVersion": "الإصدار الحالي",
-          "upcomingFeatures": "ميزات قادمة",
-          "futureVision": "الرؤية المستقبلية"
-        }
-      },
-      "contact": {
-        "title": "تواصل معنا",
-        "links": {
-          "contactUs": "اتصل بنا",
-          "documentation": "التوثيق",
-          "support": "الدعم"
+          "roadmap": "خارطة الطريق",
+          "contact": "تواصل معنا",
+          "documentation": "التوثيق"
         }
       }
     }
