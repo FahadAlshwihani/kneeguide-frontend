@@ -56,6 +56,23 @@ export const getHeroPreviewData = (t) => {
         label: p("notesLabel"),
         sub: p("notesSub"),
       },
+      aiRecommendation: {
+        label: p("aiRecommendationLabel"),
+        sub: p("aiRecommendationSub"),
+      },
+      streak: {
+        value: 12,
+        label: p("streakLabel"),
+        sub: p("streakTrend"),
+      },
+      compliance: {
+        value: "91%",
+        label: p("complianceLabel"),
+      },
+      notifications: {
+        value: 6,
+        label: p("notificationsLabel"),
+      },
     },
     patient: {
       badge: p("patientBadge"),
@@ -108,6 +125,35 @@ export const getHeroPreviewData = (t) => {
         withName: "Sarah Ahmed",
         primaryActionLabel: p("reschedule"),
         secondaryActionLabel: p("viewAll"),
+      },
+      todaySessions: {
+        value: 2,
+        label: p("todaySessionsLabel"),
+      },
+      weeklyProgress: {
+        label: p("weeklyProgressLabel"),
+        sub: p("weeklyProgressSub"),
+        value: "68%",
+        progress: 68,
+      },
+      recoveryScore: {
+        value: "8.4",
+        label: p("recoveryScoreLabel"),
+      },
+      painLevel: {
+        value: "2/10",
+        label: p("painLevelLabel"),
+        sub: p("painLevelTrend"),
+      },
+      dailyGoal: {
+        label: p("dailyGoalLabel"),
+        sub: p("dailyGoalSub"),
+        value: "75%",
+        progress: 75,
+      },
+      exerciseCompletion: {
+        value: "92%",
+        label: p("exerciseCompletionLabel"),
       },
     },
   };
