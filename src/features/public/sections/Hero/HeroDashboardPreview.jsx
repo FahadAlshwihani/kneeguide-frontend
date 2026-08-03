@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {
@@ -237,10 +237,6 @@ const HeroDashboardPreview = () => {
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
 
-  // Entrance stagger only needs a stable index -> delay mapping; it never
-  // reruns per scroll/resize.
-  const [delayBase] = useState(0);
-
   const renderCard = (entry, index, { axis = "y", sizeClass = "sm", extraClassName = "" } = {}) => {
     const restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
     const jitter = axis === "x" ? jitterX(entry.id) : 0;
@@ -257,7 +253,7 @@ const HeroDashboardPreview = () => {
         variants={cardEntrance}
         initial="hidden"
         animate="visible"
-        custom={{ delay: delayBase + index * 0.05, restY }}
+        custom={{ delay: index * 0.05, restY }}
         whileHover={{ y: restY - 4, transition: { duration: 0.2 } }}
       >
         {pool[entry.id]}
