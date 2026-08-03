@@ -28,6 +28,8 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  margin-top: -76px;
+  padding-top: 76px;
   --hero-h: calc(100svh - 72px);
 }
 
@@ -53,7 +55,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: var(--hero-h);
+  height: calc(var(--hero-h) + 76px);
   pointer-events: none;
   background: radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 55%, rgba(0, 0, 0, 0.85) 100%),
     rgba(0, 0, 0, 0.25);

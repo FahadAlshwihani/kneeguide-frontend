@@ -78,14 +78,10 @@ const DEPTH = {
 // already animated via cardEntrance's variants — motion composes its own
 // `transform` from x/y/scale/rotate style keys, so scale has to be passed
 // the same way or it would be clobbered by motion's generated transform.
-const depthStyle = ({ scale, brightness, blur }) => {
-  const filters = [];
-  if (brightness !== 1) filters.push(`brightness(${brightness})`);
-  if (blur) filters.push(`blur(${blur}px)`);
-
+const depthStyle = ({ scale, brightness }) => {
   return {
     scale,
-    filter: filters.length ? filters.join(" ") : undefined,
+    "--hero-card-brightness": brightness,
   };
 };
 

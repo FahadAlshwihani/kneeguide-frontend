@@ -179,6 +179,15 @@
   .hero-scatter-wrap {
     contain: none;
   }
+
+  .hero-dashboard-preview-item {
+    filter: brightness(var(--hero-card-brightness, 1)) blur(3px);
+    opacity: 1;
+  }
+
+  .hero-dashboard-preview-item:hover {
+    filter: brightness(var(--hero-card-brightness, 1)) blur(0);
+  }
 }
 
 .scatter-bottom-slot {
