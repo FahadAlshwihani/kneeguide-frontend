@@ -63,8 +63,12 @@ const DEPTH = {
   back: { scale: 0.96, opacity: 0.88, blur: 1 },
 };
 
+// `scale` (not a raw `transform` string) because this element's `y` is
+// already animated via cardEntrance's variants — motion composes its own
+// `transform` from x/y/scale/rotate style keys, so scale has to be passed
+// the same way or it would be clobbered by motion's generated transform.
 const depthStyle = ({ scale, opacity, blur }) => ({
-  transform: `scale(${scale})`,
+  scale,
   opacity,
   filter: blur ? `blur(${blur}px)` : undefined,
 });
