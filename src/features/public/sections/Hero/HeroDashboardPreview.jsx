@@ -248,8 +248,12 @@ const CORNER_OUTER_INSET = 16;
 const MIN_CORNER_CLEARANCE = 130;
 
 // How much of the bottom row is allowed to float past the Hero's own
-// fold, once its real rendered height is known (see useOverlapTop below)
-// — a few px, not a second row worth.
+// fold — a few px, not a second row worth. Applied as a negative CSS
+// `bottom` (see HeroDashboardBottomBand) rather than a computed `top`:
+// anchoring from the bottom means the browser's own box height (whatever
+// the tallest card in the row actually renders at) determines where the
+// row starts, so the *escaping* amount stays exactly this value
+// regardless of card height — no JS measurement needed.
 const BOTTOM_OVERLAP = 30;
 
 const computeLayout = (safeZone) => {
@@ -264,7 +268,6 @@ const computeLayout = (safeZone) => {
     leftRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, leftRailWidth)),
     rightRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, rightRailWidth)),
     showCorners: safeZone.top >= CORNER_OUTER_INSET + MIN_CORNER_CLEARANCE,
-    bandTop: Math.max(0, safeZone.bottom),
   };
 };
 
