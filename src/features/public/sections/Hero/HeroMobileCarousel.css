@@ -1,0 +1,25 @@
+/* Mobile-only featured-card carousel — see HeroMobileCarousel.jsx.
+   `position: absolute` so it never participates in `.hero-container`'s
+   flex flow (same reasoning as `.hero-scatter-wrap` on desktop): the
+   copy block's own position is untouched by whatever this renders.
+   Entirely inside the Hero's own bounds — unlike the desktop fold band,
+   this never needs to cross into Section 2, so it needs none of that
+   layer's escape-the-clip/DOM-order machinery. */
+.hero-mobile-carousel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3%;
+  display: flex;
+  justify-content: center;
+  touch-action: pan-y;
+}
+
+.hero-mobile-carousel-card {
+  width: min(84%, 340px);
+  cursor: grab;
+}
+
+.hero-mobile-carousel-card:active {
+  cursor: grabbing;
+}

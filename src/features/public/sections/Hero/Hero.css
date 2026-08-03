@@ -6,26 +6,22 @@
    this same block. Every measurement below is fluid (clamp, svh-relative)
    so the whole thing compresses to fit rather than growing past the fold.
 
-   `.hero-root` deliberately does NOT clip its own overflow (unlike
-   before) — `.hero-container` does instead, at the exact same visual
-   boundary (it fills `.hero-root` completely, see below), for everything
-   except the bottom card band. `HeroDashboardBottomBand` (in
-   Hero/index.jsx) renders as `.hero-root`'s other child, a sibling of
-   `.hero-container`, specifically so it is *not* subject to that clip and
-   can float a small, intentional amount past the fold into the next
-   section — see HeroDashboardPreview.css for its own positioning.
+   `.hero-root` clips its own overflow again — the fold-anchored card band
+   no longer lives inside it at all. HeroDashboardBottomBand now renders
+   at the HeroProblemScene level instead (as the scene's last element,
+   after Problem/Solution), specifically so it's guaranteed to paint above
+   their light-transition layers by plain DOM order, not by any z-index
+   arithmetic across this component's own ancestor chain — see
+   HeroProblemScene/index.jsx and HeroDashboardPreview.css. The mobile
+   carousel (HeroMobileCarousel) stays entirely inside the Hero, since it
+   never needs to cross the fold.
 
-   Stacking order is the *only* thing that keeps the copy readable where
-   the floating cards run behind it (composition/positions/count are
-   fixed and deliberately allowed to overlap the content — nothing avoids
-   the center): 1) `.hero-content`, highest; 2) the card layers
-   (`.hero-scatter-wrap`'s corners/rails, and the bottom band); 3) the
-   shared Beams background, underneath everything, painted one level up
-   in HeroProblemScene. See `.hero-container`'s z-index below for how that
-   ordering actually gets enforced across the sibling that escapes its
-   clip. */
+   `.hero-content`'s z-index below is only for the *local* case: keeping
+   the copy above `.hero-scatter-wrap`'s corners/rails, which are allowed
+   to run behind it wherever the fixed composition happens to overlap. */
 .hero-root {
   position: relative;
+  overflow: hidden;
   /* The sticky Header sits above this in normal flow (~65-70px), so the
      Hero itself must be shorter than 100svh by that amount, or the two
      together push past the fold and force a scroll. */
@@ -37,23 +33,8 @@
   padding: clamp(16px, 3svh, 32px) 0;
 }
 
-/* z-index: 10 — deliberately higher than the escaped bottom band's z:5
-   (see HeroDashboardPreview.css) and everything else in the Hero's own
-   stacking context. Because this element is positioned *and* has its own
-   non-auto z-index, it establishes a stacking context: `.hero-content`'s
-   z-index: 2 (below) only has to outrank `.hero-scatter-wrap`'s z:1
-   *inside* that context, but the container as a whole — content
-   included — needs to outrank the bottom band, which lives outside this
-   element (a sibling in `.hero-root`, escaping this element's overflow
-   clip) and would otherwise win by DOM order at the shared, outer
-   context. That single number is the entire mechanism keeping the
-   headline/description/CTA readable above every card layer, including
-   the sliver of the bottom band that overlaps into the next section —
-   no card is ever repositioned or hidden to protect the content instead. */
 .hero-container {
   position: relative;
-  z-index: 10;
-  overflow: hidden;
   max-width: 1680px;
   width: 100%;
   height: 100%;

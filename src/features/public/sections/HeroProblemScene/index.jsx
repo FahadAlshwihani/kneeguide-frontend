@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import PublicBackground from "../../../../components/public/backgrounds/PublicBackground";
 import Hero from "../Hero";
 import Problem from "../Problem";
 import Solution from "../Solution";
+import { HeroDashboardBottomBand } from "../Hero/HeroDashboardPreview";
 import "./HeroProblemScene.css";
 
 /**
@@ -48,12 +49,28 @@ import "./HeroProblemScene.css";
  *
  * Hero/Problem/Solution below render only their own foreground content;
  * none of them owns a background anymore.
+ *
+ * HeroDashboardBottomBand (the Hero's fold-crossing bottom card row) is
+ * rendered here, as this scene's very last element — after Hero, after
+ * `.scene-light-phase` (Problem + Solution) — instead of inside Hero
+ * itself. That's the entire mechanism that guarantees it paints above
+ * Problem/Solution's own light-transition layers: this scene already
+ * relies on "z-index auto elements paint in DOM order" everywhere else
+ * (see the stacking note in HeroProblemScene.css), and being last means
+ * winning that comparison outright, with no z-index arithmetic needed
+ * across Hero's own ancestor chain. `contentEdge` (Hero's real content
+ * box, found via a plain `querySelector` within this scene's own ref —
+ * Hero itself stays a normal, unmodified component, with no forwarded
+ * ref or measurement of its own) is what lets that band know where the
+ * Hero's copy ends and how tall the Hero itself is, without either of
+ * those needing to live inside Hero.
  */
 const HeroProblemScene = () => {
   const sceneRef = useRef(null);
   const problemMeasureRef = useRef(null);
   const [isSceneActive, setIsSceneActive] = useState(true);
   const [problemRealHeight, setProblemRealHeight] = useState(null);
+  const [contentEdge, setContentEdge] = useState(null);
 
   useEffect(() => {
     const node = sceneRef.current;
@@ -98,6 +115,43 @@ const HeroProblemScene = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Finds Hero's own root/content nodes via plain DOM queries (scoped to
+  // this scene's own ref) rather than a forwarded ref — Hero stays a
+  // normal, self-contained component; only this scene needs to know where
+  // its content box is, purely to position HeroDashboardBottomBand.
+  useLayoutEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return undefined;
+
+    const measure = () => {
+      const heroRoot = scene.querySelector(".hero-root");
+      const heroContent = scene.querySelector(".hero-content");
+      if (!heroRoot || !heroContent) return;
+
+      const rootRect = heroRoot.getBoundingClientRect();
+      const contentRect = heroContent.getBoundingClientRect();
+      const margin = Math.max(24, Math.min(48, rootRect.width * 0.03));
+
+      setContentEdge({
+        bottom: contentRect.bottom - rootRect.top + margin,
+        heroHeight: rootRect.height,
+      });
+    };
+
+    measure();
+
+    let observer;
+    if (typeof ResizeObserver !== "undefined") {
+      const heroRoot = scene.querySelector(".hero-root");
+      const heroContent = scene.querySelector(".hero-content");
+      observer = new ResizeObserver(measure);
+      if (heroRoot) observer.observe(heroRoot);
+      if (heroContent) observer.observe(heroContent);
+    }
+
+    return () => observer?.disconnect();
+  }, []);
+
   const sceneStyle = problemRealHeight
     ? { "--problem-real-h": `${problemRealHeight}px` }
     : undefined;
@@ -121,6 +175,8 @@ const HeroProblemScene = () => {
         </div>
         <Solution />
       </div>
+
+      <HeroDashboardBottomBand contentEdge={contentEdge} />
     </section>
   );
 };

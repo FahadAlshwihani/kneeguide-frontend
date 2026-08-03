@@ -239,34 +239,35 @@ const BOTTOM_BAND = [
   { id: "doctor-notifications", size: "sm", depth: "back", tier: 2 },
 ];
 
-// Mobile has no horizontal room to frame the content, so it gets its own
-// small, hand-picked vertical stack instead of the corner/rail/band zones —
-// staggered, never a rigid single column of identically-aligned cards.
-const MOBILE_STACK = [
-  { id: "doctor-appointment", size: "lg", depth: "front" },
-  { id: "patient-recovery-score", size: "sm", depth: "mid" },
-  { id: "patient-today-sessions", size: "sm", depth: "mid" },
-  { id: "doctor-streak", size: "sm", depth: "back" },
-];
+// Mobile has neither the horizontal room to frame the content nor the
+// vertical room for a multi-card stack — it gets a one-card-at-a-time
+// carousel instead (HeroMobileCarousel), entirely separate from the
+// corner/rail/band zones below.
 
-// How much of the fold-anchored row is allowed to float past the Hero's
-// own edge, into the next section — meant to land around 20-30px, a
-// sliver, not a second row worth. Desktop cards in this row also get
-// `restY` (the entrance stagger, 0-25px extra downward via a `transform`,
-// see staggerY) on top of this anchor, so this constant is deliberately
-// small: base (5px) + restY (0-25px) lands the *total* escape in roughly
-// the 5-30px range per card, never a flat 30 + up to 25 more (55px) like
-// before. Mobile cards don't get a restY (they only ever get horizontal
-// jitter), so its own anchor can sit closer to the full target directly.
-const BOTTOM_OVERLAP = 5;
-const MOBILE_OVERLAP = 24;
+// The fold-anchored row's box sits flush with the Hero's own bottom edge
+// (see the `top`/`transform` pairing on `.scatter-bottom-band` in
+// HeroDashboardPreview.css) — it has no independent negative offset of
+// its own any more. The *only* thing that lets a card cross the fold is
+// its own entrance-stagger transform (`restY`, see staggerY), clamped to
+// this ceiling — a real structural invariant, not a tuned magic number:
+// since a card's `restY` is applied via `transform`, it never affects the
+// row's own measured layout height (what useBottomBandSplit checks
+// against the content's safe zone), so however large this constant is,
+// it can only ever push a card *down*, past the fold, away from the
+// content — never up into it. Bounding it here means no single card can
+// ever end up more than this many px into the next section, i.e. it can
+// never render fully inside it — by construction, not by chance.
+const MAX_FOLD_OVERFLOW = 25;
 
-// Shared by both components below so the pool/render logic exists in
-// exactly one place even though the framing zones (corners + rails) and
-// the bottom band render as two separate React trees — the band lives
-// outside .hero-container so it can escape its overflow clip into the
-// next section (see Hero/index.jsx and Hero.css), so it can no longer be
-// a child of the same component instance that renders the rails.
+// Shared by every card-rendering component in the Hero (corners/rails,
+// the fold band + center band, and the mobile carousel in
+// HeroMobileCarousel.jsx) so the pool/render logic exists in exactly one
+// place even though they render as separate React trees — the fold band
+// in particular now renders at the HeroProblemScene level, not inside
+// Hero at all (see HeroDashboardBottomBand and HeroProblemScene/index.jsx),
+// specifically so it's guaranteed, by plain DOM order, to paint above
+// Problem/Solution's own light-transition layers — never a z-index
+// guess about a treatment it has nothing to do with.
 //
 // Corners and rails take no measurement at all — fixed positions, always
 // rendered, exactly as before; `.hero-content`'s z-index (see Hero.css)
@@ -276,14 +277,15 @@ const MOBILE_OVERLAP = 24;
 // of its own cards would land there into a separate cluster placed
 // right below the CTA instead — see HeroDashboardBottomBand. No card is
 // ever removed or hidden; it only ever moves between those two clusters.
-const useHeroDashboardPreview = () => {
+export const useHeroDashboardPreview = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
 
-  const renderCard = (entry, index, { axis = "y", sizeClass = "sm" } = {}) => {
-    const restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
+  const renderCard = (entry, index, { axis = "y", sizeClass = "sm", maxOverflow } = {}) => {
+    let restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
+    if (typeof maxOverflow === "number") restY = Math.min(restY, maxOverflow);
     const jitter = axis === "x" ? jitterX(entry.id) : 0;
     const depth = DEPTH[entry.depth] || DEPTH.mid;
 
@@ -306,7 +308,7 @@ const useHeroDashboardPreview = () => {
     );
   };
 
-  return { isMobile, renderCard };
+  return { isMobile, pool, renderCard };
 };
 
 // Corners + rails, at fixed positions/widths (see HeroDashboardPreview.css)
@@ -348,8 +350,11 @@ const HeroDashboardPreview = () => {
 // the fold. So "however many cards from the front are making the row too
 // tall" is exactly the same set as "whichever cards would otherwise land
 // in a row high enough to reach the content" — this measures the real
-// rendered height of whatever's currently assigned to the fold-anchored
-// band and, only if it's taller than the real room below the content
+// rendered *layout* height of whatever's currently assigned to the
+// fold-anchored band (a card's `restY` is a transform, so it never
+// contributes to this — it only ever pushes a card further down, past
+// the fold, which this check doesn't need to guard against) and, only if
+// that layout height is taller than the real room below the content
 // allows, moves one more card (from the front) into the below-CTA
 // cluster and checks again. Same every-render-measure/converge pattern
 // used elsewhere in this file; `splitIndex < total - 1` is the floor that
@@ -365,7 +370,7 @@ const useBottomBandSplit = (ref, total, contentEdge) => {
   useLayoutEffect(() => {
     const node = ref.current;
     if (!node || !contentEdge) return;
-    const available = Math.max(0, contentEdge.heroHeight - contentEdge.bottom - BOTTOM_OVERLAP);
+    const available = Math.max(0, contentEdge.heroHeight - contentEdge.bottom);
     const needed = node.getBoundingClientRect().height;
     if (needed > available + 0.5 && splitIndex < total - 1) {
       setSplitIndex((count) => count + 1);
@@ -375,31 +380,32 @@ const useBottomBandSplit = (ref, total, contentEdge) => {
   return splitIndex;
 };
 
-// The bottom row (desktop) / mobile stack — rendered by Hero/index.jsx as
-// a sibling of .hero-container, specifically so the fold-anchored part
-// sits outside that element's overflow clip and can float a small,
-// deliberate overlap past the Hero's fold into the next section. Anchored
-// via a negative `bottom` (see BOTTOM_OVERLAP), so the escaping amount
-// stays fixed regardless of card height.
+// Desktop only — mobile uses HeroMobileCarousel instead (rendered
+// separately; see Hero/index.jsx). Rendered by HeroProblemScene as the
+// very last element in the scene (after `.scene-light-phase`, i.e. after
+// Problem/Solution) — not by Hero at all any more — specifically so it's
+// guaranteed to paint above Problem/Solution's light-transition layers by
+// plain DOM order, the same rule this whole scene already relies on
+// elsewhere (see the stacking note in HeroProblemScene.css), rather than
+// by a z-index competing across an ancestor chain. Its own box sits
+// flush with the Hero's bottom edge (`top: contentEdge.heroHeight` +
+// `transform: translateY(-100%)`, see HeroDashboardPreview.css) — every
+// card's own `restY` transform (capped at MAX_FOLD_OVERFLOW) is the
+// *only* thing that lets it cross the fold, so no card can ever end up
+// more than that many px into Section 2.
 //
-// On desktop, whichever cards would otherwise make that fold-anchored row
-// tall enough to reach behind the content (see useBottomBandSplit) render
-// instead in `.scatter-center-band`, a second cluster pinned right below
-// the CTA (`top: contentEdge.bottom`) — same cards, same styling, same
-// stagger/depth, just a different one of the two positions. Nothing is
-// ever removed, hidden, or left overlapping the content.
+// Whichever cards would otherwise make that fold-anchored row tall enough
+// to reach behind the content (see useBottomBandSplit) render instead in
+// `.scatter-center-band`, a second cluster pinned right below the CTA
+// (`top: contentEdge.bottom`) — same cards, same styling, same stagger/
+// depth, just a different one of the two positions. Nothing is ever
+// removed, hidden, or left overlapping the content.
 export const HeroDashboardBottomBand = ({ contentEdge }) => {
   const { isMobile, renderCard } = useHeroDashboardPreview();
   const bandRef = useRef(null);
   const splitIndex = useBottomBandSplit(bandRef, BOTTOM_BAND.length, contentEdge);
 
-  if (isMobile) {
-    return (
-      <div className="scatter-mobile-band" style={{ bottom: -MOBILE_OVERLAP }}>
-        {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
-      </div>
-    );
-  }
+  if (isMobile) return null;
 
   const centerCards = BOTTOM_BAND.slice(0, splitIndex);
   const foldCards = BOTTOM_BAND.slice(splitIndex);
@@ -416,13 +422,15 @@ export const HeroDashboardBottomBand = ({ contentEdge }) => {
         </div>
       )}
 
-      <div ref={bandRef} className="scatter-bottom-band" style={{ bottom: -BOTTOM_OVERLAP }}>
-        {foldCards.map((entry, index) => (
-          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-            {renderCard(entry, index + splitIndex, { axis: "y", sizeClass: entry.size })}
-          </div>
-        ))}
-      </div>
+      {contentEdge && (
+        <div ref={bandRef} className="scatter-bottom-band" style={{ top: contentEdge.heroHeight }}>
+          {foldCards.map((entry, index) => (
+            <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+              {renderCard(entry, index + splitIndex, { axis: "y", sizeClass: entry.size, maxOverflow: MAX_FOLD_OVERFLOW })}
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 };
