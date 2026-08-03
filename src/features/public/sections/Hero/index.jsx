@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ROUTES } from "../../../../utils/routes";
 import PrimaryButton from "../../../../components/ui/PrimaryButton";
 import SecondaryButton from "../../../../components/ui/SecondaryButton";
-import HeroDashboardPreview from "./HeroDashboardPreview";
+import HeroDashboardPreview, { HeroDashboardBottomBand } from "./HeroDashboardPreview";
 import "./Hero.css";
 
 const fadeUp = {
