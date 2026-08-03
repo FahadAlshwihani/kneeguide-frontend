@@ -50,8 +50,14 @@ function extendMaterial(BaseMaterial, cfg) {
   return mat;
 }
 
-const CanvasWrapper = ({ children }) => (
-  <Canvas dpr={[1, 2]} frameloop="always" className="beams-container">
+// `dpr`/`frameloop` are passthrough props (defaulting to the exact values
+// this had hardcoded before) — a narrow, additive performance hook only:
+// callers can cap render resolution or pause the frame loop when
+// offscreen without this component's own shader/geometry/animation logic
+// changing at all, and with no visual difference for any caller that
+// doesn't pass them.
+const CanvasWrapper = ({ children, dpr = [1, 2], frameloop = 'always' }) => (
+  <Canvas dpr={dpr} frameloop={frameloop} className="beams-container">
     {children}
   </Canvas>
 );
