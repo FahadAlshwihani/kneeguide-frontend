@@ -169,3 +169,10 @@
     max-width: 60ch;
   }
 }
+
+@media (min-width: 641px) {
+  .hero-root {
+    overflow: visible;
+    z-index: 1;
+  }
+}

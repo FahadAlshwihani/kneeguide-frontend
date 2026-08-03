@@ -164,13 +164,19 @@
   position: absolute;
   left: 24px;
   right: 24px;
-  bottom: -10px;
+  bottom: -5px;
   isolation: isolate;
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   align-items: flex-end;
   gap: clamp(8px, 1vw, 16px);
   pointer-events: none;
+}
+
+@media (min-width: 641px) {
+  .hero-scatter-wrap {
+    contain: none;
+  }
 }
 
 .scatter-bottom-slot {
