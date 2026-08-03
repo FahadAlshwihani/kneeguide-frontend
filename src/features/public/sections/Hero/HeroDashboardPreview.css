@@ -167,7 +167,7 @@
   bottom: 4px;
   isolation: isolate;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   align-items: flex-end;
   gap: clamp(8px, 1vw, 16px);
   pointer-events: none;
@@ -203,7 +203,7 @@
   .scatter-bottom-band {
     left: 12px;
     right: 12px;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 7px;
   }
 
@@ -248,11 +248,6 @@
 /* The extra bonus tiles only appear once the Hero is genuinely wide —
    this is what "increases the number of floating cards" on large
    desktops without crowding tablet/small-desktop widths. */
-@media (min-width: 1440px) {
-  .scatter-bottom-band {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-  }
-}
 
 /* Mobile has its own carousel instead of a card zone here — see
    HeroMobileCarousel.jsx / HeroMobileCarousel.css. */

@@ -214,6 +214,8 @@ const RAIL_LEFT = [
   { id: "doctor-streak", depth: "back", tier: 1 },
   { id: "doctor-messages", depth: "back", tier: 2 },
   { id: "patient-exercise-completion", depth: "back", tier: 2 },
+  { id: "doctor-appointment", depth: "front" },
+  { id: "patient-exercise", depth: "mid" },
 ];
 
 const RAIL_RIGHT = [
@@ -222,15 +224,13 @@ const RAIL_RIGHT = [
   { id: "patient-today-sessions", depth: "back", tier: 1 },
   { id: "doctor-notes", depth: "back", tier: 2 },
   { id: "doctor-compliance", depth: "back", tier: 2 },
+  { id: "patient-appointment", depth: "front" },
+  { id: "patient-progress", depth: "mid" },
 ];
 
 const BOTTOM_BAND = [
-  { id: "doctor-appointment", size: "lg", depth: "front", tier: 1 },
-  { id: "patient-exercise", size: "md", depth: "mid", tier: 1 },
   { id: "doctor-progress", size: "md", depth: "mid", tier: 1 },
-  { id: "patient-progress", size: "md", depth: "mid", tier: 1 },
   { id: "patient-weekly-progress", size: "md", depth: "mid", tier: 1 },
-  { id: "patient-appointment", size: "lg", depth: "front", tier: 1 },
   { id: "doctor-ai-recommendation", size: "md", depth: "back", tier: 2 },
   { id: "patient-daily-goal", size: "md", depth: "back", tier: 2 },
   { id: "patient-avg-exercise-time", size: "sm", depth: "back", tier: 2 },
