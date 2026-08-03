@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "../../../../utils/routes";
@@ -18,11 +18,12 @@ const fadeUp = {
 
 const Hero = () => {
   const { t } = useTranslation();
-  const previewWrapRef = useRef(null);
 
   return (
     <section className="hero-root">
       <div className="hero-container">
+        <HeroDashboardPreview />
+
         <div className="hero-spacer hero-spacer-top" aria-hidden="true" />
 
         <motion.div className="hero-content" initial="hidden" animate="visible">
@@ -51,10 +52,6 @@ const Hero = () => {
         </motion.div>
 
         <div className="hero-spacer hero-spacer-bottom" aria-hidden="true" />
-
-        <div className="hero-preview-wrap" ref={previewWrapRef}>
-          <HeroDashboardPreview wrapRef={previewWrapRef} />
-        </div>
       </div>
     </section>
   );
