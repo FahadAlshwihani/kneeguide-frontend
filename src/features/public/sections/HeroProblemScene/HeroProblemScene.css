@@ -14,17 +14,45 @@
    with z-index either 0 or auto paint together in DOM order — so simply
    keeping the background layers first in markup and <Hero />/<Problem />/
    <Solution /> last is what guarantees the real content always paints on
-   top, with no z-index arithmetic needed. */
+   top, with no z-index arithmetic needed.
+
+   Root-cause note on the recurring "rectangular line" at each section
+   boundary: it was never a background/border/shadow on a section root —
+   Hero/Problem/Solution all confirmed transparent, no competing
+   backgrounds. The Beams canvas itself (`<color attach="background"
+   args={['#000000']} />` inside Beams.jsx) is opaque everywhere it
+   renders, and .scene-background-layer's `inset: 0` always matches this
+   wrapper's *real* combined height regardless of Problem/Solution's exact
+   content — so the canvas itself can't leave a gap. What *can* leave a
+   gap: Problem/Solution use `min-height: 100svh`, but the treatment
+   layers below were sized using a flat `100svh` guess (--problem-h) — if
+   real content (padding + the 3-card grid) ever renders taller than that
+   guess at some viewport size, the treatment layers fell short of the
+   section's *actual* height, and the raw, untreated dark canvas showed
+   through right at that edge — reading exactly as a rectangular line.
+   Fixed below by anchoring every mask's ramp to absolute calc() lengths
+   (not percentages of the element's own box, which would rescale
+   whenever the box is resized) and then padding each element's box with
+   generous extra height past where its ramp finishes — since a CSS
+   gradient holds its last stop's value for any distance beyond it, that
+   extra height is inert (same already-resolved state) but guarantees
+   there is no unrendered gap even if real content runs taller than the
+   100svh guess by a few hundred px. */
 
 .hero-problem-scene {
   position: relative;
   isolation: isolate;
   /* Hero has a fixed height; Problem is only min-height, so this is an
      approximation (assumes Problem's content doesn't force it taller
-     than 100svh, which it doesn't) — the best a CSS-only anchor can do
-     without JS layout measurement. */
+     than 100svh) — the best a CSS-only anchor can do without JS layout
+     measurement. The safety buffers below exist specifically because
+     this approximation can be wrong. */
   --hero-h: calc(100svh - 72px);
   --problem-h: 100svh;
+  /* How much extra, inert height each layer carries past where its ramp
+     actually finishes — pure safety margin against Problem/Solution
+     rendering taller than --problem-h assumes. */
+  --overshoot: 260px;
 }
 
 /* The shared canvas. Plain `absolute; inset: 0`, spanning the full
@@ -41,10 +69,12 @@
 }
 
 /* Layer 1 — Hero's own cinematic vignette. Byte-identical to the
-   original Hero.css rule, confined to exactly Hero's own height and
-   nothing more — it no longer needs to extend into Problem, because
-   Problem now provides its own matching darkness at its own top (see
-   Layer 2 below) instead of relying on this layer to bridge the gap. */
+   original Hero.css rule, confined to exactly Hero's own height (which
+   is exact, not approximated — Hero uses a real `height`, not
+   `min-height` — so this layer needs no overshoot buffer). It no longer
+   needs to extend into Problem, because Problem now provides its own
+   matching darkness at its own top (see Layer 2 below) instead of
+   relying on this layer to bridge the gap. */
 .scene-hero-vignette {
   position: absolute;
   top: 0;
@@ -57,26 +87,43 @@
 }
 
 /* Layer 2 — the other half of what makes the boundary disappear: a flat
-   wash matching the vignette's own ending tone (~0.87 combined alpha),
-   confined to exactly Problem's own height. At Problem's very top this
-   sits at full strength — visually indistinguishable from Hero's own
-   ending darkness, so the boundary has nothing to reveal — then
-   dissolves gradually across Problem's *entire* height (mirroring Layer
-   3's own rise below, stop-for-stop) rather than in a short window near
-   the top. An oversized, off-center radial (far wider than any real
-   viewport) keeps the dissolve from reading as a straight band. */
+   wash matching the vignette's own ending tone (~0.87 combined alpha).
+   At Problem's very top this sits at full strength — visually
+   indistinguishable from Hero's own ending darkness, so the boundary has
+   nothing to reveal — then dissolves gradually across Problem's own
+   height, mirroring Layer 3's own rise stop-for-stop. Every stop is an
+   absolute `calc(var(--problem-h) * n)` length, not a percentage of this
+   element's own (now taller, --overshoot-padded) box — so the box can
+   grow past --problem-h purely as safety margin without stretching or
+   shifting where the actual ramp happens. An oversized, off-center
+   radial (far wider than any real viewport) keeps the dissolve from
+   reading as a straight band. */
 .scene-problem-dark-wash {
   position: absolute;
   top: var(--hero-h);
   left: 0;
   right: 0;
-  height: var(--problem-h);
+  height: calc(var(--problem-h) + var(--overshoot));
   pointer-events: none;
   background: rgba(0, 0, 0, 0.87);
   mask-image: radial-gradient(ellipse 220% 160% at 62% 70%, black 0%, transparent 75%),
-    linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.92) 25%, rgba(0, 0, 0, 0.55) 50%, rgba(0, 0, 0, 0.18) 75%, transparent 100%);
+    linear-gradient(
+      to bottom,
+      black 0,
+      rgba(0, 0, 0, 0.92) calc(var(--problem-h) * 0.25),
+      rgba(0, 0, 0, 0.55) calc(var(--problem-h) * 0.5),
+      rgba(0, 0, 0, 0.18) calc(var(--problem-h) * 0.75),
+      transparent var(--problem-h)
+    );
   -webkit-mask-image: radial-gradient(ellipse 220% 160% at 62% 70%, black 0%, transparent 75%),
-    linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.92) 25%, rgba(0, 0, 0, 0.55) 50%, rgba(0, 0, 0, 0.18) 75%, transparent 100%);
+    linear-gradient(
+      to bottom,
+      black 0,
+      rgba(0, 0, 0, 0.92) calc(var(--problem-h) * 0.25),
+      rgba(0, 0, 0, 0.55) calc(var(--problem-h) * 0.5),
+      rgba(0, 0, 0, 0.18) calc(var(--problem-h) * 0.75),
+      transparent var(--problem-h)
+    );
 }
 
 /* Layer 3 — the atmosphere shift, and where the beams visually invert
@@ -89,51 +136,70 @@
    moving, only recolored.
 
    Its box starts exactly at Problem's top (never earlier — Hero is
-   never touched) and spans Problem + Solution combined, but its mask is
-   ~0 for the entire first stretch, mirroring Layer 2's own dissolve
-   stop-for-stop: barely-there by Problem's 25%, a genuine 50/50 blend
-   with Layer 2 at its middle, mostly applied by its 75%, and fully
-   applied by Problem's bottom — holding there through all of Solution so
-   the light atmosphere established by the end of Problem carries over as
-   Solution's starting state, exactly as Layer 4 needs it. Nothing about
-   this curve is anchored to the Hero/Problem boundary; it's entirely a
-   function of Problem's own vertical progress. */
+   never touched) and its ramp — again anchored to absolute
+   `calc(var(--problem-h) * n)` lengths, not percentages — mirrors Layer
+   2's own dissolve stop-for-stop across Problem's own height: barely
+   there at 25%, a genuine 50/50 blend with Layer 2 at the middle, mostly
+   applied by 75%, fully applied by Problem's bottom. Past that point the
+   box keeps going (Problem + Solution + overshoot) at that same fully-
+   applied state, so the light atmosphere established by the end of
+   Problem carries over as Solution's starting state and stays intact
+   even if Solution renders taller than assumed, exactly what Layer 4
+   needs. Nothing about this curve is anchored to the Hero/Problem
+   boundary; it's entirely a function of Problem's own vertical
+   progress. */
 .scene-invert-lighten {
   position: absolute;
   top: var(--hero-h);
   left: 0;
   right: 0;
-  /* Problem + Solution combined (both ≈100svh) — Problem occupies the
-     first half of this layer's own box, Solution the second, which is
-     why the stops below are all halved (12.5/25/37.5/50 instead of
-     25/50/75/100) against this taller box. */
-  height: calc(var(--problem-h) * 2);
+  height: calc(var(--problem-h) * 2 + var(--overshoot));
   pointer-events: none;
   background: #f9f4ea;
   mix-blend-mode: exclusion;
   opacity: 0.86;
   mask-image: radial-gradient(ellipse 210% 150% at 38% 30%, black 0%, transparent 75%),
-    linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.08) 12.5%, rgba(0, 0, 0, 0.45) 25%, rgba(0, 0, 0, 0.82) 37.5%, black 50%, black 100%);
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      rgba(0, 0, 0, 0.08) calc(var(--problem-h) * 0.125),
+      rgba(0, 0, 0, 0.45) calc(var(--problem-h) * 0.25),
+      rgba(0, 0, 0, 0.82) calc(var(--problem-h) * 0.375),
+      black var(--problem-h)
+    );
   -webkit-mask-image: radial-gradient(ellipse 210% 150% at 38% 30%, black 0%, transparent 75%),
-    linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.08) 12.5%, rgba(0, 0, 0, 0.45) 25%, rgba(0, 0, 0, 0.82) 37.5%, black 50%, black 100%);
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      rgba(0, 0, 0, 0.08) calc(var(--problem-h) * 0.125),
+      rgba(0, 0, 0, 0.45) calc(var(--problem-h) * 0.25),
+      rgba(0, 0, 0, 0.82) calc(var(--problem-h) * 0.375),
+      black var(--problem-h)
+    );
 }
 
-/* Layer 4 — confined to Solution's own height only: a plain (no blend
-   mode) warm-white cover that progressively paints over the canvas,
-   fading the now-light-and-gray beams out entirely by Solution's bottom
-   edge, leaving the same clean flat warm-white the rest of the site
-   already uses. Untouched — the Problem → Solution handoff was already
-   correct and this pass only repairs the Hero → Problem one above. */
+/* Layer 4 — a plain (no blend mode) warm-white cover that progressively
+   paints over the canvas, fading the now-light-and-gray beams out
+   entirely by Solution's bottom edge, leaving the same clean flat
+   warm-white the rest of the site already uses. `bottom: 0` (relative to
+   this wrapper, whose own height always matches the *real* combined
+   content) means its own bottom edge is exact regardless of any
+   approximation error — only its `top` depends on --problem-h, so it
+   starts a bit earlier than Problem's exact real end as its own safety
+   margin (overlapping into where Layer 3 is already fully applied
+   anyway, never leaving a gap) rather than starting late. The mask's own
+   percentages are safe to leave as normal percentages here, since this
+   element's height is already exact (bottom: 0), not approximated. */
 .scene-beam-fadeout {
   position: absolute;
-  top: calc(var(--hero-h) + var(--problem-h));
+  top: calc(var(--hero-h) + var(--problem-h) - var(--overshoot));
   left: 0;
   right: 0;
   bottom: 0;
   pointer-events: none;
   background: #f9f4ea;
   mask-image: radial-gradient(ellipse 140% 85% at 55% 100%, black 0%, transparent 66%),
-    linear-gradient(to bottom, transparent 0%, transparent 14%, black 90%, black 100%);
+    linear-gradient(to bottom, transparent 0%, transparent 10%, black 88%, black 100%);
   -webkit-mask-image: radial-gradient(ellipse 140% 85% at 55% 100%, black 0%, transparent 66%),
-    linear-gradient(to bottom, transparent 0%, transparent 14%, black 90%, black 100%);
+    linear-gradient(to bottom, transparent 0%, transparent 10%, black 88%, black 100%);
 }
