@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Beams from "./Beams";
 import "./PublicBackground.css";
 
@@ -25,22 +25,20 @@ const getResponsiveDpr = () => {
  * and it never intercepts clicks (pointer-events: none throughout). Skips
  * the animated canvas entirely for prefers-reduced-motion.
  *
- * Two additional, narrow performance behaviors, both driven from here
- * rather than inside Beams.jsx itself (which only grew small, additive,
- * backward-compatible `dpr`/`frameloop` passthrough props for this — its
- * shader/geometry/animation are untouched, and its rendered appearance
- * while visible does not change):
- *   - `dpr` is capped well below Beams' own default (see above).
- *   - `frameloop` drops to "never" once this element has scrolled fully
- *     out of view (IntersectionObserver, with a 200px margin so it never
- *     visibly starts/stops right at the viewport edge), so the WebGL
- *     frame loop isn't running behind sections that don't use it.
+ * `active` (default `true`) is an external pause/resume signal — the
+ * caller decides *when* (e.g. HeroProblemScene observes its own, wider
+ * wrapper via IntersectionObserver + document.visibilityState and passes
+ * the combined result down), this component just forwards it to Beams'
+ * `frameloop` prop. Toggling it never remounts the Canvas or resets the
+ * animation, it only starts/stops the frame loop on the same instance.
+ * `dpr` is capped well below Beams' own default here (see above) — both
+ * are small, additive, backward-compatible passthrough props on Beams.jsx
+ * itself; its shader/geometry/animation are untouched, and its rendered
+ * appearance while visible does not change.
  */
-const PublicBackground = ({ className = "" }) => {
+const PublicBackground = ({ className = "", active = true }) => {
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
   const [dpr, setDpr] = useState(getResponsiveDpr);
-  const rootRef = useRef(null);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -56,18 +54,8 @@ const PublicBackground = ({ className = "" }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const node = rootRef.current;
-    if (!node || typeof IntersectionObserver === "undefined") return undefined;
-    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), {
-      rootMargin: "200px 0px",
-    });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div ref={rootRef} className={`public-bg-root ${className}`.trim()} aria-hidden="true">
+    <div className={`public-bg-root ${className}`.trim()} aria-hidden="true">
       {reducedMotion ? (
         <div className="public-bg-static-fallback" />
       ) : (
@@ -81,7 +69,7 @@ const PublicBackground = ({ className = "" }) => {
           scale={0.2}
           rotation={20}
           dpr={dpr}
-          frameloop={isVisible ? "always" : "never"}
+          frameloop={active ? "always" : "never"}
         />
       )}
     </div>
