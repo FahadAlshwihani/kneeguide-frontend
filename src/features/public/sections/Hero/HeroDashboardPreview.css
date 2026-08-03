@@ -118,20 +118,33 @@
 }
 
 /* Bottom band: the widest zone, stretching almost the full Hero width.
-   `top` is set inline by the component (`layout.bandTop`, the real
-   measured bottom edge of the content plus its breathing margin) so the
-   band always begins below the CTA row, never behind it — flex-wrap
-   means it still reflows into more rows on narrower viewports entirely on
-   its own, never via a hardcoded breakpoint. */
+   Rendered by HeroDashboardBottomBand as a direct child of `.hero-root`
+   (a sibling of `.hero-container`, not a descendant of `.hero-scatter-wrap`
+   any more — see Hero/index.jsx and Hero.css), specifically so it isn't
+   subject to `.hero-container`'s overflow clip and can float its small,
+   deliberate overlap past the fold into the next section. `max-width` +
+   `margin` reproduce `.hero-container`'s own centering so the band still
+   lines up horizontally with the rails/corners above it. `top` is set
+   inline by the component (`layout.bandTop`, the real measured bottom
+   edge of the content plus its breathing margin) so the band always
+   begins below the CTA row, never behind it — flex-wrap means it still
+   reflows into more rows on narrower viewports entirely on its own, never
+   via a hardcoded breakpoint. The elevated z-index is what lets it paint
+   above the next section's own content in that small overlap band instead
+   of being covered by it. */
 .scatter-bottom-band {
   position: absolute;
   left: 3%;
   right: 3%;
+  max-width: 1680px;
+  margin: 0 auto;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: clamp(14px, 1.8vw, 28px);
+  pointer-events: none;
 }
 
 @media (max-width: 1023px) {
@@ -151,26 +164,32 @@
 }
 
 /* Mobile: no side room at all, so the preview becomes a small, hand-picked
-   vertical stack anchored below the content instead of framing it. `top`
-   is set inline by the component, same as the bottom band above. */
+   vertical stack anchored below the content instead of framing it. Same
+   escape-the-clip / elevated-z-index reasoning as the bottom band above
+   (this is mobile's equivalent of the bottom row) — `top` is set inline
+   by the component. */
 .scatter-mobile-band {
   position: absolute;
   left: 6%;
   right: 6%;
+  max-width: 1680px;
+  margin: 0 auto;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: clamp(10px, 3vw, 16px);
+  pointer-events: none;
 }
 
-.hero-scatter-wrap--mobile .hero-dashboard-preview-item--lg {
+.scatter-mobile-band .hero-dashboard-preview-item--lg {
   width: min(100%, 320px);
 }
 
-.hero-scatter-wrap--mobile .hero-dashboard-preview-item--md {
+.scatter-mobile-band .hero-dashboard-preview-item--md {
   width: min(78%, 260px);
 }
 
-.hero-scatter-wrap--mobile .hero-dashboard-preview-item--sm {
+.scatter-mobile-band .hero-dashboard-preview-item--sm {
   width: min(60%, 200px);
 }
