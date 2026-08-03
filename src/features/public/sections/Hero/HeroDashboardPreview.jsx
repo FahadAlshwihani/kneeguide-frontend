@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {
@@ -257,8 +257,6 @@ const BOTTOM_BAND = [
 // content — never up into it. Bounding it here means no single card can
 // ever end up more than this many px into the next section, i.e. it can
 // never render fully inside it — by construction, not by chance.
-const MAX_FOLD_OVERFLOW = 25;
-
 // Shared by every card-rendering component in the Hero (corners/rails,
 // the fold band + center band, and the mobile carousel in
 // HeroMobileCarousel.jsx) so the pool/render logic exists in exactly one
@@ -283,9 +281,8 @@ export const useHeroDashboardPreview = () => {
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
 
-  const renderCard = (entry, index, { axis = "y", sizeClass = "sm", maxOverflow } = {}) => {
+  const renderCard = (entry, index, { axis = "y", sizeClass = "sm" } = {}) => {
     let restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
-    if (typeof maxOverflow === "number") restY = Math.min(restY, maxOverflow);
     const jitter = axis === "x" ? jitterX(entry.id) : 0;
     const depth = DEPTH[entry.depth] || DEPTH.mid;
 
@@ -341,6 +338,14 @@ const HeroDashboardPreview = () => {
           </div>
         ))}
       </div>
+
+      <div className="scatter-bottom-band">
+        {BOTTOM_BAND.map((entry, index) => (
+          <div key={entry.id} className="scatter-bottom-slot">
+            {renderCard(entry, index + 12, { axis: "y", sizeClass: entry.size })}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -359,27 +364,6 @@ const HeroDashboardPreview = () => {
 // cluster and checks again. Same every-render-measure/converge pattern
 // used elsewhere in this file; `splitIndex < total - 1` is the floor that
 // guarantees it terminates and never empties the fold band entirely.
-const useBottomBandSplit = (ref, total, contentEdge) => {
-  const [splitIndex, setSplitIndex] = useState(0);
-
-  useLayoutEffect(() => {
-    setSplitIndex(0);
-  }, [total, contentEdge?.bottom, contentEdge?.heroHeight]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useLayoutEffect(() => {
-    const node = ref.current;
-    if (!node || !contentEdge) return;
-    const available = Math.max(0, contentEdge.heroHeight - contentEdge.bottom);
-    const needed = node.getBoundingClientRect().height;
-    if (needed > available + 0.5 && splitIndex < total - 1) {
-      setSplitIndex((count) => count + 1);
-    }
-  });
-
-  return splitIndex;
-};
-
 // Desktop only — mobile uses HeroMobileCarousel instead (rendered
 // separately; see Hero/index.jsx). Rendered by HeroProblemScene as the
 // very last element in the scene (after `.scene-light-phase`, i.e. after
@@ -400,39 +384,4 @@ const useBottomBandSplit = (ref, total, contentEdge) => {
 // (`top: contentEdge.bottom`) — same cards, same styling, same stagger/
 // depth, just a different one of the two positions. Nothing is ever
 // removed, hidden, or left overlapping the content.
-export const HeroDashboardBottomBand = ({ contentEdge }) => {
-  const { isMobile, renderCard } = useHeroDashboardPreview();
-  const bandRef = useRef(null);
-  const splitIndex = useBottomBandSplit(bandRef, BOTTOM_BAND.length, contentEdge);
-
-  if (isMobile) return null;
-
-  const centerCards = BOTTOM_BAND.slice(0, splitIndex);
-  const foldCards = BOTTOM_BAND.slice(splitIndex);
-
-  return (
-    <>
-      {centerCards.length > 0 && contentEdge && (
-        <div className="scatter-center-band" style={{ top: contentEdge.bottom }}>
-          {centerCards.map((entry, index) => (
-            <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-              {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {contentEdge && (
-        <div ref={bandRef} className="scatter-bottom-band" style={{ top: contentEdge.heroHeight }}>
-          {foldCards.map((entry, index) => (
-            <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-              {renderCard(entry, index + splitIndex, { axis: "y", sizeClass: entry.size, maxOverflow: MAX_FOLD_OVERFLOW })}
-            </div>
-          ))}
-        </div>
-      )}
-    </>
-  );
-};
-
 export default HeroDashboardPreview;

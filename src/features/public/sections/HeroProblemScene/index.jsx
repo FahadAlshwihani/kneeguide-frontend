@@ -1,9 +1,8 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PublicBackground from "../../../../components/public/backgrounds/PublicBackground";
 import Hero from "../Hero";
 import Problem from "../Problem";
 import Solution from "../Solution";
-import { HeroDashboardBottomBand } from "../Hero/HeroDashboardPreview";
 import "./HeroProblemScene.css";
 
 /**
@@ -70,7 +69,6 @@ const HeroProblemScene = () => {
   const problemMeasureRef = useRef(null);
   const [isSceneActive, setIsSceneActive] = useState(true);
   const [problemRealHeight, setProblemRealHeight] = useState(null);
-  const [contentEdge, setContentEdge] = useState(null);
 
   useEffect(() => {
     const node = sceneRef.current;
@@ -119,39 +117,6 @@ const HeroProblemScene = () => {
   // this scene's own ref) rather than a forwarded ref — Hero stays a
   // normal, self-contained component; only this scene needs to know where
   // its content box is, purely to position HeroDashboardBottomBand.
-  useLayoutEffect(() => {
-    const scene = sceneRef.current;
-    if (!scene) return undefined;
-
-    const measure = () => {
-      const heroRoot = scene.querySelector(".hero-root");
-      const heroContent = scene.querySelector(".hero-content");
-      if (!heroRoot || !heroContent) return;
-
-      const rootRect = heroRoot.getBoundingClientRect();
-      const contentRect = heroContent.getBoundingClientRect();
-      const margin = Math.max(24, Math.min(48, rootRect.width * 0.03));
-
-      setContentEdge({
-        bottom: contentRect.bottom - rootRect.top + margin,
-        heroHeight: rootRect.height,
-      });
-    };
-
-    measure();
-
-    let observer;
-    if (typeof ResizeObserver !== "undefined") {
-      const heroRoot = scene.querySelector(".hero-root");
-      const heroContent = scene.querySelector(".hero-content");
-      observer = new ResizeObserver(measure);
-      if (heroRoot) observer.observe(heroRoot);
-      if (heroContent) observer.observe(heroContent);
-    }
-
-    return () => observer?.disconnect();
-  }, []);
-
   const sceneStyle = problemRealHeight
     ? { "--problem-real-h": `${problemRealHeight}px` }
     : undefined;
@@ -176,7 +141,6 @@ const HeroProblemScene = () => {
         <Solution />
       </div>
 
-      <HeroDashboardBottomBand contentEdge={contentEdge} />
     </section>
   );
 };
