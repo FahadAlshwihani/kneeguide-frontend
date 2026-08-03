@@ -186,8 +186,8 @@ const buildPool = (data) => ({
 // the cards inside it simply flow (flex column/wrap), so the composition
 // keeps its intent — frame the edges, leave the center clear — at any size.
 const CORNERS = [
-  { id: "patient-exercises-assigned", side: "left", depth: "back" },
-  { id: "doctor-active-patients", side: "right", depth: "back" },
+  { id: "patient-exercises-assigned", depth: "back" },
+  { id: "doctor-active-patients", depth: "back" },
 ];
 
 const RAIL_LEFT = [
@@ -237,7 +237,7 @@ const HeroDashboardPreview = () => {
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
 
-  const renderCard = (entry, index, { axis = "y", sizeClass = "sm", extraClassName = "" } = {}) => {
+  const renderCard = (entry, index, { axis = "y", sizeClass = "sm" } = {}) => {
     const restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
     const jitter = axis === "x" ? jitterX(entry.id) : 0;
     const depth = DEPTH[entry.depth] || DEPTH.mid;
@@ -245,7 +245,7 @@ const HeroDashboardPreview = () => {
     return (
       <motion.div
         key={entry.id}
-        className={`hero-dashboard-preview-item hero-dashboard-preview-item--${sizeClass} ${extraClassName}`.trim()}
+        className={`hero-dashboard-preview-item hero-dashboard-preview-item--${sizeClass}`}
         style={{
           ...depthStyle(depth),
           ...(jitter ? { marginInlineStart: `${jitter}px` } : null),
