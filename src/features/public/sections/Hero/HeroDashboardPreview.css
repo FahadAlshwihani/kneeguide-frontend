@@ -101,11 +101,13 @@
   top: 20%;
   bottom: 18%;
   width: clamp(136px, 12vw, 182px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: stretch;
-  gap: clamp(10px, 1.6vw, 20px);
+}
+
+.scatter-rail > div {
+  position: absolute;
+  top: var(--rail-position);
+  inset-inline: 0;
+  transform: translateY(var(--rail-shift));
 }
 
 .scatter-rail-left {

@@ -324,19 +324,33 @@ const HeroDashboardPreview = () => {
       <div className="scatter-corner scatter-corner-right">{renderCard(CORNERS[1], 1, { axis: "x", sizeClass: "sm" })}</div>
 
       <div className="scatter-rail scatter-rail-left">
-        {RAIL_LEFT.map((entry, index) => (
-          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+        {RAIL_LEFT.map((entry, index) => {
+          const progress = (index / (RAIL_LEFT.length - 1)) * 100;
+          return (
+          <div
+            key={entry.id}
+            className={entry.tier === 2 ? "scatter-tier-2" : undefined}
+            style={{ "--rail-position": `${progress}%`, "--rail-shift": `-${progress}%` }}
+          >
             {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="scatter-rail scatter-rail-right">
-        {RAIL_RIGHT.map((entry, index) => (
-          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+        {RAIL_RIGHT.map((entry, index) => {
+          const progress = (index / (RAIL_RIGHT.length - 1)) * 100;
+          return (
+          <div
+            key={entry.id}
+            className={entry.tier === 2 ? "scatter-tier-2" : undefined}
+            style={{ "--rail-position": `${progress}%`, "--rail-shift": `-${progress}%` }}
+          >
             {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="scatter-bottom-band">
