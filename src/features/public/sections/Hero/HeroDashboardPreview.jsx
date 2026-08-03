@@ -364,33 +364,70 @@ const HeroDashboardPreview = ({ safeZone }) => {
   );
 };
 
+// Trims from the *end* of a list (least-essential first, per how
+// BOTTOM_BAND/MOBILE_STACK are ordered) until the container's real
+// rendered height fits within `availableHeight` — the center content's
+// safe zone is a hard ceiling on the band's height, never something a
+// card count is allowed to push through. Runs on every render (no deps,
+// same pattern the old grid-fit loop used): each trim causes a
+// re-render, which measures again, converging before the browser paints
+// an intermediate frame. Resets to the full count whenever the ceiling
+// itself changes (viewport/content resize), so a narrower measurement
+// never sticks once there's room again.
+const useFittedCount = (ref, totalCount, availableHeight) => {
+  const [visibleCount, setVisibleCount] = useState(totalCount);
+
+  useLayoutEffect(() => {
+    setVisibleCount(totalCount);
+  }, [totalCount, availableHeight]);
+
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (!node || availableHeight == null) return;
+    const needed = node.getBoundingClientRect().height;
+    if (needed > availableHeight + 0.5 && visibleCount > 1) {
+      setVisibleCount((count) => count - 1);
+    }
+  });
+
+  return visibleCount;
+};
+
 // The bottom row (desktop) / mobile stack — rendered by Hero/index.jsx as
 // a sibling of .hero-container, specifically so it sits outside that
 // element's overflow clip and can float a small, deliberate overlap past
 // the Hero's fold into the next section. Anchored via a negative `bottom`
-// (see BOTTOM_OVERLAP) instead of a computed `top`, so the row sits
-// against the Hero's own bottom edge the same way it always conceptually
-// has — only now allowed to overhang it by a fixed, small amount instead
-// of being clipped there. Position within the row, stagger, depth and
-// card set are all unchanged from before; only the anchor edge changed —
-// see HeroDashboardPreview.css for the z-index that keeps it above the
-// next section's own content in that overlap band.
+// (see BOTTOM_OVERLAP), so the escaping amount past the fold stays fixed
+// regardless of card height; `useFittedCount` keeps the row's *other* end
+// from ever rising into the content's safe zone by dropping the
+// least-essential cards first instead of nudging anything upward. Per-
+// card position within the row, stagger, depth and styling are all
+// unchanged from before — only whether a given card renders at all, and
+// the row's anchor edge, changed. See HeroDashboardPreview.css for the
+// z-index that keeps it above the next section's own content in that
+// overlap band.
 export const HeroDashboardBottomBand = ({ safeZone }) => {
   const { isMobile, layout, renderCard } = useHeroDashboardPreview(safeZone);
+  const bandRef = useRef(null);
+  const totalCount = isMobile ? MOBILE_STACK.length : BOTTOM_BAND.length;
+  const visibleCount = useFittedCount(bandRef, totalCount, layout?.availableBandHeight);
 
   if (!layout) return null;
 
   if (isMobile) {
+    const visible = MOBILE_STACK.slice(0, visibleCount);
     return (
-      <div className="scatter-mobile-band" style={{ bottom: -BOTTOM_OVERLAP }}>
-        {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
+      <div ref={bandRef} className="scatter-mobile-band" style={{ bottom: -BOTTOM_OVERLAP }}>
+        {visible.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
       </div>
     );
   }
 
+  const visible = BOTTOM_BAND.slice(0, visibleCount);
+
   return (
-    <div className="scatter-bottom-band" style={{ bottom: -BOTTOM_OVERLAP }}>
-      {BOTTOM_BAND.map((entry, index) => (
+    <div ref={bandRef} className="scatter-bottom-band" style={{ bottom: -BOTTOM_OVERLAP }}>
+      {visible.map((entry, index) => (
         <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
           {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}
         </div>
