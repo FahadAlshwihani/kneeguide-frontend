@@ -72,12 +72,7 @@
   background: var(--color-secondary);
 }
 
-/* Top corners: two small tiles well clear of the centered badge. Fixed px
-   (not %) so it matches CORNER_OUTER_INSET in HeroDashboardPreview.jsx
-   exactly — that constant is what the component uses to decide whether
-   there's genuinely enough room above the content to show these at all
-   (`layout.showCorners`), so the anchor here has to be the same number,
-   not an approximation of it. */
+/* Top corners: two small tiles anchored at the Hero's own corners. */
 .scatter-corner {
   position: absolute;
   top: 16px;
@@ -91,24 +86,19 @@
   right: 16px;
 }
 
-/* Left/right rails: frame the copy block without ever entering its
-   column. Width is set inline by the component (`layout.leftRailWidth` /
-   `rightRailWidth`, clamped to the real measured clearance beside the
-   content — see safeZone in Hero/index.jsx); the rail's own `left`/
-   `right` anchor here matches RAIL_OUTER_INSET's assumed value exactly.
-   `top`/`bottom` (not a fixed height) give the flex column real room to
-   distribute its cards with its own natural spacing, which is what
-   creates the "one higher, one lower" stagger — no manual y offsets
-   needed here, each card additionally gets a small deterministic
-   horizontal jitter (see jitterX in the component) for asymmetry. Whether
-   a rail renders at all is also decided by the component
-   (`layout.showLeftRail` / `showRightRail`) — if there truly isn't room
-   beside the content, it simply isn't rendered rather than forced to
-   overlap. */
+/* Left/right rails: frame the copy block, at a fixed width regardless of
+   how close that puts them to the content — see the file header on why
+   that's intentional here. `top`/`bottom` (not a fixed height) give the
+   flex column real room to distribute its cards with its own natural
+   spacing, which is what creates the "one higher, one lower" stagger —
+   no manual y offsets needed here, each card additionally gets a small
+   deterministic horizontal jitter (see jitterX in the component) for
+   asymmetry. */
 .scatter-rail {
   position: absolute;
   top: 20%;
   bottom: 18%;
+  width: clamp(136px, 12vw, 182px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
