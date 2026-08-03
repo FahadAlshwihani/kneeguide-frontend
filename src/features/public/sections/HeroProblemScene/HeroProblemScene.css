@@ -1,14 +1,17 @@
 /* Hero + Problem + Solution as one continuous animated scene: a single
-   Beams canvas (PublicBackground) pinned behind all three sections, with
-   a layered treatment overlay doing the atmosphere journey while the
-   same animation keeps running underneath. All overlays below are
-   static — only the WebGL canvas itself animates.
+   Beams canvas (PublicBackground) absolutely positioned behind all three
+   sections, scrolling with the document like any other page content (no
+   `position: sticky`/`fixed` here — that was tried for its performance
+   benefit and reverted because it read as a fixed/parallax background
+   instead of one continuous canvas moving with the page). A layered,
+   static treatment overlay does the atmosphere journey while the same
+   animation keeps running underneath — only the WebGL canvas animates.
 
    Stacking note: none of the elements below (or Hero's/Problem's/
    Solution's own section roots) set an explicit z-index, and the only
-   positioned elements are .scene-background-layer/-sticky and the
-   treatment divs. Per the CSS stacking spec, positioned descendants with
-   z-index either 0 or auto paint together in DOM order — so simply
+   positioned elements are .scene-background-layer and the treatment
+   divs (all absolute). Per the CSS stacking spec, positioned descendants
+   with z-index either 0 or auto paint together in DOM order — so simply
    keeping the background layers first in markup and <Hero />/<Problem />/
    <Solution /> last is what guarantees the real content always paints on
    top, with no z-index arithmetic needed. */
@@ -22,23 +25,13 @@
      without JS layout measurement. */
   --hero-h: calc(100svh - 72px);
   --problem-h: 100svh;
-  /* How far the vignette's fade-out and the invert layer's fast initial
-     rise overlap each other across the Hero/Problem handoff — inside the
-     requested 240-360px range. Both layers reference this same value so
-     their curves stay matched if it's ever retuned. */
-  --seam-overlap: 320px;
-  /* A few extra px of *physical* overlap between adjacent layers, on top
-     of --seam-overlap, so nothing relies on two separate elements
-     resolving an identical calc() to the exact same sub-pixel value. */
-  --seam-safety: 4px;
 }
 
-/* Removed from normal flow entirely (`position: absolute`), so it never
-   contributes height and can never push Hero/Problem/Solution down the
-   page — see .scene-background-sticky below for why the sticky behavior
-   has to live one level deeper than this. `contain: paint` is safe here
-   specifically because this subtree is 100% decorative background, never
-   real content that might need to paint outside its own box. */
+/* The shared canvas. Plain `absolute; inset: 0`, spanning the full
+   combined height of all three sections and scrolling normally with
+   them — deliberately not sticky. PublicBackground's own oversized
+   insets (percentage-based) size themselves relative to this box exactly
+   as they always have. */
 .scene-background-layer {
   position: absolute;
   inset: 0;
@@ -47,45 +40,46 @@
   pointer-events: none;
 }
 
-/* The actual performance fix: sticky *inside* the already-out-of-flow
-   wrapper above, so it pins to the viewport for this wrapper's full
-   height without itself ever occupying flow space (a sticky element
-   that's a direct normal-flow child still claims its own space in that
-   flow — nesting it inside an absolute parent is what avoids that).
-   PublicBackground's own oversized insets (tuned for a ~1-viewport
-   container) are correct again unmodified, since that's exactly what
-   this box is. */
-.scene-background-sticky {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 100svh;
-}
-
-/* Layer 1 — Hero's own cinematic vignette. Identical to the original
-   Hero.css rule for Hero's own height, plus a softly-masked extension
-   (--seam-overlap) past Hero's true edge into Problem's territory. The
-   mask's linear component keeps it fully opaque for the *entire*
-   original Hero height — so Hero's own pixels are never altered — and
-   only fades out across the trailing --seam-overlap span; an oversized
-   off-center radial (much wider than any real viewport) breaks that
-   fade into an organic, asymmetric shape instead of a straight edge. */
+/* Layer 1 — Hero's own cinematic vignette. Byte-identical to the
+   original Hero.css rule, confined to exactly Hero's own height and
+   nothing more — it no longer needs to extend into Problem, because
+   Problem now provides its own matching darkness at its own top (see
+   Layer 2 below) instead of relying on this layer to bridge the gap. */
 .scene-hero-vignette {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: calc(var(--hero-h) + var(--seam-overlap) + var(--seam-safety));
+  height: var(--hero-h);
   pointer-events: none;
   background: radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 55%, rgba(0, 0, 0, 0.85) 100%),
     rgba(0, 0, 0, 0.25);
-  mask-image: radial-gradient(ellipse 220% 160% at 38% calc(100% - (var(--seam-overlap) / 2)), black 30%, transparent 88%),
-    linear-gradient(to bottom, black 0%, black calc(100% - var(--seam-overlap) - var(--seam-safety)), transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 220% 160% at 38% calc(100% - (var(--seam-overlap) / 2)), black 30%, transparent 88%),
-    linear-gradient(to bottom, black 0%, black calc(100% - var(--seam-overlap) - var(--seam-safety)), transparent 100%);
 }
 
-/* Layer 2 — the atmosphere shift, and where the beams visually invert
+/* Layer 2 — the other half of what makes the boundary disappear: a flat
+   wash matching the vignette's own ending tone (~0.87 combined alpha),
+   confined to exactly Problem's own height. At Problem's very top this
+   sits at full strength — visually indistinguishable from Hero's own
+   ending darkness, so the boundary has nothing to reveal — then
+   dissolves gradually across Problem's *entire* height (mirroring Layer
+   3's own rise below, stop-for-stop) rather than in a short window near
+   the top. An oversized, off-center radial (far wider than any real
+   viewport) keeps the dissolve from reading as a straight band. */
+.scene-problem-dark-wash {
+  position: absolute;
+  top: var(--hero-h);
+  left: 0;
+  right: 0;
+  height: var(--problem-h);
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.87);
+  mask-image: radial-gradient(ellipse 220% 160% at 62% 70%, black 0%, transparent 75%),
+    linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.92) 25%, rgba(0, 0, 0, 0.55) 50%, rgba(0, 0, 0, 0.18) 75%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 220% 160% at 62% 70%, black 0%, transparent 75%),
+    linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.92) 25%, rgba(0, 0, 0, 0.55) 50%, rgba(0, 0, 0, 0.18) 75%, transparent 100%);
+}
+
+/* Layer 3 — the atmosphere shift, and where the beams visually invert
    rather than dim. A warm-white fill blended with
    `mix-blend-mode: exclusion`: where the canvas underneath is near-black
    (empty space between beams), exclusion against a near-white leaves the
@@ -94,38 +88,37 @@
    swap from bright-on-black to soft-gray-on-warm-white, still clearly
    moving, only recolored.
 
-   This is the other half of the seam fix: its box starts a few px
-   *before* Hero's true edge (--seam-safety, deliberate physical overlap,
-   not a shared calc() with the vignette above) and its mask rises fast
-   — already at moderate strength within the first --seam-overlap span —
-   so it's substantially active for the *entire* time the vignette above
-   is fading out, instead of starting from zero once that fade is
-   already underway (that gap between "vignette mostly gone" and "invert
-   layer barely started" was the actual seam). After that shared span it
-   settles back into the original slow climb, still finishing by roughly
-   Problem's midpoint and holding fully applied through Solution — so the
-   light atmosphere established by the end of Problem still carries over
-   as Solution's starting state, exactly as Layer 3 needs it. */
+   Its box starts exactly at Problem's top (never earlier — Hero is
+   never touched) and spans Problem + Solution combined, but its mask is
+   ~0 for the entire first stretch, mirroring Layer 2's own dissolve
+   stop-for-stop: barely-there by Problem's 25%, a genuine 50/50 blend
+   with Layer 2 at its middle, mostly applied by its 75%, and fully
+   applied by Problem's bottom — holding there through all of Solution so
+   the light atmosphere established by the end of Problem carries over as
+   Solution's starting state, exactly as Layer 4 needs it. Nothing about
+   this curve is anchored to the Hero/Problem boundary; it's entirely a
+   function of Problem's own vertical progress. */
 .scene-invert-lighten {
   position: absolute;
-  top: calc(var(--hero-h) - var(--seam-safety));
+  top: var(--hero-h);
   left: 0;
   right: 0;
   /* Problem + Solution combined (both ≈100svh) — Problem occupies the
      first half of this layer's own box, Solution the second, which is
-     what the mask percentages below are calibrated against. */
-  height: calc(var(--problem-h) * 2 + var(--seam-safety));
+     why the stops below are all halved (12.5/25/37.5/50 instead of
+     25/50/75/100) against this taller box. */
+  height: calc(var(--problem-h) * 2);
   pointer-events: none;
   background: #f9f4ea;
   mix-blend-mode: exclusion;
   opacity: 0.86;
-  mask-image: radial-gradient(ellipse 210% 110% at 42% 16%, black 0%, transparent 48%),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.72) var(--seam-overlap), black 46%, black 100%);
-  -webkit-mask-image: radial-gradient(ellipse 210% 110% at 42% 16%, black 0%, transparent 48%),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.72) var(--seam-overlap), black 46%, black 100%);
+  mask-image: radial-gradient(ellipse 210% 150% at 38% 30%, black 0%, transparent 75%),
+    linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.08) 12.5%, rgba(0, 0, 0, 0.45) 25%, rgba(0, 0, 0, 0.82) 37.5%, black 50%, black 100%);
+  -webkit-mask-image: radial-gradient(ellipse 210% 150% at 38% 30%, black 0%, transparent 75%),
+    linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.08) 12.5%, rgba(0, 0, 0, 0.45) 25%, rgba(0, 0, 0, 0.82) 37.5%, black 50%, black 100%);
 }
 
-/* Layer 3 — confined to Solution's own height only: a plain (no blend
+/* Layer 4 — confined to Solution's own height only: a plain (no blend
    mode) warm-white cover that progressively paints over the canvas,
    fading the now-light-and-gray beams out entirely by Solution's bottom
    edge, leaving the same clean flat warm-white the rest of the site

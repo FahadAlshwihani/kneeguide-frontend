@@ -7,43 +7,40 @@ import "./HeroProblemScene.css";
 
 /**
  * Hero, Problem AND Solution share ONE continuous Beams canvas instead of
- * each rendering its own separate background — mounted exactly once here.
+ * each rendering its own separate background — mounted exactly once here,
+ * absolutely positioned behind all three sections' combined height, and
+ * scrolling with the document exactly like the rest of the page (no
+ * `position: sticky`/`fixed` anywhere in this wrapper — a sticky-canvas
+ * version was tried for its performance benefit and reverted: it read as
+ * a fixed/parallax background with content scrolling over it, which is
+ * explicitly not the intended feel here. The background must move with
+ * the page like a normal, continuous canvas; only its color treatment
+ * changes while scrolling, never its position).
+ *
  * Beams.jsx gets only a narrow, additive performance extension (see its
  * own file) — never touched for shader/geometry/visual-behavior reasons —
- * and PublicBackground (the existing wrapper around it) drives the DPR
- * cap without changing its own rendered appearance while visible.
+ * and PublicBackground (the existing wrapper around it) drives a DPR cap
+ * and a pause-when-offscreen signal without changing its own rendered
+ * appearance while visible or restarting its animation. Visibility is
+ * tracked once, here, on the whole three-section wrapper via
+ * IntersectionObserver + document.visibilityState, and passed down as a
+ * plain `active` prop that only toggles the existing Canvas's `frameloop`
+ * — pause/resume only, never a remount.
  *
- * Canvas geometry (the actual performance fix): `.scene-background-layer`
- * is `position: absolute; inset: 0` — removed from normal flow entirely,
- * so it contributes no height of its own and can never push Hero/Problem/
- * Solution down the page. Its child, `.scene-background-sticky`, is the
- * one that's `position: sticky; height: 100svh` — nested *inside* that
- * already-out-of-flow box, so its own sticky behavior pins it to the
- * viewport for this wrapper's entire scroll range without ever occupying
- * flow space itself either. The result: the WebGL canvas only ever
- * renders at ~1 viewport size, for the whole Hero→Problem→Solution
- * scroll, instead of a framebuffer 3 sections tall. (An earlier attempt
- * made `.scene-background-layer` itself sticky — that's wrong: a sticky
- * element that IS a normal-flow child still occupies its own space in
- * that flow, which is exactly what pushed Hero down the page. The fix is
- * sticky-inside-absolute, not sticky alone.)
- *
- * Visibility is tracked once, here, on the whole three-section wrapper
- * (not narrower) via IntersectionObserver + document.visibilityState,
- * and passed down as a plain `active` prop — PublicBackground only ever
- * toggles the existing Canvas's `frameloop` prop in response (pause/
- * resume), it never remounts the Canvas or restarts the animation.
- *
- * The journey (see HeroProblemScene.css for the actual treatment layers):
+ * The journey (see HeroProblemScene.css for the actual treatment layers)
+ * is now anchored entirely to Problem's own vertical progress, not to the
+ * Hero/Problem boundary:
  *   Hero      — fully cinematic, untouched down to the pixel.
- *   Problem   — the same beams, still fully visible, gradually recolored
- *               (via `mix-blend-mode: exclusion`, not dimmed) from
- *               bright-on-black to soft-gray-on-warm-white across its
- *               whole height.
+ *   Problem   — starts looking identical to Hero's own ending state (so
+ *               there is nothing to blend right at the boundary — both
+ *               sides already match), then performs the entire dark ->
+ *               warm-white transformation gradually across its own full
+ *               height. The beams stay fully visible throughout, only
+ *               recolored (`mix-blend-mode: exclusion`, never dimmed).
  *   Solution  — continues that same light/gray-beams look, then the
  *               beams themselves gradually fade beneath a solid
  *               warm-white cover, reaching a clean flat warm-white by
- *               its bottom edge.
+ *               its bottom edge (unchanged from before).
  *
  * Hero/Problem/Solution below render only their own foreground content;
  * none of them owns a background anymore.
@@ -86,12 +83,11 @@ const HeroProblemScene = () => {
   return (
     <section className="hero-problem-scene" ref={sceneRef}>
       <div className="scene-background-layer" aria-hidden="true">
-        <div className="scene-background-sticky">
-          <PublicBackground active={isSceneActive} />
-        </div>
+        <PublicBackground active={isSceneActive} />
       </div>
 
       <div className="scene-hero-vignette" aria-hidden="true" />
+      <div className="scene-problem-dark-wash" aria-hidden="true" />
       <div className="scene-invert-lighten" aria-hidden="true" />
       <div className="scene-beam-fadeout" aria-hidden="true" />
 
