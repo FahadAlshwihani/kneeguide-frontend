@@ -263,7 +263,13 @@ const computeLayout = (safeZone) => {
   };
 };
 
-const HeroDashboardPreview = ({ safeZone }) => {
+// Shared by both components below so the pool/layout/render logic exists
+// in exactly one place even though the framing zones (corners + rails)
+// and the bottom band render as two separate React trees now — the band
+// has to live outside .hero-container to escape its overflow clip (see
+// Hero/index.jsx and Hero.css), so it can no longer be a child of the
+// same component instance that renders the rails.
+const useHeroDashboardPreview = (safeZone) => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const data = useMemo(() => getHeroPreviewData(t), [t]);
@@ -294,22 +300,20 @@ const HeroDashboardPreview = ({ safeZone }) => {
     );
   };
 
-  // Nothing renders until the real content box has been measured — with
-  // `useLayoutEffect` driving that measurement in Hero/index.jsx this
-  // resolves before the first paint, so in practice there's no visible
-  // pop-in; what it guarantees is that a card is never placed from a
-  // guessed position, even for one frame.
-  if (!layout) return null;
+  return { isMobile, layout, renderCard };
+};
 
-  if (isMobile) {
-    return (
-      <div className="hero-scatter-wrap hero-scatter-wrap--mobile">
-        <div className="scatter-mobile-band" style={{ top: layout.bandTop }}>
-          {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
-        </div>
-      </div>
-    );
-  }
+// Corners + rails only — unchanged from before. Nothing renders until the
+// real content box has been measured — with `useLayoutEffect` driving
+// that measurement in Hero/index.jsx this resolves before the first
+// paint, so in practice there's no visible pop-in; what it guarantees is
+// that a card is never placed from a guessed position, even for one
+// frame. Mobile has no frame zones, so this renders nothing there — see
+// HeroDashboardBottomBand for its stack.
+const HeroDashboardPreview = ({ safeZone }) => {
+  const { isMobile, layout, renderCard } = useHeroDashboardPreview(safeZone);
+
+  if (!layout || isMobile) return null;
 
   return (
     <div className="hero-scatter-wrap">
@@ -339,14 +343,38 @@ const HeroDashboardPreview = ({ safeZone }) => {
           ))}
         </div>
       )}
+    </div>
+  );
+};
 
-      <div className="scatter-bottom-band" style={{ top: layout.bandTop }}>
-        {BOTTOM_BAND.map((entry, index) => (
-          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-            {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}
-          </div>
-        ))}
+// The bottom row (desktop) / mobile stack — rendered by Hero/index.jsx as
+// a sibling of .hero-container, specifically so it sits outside that
+// element's overflow clip and can float its small, deliberate overlap
+// past the Hero's fold into the next section. Position, stagger, depth
+// and card set are all unchanged from before; only where this piece of
+// markup lives in the DOM (and its CSS positioning context) changed —
+// see HeroDashboardPreview.css for the z-index that keeps it above the
+// next section's own content in that overlap band.
+export const HeroDashboardBottomBand = ({ safeZone }) => {
+  const { isMobile, layout, renderCard } = useHeroDashboardPreview(safeZone);
+
+  if (!layout) return null;
+
+  if (isMobile) {
+    return (
+      <div className="scatter-mobile-band" style={{ top: layout.bandTop }}>
+        {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
       </div>
+    );
+  }
+
+  return (
+    <div className="scatter-bottom-band" style={{ top: layout.bandTop }}>
+      {BOTTOM_BAND.map((entry, index) => (
+        <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+          {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}
+        </div>
+      ))}
     </div>
   );
 };

@@ -4,10 +4,18 @@
    section that must never exceed 100svh (strict). The preview is never
    split into its own section; it starts immediately below the CTAs inside
    this same block. Every measurement below is fluid (clamp, svh-relative)
-   so the whole thing compresses to fit rather than growing past the fold. */
+   so the whole thing compresses to fit rather than growing past the fold.
+
+   `.hero-root` deliberately does NOT clip its own overflow (unlike
+   before) — `.hero-container` does instead, at the exact same visual
+   boundary (it fills `.hero-root` completely, see below), for everything
+   except the bottom card band. `HeroDashboardBottomBand` (in
+   Hero/index.jsx) renders as `.hero-root`'s other child, a sibling of
+   `.hero-container`, specifically so it is *not* subject to that clip and
+   can float a small, intentional amount past the fold into the next
+   section — see HeroDashboardPreview.css for its own positioning. */
 .hero-root {
   position: relative;
-  overflow: hidden;
   /* The sticky Header sits above this in normal flow (~65-70px), so the
      Hero itself must be shorter than 100svh by that amount, or the two
      together push past the fold and force a scroll. */
@@ -22,6 +30,7 @@
 .hero-container {
   position: relative;
   z-index: 1;
+  overflow: hidden;
   max-width: 1680px;
   width: 100%;
   height: 100%;
