@@ -381,6 +381,11 @@ const useFittedCount = (ref, totalCount, availableHeight) => {
     setVisibleCount(totalCount);
   }, [totalCount, availableHeight]);
 
+  // Deliberately no deps — this must re-measure after every trim's
+  // re-render to check whether it converged yet, the same pattern the
+  // old grid-fit loop used. `visibleCount > 1` is the floor that
+  // guarantees it always terminates.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     const node = ref.current;
     if (!node || availableHeight == null) return;
