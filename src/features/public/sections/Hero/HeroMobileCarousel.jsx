@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useHeroDashboardPreview } from "./HeroDashboardPreview";
 import "./HeroMobileCarousel.css";
 
@@ -45,6 +45,7 @@ const HeroMobileCarousel = () => {
   const [direction, setDirection] = useState(1);
   const [paused, setPaused] = useState(false);
   const resumeTimerRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
 
   const step = (delta) => {
     setDirection(delta);
@@ -52,11 +53,11 @@ const HeroMobileCarousel = () => {
   };
 
   useEffect(() => {
-    if (paused || total <= 1) return undefined;
+    if (paused || total <= 1 || prefersReducedMotion) return undefined;
     const timer = setInterval(() => step(1), AUTOPLAY_INTERVAL_MS);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paused, total]);
+  }, [paused, total, prefersReducedMotion]);
 
   useEffect(
     () => () => {
@@ -85,24 +86,43 @@ const HeroMobileCarousel = () => {
   const currentId = ids[index];
 
   return (
-    <div className="hero-mobile-carousel" onPointerDown={pauseThenScheduleResume}>
-      <AnimatePresence custom={direction} initial={false}>
-        <motion.div
-          key={currentId}
-          className="hero-dashboard-preview-item hero-mobile-carousel-card"
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.18}
-          onDragEnd={handleDragEnd}
-        >
-          {pool[currentId]}
-        </motion.div>
-      </AnimatePresence>
+    <div className="hero-mobile-carousel" onPointerDown={pauseThenScheduleResume} aria-roledescription="carousel">
+      <div className="hero-mobile-carousel-viewport">
+        <AnimatePresence custom={direction} initial={false} mode="popLayout">
+          <motion.div
+            key={currentId}
+            className="hero-dashboard-preview-item hero-mobile-carousel-card"
+            custom={direction}
+            variants={prefersReducedMotion ? undefined : slideVariants}
+            initial={prefersReducedMotion ? false : "enter"}
+            animate={prefersReducedMotion ? { opacity: 1 } : "center"}
+            exit={prefersReducedMotion ? { opacity: 0 } : "exit"}
+            drag={prefersReducedMotion ? false : "x"}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.18}
+            onDragEnd={handleDragEnd}
+          >
+            {pool[currentId]}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div className="hero-mobile-carousel-dots" aria-label="Dashboard previews">
+        {ids.map((id, dotIndex) => (
+          <button
+            key={id}
+            type="button"
+            className={`hero-mobile-carousel-dot${dotIndex === index ? " is-active" : ""}`}
+            aria-label={`Show preview ${dotIndex + 1}`}
+            aria-current={dotIndex === index ? "true" : undefined}
+            onClick={() => {
+              setDirection(dotIndex > index ? 1 : -1);
+              setIndex(dotIndex);
+              pauseThenScheduleResume();
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 };

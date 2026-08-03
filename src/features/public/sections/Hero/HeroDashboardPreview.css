@@ -25,6 +25,8 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
+  isolation: isolate;
+  contain: paint;
 }
 
 .hero-dashboard-preview-item {
@@ -160,24 +162,53 @@
    to whatever's behind it. */
 .scatter-bottom-band {
   position: absolute;
-  left: 3%;
-  right: 3%;
-  max-width: 1680px;
-  margin: 0 auto;
-  transform: translateY(-100%);
+  left: 24px;
+  right: 24px;
+  bottom: 4px;
   isolation: isolate;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: flex-end;
-  justify-content: space-between;
-  gap: clamp(14px, 1.8vw, 28px);
+  gap: clamp(8px, 1vw, 16px);
   pointer-events: none;
 }
 
-@media (max-width: 1023px) {
+.scatter-bottom-slot {
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.scatter-bottom-slot .hero-dashboard-preview-item {
+  width: 100%;
+  max-width: 240px;
+}
+
+@media (max-width: 1180px) {
+  .scatter-corner {
+    top: 8px;
+  }
+
+  .scatter-rail {
+    top: 16%;
+    bottom: 25%;
+    width: clamp(112px, 12vw, 142px);
+    gap: 8px;
+  }
+
+  .scatter-rail-left { left: 12px; }
+  .scatter-rail-right { right: 12px; }
+
   .scatter-bottom-band {
-    left: 4%;
-    right: 4%;
+    left: 12px;
+    right: 12px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .scatter-bottom-slot .hero-dashboard-preview-item {
+    max-width: 170px;
   }
 }
 
@@ -217,9 +248,9 @@
 /* The extra bonus tiles only appear once the Hero is genuinely wide —
    this is what "increases the number of floating cards" on large
    desktops without crowding tablet/small-desktop widths. */
-@media (max-width: 1279px) {
-  .scatter-tier-2 {
-    display: none;
+@media (min-width: 1440px) {
+  .scatter-bottom-band {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
 

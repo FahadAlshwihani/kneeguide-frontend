@@ -140,6 +140,23 @@
    itself stays transparent so that shared background shows through. */
 
 @media (max-width: 640px) {
+  .hero-root {
+    height: calc(100svh - 72px);
+    padding: clamp(12px, 2svh, 20px) 0;
+  }
+
+  .hero-container {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(10px, 2svh, 18px);
+    padding: 0 16px;
+  }
+
+  .hero-spacer {
+    display: none;
+  }
+
   .hero-description {
     max-width: 60ch;
   }
