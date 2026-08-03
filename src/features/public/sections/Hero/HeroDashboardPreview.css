@@ -156,6 +156,39 @@
   }
 }
 
+/* Center band: whichever cards HeroDashboardBottomBand splits off the
+   front of the fold-anchored row because it would otherwise be tall
+   enough to reach behind the content (see useBottomBandSplit) render
+   here instead — a second cluster pinned to `top: contentEdge.bottom`
+   (the content's own real measured bottom edge, plus breathing margin),
+   i.e. it starts immediately below the CTA row and is never repositioned
+   further than that. Same card styling/stagger/depth as the fold band;
+   only the anchor and (when there's more than one row) the
+   center-vs-space-between distribution differ, since this cluster reads
+   as a compact group rather than a full-width row. No special z-index
+   needed here — unlike the fold band, this sits entirely inside the
+   Hero's own bounds and never overlaps the content by construction. */
+.scatter-center-band {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  max-width: 1680px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(14px, 1.8vw, 28px);
+  pointer-events: none;
+}
+
+@media (max-width: 1023px) {
+  .scatter-center-band {
+    left: 4%;
+    right: 4%;
+  }
+}
+
 /* The extra bonus tiles only appear once the Hero is genuinely wide —
    this is what "increases the number of floating cards" on large
    desktops without crowding tablet/small-desktop widths. */
