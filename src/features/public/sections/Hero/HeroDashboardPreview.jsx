@@ -357,10 +357,13 @@ const HeroDashboardPreview = ({ safeZone }) => {
 
 // The bottom row (desktop) / mobile stack — rendered by Hero/index.jsx as
 // a sibling of .hero-container, specifically so it sits outside that
-// element's overflow clip and can float its small, deliberate overlap
-// past the Hero's fold into the next section. Position, stagger, depth
-// and card set are all unchanged from before; only where this piece of
-// markup lives in the DOM (and its CSS positioning context) changed —
+// element's overflow clip and can float a small, deliberate overlap past
+// the Hero's fold into the next section. Anchored via a negative `bottom`
+// (see BOTTOM_OVERLAP) instead of a computed `top`, so the row sits
+// against the Hero's own bottom edge the same way it always conceptually
+// has — only now allowed to overhang it by a fixed, small amount instead
+// of being clipped there. Position within the row, stagger, depth and
+// card set are all unchanged from before; only the anchor edge changed —
 // see HeroDashboardPreview.css for the z-index that keeps it above the
 // next section's own content in that overlap band.
 export const HeroDashboardBottomBand = ({ safeZone }) => {
@@ -370,14 +373,14 @@ export const HeroDashboardBottomBand = ({ safeZone }) => {
 
   if (isMobile) {
     return (
-      <div className="scatter-mobile-band" style={{ top: layout.bandTop }}>
+      <div className="scatter-mobile-band" style={{ bottom: -BOTTOM_OVERLAP }}>
         {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
       </div>
     );
   }
 
   return (
-    <div className="scatter-bottom-band" style={{ top: layout.bandTop }}>
+    <div className="scatter-bottom-band" style={{ bottom: -BOTTOM_OVERLAP }}>
       {BOTTOM_BAND.map((entry, index) => (
         <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
           {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}

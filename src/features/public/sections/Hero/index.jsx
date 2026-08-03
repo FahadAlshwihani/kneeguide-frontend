@@ -54,7 +54,6 @@ const Hero = () => {
         bottom: contentRect.bottom - rootRect.top + margin + SAFE_BOTTOM_EXTRA,
         left: contentRect.left - rootRect.left - margin,
         right: rootRect.width - (contentRect.right - rootRect.left) - margin,
-        heroHeight: rootRect.height,
       });
     };
 

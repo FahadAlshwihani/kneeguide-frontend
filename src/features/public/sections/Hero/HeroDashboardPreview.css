@@ -124,14 +124,19 @@
    subject to `.hero-container`'s overflow clip and can float its small,
    deliberate overlap past the fold into the next section. `max-width` +
    `margin` reproduce `.hero-container`'s own centering so the band still
-   lines up horizontally with the rails/corners above it. `top` is set
-   inline by the component (`layout.bandTop`, the real measured bottom
-   edge of the content plus its breathing margin) so the band always
-   begins below the CTA row, never behind it — flex-wrap means it still
-   reflows into more rows on narrower viewports entirely on its own, never
-   via a hardcoded breakpoint. The elevated z-index is what lets it paint
-   above the next section's own content in that small overlap band instead
-   of being covered by it. */
+   lines up horizontally with the rails/corners above it.
+
+   `bottom` (not `top`) is set inline by the component, to a small negative
+   value (BOTTOM_OVERLAP) — anchoring from the bottom means the row's
+   position is entirely a function of its own rendered height, so however
+   tall the tallest card in it turns out to be, only that fixed overlap
+   amount ever escapes past the Hero's fold, never a fraction of the row's
+   own height. `align-items: flex-end` keeps every card's bottom edge on
+   that same line even when flex-wrap produces cards of different heights
+   in the same row. flex-wrap still reflows into more rows on narrower
+   viewports entirely on its own, never via a hardcoded breakpoint. The
+   elevated z-index is what lets it paint above the next section's own
+   content in that small overlap band instead of being covered by it. */
 .scatter-bottom-band {
   position: absolute;
   left: 3%;
@@ -141,7 +146,7 @@
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: clamp(14px, 1.8vw, 28px);
   pointer-events: none;
@@ -165,9 +170,9 @@
 
 /* Mobile: no side room at all, so the preview becomes a small, hand-picked
    vertical stack anchored below the content instead of framing it. Same
-   escape-the-clip / elevated-z-index reasoning as the bottom band above
-   (this is mobile's equivalent of the bottom row) — `top` is set inline
-   by the component. */
+   escape-the-clip / elevated-z-index / bottom-anchored-overlap reasoning
+   as the bottom band above (this is mobile's equivalent of the bottom
+   row) — `bottom` is set inline by the component. */
 .scatter-mobile-band {
   position: absolute;
   left: 6%;
