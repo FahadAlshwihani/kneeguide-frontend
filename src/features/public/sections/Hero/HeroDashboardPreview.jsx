@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {
