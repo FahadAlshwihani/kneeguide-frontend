@@ -53,25 +53,41 @@ const hashOf = (id) => Array.from(id).reduce((acc, ch) => acc + ch.charCodeAt(0)
 const staggerY = (id, min = 8, span = 18) => min + (hashOf(id) % span);
 const jitterX = (id, span = 10) => (hashOf(id) % (span * 2 + 1)) - span;
 
-// Depth tiers: only translateY/scale/opacity/blur, never a real perspective
-// transform. "front" cards (the two hero appointment cards) stay at full
-// scale/clarity; "mid" cards ease back slightly; "back" cards (the smaller
-// rail/bonus tiles) sit a touch further with a whisper of blur.
+// Depth tiers: only translateY/scale/brightness/blur, never a real
+// perspective transform. "front" cards (the two hero appointment cards)
+// stay at full scale/clarity; "mid" cards ease back slightly; "back"
+// cards (the smaller rail/bonus tiles) sit a touch further with a
+// whisper of blur.
+//
+// `brightness` (a `filter` function), not the `opacity` *property* — this
+// used to be `opacity`, which works by alpha-blending the whole card
+// against whatever is actually behind it. That's invisible over the
+// Hero's own dark canvas, but for the bottom band's small escaped sliver
+// that crosses into the next section's already-light background, it let
+// that lighter backdrop show through the "back"/"mid" cards, which read
+// as the card inheriting the next section's treatment. `brightness()`
+// only recomputes the element's own already-rendered pixels — the card
+// stays fully opaque and looks identical no matter what's behind it.
 const DEPTH = {
-  front: { scale: 1, opacity: 1, blur: 0 },
-  mid: { scale: 0.98, opacity: 0.95, blur: 0 },
-  back: { scale: 0.96, opacity: 0.88, blur: 1 },
+  front: { scale: 1, brightness: 1, blur: 0 },
+  mid: { scale: 0.98, brightness: 0.95, blur: 0 },
+  back: { scale: 0.96, brightness: 0.88, blur: 1 },
 };
 
 // `scale` (not a raw `transform` string) because this element's `y` is
 // already animated via cardEntrance's variants — motion composes its own
 // `transform` from x/y/scale/rotate style keys, so scale has to be passed
 // the same way or it would be clobbered by motion's generated transform.
-const depthStyle = ({ scale, opacity, blur }) => ({
-  scale,
-  opacity,
-  filter: blur ? `blur(${blur}px)` : undefined,
-});
+const depthStyle = ({ scale, brightness, blur }) => {
+  const filters = [];
+  if (brightness !== 1) filters.push(`brightness(${brightness})`);
+  if (blur) filters.push(`blur(${blur}px)`);
+
+  return {
+    scale,
+    filter: filters.length ? filters.join(" ") : undefined,
+  };
+};
 
 /**
  * The pool of preview widgets. Every entry reuses one of the five shared
@@ -233,12 +249,17 @@ const MOBILE_STACK = [
   { id: "doctor-streak", size: "sm", depth: "back" },
 ];
 
-// How much of the bottom row is allowed to float past the Hero's own
-// fold, into the next section — a few px, not a second row worth.
-// Applied as a negative CSS `bottom` (see HeroDashboardBottomBand):
-// anchoring from the bottom means the escaping amount always stays this
-// value, regardless of how tall the row's own content is.
-const BOTTOM_OVERLAP = 30;
+// How much of the fold-anchored row is allowed to float past the Hero's
+// own edge, into the next section — meant to land around 20-30px, a
+// sliver, not a second row worth. Desktop cards in this row also get
+// `restY` (the entrance stagger, 0-25px extra downward via a `transform`,
+// see staggerY) on top of this anchor, so this constant is deliberately
+// small: base (5px) + restY (0-25px) lands the *total* escape in roughly
+// the 5-30px range per card, never a flat 30 + up to 25 more (55px) like
+// before. Mobile cards don't get a restY (they only ever get horizontal
+// jitter), so its own anchor can sit closer to the full target directly.
+const BOTTOM_OVERLAP = 5;
+const MOBILE_OVERLAP = 24;
 
 // Shared by both components below so the pool/render logic exists in
 // exactly one place even though the framing zones (corners + rails) and
@@ -374,7 +395,7 @@ export const HeroDashboardBottomBand = ({ contentEdge }) => {
 
   if (isMobile) {
     return (
-      <div className="scatter-mobile-band" style={{ bottom: -BOTTOM_OVERLAP }}>
+      <div className="scatter-mobile-band" style={{ bottom: -MOBILE_OVERLAP }}>
         {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
       </div>
     );

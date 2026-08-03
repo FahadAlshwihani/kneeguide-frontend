@@ -133,7 +133,14 @@
    in the same row. flex-wrap still reflows into more rows on narrower
    viewports entirely on its own, never via a hardcoded breakpoint. The
    elevated z-index is what lets it paint above the next section's own
-   content in that small overlap band instead of being covered by it. */
+   content in that small overlap band instead of being covered by it —
+   its own cards' filters (see DEPTH/depthStyle in HeroDashboardPreview.jsx)
+   are what keep their *appearance* identical in that sliver too; z-index
+   only controls paint order, not whether a card's own rendering depends
+   on what's behind it. `isolation: isolate` is a belt-and-suspenders
+   guarantee on top of that ordering: this band paints as a single, self-
+   contained unit, so nothing from Section 2's blend-mode/mask treatment
+   layers can ever reach in and alter it, regardless of paint order. */
 .scatter-bottom-band {
   position: absolute;
   left: 3%;
@@ -141,6 +148,7 @@
   max-width: 1680px;
   margin: 0 auto;
   z-index: 5;
+  isolation: isolate;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -200,9 +208,9 @@
 
 /* Mobile: no side room at all, so the preview becomes a small, hand-picked
    vertical stack anchored below the content instead of framing it. Same
-   escape-the-clip / elevated-z-index / bottom-anchored-overlap reasoning
-   as the bottom band above (this is mobile's equivalent of the bottom
-   row) — `bottom` is set inline by the component. */
+   escape-the-clip / elevated-z-index / bottom-anchored-overlap / isolation
+   reasoning as the bottom band above (this is mobile's equivalent of the
+   bottom row) — `bottom` is set inline by the component (MOBILE_OVERLAP). */
 .scatter-mobile-band {
   position: absolute;
   left: 6%;
@@ -210,6 +218,7 @@
   max-width: 1680px;
   margin: 0 auto;
   z-index: 5;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
