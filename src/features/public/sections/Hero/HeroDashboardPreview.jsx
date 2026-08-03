@@ -247,6 +247,11 @@ const MAX_RAIL_WIDTH = 182;
 const CORNER_OUTER_INSET = 16;
 const MIN_CORNER_CLEARANCE = 130;
 
+// How much of the bottom row is allowed to float past the Hero's own
+// fold, once its real rendered height is known (see useOverlapTop below)
+// — a few px, not a second row worth.
+const BOTTOM_OVERLAP = 30;
+
 const computeLayout = (safeZone) => {
   if (!safeZone) return null;
 
