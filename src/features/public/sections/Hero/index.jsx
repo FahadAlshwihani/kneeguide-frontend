@@ -17,12 +17,10 @@ const fadeUp = {
 };
 
 // Breathing room kept clear on every side of the real, measured content
-// box — not a guess. Bottom gets extra: the brief specifically wants the
-// card band to visibly begin *below* the CTA row, not just clear it.
+// box — not a guess.
 const SAFE_MARGIN_MIN = 32;
 const SAFE_MARGIN_MAX = 64;
 const SAFE_MARGIN_VW = 0.04;
-const SAFE_BOTTOM_EXTRA = 24;
 
 const Hero = () => {
   const { t } = useTranslation();
@@ -32,9 +30,9 @@ const Hero = () => {
 
   // The one true source for where the headline/paragraph/CTA block
   // actually sits — HeroDashboardPreview never guesses this, it only
-  // consumes it. Measured against .hero-root (not .hero-container) since
-  // that's the coordinate space the escaping bottom band now positions
-  // itself in — see HeroDashboardBottomBand below and Hero.css's
+  // consumes it (for the corners/rails; the bottom band anchors to the
+  // Hero's own bottom edge instead — see HeroDashboardBottomBand).
+  // Measured against .hero-root, not .hero-container — see Hero.css's
   // `.hero-root`/`.hero-container` overflow split. Re-measures whenever
   // the content's own box changes (text length, language/RTL switch, font
   // load) or the root's size changes (viewport resize), via
@@ -51,7 +49,6 @@ const Hero = () => {
 
       setSafeZone({
         top: contentRect.top - rootRect.top - margin,
-        bottom: contentRect.bottom - rootRect.top + margin + SAFE_BOTTOM_EXTRA,
         left: contentRect.left - rootRect.left - margin,
         right: rootRect.width - (contentRect.right - rootRect.left) - margin,
       });
