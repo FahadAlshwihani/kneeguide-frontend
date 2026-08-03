@@ -65,31 +65,43 @@
   background: var(--color-secondary);
 }
 
-/* Top corners: two small tiles well clear of the centered badge. */
+/* Top corners: two small tiles well clear of the centered badge. Fixed px
+   (not %) so it matches CORNER_OUTER_INSET in HeroDashboardPreview.jsx
+   exactly — that constant is what the component uses to decide whether
+   there's genuinely enough room above the content to show these at all
+   (`layout.showCorners`), so the anchor here has to be the same number,
+   not an approximation of it. */
 .scatter-corner {
   position: absolute;
-  top: 2%;
+  top: 16px;
 }
 
 .scatter-corner-left {
-  left: 2%;
+  left: 16px;
 }
 
 .scatter-corner-right {
-  right: 2%;
+  right: 16px;
 }
 
 /* Left/right rails: frame the copy block without ever entering its
-   column. `top`/`bottom` (not a fixed height) give the flex column real
-   room to distribute its cards with its own natural spacing, which is
-   what creates the "one higher, one lower" stagger — no manual y offsets
+   column. Width is set inline by the component (`layout.leftRailWidth` /
+   `rightRailWidth`, clamped to the real measured clearance beside the
+   content — see safeZone in Hero/index.jsx); the rail's own `left`/
+   `right` anchor here matches RAIL_OUTER_INSET's assumed value exactly.
+   `top`/`bottom` (not a fixed height) give the flex column real room to
+   distribute its cards with its own natural spacing, which is what
+   creates the "one higher, one lower" stagger — no manual y offsets
    needed here, each card additionally gets a small deterministic
-   horizontal jitter (see jitterX in the component) for asymmetry. */
+   horizontal jitter (see jitterX in the component) for asymmetry. Whether
+   a rail renders at all is also decided by the component
+   (`layout.showLeftRail` / `showRightRail`) — if there truly isn't room
+   beside the content, it simply isn't rendered rather than forced to
+   overlap. */
 .scatter-rail {
   position: absolute;
   top: 20%;
   bottom: 18%;
-  width: clamp(136px, 12vw, 182px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -98,36 +110,31 @@
 }
 
 .scatter-rail-left {
-  left: 1.5%;
+  left: 28px;
 }
 
 .scatter-rail-right {
-  right: 1.5%;
+  right: 28px;
 }
 
 /* Bottom band: the widest zone, stretching almost the full Hero width.
-   flex-wrap means it reflows into more rows on narrower viewports
-   entirely on its own, never via a hardcoded breakpoint. */
+   `top` is set inline by the component (`layout.bandTop`, the real
+   measured bottom edge of the content plus its breathing margin) so the
+   band always begins below the CTA row, never behind it — flex-wrap
+   means it still reflows into more rows on narrower viewports entirely on
+   its own, never via a hardcoded breakpoint. */
 .scatter-bottom-band {
   position: absolute;
   left: 3%;
   right: 3%;
-  bottom: 2%;
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: clamp(14px, 1.8vw, 28px);
 }
 
-/* Rails only once there's genuine side room; below this the bottom band
-   (which needs no side clearance) carries the composition alone. */
 @media (max-width: 1023px) {
-  .scatter-corner,
-  .scatter-rail {
-    display: none;
-  }
-
   .scatter-bottom-band {
     left: 4%;
     right: 4%;
@@ -144,12 +151,12 @@
 }
 
 /* Mobile: no side room at all, so the preview becomes a small, hand-picked
-   vertical stack anchored below the content instead of framing it. */
+   vertical stack anchored below the content instead of framing it. `top`
+   is set inline by the component, same as the bottom band above. */
 .scatter-mobile-band {
   position: absolute;
   left: 6%;
   right: 6%;
-  bottom: 2%;
   display: flex;
   flex-direction: column;
   align-items: center;

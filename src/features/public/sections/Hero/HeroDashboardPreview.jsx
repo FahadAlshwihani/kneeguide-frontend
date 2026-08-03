@@ -231,11 +231,44 @@ const MOBILE_STACK = [
   { id: "doctor-streak", size: "sm", depth: "back" },
 ];
 
-const HeroDashboardPreview = () => {
+// Rail geometry used to turn `safeZone` (real, measured clearance) into a
+// real pixel width for each rail — and, just as importantly, into a plain
+// "there isn't room, don't render it" decision instead of ever forcing an
+// overlap. RAIL_OUTER_INSET/CORNER_OUTER_INSET intentionally use the upper
+// end of the CSS clamp() the outer anchor actually renders at (see
+// HeroDashboardPreview.css), so this always *under*-estimates available
+// space rather than over-estimating it — the failure mode this exists to
+// prevent is a card touching the safe zone, never a card sitting a few
+// extra px further out than it strictly had to.
+const RAIL_OUTER_INSET = 28;
+const RAIL_GAP = 20;
+const MIN_RAIL_WIDTH = 120;
+const MAX_RAIL_WIDTH = 182;
+const CORNER_OUTER_INSET = 16;
+const MIN_CORNER_CLEARANCE = 130;
+
+const computeLayout = (safeZone) => {
+  if (!safeZone) return null;
+
+  const leftRailWidth = safeZone.left - RAIL_OUTER_INSET - RAIL_GAP;
+  const rightRailWidth = safeZone.right - RAIL_OUTER_INSET - RAIL_GAP;
+
+  return {
+    showLeftRail: leftRailWidth >= MIN_RAIL_WIDTH,
+    showRightRail: rightRailWidth >= MIN_RAIL_WIDTH,
+    leftRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, leftRailWidth)),
+    rightRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, rightRailWidth)),
+    showCorners: safeZone.top >= CORNER_OUTER_INSET + MIN_CORNER_CLEARANCE,
+    bandTop: Math.max(0, safeZone.bottom),
+  };
+};
+
+const HeroDashboardPreview = ({ safeZone }) => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
+  const layout = useMemo(() => computeLayout(safeZone), [safeZone]);
 
   const renderCard = (entry, index, { axis = "y", sizeClass = "sm" } = {}) => {
     const restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
@@ -261,10 +294,17 @@ const HeroDashboardPreview = () => {
     );
   };
 
+  // Nothing renders until the real content box has been measured — with
+  // `useLayoutEffect` driving that measurement in Hero/index.jsx this
+  // resolves before the first paint, so in practice there's no visible
+  // pop-in; what it guarantees is that a card is never placed from a
+  // guessed position, even for one frame.
+  if (!layout) return null;
+
   if (isMobile) {
     return (
       <div className="hero-scatter-wrap hero-scatter-wrap--mobile">
-        <div className="scatter-mobile-band">
+        <div className="scatter-mobile-band" style={{ top: layout.bandTop }}>
           {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
         </div>
       </div>
@@ -273,26 +313,34 @@ const HeroDashboardPreview = () => {
 
   return (
     <div className="hero-scatter-wrap">
-      <div className="scatter-corner scatter-corner-left">{renderCard(CORNERS[0], 0, { axis: "x", sizeClass: "sm" })}</div>
-      <div className="scatter-corner scatter-corner-right">{renderCard(CORNERS[1], 1, { axis: "x", sizeClass: "sm" })}</div>
+      {layout.showCorners && (
+        <>
+          <div className="scatter-corner scatter-corner-left">{renderCard(CORNERS[0], 0, { axis: "x", sizeClass: "sm" })}</div>
+          <div className="scatter-corner scatter-corner-right">{renderCard(CORNERS[1], 1, { axis: "x", sizeClass: "sm" })}</div>
+        </>
+      )}
 
-      <div className="scatter-rail scatter-rail-left">
-        {RAIL_LEFT.map((entry, index) => (
-          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-            {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
-          </div>
-        ))}
-      </div>
+      {layout.showLeftRail && (
+        <div className="scatter-rail scatter-rail-left" style={{ width: layout.leftRailWidth }}>
+          {RAIL_LEFT.map((entry, index) => (
+            <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+              {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className="scatter-rail scatter-rail-right">
-        {RAIL_RIGHT.map((entry, index) => (
-          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-            {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
-          </div>
-        ))}
-      </div>
+      {layout.showRightRail && (
+        <div className="scatter-rail scatter-rail-right" style={{ width: layout.rightRailWidth }}>
+          {RAIL_RIGHT.map((entry, index) => (
+            <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+              {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className="scatter-bottom-band">
+      <div className="scatter-bottom-band" style={{ top: layout.bandTop }}>
         {BOTTOM_BAND.map((entry, index) => (
           <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
             {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}
