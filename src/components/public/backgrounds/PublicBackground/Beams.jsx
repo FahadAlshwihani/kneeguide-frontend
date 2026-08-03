@@ -155,7 +155,9 @@ const Beams = ({
   speed = 2,
   noiseIntensity = 1.75,
   scale = 0.2,
-  rotation = 0
+  rotation = 0,
+  dpr = [1, 2],
+  frameloop = 'always'
 }) => {
   const meshRef = useRef(null);
   const beamMaterial = useMemo(
@@ -216,7 +218,7 @@ const Beams = ({
   );
 
   return (
-    <CanvasWrapper>
+    <CanvasWrapper dpr={dpr} frameloop={frameloop}>
       <group rotation={[0, 0, degToRad(rotation)]}>
         <PlaneNoise ref={meshRef} material={beamMaterial} count={beamNumber} width={beamWidth} height={beamHeight} />
         <DirLight color={lightColor} position={[0, 3, 10]} />
