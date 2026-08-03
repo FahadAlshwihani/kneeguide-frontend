@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,6 +12,14 @@ import {
   FaClipboardCheck,
   FaStopwatch,
   FaArrowTrendUp,
+  FaClock,
+  FaHeartPulse,
+  FaGaugeHigh,
+  FaWandMagicSparkles,
+  FaFire,
+  FaClipboardList,
+  FaBell,
+  FaCircleCheck,
 } from "react-icons/fa6";
 
 import MetricCard from "../../../dashboard/shared/components/MetricCard";
@@ -24,15 +32,9 @@ import { getHeroPreviewData } from "./heroPreviewData";
 import useIsMobile from "./useIsMobile";
 import "./HeroDashboardPreview.css";
 
-// Cards settle at a small, deterministic vertical offset (never at a
-// shared y:0) — an intentionally layered composition, not a rigid,
-// perfectly aligned grid. The offset is bounded (see overlapOffsetFor) and
-// only ever nudges a card *down toward its row below*, never up — pushing
-// up risks poking a first-row card above the preview box entirely (where
-// the wrap's overflow:hidden safety net would clip it), while pushing
-// down only ever overlaps into content the preview already owns, and
-// worst case adds a few px the fit loop below simply measures and
-// accounts for like any other content.
+// Same fade-up entrance every card has always used — only what each card's
+// *rest* position is has changed (a per-zone stagger offset instead of a
+// grid-row overlap), never the animation itself.
 const cardEntrance = {
   hidden: { opacity: 0, y: 18 },
   visible: ({ delay = 0, restY = 0 } = {}) => ({
@@ -42,311 +44,261 @@ const cardEntrance = {
   }),
 };
 
-// Small, stable per-card overlap so neighboring rows read as a loosely
-// layered stack (Apple-style floating previews) instead of a spreadsheet
-// grid. Deterministic from the card's id — same card always gets the same
-// nudge, never a fresh random value per render. The anchor card (index 0)
-// sits at rest; every other card is pushed down by 8–20px into the row
-// below it, which is the full extent of the "overlap" — bounded, and
-// always downward so it can never escape the preview box upward.
-const overlapOffsetFor = (id, index) => {
-  if (index === 0) return 0;
-  const hash = Array.from(id).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  const magnitude = 8 + (hash % 13); // 8–20px
-  return index % 2 === 0 ? 0 : magnitude;
+// Deterministic, small per-card offset derived from its id — same card
+// always gets the same nudge. Used both for the vertical "one card higher,
+// one lower" stagger and, at a smaller magnitude, for horizontal jitter on
+// the rails. Never random per render, always bounded.
+const hashOf = (id) => Array.from(id).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+
+const staggerY = (id, min = 8, span = 18) => min + (hashOf(id) % span);
+const jitterX = (id, span = 10) => (hashOf(id) % (span * 2 + 1)) - span;
+
+// Depth tiers: only translateY/scale/opacity/blur, never a real perspective
+// transform. "front" cards (the two hero appointment cards) stay at full
+// scale/clarity; "mid" cards ease back slightly; "back" cards (the smaller
+// rail/bonus tiles) sit a touch further with a whisper of blur.
+const DEPTH = {
+  front: { scale: 1, opacity: 1, blur: 0 },
+  mid: { scale: 0.98, opacity: 0.95, blur: 0 },
+  back: { scale: 0.96, opacity: 0.88, blur: 1 },
 };
 
+const depthStyle = ({ scale, opacity, blur }) => ({
+  transform: `scale(${scale})`,
+  opacity,
+  filter: blur ? `blur(${blur}px)` : undefined,
+});
+
 /**
- * Builds the pool of preview "widgets", ordered from most to least
- * essential — tiers slice from the front, so shrinking the count always
- * keeps the clearest, most representative cards on screen.
+ * The pool of preview widgets. Every entry reuses one of the five shared
+ * dashboard card components verbatim (MetricCard, ProgressCard,
+ * AppointmentCard, ExerciseCard, DashboardCard) with only local, clearly
+ * fictional preview data — no card is redesigned here.
  */
-const buildPool = (data) => [
-  {
-    id: "doctor-appointment",
-    size: "lg",
-    node: (
-      <>
-        <span className="hero-dashboard-preview-tag">{data.doctor.badge}</span>
-        <DashboardCard title={data.doctor.appointment.title}>
-          <AppointmentCard {...data.doctor.appointment} previewMode />
-        </DashboardCard>
-      </>
-    ),
-  },
-  {
-    id: "patient-exercise",
-    size: "md",
-    node: (
-      <>
-        <span className="hero-dashboard-preview-tag hero-dashboard-preview-tag-patient">{data.patient.badge}</span>
-        <ExerciseCard {...data.patient.exercise} previewMode />
-      </>
-    ),
-  },
-  {
-    id: "doctor-active-patients",
-    size: "sm",
-    node: <MetricCard icon={FaUsers} value={data.doctor.metric.value} label={data.doctor.metric.label} />,
-  },
-  {
-    id: "patient-progress",
-    size: "md",
-    node: (
-      <DashboardCard>
-        <div className="progress-card-list">
-          <ProgressCard {...data.patient.rom} />
-          <ProgressCard {...data.patient.adherence} />
-        </div>
+const buildPool = (data) => ({
+  "doctor-appointment": (
+    <>
+      <span className="hero-dashboard-preview-tag">{data.doctor.badge}</span>
+      <DashboardCard title={data.doctor.appointment.title}>
+        <AppointmentCard {...data.doctor.appointment} previewMode />
       </DashboardCard>
-    ),
-  },
-  {
-    id: "doctor-progress",
-    size: "md",
-    node: (
-      <DashboardCard>
-        <ProgressCard {...data.doctor.progress} />
-      </DashboardCard>
-    ),
-  },
-  {
-    id: "patient-appointment",
-    size: "lg",
-    node: (
-      <DashboardCard title={data.patient.appointment.title}>
-        <AppointmentCard {...data.patient.appointment} previewMode />
-      </DashboardCard>
-    ),
-  },
-  {
-    id: "doctor-today-appointments",
-    size: "sm",
-    node: (
-      <MetricCard
-        icon={FaCalendarCheck}
-        value={data.doctor.todayAppointments.value}
-        label={data.doctor.todayAppointments.label}
-      />
-    ),
-  },
-  {
-    id: "doctor-alert",
-    size: "sm",
-    node: (
-      <MetricCard
-        icon={FaTriangleExclamation}
-        label={data.doctor.alert.label}
-        trend={data.doctor.alert.sub}
-        status="alert"
-      />
-    ),
-  },
-  {
-    id: "doctor-new-reports",
-    size: "sm",
-    node: (
-      <MetricCard icon={FaFileLines} value={data.doctor.newReports.value} label={data.doctor.newReports.label} />
-    ),
-  },
-  {
-    id: "patient-exercises-assigned",
-    size: "sm",
-    node: (
-      <MetricCard
-        icon={FaListCheck}
-        value={data.patient.exercisesAssigned.value}
-        label={data.patient.exercisesAssigned.label}
-        status="success"
-      />
-    ),
-  },
-  {
-    id: "doctor-messages",
-    size: "sm",
-    node: (
-      <MetricCard icon={FaComments} value={data.doctor.messages.value} label={data.doctor.messages.label} />
-    ),
-  },
-  {
-    id: "doctor-notes",
-    size: "sm",
-    node: <MetricCard icon={FaNoteSticky} value={data.doctor.notes.value} label={data.doctor.notes.label} />,
-  },
-  {
-    id: "patient-session-completion",
-    size: "sm",
-    node: (
-      <MetricCard
-        icon={FaClipboardCheck}
-        value={data.patient.sessionCompletion.value}
-        label={data.patient.sessionCompletion.label}
-      />
-    ),
-  },
-  {
-    id: "patient-avg-exercise-time",
-    size: "sm",
-    node: (
-      <MetricCard
-        icon={FaStopwatch}
-        value={data.patient.avgExerciseTime.value}
-        label={data.patient.avgExerciseTime.label}
-      />
-    ),
-  },
-  {
-    id: "patient-rom-improvement",
-    size: "sm",
-    node: (
-      <MetricCard
-        icon={FaArrowTrendUp}
-        value={data.patient.romImprovement.value}
-        label={data.patient.romImprovement.label}
-        status="success"
-      />
-    ),
-  },
+    </>
+  ),
+  "patient-appointment": (
+    <DashboardCard title={data.patient.appointment.title}>
+      <AppointmentCard {...data.patient.appointment} previewMode />
+    </DashboardCard>
+  ),
+  "patient-exercise": (
+    <>
+      <span className="hero-dashboard-preview-tag hero-dashboard-preview-tag-patient">{data.patient.badge}</span>
+      <ExerciseCard {...data.patient.exercise} previewMode />
+    </>
+  ),
+  "doctor-progress": (
+    <DashboardCard>
+      <ProgressCard {...data.doctor.progress} />
+    </DashboardCard>
+  ),
+  "patient-progress": (
+    <DashboardCard>
+      <div className="progress-card-list">
+        <ProgressCard {...data.patient.rom} />
+        <ProgressCard {...data.patient.adherence} />
+      </div>
+    </DashboardCard>
+  ),
+  "patient-weekly-progress": (
+    <DashboardCard>
+      <ProgressCard {...data.patient.weeklyProgress} />
+    </DashboardCard>
+  ),
+  "patient-daily-goal": (
+    <DashboardCard>
+      <ProgressCard {...data.patient.dailyGoal} />
+    </DashboardCard>
+  ),
+  "doctor-ai-recommendation": (
+    <DashboardCard>
+      <MetricCard icon={FaWandMagicSparkles} label={data.doctor.aiRecommendation.label} trend={data.doctor.aiRecommendation.sub} status="success" />
+    </DashboardCard>
+  ),
+  "doctor-active-patients": (
+    <MetricCard icon={FaUsers} value={data.doctor.metric.value} label={data.doctor.metric.label} />
+  ),
+  "doctor-today-appointments": (
+    <MetricCard icon={FaCalendarCheck} value={data.doctor.todayAppointments.value} label={data.doctor.todayAppointments.label} />
+  ),
+  "doctor-alert": (
+    <MetricCard icon={FaTriangleExclamation} label={data.doctor.alert.label} trend={data.doctor.alert.sub} status="alert" />
+  ),
+  "doctor-new-reports": (
+    <MetricCard icon={FaFileLines} value={data.doctor.newReports.value} label={data.doctor.newReports.label} />
+  ),
+  "doctor-messages": (
+    <MetricCard icon={FaComments} value={data.doctor.messages.value} label={data.doctor.messages.label} />
+  ),
+  "doctor-notes": (
+    <MetricCard icon={FaNoteSticky} value={data.doctor.notes.value} label={data.doctor.notes.label} />
+  ),
+  "doctor-streak": (
+    <MetricCard icon={FaFire} value={data.doctor.streak.value} label={data.doctor.streak.label} trend={data.doctor.streak.sub} status="success" />
+  ),
+  "doctor-compliance": (
+    <MetricCard icon={FaClipboardList} value={data.doctor.compliance.value} label={data.doctor.compliance.label} />
+  ),
+  "doctor-notifications": <MetricCard icon={FaBell} value={data.doctor.notifications.value} label={data.doctor.notifications.label} />,
+  "patient-exercises-assigned": (
+    <MetricCard icon={FaListCheck} value={data.patient.exercisesAssigned.value} label={data.patient.exercisesAssigned.label} status="success" />
+  ),
+  "patient-session-completion": (
+    <MetricCard icon={FaClipboardCheck} value={data.patient.sessionCompletion.value} label={data.patient.sessionCompletion.label} />
+  ),
+  "patient-avg-exercise-time": (
+    <MetricCard icon={FaStopwatch} value={data.patient.avgExerciseTime.value} label={data.patient.avgExerciseTime.label} />
+  ),
+  "patient-rom-improvement": (
+    <MetricCard icon={FaArrowTrendUp} value={data.patient.romImprovement.value} label={data.patient.romImprovement.label} status="success" />
+  ),
+  "patient-today-sessions": (
+    <MetricCard icon={FaClock} value={data.patient.todaySessions.value} label={data.patient.todaySessions.label} />
+  ),
+  "patient-recovery-score": (
+    <MetricCard icon={FaHeartPulse} value={data.patient.recoveryScore.value} label={data.patient.recoveryScore.label} status="success" />
+  ),
+  "patient-pain-level": (
+    <MetricCard icon={FaGaugeHigh} value={data.patient.painLevel.value} label={data.patient.painLevel.label} trend={data.patient.painLevel.sub} status="success" />
+  ),
+  "patient-exercise-completion": (
+    <MetricCard icon={FaCircleCheck} value={data.patient.exerciseCompletion.value} label={data.patient.exerciseCompletion.label} status="success" />
+  ),
+});
+
+// The composition itself: which widgets sit in which zone, at what size and
+// depth, and (for the rail/bonus tiles) which ones only appear once there's
+// genuinely enough room (`tier: 2`, revealed by a media query — see
+// HeroDashboardPreview.css — never by a JS width bucket). Nothing here is a
+// pixel coordinate; every zone anchors to a corner/edge with percentages and
+// the cards inside it simply flow (flex column/wrap), so the composition
+// keeps its intent — frame the edges, leave the center clear — at any size.
+const CORNERS = [
+  { id: "patient-exercises-assigned", side: "left", depth: "back" },
+  { id: "doctor-active-patients", side: "right", depth: "back" },
 ];
 
-const SCALE_MAX = 0.83;
-const SCALE_MIN = 0.6;
-const SCALE_STEP = 0.04;
+const RAIL_LEFT = [
+  { id: "doctor-alert", depth: "back", tier: 1 },
+  { id: "patient-recovery-score", depth: "back", tier: 1 },
+  { id: "doctor-streak", depth: "back", tier: 1 },
+  { id: "doctor-messages", depth: "back", tier: 2 },
+  { id: "patient-exercise-completion", depth: "back", tier: 2 },
+];
 
-/**
- * Composes real, shared dashboard cards (the same components the Doctor
- * and Patient dashboards render) into an organic, floating-widget preview
- * for the public Hero. Supplies only static local preview data — no auth,
- * no API calls, no navigation. Interactive elements render with
- * `previewMode` so they stay focusable/keyboard-accessible but perform no
- * real action.
- *
- * Card count is never bucketed by viewport width — this component measures
- * `wrapRef` (the box the Hero handed it) against its own rendered height
- * and fits however many cards actually belong there: it starts from the
- * full pool and, if that overflows, first shrinks scale, then — only if
- * still too tall at the minimum scale — drops cards from the end of the
- * (already least-to-most-essential-ordered) pool. Every card that ends up
- * on screen is always shown whole; nothing is ever clipped mid-card. The
- * one deliberate exception is mobile (see `useIsMobile`), which always
- * shows exactly one card by product decision, not by measurement.
- */
-const HeroDashboardPreview = ({ wrapRef }) => {
+const RAIL_RIGHT = [
+  { id: "patient-rom-improvement", depth: "back", tier: 1 },
+  { id: "doctor-new-reports", depth: "back", tier: 1 },
+  { id: "patient-today-sessions", depth: "back", tier: 1 },
+  { id: "doctor-notes", depth: "back", tier: 2 },
+  { id: "doctor-compliance", depth: "back", tier: 2 },
+];
+
+const BOTTOM_BAND = [
+  { id: "doctor-appointment", size: "lg", depth: "front", tier: 1 },
+  { id: "patient-exercise", size: "md", depth: "mid", tier: 1 },
+  { id: "doctor-progress", size: "md", depth: "mid", tier: 1 },
+  { id: "patient-progress", size: "md", depth: "mid", tier: 1 },
+  { id: "patient-weekly-progress", size: "md", depth: "mid", tier: 1 },
+  { id: "patient-appointment", size: "lg", depth: "front", tier: 1 },
+  { id: "doctor-ai-recommendation", size: "md", depth: "back", tier: 2 },
+  { id: "patient-daily-goal", size: "md", depth: "back", tier: 2 },
+  { id: "patient-avg-exercise-time", size: "sm", depth: "back", tier: 2 },
+  { id: "patient-session-completion", size: "sm", depth: "back", tier: 2 },
+  { id: "patient-pain-level", size: "sm", depth: "back", tier: 2 },
+  { id: "doctor-notifications", size: "sm", depth: "back", tier: 2 },
+];
+
+// Mobile has no horizontal room to frame the content, so it gets its own
+// small, hand-picked vertical stack instead of the corner/rail/band zones —
+// staggered, never a rigid single column of identically-aligned cards.
+const MOBILE_STACK = [
+  { id: "doctor-appointment", size: "lg", depth: "front" },
+  { id: "patient-recovery-score", size: "sm", depth: "mid" },
+  { id: "patient-today-sessions", size: "sm", depth: "mid" },
+  { id: "doctor-streak", size: "sm", depth: "back" },
+];
+
+const HeroDashboardPreview = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
 
-  // Mobile shows exactly one card, chosen once at random on mount (not on
-  // every resize) — no slider, no carousel, no autoplay.
-  const [mobilePick] = useState(() => Math.floor(Math.random() * pool.length));
+  // Entrance stagger only needs a stable index -> delay mapping; it never
+  // reruns per scroll/resize.
+  const [delayBase] = useState(0);
 
-  const candidates = isMobile ? [pool[mobilePick]] : pool;
+  const renderCard = (entry, index, { axis = "y", sizeClass = "sm", extraClassName = "" } = {}) => {
+    const restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
+    const jitter = axis === "x" ? jitterX(entry.id) : 0;
+    const depth = DEPTH[entry.depth] || DEPTH.mid;
 
-  const gridRef = useRef(null);
-  const [visibleCount, setVisibleCount] = useState(candidates.length);
-  const [scale, setScale] = useState(SCALE_MAX);
+    return (
+      <motion.div
+        key={entry.id}
+        className={`hero-dashboard-preview-item hero-dashboard-preview-item--${sizeClass} ${extraClassName}`.trim()}
+        style={{
+          ...depthStyle(depth),
+          ...(jitter ? { marginInlineStart: `${jitter}px` } : null),
+        }}
+        variants={cardEntrance}
+        initial="hidden"
+        animate="visible"
+        custom={{ delay: delayBase + index * 0.05, restY }}
+        whileHover={{ y: restY - 4, transition: { duration: 0.2 } }}
+      >
+        {pool[entry.id]}
+      </motion.div>
+    );
+  };
 
-  // The candidate set itself changed (mobile toggled, or a fresh mobile
-  // pick) — start over at full size/count and let the fit pass below trim
-  // it back down if the available space doesn't allow it.
-  useLayoutEffect(() => {
-    setVisibleCount(candidates.length);
-    setScale(SCALE_MAX);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile, candidates.length]);
-
-  // When the box we've been given resizes (viewport width or height
-  // change), give the full candidate set another chance before
-  // re-measuring — it may now fit more (or less) than it did before. This
-  // is the *only* thing that decides how many cards render on desktop/
-  // tablet — there is no width-bucketed count anywhere in this file.
-  useLayoutEffect(() => {
-    const wrap = wrapRef?.current;
-    if (!wrap || typeof ResizeObserver === "undefined") return undefined;
-    const observer = new ResizeObserver(() => {
-      setVisibleCount(candidates.length);
-      setScale(SCALE_MAX);
-    });
-    observer.observe(wrap);
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [candidates.length]);
-
-  // Runs after every render (no deps): measures the current render against
-  // the available box. Two passes, both strictly monotonic (only ever
-  // trim, never grow, within this effect) so there's no risk of a
-  // grow/shrink render loop that never settles:
-  //
-  //   1. Overflow: nudges scale down a step, or — once at the scale floor
-  //      — drops the least-essential visible card.
-  //   2. Once height fits: checks whether the last row is a sparse,
-  //      mostly-empty remainder (the "gap on the right" a rigid card-count
-  //      leaves behind) rather than a reasonably full row, and trims down
-  //      to the last complete row so the composition never ends in a
-  //      dangling, half-empty row. Never trims below one full row.
-  //
-  // Each trim causes a re-render, which runs this effect again, converging
-  // before the browser ever paints an intermediate frame.
-  useLayoutEffect(() => {
-    const wrap = wrapRef?.current;
-    const grid = gridRef.current;
-    if (!wrap || !grid) return;
-
-    const available = wrap.clientHeight;
-    if (available <= 0) return;
-
-    const needed = grid.getBoundingClientRect().height;
-    if (needed > available + 0.5) {
-      if (scale > SCALE_MIN + 0.001) {
-        setScale((s) => Math.max(SCALE_MIN, +(s - SCALE_STEP).toFixed(2)));
-      } else if (visibleCount > 1) {
-        setVisibleCount((c) => c - 1);
-      }
-      return;
-    }
-
-    if (visibleCount <= 1) return;
-    const columnCount = window
-      .getComputedStyle(grid)
-      .gridTemplateColumns.split(" ")
-      .filter(Boolean).length;
-    if (columnCount <= 1) return;
-
-    const shown = candidates.slice(0, visibleCount);
-    const totalSpan = shown.reduce((sum, item) => sum + (item.size === "lg" ? 2 : 1), 0);
-    const remainder = totalSpan % columnCount;
-    const rowIsMostlyEmpty = remainder !== 0 && remainder < columnCount / 2;
-    if (rowIsMostlyEmpty && visibleCount - 1 >= columnCount) {
-      setVisibleCount((c) => c - 1);
-    }
-  });
-
-  const visible = candidates.slice(0, Math.min(visibleCount, candidates.length));
+  if (isMobile) {
+    return (
+      <div className="hero-scatter-wrap hero-scatter-wrap--mobile">
+        <div className="scatter-mobile-band">
+          {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      ref={gridRef}
-      className="hero-dashboard-preview-root"
-      style={{ transform: `scale(${scale})` }}
-    >
-      {visible.map((item, index) => {
-        const restY = overlapOffsetFor(item.id, index);
-        return (
-          <motion.div
-            key={item.id}
-            className={`hero-dashboard-preview-item hero-dashboard-preview-item--${item.size}`}
-            style={{ zIndex: restY === 0 ? 1 : 2 }}
-            variants={cardEntrance}
-            initial="hidden"
-            animate="visible"
-            custom={{ delay: index * 0.05, restY }}
-            whileHover={{ y: restY - 4, transition: { duration: 0.2 } }}
-          >
-            {item.node}
-          </motion.div>
-        );
-      })}
+    <div className="hero-scatter-wrap">
+      <div className="scatter-corner scatter-corner-left">{renderCard(CORNERS[0], 0, { axis: "x", sizeClass: "sm" })}</div>
+      <div className="scatter-corner scatter-corner-right">{renderCard(CORNERS[1], 1, { axis: "x", sizeClass: "sm" })}</div>
+
+      <div className="scatter-rail scatter-rail-left">
+        {RAIL_LEFT.map((entry, index) => (
+          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+            {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
+          </div>
+        ))}
+      </div>
+
+      <div className="scatter-rail scatter-rail-right">
+        {RAIL_RIGHT.map((entry, index) => (
+          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+            {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
+          </div>
+        ))}
+      </div>
+
+      <div className="scatter-bottom-band">
+        {BOTTOM_BAND.map((entry, index) => (
+          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+            {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
