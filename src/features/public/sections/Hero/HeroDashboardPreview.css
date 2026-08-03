@@ -164,7 +164,7 @@
   position: absolute;
   left: 24px;
   right: 24px;
-  bottom: 4px;
+  bottom: -10px;
   isolation: isolate;
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));

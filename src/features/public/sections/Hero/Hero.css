@@ -157,6 +157,14 @@
     display: none;
   }
 
+  .hero-content {
+    grid-row: 1;
+  }
+
+  .hero-mobile-carousel {
+    grid-row: 2;
+  }
+
   .hero-description {
     max-width: 60ch;
   }
