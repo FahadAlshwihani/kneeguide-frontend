@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {
@@ -183,8 +183,10 @@ const buildPool = (data) => ({
 // genuinely enough room (`tier: 2`, revealed by a media query — see
 // HeroDashboardPreview.css — never by a JS width bucket). Nothing here is a
 // pixel coordinate; every zone anchors to a corner/edge with percentages and
-// the cards inside it simply flow (flex column/wrap), so the composition
-// keeps its intent — frame the edges, leave the center clear — at any size.
+// the cards inside it simply flow (flex column/wrap). This composition is
+// allowed to run behind the Hero content — it is never shrunk, hidden, or
+// trimmed to dodge it; see `.hero-content`'s z-index in Hero.css for what
+// actually keeps the copy on top.
 const CORNERS = [
   { id: "patient-exercises-assigned", depth: "back" },
   { id: "doctor-active-patients", depth: "back" },
@@ -231,67 +233,32 @@ const MOBILE_STACK = [
   { id: "doctor-streak", size: "sm", depth: "back" },
 ];
 
-// Rail geometry used to turn `safeZone` (real, measured clearance) into a
-// real pixel width for each rail — and, just as importantly, into a plain
-// "there isn't room, don't render it" decision instead of ever forcing an
-// overlap. RAIL_OUTER_INSET/CORNER_OUTER_INSET intentionally use the upper
-// end of the CSS clamp() the outer anchor actually renders at (see
-// HeroDashboardPreview.css), so this always *under*-estimates available
-// space rather than over-estimating it — the failure mode this exists to
-// prevent is a card touching the safe zone, never a card sitting a few
-// extra px further out than it strictly had to.
-const RAIL_OUTER_INSET = 28;
-const RAIL_GAP = 20;
-const MIN_RAIL_WIDTH = 120;
-const MAX_RAIL_WIDTH = 182;
-const CORNER_OUTER_INSET = 16;
-const MIN_CORNER_CLEARANCE = 130;
-
 // How much of the bottom row is allowed to float past the Hero's own
-// fold — a few px, not a second row worth. Applied as a negative CSS
-// `bottom` (see HeroDashboardBottomBand): anchoring from the bottom means
-// the *escaping* amount past the fold always stays exactly this value,
-// regardless of how tall the row's own content is. What it can't do on
-// its own is guarantee the *other* end (the row's top) never rises into
-// the safe zone if the row wraps into more than one line — that's what
-// availableBandHeight below, and the card-count trim in
-// HeroDashboardBottomBand, are for.
+// fold, into the next section — a few px, not a second row worth.
+// Applied as a negative CSS `bottom` (see HeroDashboardBottomBand):
+// anchoring from the bottom means the escaping amount always stays this
+// value, regardless of how tall the row's own content is.
 const BOTTOM_OVERLAP = 30;
 
-const computeLayout = (safeZone) => {
-  if (!safeZone) return null;
-
-  const leftRailWidth = safeZone.left - RAIL_OUTER_INSET - RAIL_GAP;
-  const rightRailWidth = safeZone.right - RAIL_OUTER_INSET - RAIL_GAP;
-
-  return {
-    showLeftRail: leftRailWidth >= MIN_RAIL_WIDTH,
-    showRightRail: rightRailWidth >= MIN_RAIL_WIDTH,
-    leftRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, leftRailWidth)),
-    rightRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, rightRailWidth)),
-    showCorners: safeZone.top >= CORNER_OUTER_INSET + MIN_CORNER_CLEARANCE,
-    // The hard ceiling on the bottom band's own rendered height: whatever
-    // is left between the safe zone's bottom edge and the Hero's own
-    // bottom edge, minus the deliberate overlap. If the band would
-    // otherwise render taller than this, HeroDashboardBottomBand trims
-    // cards (least-essential first) until it fits — the center content
-    // is never the thing that moves.
-    availableBandHeight: Math.max(0, safeZone.heroHeight - safeZone.bottom - BOTTOM_OVERLAP),
-  };
-};
-
-// Shared by both components below so the pool/layout/render logic exists
-// in exactly one place even though the framing zones (corners + rails)
-// and the bottom band render as two separate React trees now — the band
-// has to live outside .hero-container to escape its overflow clip (see
-// Hero/index.jsx and Hero.css), so it can no longer be a child of the
-// same component instance that renders the rails.
-const useHeroDashboardPreview = (safeZone) => {
+// Shared by both components below so the pool/render logic exists in
+// exactly one place even though the framing zones (corners + rails) and
+// the bottom band render as two separate React trees — the band lives
+// outside .hero-container so it can escape its overflow clip into the
+// next section (see Hero/index.jsx and Hero.css), so it can no longer be
+// a child of the same component instance that renders the rails.
+//
+// Deliberately no measurement, no safe-zone avoidance, no card-count
+// trimming: the composition is fixed (same corners/rails/band, same
+// count, same positions, every time) and is allowed to sit behind the
+// Hero content wherever the two overlap. What keeps the content readable
+// is stacking order alone — see `.hero-content`'s z-index in Hero.css,
+// which outranks every card layer including the bottom band's escaped
+// portion — never repositioning or hiding a card.
+const useHeroDashboardPreview = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const data = useMemo(() => getHeroPreviewData(t), [t]);
   const pool = useMemo(() => buildPool(data), [data]);
-  const layout = useMemo(() => computeLayout(safeZone), [safeZone]);
 
   const renderCard = (entry, index, { axis = "y", sizeClass = "sm" } = {}) => {
     const restY = axis === "y" ? staggerY(entry.id, entry.size === "lg" ? 0 : 8) : 0;
@@ -317,85 +284,41 @@ const useHeroDashboardPreview = (safeZone) => {
     );
   };
 
-  return { isMobile, layout, renderCard };
+  return { isMobile, renderCard };
 };
 
-// Corners + rails only — unchanged from before. Nothing renders until the
-// real content box has been measured — with `useLayoutEffect` driving
-// that measurement in Hero/index.jsx this resolves before the first
-// paint, so in practice there's no visible pop-in; what it guarantees is
-// that a card is never placed from a guessed position, even for one
-// frame. Mobile has no frame zones, so this renders nothing there — see
-// HeroDashboardBottomBand for its stack.
-const HeroDashboardPreview = ({ safeZone }) => {
-  const { isMobile, layout, renderCard } = useHeroDashboardPreview(safeZone);
+// Corners + rails, at fixed positions/widths (see HeroDashboardPreview.css)
+// — always rendered, regardless of how close that puts them to the
+// content; `.hero-content`'s z-index is what keeps the copy readable if
+// they ever overlap. Mobile has no frame zones, so this renders nothing
+// there — see HeroDashboardBottomBand for its stack.
+const HeroDashboardPreview = () => {
+  const { isMobile, renderCard } = useHeroDashboardPreview();
 
-  if (!layout || isMobile) return null;
+  if (isMobile) return null;
 
   return (
     <div className="hero-scatter-wrap">
-      {layout.showCorners && (
-        <>
-          <div className="scatter-corner scatter-corner-left">{renderCard(CORNERS[0], 0, { axis: "x", sizeClass: "sm" })}</div>
-          <div className="scatter-corner scatter-corner-right">{renderCard(CORNERS[1], 1, { axis: "x", sizeClass: "sm" })}</div>
-        </>
-      )}
+      <div className="scatter-corner scatter-corner-left">{renderCard(CORNERS[0], 0, { axis: "x", sizeClass: "sm" })}</div>
+      <div className="scatter-corner scatter-corner-right">{renderCard(CORNERS[1], 1, { axis: "x", sizeClass: "sm" })}</div>
 
-      {layout.showLeftRail && (
-        <div className="scatter-rail scatter-rail-left" style={{ width: layout.leftRailWidth }}>
-          {RAIL_LEFT.map((entry, index) => (
-            <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-              {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="scatter-rail scatter-rail-left">
+        {RAIL_LEFT.map((entry, index) => (
+          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+            {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
+          </div>
+        ))}
+      </div>
 
-      {layout.showRightRail && (
-        <div className="scatter-rail scatter-rail-right" style={{ width: layout.rightRailWidth }}>
-          {RAIL_RIGHT.map((entry, index) => (
-            <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
-              {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="scatter-rail scatter-rail-right">
+        {RAIL_RIGHT.map((entry, index) => (
+          <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
+            {renderCard(entry, index + 2, { axis: "x", sizeClass: "sm" })}
+          </div>
+        ))}
+      </div>
     </div>
   );
-};
-
-// Trims from the *end* of a list (least-essential first, per how
-// BOTTOM_BAND/MOBILE_STACK are ordered) until the container's real
-// rendered height fits within `availableHeight` — the center content's
-// safe zone is a hard ceiling on the band's height, never something a
-// card count is allowed to push through. Runs on every render (no deps,
-// same pattern the old grid-fit loop used): each trim causes a
-// re-render, which measures again, converging before the browser paints
-// an intermediate frame. Resets to the full count whenever the ceiling
-// itself changes (viewport/content resize), so a narrower measurement
-// never sticks once there's room again.
-const useFittedCount = (ref, totalCount, availableHeight) => {
-  const [visibleCount, setVisibleCount] = useState(totalCount);
-
-  useLayoutEffect(() => {
-    setVisibleCount(totalCount);
-  }, [totalCount, availableHeight]);
-
-  // Deliberately no deps — this must re-measure after every trim's
-  // re-render to check whether it converged yet, the same pattern the
-  // old grid-fit loop used. `visibleCount > 1` is the floor that
-  // guarantees it always terminates.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useLayoutEffect(() => {
-    const node = ref.current;
-    if (!node || availableHeight == null) return;
-    const needed = node.getBoundingClientRect().height;
-    if (needed > availableHeight + 0.5 && visibleCount > 1) {
-      setVisibleCount((count) => count - 1);
-    }
-  });
-
-  return visibleCount;
 };
 
 // The bottom row (desktop) / mobile stack — rendered by Hero/index.jsx as
@@ -403,36 +326,23 @@ const useFittedCount = (ref, totalCount, availableHeight) => {
 // element's overflow clip and can float a small, deliberate overlap past
 // the Hero's fold into the next section. Anchored via a negative `bottom`
 // (see BOTTOM_OVERLAP), so the escaping amount past the fold stays fixed
-// regardless of card height; `useFittedCount` keeps the row's *other* end
-// from ever rising into the content's safe zone by dropping the
-// least-essential cards first instead of nudging anything upward. Per-
-// card position within the row, stagger, depth and styling are all
-// unchanged from before — only whether a given card renders at all, and
-// the row's anchor edge, changed. See HeroDashboardPreview.css for the
-// z-index that keeps it above the next section's own content in that
-// overlap band.
-export const HeroDashboardBottomBand = ({ safeZone }) => {
-  const { isMobile, layout, renderCard } = useHeroDashboardPreview(safeZone);
-  const bandRef = useRef(null);
-  const totalCount = isMobile ? MOBILE_STACK.length : BOTTOM_BAND.length;
-  const visibleCount = useFittedCount(bandRef, totalCount, layout?.availableBandHeight);
-
-  if (!layout) return null;
+// regardless of card height. Full card set, always — the Hero content is
+// what stays on top when they overlap (see Hero.css), not the other way
+// around.
+export const HeroDashboardBottomBand = () => {
+  const { isMobile, renderCard } = useHeroDashboardPreview();
 
   if (isMobile) {
-    const visible = MOBILE_STACK.slice(0, visibleCount);
     return (
-      <div ref={bandRef} className="scatter-mobile-band" style={{ bottom: -BOTTOM_OVERLAP }}>
-        {visible.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
+      <div className="scatter-mobile-band" style={{ bottom: -BOTTOM_OVERLAP }}>
+        {MOBILE_STACK.map((entry, index) => renderCard(entry, index, { axis: "x", sizeClass: entry.size }))}
       </div>
     );
   }
 
-  const visible = BOTTOM_BAND.slice(0, visibleCount);
-
   return (
-    <div ref={bandRef} className="scatter-bottom-band" style={{ bottom: -BOTTOM_OVERLAP }}>
-      {visible.map((entry, index) => (
+    <div className="scatter-bottom-band" style={{ bottom: -BOTTOM_OVERLAP }}>
+      {BOTTOM_BAND.map((entry, index) => (
         <div key={entry.id} className={entry.tier === 2 ? "scatter-tier-2" : undefined}>
           {renderCard(entry, index, { axis: "y", sizeClass: entry.size })}
         </div>

@@ -6,12 +6,19 @@
    the preview is a full-bleed absolute layer (see Hero.css's
    `.hero-scatter-wrap` positioning) split into independent zones that hug
    the edges of the Hero — two corner tiles, a left rail, a right rail and
-   a wide bottom band — leaving the entire center column (where the
-   headline/description/CTA live) empty by construction: nothing is
-   positioned there. Each zone anchors to a corner/edge with percentages
+   a wide bottom band. Each zone anchors to a corner/edge with percentages
    and clamp()'d widths and lets its cards flow naturally (flex column for
    the rails, flex-wrap for the bottom band), so it reflows continuously
-   with viewport size instead of jumping between hardcoded breakpoints. */
+   with viewport size instead of jumping between hardcoded breakpoints.
+
+   These zones are fixed — same positions, same widths, same card count,
+   on every render — and are allowed to run behind the Hero's own content
+   wherever the two happen to overlap. Nothing here avoids the center:
+   what keeps the headline/description/CTA readable is stacking order
+   alone (`.hero-content`'s z-index in Hero.css, which outranks every
+   layer in this file, including the bottom band's escaped portion via
+   `.hero-container`'s own z-index), never a shrunk rail, a hidden corner,
+   or a trimmed card count. */
 
 .hero-scatter-wrap {
   position: absolute;
