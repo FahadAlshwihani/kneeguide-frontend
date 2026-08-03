@@ -30,12 +30,14 @@ const Hero = () => {
 
   // The one true source for where the headline/paragraph/CTA block
   // actually sits — HeroDashboardPreview never guesses this, it only
-  // consumes it (for the corners/rails; the bottom band anchors to the
-  // Hero's own bottom edge instead — see HeroDashboardBottomBand).
-  // Measured against .hero-root, not .hero-container — see Hero.css's
-  // `.hero-root`/`.hero-container` overflow split. Re-measures whenever
-  // the content's own box changes (text length, language/RTL switch, font
-  // load) or the root's size changes (viewport resize), via
+  // consumes it. Measured against .hero-root, not .hero-container — see
+  // Hero.css's `.hero-root`/`.hero-container` overflow split. `bottom` +
+  // `heroHeight` together give the bottom band a hard ceiling on how tall
+  // it may render (see availableBandHeight in HeroDashboardPreview.jsx) —
+  // that's what keeps it off the content even when it wraps into more
+  // than one row, without ever nudging a card upward by hand. Re-measures
+  // whenever the content's own box changes (text length, language/RTL
+  // switch, font load) or the root's size changes (viewport resize), via
   // ResizeObserver on both.
   useLayoutEffect(() => {
     const heroRoot = heroRootRef.current;
@@ -49,8 +51,10 @@ const Hero = () => {
 
       setSafeZone({
         top: contentRect.top - rootRect.top - margin,
+        bottom: contentRect.bottom - rootRect.top + margin,
         left: contentRect.left - rootRect.left - margin,
         right: rootRect.width - (contentRect.right - rootRect.left) - margin,
+        heroHeight: rootRect.height,
       });
     };
 

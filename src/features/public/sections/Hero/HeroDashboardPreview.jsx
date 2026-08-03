@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import {
@@ -249,11 +249,13 @@ const MIN_CORNER_CLEARANCE = 130;
 
 // How much of the bottom row is allowed to float past the Hero's own
 // fold — a few px, not a second row worth. Applied as a negative CSS
-// `bottom` (see HeroDashboardBottomBand) rather than a computed `top`:
-// anchoring from the bottom means the browser's own box height (whatever
-// the tallest card in the row actually renders at) determines where the
-// row starts, so the *escaping* amount stays exactly this value
-// regardless of card height — no JS measurement needed.
+// `bottom` (see HeroDashboardBottomBand): anchoring from the bottom means
+// the *escaping* amount past the fold always stays exactly this value,
+// regardless of how tall the row's own content is. What it can't do on
+// its own is guarantee the *other* end (the row's top) never rises into
+// the safe zone if the row wraps into more than one line — that's what
+// availableBandHeight below, and the card-count trim in
+// HeroDashboardBottomBand, are for.
 const BOTTOM_OVERLAP = 30;
 
 const computeLayout = (safeZone) => {
@@ -268,6 +270,13 @@ const computeLayout = (safeZone) => {
     leftRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, leftRailWidth)),
     rightRailWidth: Math.min(MAX_RAIL_WIDTH, Math.max(MIN_RAIL_WIDTH, rightRailWidth)),
     showCorners: safeZone.top >= CORNER_OUTER_INSET + MIN_CORNER_CLEARANCE,
+    // The hard ceiling on the bottom band's own rendered height: whatever
+    // is left between the safe zone's bottom edge and the Hero's own
+    // bottom edge, minus the deliberate overlap. If the band would
+    // otherwise render taller than this, HeroDashboardBottomBand trims
+    // cards (least-essential first) until it fits — the center content
+    // is never the thing that moves.
+    availableBandHeight: Math.max(0, safeZone.heroHeight - safeZone.bottom - BOTTOM_OVERLAP),
   };
 };
 
