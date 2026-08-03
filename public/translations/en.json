@@ -768,7 +768,22 @@
       "avgExerciseTimeLabel": "Avg. exercise time",
       "avgExerciseTimeSub": "This week",
       "romImprovementLabel": "ROM improvement",
-      "romImprovementSub": "This month"
+      "romImprovementSub": "This month",
+      "todaySessionsLabel": "Today's Sessions",
+      "weeklyProgressLabel": "Weekly Progress",
+      "weeklyProgressSub": "vs. last week",
+      "recoveryScoreLabel": "Recovery Score",
+      "painLevelLabel": "Pain Level",
+      "painLevelTrend": "Down from 4",
+      "dailyGoalLabel": "Daily Goal",
+      "dailyGoalSub": "3 of 4 exercises",
+      "exerciseCompletionLabel": "Exercise Completion",
+      "aiRecommendationLabel": "AI Recommendation",
+      "aiRecommendationSub": "Increase ROM drills by 10%",
+      "streakLabel": "Streak",
+      "streakTrend": "day streak",
+      "complianceLabel": "Compliance",
+      "notificationsLabel": "Notifications"
     }
   },
   "publicHeader": {

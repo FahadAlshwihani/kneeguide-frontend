@@ -768,7 +768,22 @@
       "avgExerciseTimeLabel": "متوسط وقت التمرين",
       "avgExerciseTimeSub": "هذا الأسبوع",
       "romImprovementLabel": "تحسّن مدى الحركة",
-      "romImprovementSub": "هذا الشهر"
+      "romImprovementSub": "هذا الشهر",
+      "todaySessionsLabel": "جلسات اليوم",
+      "weeklyProgressLabel": "التقدّم الأسبوعي",
+      "weeklyProgressSub": "مقارنة بالأسبوع الماضي",
+      "recoveryScoreLabel": "مؤشر التعافي",
+      "painLevelLabel": "مستوى الألم",
+      "painLevelTrend": "انخفاض من 4",
+      "dailyGoalLabel": "الهدف اليومي",
+      "dailyGoalSub": "3 من 4 تمارين",
+      "exerciseCompletionLabel": "إتمام التمارين",
+      "aiRecommendationLabel": "توصية الذكاء الاصطناعي",
+      "aiRecommendationSub": "زيادة تمارين مدى الحركة بنسبة 10%",
+      "streakLabel": "التتابع",
+      "streakTrend": "يوم متتالي",
+      "complianceLabel": "الالتزام",
+      "notificationsLabel": "الإشعارات"
     }
   },
   "publicHeader": {
