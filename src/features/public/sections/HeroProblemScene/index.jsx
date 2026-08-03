@@ -27,27 +27,33 @@ import "./HeroProblemScene.css";
  * plain `active` prop that only toggles the existing Canvas's `frameloop`
  * — pause/resume only, never a remount.
  *
- * The journey (see HeroProblemScene.css for the actual treatment layers)
- * is now anchored entirely to Problem's own vertical progress, not to the
- * Hero/Problem boundary:
- *   Hero      — fully cinematic, untouched down to the pixel.
- *   Problem   — starts looking identical to Hero's own ending state (so
- *               there is nothing to blend right at the boundary — both
- *               sides already match), then performs the entire dark ->
- *               warm-white transformation gradually across its own full
- *               height. The beams stay fully visible throughout, only
- *               recolored (`mix-blend-mode: exclusion`, never dimmed).
- *   Solution  — continues that same light/gray-beams look, then the
- *               beams themselves gradually fade beneath a solid
- *               warm-white cover, reaching a clean flat warm-white by
- *               its bottom edge (unchanged from before).
+ * Problem and Solution are wrapped in `.scene-light-phase`, a plain
+ * normal-flow container with no explicit height of its own — its real
+ * height is always exactly Problem's + Solution's rendered height,
+ * whatever that turns out to be at any viewport/content size. The light
+ * treatment layers live inside it and are sized with `inset: 0` /
+ * `bottom: 0` against that real box, so they can never fall short of or
+ * overshoot the two sections' actual combined height the way a flat
+ * `100svh` guess could.
+ *
+ * The one remaining precise seam is Problem -> Solution: a ResizeObserver
+ * on Problem's own measuring wrapper exposes its *real* rendered height as
+ * `--problem-real-h` (with a `100svh` fallback for the brief moment
+ * before the first observation fires), and the treatment layers use that
+ * exact pixel length — not a percentage, not a guess — to anchor their
+ * ramp so it always finishes precisely at Problem's real bottom edge,
+ * with a small fixed overlap for subpixel safety. The Hero/Problem
+ * boundary is intentionally left as a plain, visible section break — no
+ * bridging layer there.
  *
  * Hero/Problem/Solution below render only their own foreground content;
  * none of them owns a background anymore.
  */
 const HeroProblemScene = () => {
   const sceneRef = useRef(null);
+  const problemMeasureRef = useRef(null);
   const [isSceneActive, setIsSceneActive] = useState(true);
+  const [problemRealHeight, setProblemRealHeight] = useState(null);
 
   useEffect(() => {
     const node = sceneRef.current;
@@ -80,20 +86,41 @@ const HeroProblemScene = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const node = problemMeasureRef.current;
+    if (!node || typeof ResizeObserver === "undefined") return undefined;
+
+    const observer = new ResizeObserver(([entry]) => {
+      setProblemRealHeight(entry.contentRect.height);
+    });
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const sceneStyle = problemRealHeight
+    ? { "--problem-real-h": `${problemRealHeight}px` }
+    : undefined;
+
   return (
-    <section className="hero-problem-scene" ref={sceneRef}>
+    <section className="hero-problem-scene" ref={sceneRef} style={sceneStyle}>
       <div className="scene-background-layer" aria-hidden="true">
         <PublicBackground active={isSceneActive} />
       </div>
 
       <div className="scene-hero-vignette" aria-hidden="true" />
-      <div className="scene-problem-dark-wash" aria-hidden="true" />
-      <div className="scene-invert-lighten" aria-hidden="true" />
-      <div className="scene-beam-fadeout" aria-hidden="true" />
 
       <Hero />
-      <Problem />
-      <Solution />
+
+      <div className="scene-light-phase">
+        <div className="scene-invert-lighten" aria-hidden="true" />
+        <div className="scene-beam-fadeout" aria-hidden="true" />
+
+        <div ref={problemMeasureRef}>
+          <Problem />
+        </div>
+        <Solution />
+      </div>
     </section>
   );
 };
