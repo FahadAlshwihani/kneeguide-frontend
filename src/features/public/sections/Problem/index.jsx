@@ -57,7 +57,7 @@ const AnimatedStatValue = ({ raw, active }) => {
 };
 
 const Problem = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const statsRowRef = useRef(null);
   const isStatsRowInView = useInView(statsRowRef, { once: true, amount: 0.5 });
 
@@ -84,6 +84,7 @@ const Problem = () => {
         <Reveal as="div" className="problem-audience" delay={0.05}>
           <span className="problem-audience-lead">{t("publicProblem.audience.lead")}</span>{" "}
           <TextType
+            key={i18n.language}
             as="span"
             className="problem-audience-word"
             text={audienceWords}

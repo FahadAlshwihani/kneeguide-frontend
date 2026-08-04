@@ -41,15 +41,19 @@
 }
 
 /* 1. Projected impact statistics — first element in the section. Pure
-   typography, no icons, no tiles: a small centered eyebrow, then three
-   large blue numbers with dark labels beneath, separated only by a
-   single subtle vertical rule between items (never around them). */
+   typography, no icons, no tiles, no dividers: a small centered eyebrow
+   that reads as the title for the whole row (the generous margin below
+   it is what keeps it from reading as attached to the middle number
+   specifically), then three large blue numbers with dark labels beneath,
+   separated by whitespace alone. Numbers count up from 0 once (see
+   AnimatedStatValue in index.jsx) — this file only styles the resting
+   state. */
 .problem-stats {
   margin-bottom: clamp(48px, 7vw, 72px);
 }
 
 .problem-stats-eyebrow {
-  margin: 0 0 20px;
+  margin: 0 0 36px;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -63,31 +67,11 @@
   justify-content: center;
   align-items: stretch;
   flex-wrap: wrap;
-  gap: clamp(36px, 6vw, 80px);
+  gap: clamp(40px, 7vw, 96px);
 }
 
 .problem-stat {
-  position: relative;
   text-align: center;
-  padding-inline-start: clamp(36px, 6vw, 80px);
-}
-
-.problem-stat:first-child {
-  padding-inline-start: 0;
-}
-
-.problem-stat:first-child::before {
-  content: none;
-}
-
-.problem-stat::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 1px;
-  background: var(--problem-border);
 }
 
 .problem-stat-value {
@@ -96,6 +80,7 @@
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .problem-stat-label {
@@ -105,39 +90,28 @@
   color: var(--problem-heading);
 }
 
-/* 2. Designed-for audience row — same "no container" rule as the stats
-   above: three evenly distributed icon + label pairs, directly on the
-   background, no card, no strip, no border. */
+/* 2. Designed-for audience statement — one centered sentence, printed
+   directly on the page (no card, no strip, no border). The fixed lead
+   ("Designed for" / "مصمم") is plain text; only the last word animates
+   via TextType (see index.jsx), colored per word from the existing
+   brand palette. Font size deliberately reuses the same clamp() family
+   already used elsewhere in this file, just at a size between the stat
+   values and the section title — large enough to read as a standalone
+   statement, not a fourth stat. */
 .problem-audience {
   margin-bottom: clamp(48px, 7vw, 72px);
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: clamp(28px, 5vw, 64px);
-}
-
-.problem-audience-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.problem-audience-icon {
-  flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #eff6ff;
-  color: var(--color-primary);
-  font-size: 0.85rem;
-}
-
-.problem-audience-label {
-  font-size: 0.92rem;
+  text-align: center;
+  font-size: clamp(1.35rem, 2.8vw, 1.85rem);
   font-weight: 600;
   color: var(--problem-heading);
+}
+
+.problem-audience-lead {
+  color: var(--problem-heading);
+}
+
+.problem-audience-word {
+  font-weight: 700;
 }
 
 /* 3. Section header. */
@@ -230,19 +204,5 @@
     flex-direction: column;
     align-items: center;
     gap: 24px;
-  }
-
-  .problem-stat {
-    padding-inline-start: 0;
-  }
-
-  .problem-stat::before {
-    content: none;
-  }
-
-  .problem-audience {
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
   }
 }
