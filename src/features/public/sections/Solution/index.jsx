@@ -282,7 +282,7 @@ const angleCrossed = (prev, curr, target) => {
 };
 
 const Solution = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tier = useRadarTier();
   const [hoveredNode, setHoveredNode] = useState(null);
   // Increments once per completed sweep revolution — the only React state
@@ -347,16 +347,27 @@ const Solution = () => {
     let observer;
     if (typeof ResizeObserver !== "undefined") {
       observer = new ResizeObserver(measure);
-      observer.observe(node);
-    } else {
-      window.addEventListener("resize", measure);
+      // A translated header or language-dependent section above can move
+      // the map without changing the map's own width or height. Observe
+      // the ancestor chain so those layout shifts also refresh the portal.
+      let current = node;
+      while (current) {
+        observer.observe(current);
+        current = current.parentElement;
+      }
     }
+
+    window.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("resize", measure);
+    document.fonts?.addEventListener?.("loadingdone", measure);
 
     return () => {
       observer?.disconnect();
       window.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("resize", measure);
+      document.fonts?.removeEventListener?.("loadingdone", measure);
     };
-  }, []);
+  }, [i18n.language]);
 
   // centerY == viewBoxHeight puts the radar origin exactly on the map's
   // real bottom edge — every ring, node, the hub, the sweep's origin and
