@@ -168,36 +168,48 @@
   filter: drop-shadow(0 0 2.4px rgba(37, 99, 235, 0.65));
 }
 
+/* The positioning anchor. Deliberately a plain element (see index.jsx) —
+   `top`/`left`/`transform` are declared once, here, and never touched
+   again by anything else, so nothing can ever override or fight this
+   translate. Its own rendered box is exactly `.platform-node-circle`'s
+   box: the label is `position: absolute` (out of flow, see below), so
+   `translate(-50%, -50%)` centers the CIRCLE's own center — not some
+   circle+label combined box — precisely on (--node-x, --node-y), the
+   same point the arc itself passes through. */
 .platform-node {
   position: absolute;
   top: var(--node-y);
   left: var(--node-x);
   transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  width: max-content;
-  max-width: 88px;
-  text-align: center;
 }
 
 .platform-node-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   background: #ffffff;
   border: 1px solid var(--solution-border);
   box-shadow: 0 1px 4px rgba(20, 20, 20, 0.05);
   color: var(--color-primary);
   font-size: 1rem;
-  transition: transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+/* Positioned relative to .platform-node (its offset parent), which is
+   sized to exactly the circle above — `top: 100%` therefore always means
+   "right at the circle's own bottom edge", at any breakpoint's circle
+   size, with no separate hand-typed pixel offset to keep in sync. */
 .platform-node-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 6px;
+  width: 88px;
+  text-align: center;
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--solution-text);
@@ -205,30 +217,26 @@
 }
 
 /* The hub — larger, brighter, and the strongest element in the map. Same
-   --node-x/--node-y anchoring mechanism as every other node (computed
-   from the same center used for every ring/node in index.jsx, not a
-   separate top:50%/left:50% special case), positioned low and center,
-   slightly into the innermost ring rather than in the middle of the
-   outer nodes. */
+   plain-anchor + absolutely-positioned-label mechanism as every other
+   node above (computed from the same center used for every ring/node in
+   index.jsx, not a separate top:50%/left:50% special case), positioned
+   low and center, slightly into the innermost ring rather than in the
+   middle of the outer nodes. */
 .platform-hub {
   position: absolute;
   top: var(--node-y);
   left: var(--node-x);
   transform: translate(-50%, -50%);
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
 }
 
 .platform-hub-circle {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
   background: #ffffff;
   border: 1px solid rgba(37, 99, 235, 0.3);
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.16);
