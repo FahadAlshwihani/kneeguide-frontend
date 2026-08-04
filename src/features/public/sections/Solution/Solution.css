@@ -257,6 +257,12 @@
 }
 
 .platform-hub-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  white-space: nowrap;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--solution-heading);
@@ -265,11 +271,14 @@
 /* Hover — desktop/pointer devices only, so touch never gets a stuck
    hover state. The corresponding arc highlight/connector are driven by
    React state (hoveredNode), gated the same way here so neither shows on
-   touch. Only the hovered node itself changes — the rest of the radar
-   stays exactly as it was. */
+   touch. Mouse events are bound to `.platform-node` (see index.jsx), so
+   hovering anywhere in the node — including its label — reaches the
+   circle via the descendant selector below; `.is-hovered` is the same
+   state applied directly by React, for parity with touch/keyboard
+   interactions that set hoveredNode without a real `:hover`. */
 @media (hover: hover) and (pointer: fine) {
   .platform-node:hover .platform-node-circle,
-  .platform-node.is-hovered .platform-node-circle {
+  .platform-node-circle.is-hovered {
     transform: scale(1.1);
     border-color: var(--color-primary);
     color: var(--color-primary-hover);
