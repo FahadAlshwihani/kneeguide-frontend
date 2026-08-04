@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { motion, useInView, useMotionValue, animate } from "motion/react";
 import { FaUser, FaUserDoctor, FaBrain, FaDumbbell, FaChartLine, FaFileLines, FaBell, FaStopwatch, FaPeopleGroup } from "react-icons/fa6";
@@ -91,11 +92,14 @@ const buildRings = (radii, offsets, keysList) => radii.map((radius, i) => ({ rad
 // always scales them down further when needed (see fitRings below) to
 // guarantee they fit the container's real, measured height *and* stay
 // within its horizontal edges — never a hand-tuned viewBoxHeight per
-// tier, never eyeballed. Mobile's are a little tighter than tablet's,
-// trading some of the radial spacing between rings for the room 9 nodes
-// (instead of a reduced set) need on a narrow screen.
+// tier, never eyeballed. Mobile's own radii are spaced a bit more
+// generously between rings than a straight-down-scaled version of
+// tablet's would be (see RADAR_TIERS) specifically to keep 9 nodes'
+// worth of circles+labels from crowding a narrow screen — paired with
+// smaller node/label chrome at that same breakpoint (see the
+// max-width: 640px block, Solution.css).
 const RADAR_TIERS = [
-  { id: "mobile", minWidth: 0, rings: buildRings([16, 27, 38], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+  { id: "mobile", minWidth: 0, rings: buildRings([16, 29, 43], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "tablet", minWidth: 641, rings: buildRings([18, 31, 44], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "laptop", minWidth: 1024, rings: buildRings([20, 34, 48], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "desktop", minWidth: 1280, rings: buildRings([22, 36, 50], FULL_RING_OFFSETS, FULL_RING_KEYS) },
@@ -291,13 +295,24 @@ const Solution = () => {
   // only one number, derived from the DOM itself.
   const [mapSize, setMapSize] = useState(null);
 
+  // Document-relative pixel position of the radar origin (the map's own
+  // bottom-center — see hubPortalPos usage below), measured alongside
+  // mapSize from the exact same rect. This is what lets the hub render
+  // through a portal (see the return statement) instead of as a normal
+  // descendant here — see the note above the portal call for why that's
+  // necessary.
+  const [hubPortalPos, setHubPortalPos] = useState(null);
+
   useLayoutEffect(() => {
     const node = mapRef.current;
     if (!node) return undefined;
 
     const measure = () => {
       const rect = node.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) setMapSize({ width: rect.width, height: rect.height });
+      if (rect.width > 0 && rect.height > 0) {
+        setMapSize({ width: rect.width, height: rect.height });
+        setHubPortalPos({ x: rect.left + rect.width / 2 + window.scrollX, y: rect.bottom + window.scrollY });
+      }
     };
 
     measure();
@@ -321,12 +336,14 @@ const Solution = () => {
   // the pulse's origin are all built from this exact point. Everything
   // drawn inside .platform-radar-clip (rings, nodes, the sweep, the
   // pulse) is clipped there, at that same edge, same as before. The hub
-  // alone renders *outside* that clipping wrapper (see the JSX below and
-  // .platform-hub in Solution.css) so it's the one element allowed to
-  // stay fully visible even though it's centered exactly on the boundary
-  // line, same as everything else. Before the first measurement lands,
-  // fall back to a plausible ratio so nothing renders from a guess for
-  // more than a frame.
+  // alone is exempt (see the portal at the end of the return statement,
+  // and hubPortalPos above) — it's still centered on this exact same
+  // point, just rendered through a portal so an ancestor several levels
+  // up (HeroProblemScene's own `overflow: hidden`, which wraps Hero,
+  // Problem AND Solution as one continuous scene and would otherwise crop
+  // the hub exactly like it crops everything else) never gets a chance to
+  // clip it. Before the first measurement lands, fall back to a plausible
+  // ratio so nothing renders from a guess for more than a frame.
   const viewBoxHeight = mapSize ? (mapSize.height / mapSize.width) * 100 : 30;
   const center = { x: 50, y: viewBoxHeight };
   const rings = fitRings(tier.rings, viewBoxHeight, mapSize?.width ?? 0);
@@ -428,6 +445,15 @@ const Solution = () => {
             deliberately rendered OUTSIDE it, as this div's own sibling
             below, so it's the one element exempt from that clip. */}
         <div className="platform-radar-clip">
+        {/* Shares one fade mask between the decorative arcs and the sweep
+            beam (see .platform-fade-layer, Solution.css) so the beam
+            dissolves into the background exactly the same way the arcs
+            already do, instead of getting hard-cut by
+            .platform-radar-clip's overflow first. Nodes and the pulse are
+            deliberately NOT inside this wrapper — nodes are real UI that
+            should never fade, and the pulse has its own reasons to stay
+            unmasked (see .platform-pulse-layer below). */}
+        <div className="platform-fade-layer">
         <svg className="platform-radar" viewBox={viewBox} preserveAspectRatio="none" aria-hidden="true">
           {decorativeArcs.map((radius, i) => (
             <motion.path
