@@ -156,6 +156,8 @@ const Beams = ({
   noiseIntensity = 1.75,
   scale = 0.2,
   rotation = 0,
+  cameraZoom = 1,
+  cameraY = 0,
   dpr = [1, 2],
   frameloop = 'always'
 }) => {
@@ -225,7 +227,7 @@ const Beams = ({
       </group>
       <ambientLight intensity={1} />
       <color attach="background" args={['#000000']} />
-      <PerspectiveCamera makeDefault position={[0, 0, 20]} fov={30} />
+      <PerspectiveCamera makeDefault position={[0, cameraY, 20]} fov={30} zoom={cameraZoom} />
     </CanvasWrapper>
   );
 };

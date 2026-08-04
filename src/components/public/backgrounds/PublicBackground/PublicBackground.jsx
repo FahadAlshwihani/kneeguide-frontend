@@ -68,6 +68,8 @@ const PublicBackground = ({ className = "", active = true }) => {
           noiseIntensity={1.75}
           scale={0.2}
           rotation={20}
+          cameraZoom={1.46}
+          cameraY={0.22}
           dpr={dpr}
           frameloop={active ? "always" : "never"}
         />
