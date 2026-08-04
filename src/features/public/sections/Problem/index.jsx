@@ -1,5 +1,15 @@
 import React from "react";
-import { FaClipboardList, FaCommentSlash, FaChartLine } from "react-icons/fa6";
+import {
+  FaClipboardList,
+  FaCommentSlash,
+  FaChartLine,
+  FaBullseye,
+  FaWandMagicSparkles,
+  FaArrowTrendUp,
+  FaUser,
+  FaUserDoctor,
+  FaPeopleGroup,
+} from "react-icons/fa6";
 import Reveal from "../../components/Reveal";
 import "./Problem.css";
 
@@ -22,6 +32,33 @@ const PROBLEMS = [
     description:
       "Without daily data, clinicians adjust treatment plans on memory instead of evidence.",
   },
+];
+
+const HIGHLIGHTS = [
+  {
+    icon: FaBullseye,
+    value: "Consistent",
+    title: "Exercise adherence",
+    description: "Goal-focused routines designed to make daily rehabilitation easier to follow.",
+  },
+  {
+    icon: FaWandMagicSparkles,
+    value: "24/7",
+    title: "AI-assisted guidance",
+    description: "On-demand support that helps patients stay informed between appointments.",
+  },
+  {
+    icon: FaArrowTrendUp,
+    value: "Faster",
+    title: "Recovery visibility",
+    description: "Clear progress signals that help meaningful changes surface sooner.",
+  },
+];
+
+const AUDIENCES = [
+  { icon: FaUser, title: "Patients", description: "Clear guidance for every recovery day." },
+  { icon: FaUserDoctor, title: "Clinicians", description: "Useful context between appointments." },
+  { icon: FaPeopleGroup, title: "Healthcare Teams", description: "A shared view of rehabilitation progress." },
 ];
 
 const Problem = () => {
@@ -52,6 +89,38 @@ const Problem = () => {
             );
           })}
         </div>
+
+        <Reveal as="div" className="problem-highlights">
+          {HIGHLIGHTS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div className="problem-highlight" key={item.title}>
+                <span className="problem-highlight-icon"><Icon aria-hidden="true" /></span>
+                <strong className="problem-highlight-value">{item.value}</strong>
+                <span className="problem-highlight-title">{item.title}</span>
+                <p className="problem-highlight-description">{item.description}</p>
+              </div>
+            );
+          })}
+        </Reveal>
+
+        <Reveal as="div" className="problem-trust">
+          <p className="problem-trust-label">Designed around the people who move recovery forward</p>
+          <div className="problem-trust-grid">
+            {AUDIENCES.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div className="problem-trust-item" key={item.title}>
+                  <span className="problem-trust-icon"><Icon aria-hidden="true" /></span>
+                  <span>
+                    <strong>Designed for {item.title}</strong>
+                    <small>{item.description}</small>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

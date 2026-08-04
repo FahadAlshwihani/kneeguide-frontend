@@ -21,8 +21,8 @@
   --problem-heading: #141414;
   --problem-text: #4b4b4b;
   --problem-muted: #6b6b6b;
-  --problem-border: rgba(20, 20, 20, 0.1);
-  --problem-card-bg: #fffdf9;
+  --problem-border: #e8edf5;
+  --problem-card-bg: #ffffff;
 }
 
 .problem-container {
@@ -54,14 +54,14 @@
   border-radius: 999px;
 }
 
-.problem-title {
+.public-root .problem-title {
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 600;
   color: var(--problem-heading);
   text-wrap: balance;
 }
 
-.problem-description {
+.public-root .problem-description {
   font-size: 1.05rem;
   line-height: 1.65;
   color: var(--problem-text);
@@ -76,11 +76,123 @@
 .problem-card {
   background: var(--problem-card-bg);
   border: 1px solid var(--problem-border);
-  border-radius: var(--radius-lg);
-  padding: 32px 28px;
+  border-radius: 24px;
+  padding: 30px 28px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.problem-highlights {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--problem-border);
+  border-radius: 28px;
+}
+
+.problem-highlight {
+  position: relative;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 12px;
+  align-items: center;
+}
+
+.problem-highlight + .problem-highlight {
+  border-inline-start: 1px solid var(--problem-border);
+}
+
+.problem-highlight-icon {
+  grid-row: 1 / span 2;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+  background: #eff6ff;
+}
+
+.problem-highlight-value {
+  font-size: 1.35rem;
+  line-height: 1.1;
+  color: var(--problem-heading);
+}
+
+.problem-highlight-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.public-root .problem-highlight-description {
+  grid-column: 1 / -1;
+  margin-top: 18px;
+  color: var(--problem-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.problem-trust {
+  margin-top: 24px;
+  padding: 22px 24px;
+  border: 1px solid var(--problem-border);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.public-root .problem-trust-label {
+  margin-bottom: 18px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #667085;
+  text-align: center;
+}
+
+.problem-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.problem-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.problem-trust-icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: var(--color-primary);
+}
+
+.problem-trust-item strong,
+.problem-trust-item small {
+  display: block;
+}
+
+.problem-trust-item strong {
+  color: var(--problem-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.problem-trust-item small {
+  margin-top: 3px;
+  color: var(--problem-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
 }
 
 .problem-card-icon {
@@ -95,20 +207,31 @@
   font-size: 1.15rem;
 }
 
-.problem-card-title {
+.public-root .problem-card-title {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--problem-heading);
 }
 
-.problem-card-description {
+.public-root .problem-card-description {
   font-size: 0.92rem;
   line-height: 1.6;
   color: var(--problem-muted);
 }
 
 @media (max-width: 960px) {
-  .problem-grid {
+  .problem-grid,
+  .problem-highlights,
+  .problem-trust-grid {
     grid-template-columns: 1fr;
+  }
+
+  .problem-highlight + .problem-highlight {
+    border-inline-start: 0;
+    border-top: 1px solid var(--problem-border);
+  }
+
+  .problem-trust-grid {
+    gap: 16px;
   }
 }
