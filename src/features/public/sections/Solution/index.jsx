@@ -580,7 +580,15 @@ const Solution = () => {
             </div>
           );
         })}
+        </div>
 
+        {/* Outside .platform-radar-clip on purpose — see the comment
+            above it. Same (--node-x, --node-y) anchoring mechanism as
+            every node, computed from the exact same `center` everything
+            else uses (never moved off it), so the hub visually sits
+            exactly at the radar's true origin; it's just no longer
+            subject to the wrapper's overflow: hidden, so nothing crops
+            it. */}
         <div className="platform-hub" style={{ "--node-x": `${center.x}%`, "--node-y": `${(center.y / viewBoxHeight) * 100}%` }}>
           <motion.span
             className="platform-hub-circle"
