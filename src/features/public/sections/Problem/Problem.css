@@ -90,23 +90,41 @@
   color: var(--problem-heading);
 }
 
-/* 2. Designed-for audience statement — one centered sentence, printed
+/* 2. Designed-for audience statement — one centered line, printed
    directly on the page (no card, no strip, no border). The fixed lead
    ("Designed for" / "مصمم") is plain text; only the last word animates
    via TextType (see index.jsx), colored per word from the existing
    brand palette. Font size deliberately reuses the same clamp() family
    already used elsewhere in this file, just at a size between the stat
    values and the section title — large enough to read as a standalone
-   statement, not a fourth stat. */
+   statement, not a fourth stat.
+
+   `.problem-audience` centers `.problem-audience-line` with flexbox
+   (`justify-content`), not `text-align` — text-align centers an inline
+   *text run*, which is exactly the kind of shared flow that let the
+   animated word's changing content nudge the prefix. Flex items are a
+   different layout model entirely: the prefix and the word-slot are two
+   independent boxes with their own fixed sizes (`flex: 0 0 auto` on
+   both), so nothing about what's typed/deleted *inside* the slot can
+   ever resize the slot itself or move its sibling. */
 .problem-audience {
   margin-bottom: clamp(48px, 7vw, 72px);
-  text-align: center;
+  display: flex;
+  justify-content: center;
   font-size: clamp(1.35rem, 2.8vw, 1.85rem);
   font-weight: 600;
   color: var(--problem-heading);
 }
 
+.problem-audience-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+
 .problem-audience-lead {
+  flex: 0 0 auto;
+  white-space: nowrap;
   color: var(--problem-heading);
 }
 
@@ -117,14 +135,17 @@
 
 /* Fixed-width slot around the animated word (see wordSlotWidth in
    index.jsx) — its width is set inline, sized to the widest of the three
-   words, so "Designed for" never shifts as shorter/longer words type or
-   delete. `text-align: start` (not the inherited center) keeps the word
+   words, and never collapses while TextType types/deletes inside it:
+   `flex: 0 0 auto` plus an explicit `width` means this box's size comes
+   from that inline style alone, never from its content. `overflow:
+   hidden` clips a mid-transition character or the cursor if either ever
+   nudges a pixel past that width; `text-align: start` keeps the word
    growing outward from the edge nearest the lead text instead of
    re-centering on every keystroke. */
 .problem-audience-word-slot {
+  flex: 0 0 auto;
   display: inline-block;
   text-align: start;
-  vertical-align: top;
   overflow: hidden;
 }
 
