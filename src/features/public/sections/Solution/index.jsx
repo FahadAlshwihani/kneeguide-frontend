@@ -142,6 +142,13 @@ const HORIZONTAL_RADIUS_LIMIT = 50 / Math.cos(ARC_START_RAD) - 2;
 // it's exact at any size rather than a per-breakpoint guess.
 const NODE_BOTTOM_CLEARANCE_PX = 64;
 
+// Same idea as NODE_BOTTOM_CLEARANCE_PX, but for the hub div itself
+// (see hubCenterY in the component) — sized for its own, larger circle
+// (max 68px diameter/34px radius) + label margin + one label line, plus
+// a safety buffer, so the hub's full circle and label always clear the
+// bottom edge regardless of breakpoint.
+const HUB_BOTTOM_CLEARANCE_PX = 76;
+
 const fitRings = (rings, viewBoxHeight, mapWidth) => {
   const outerRadius = Math.max(...rings.map((ring) => ring.radius));
   const verticalAvailable = viewBoxHeight - TOP_MARGIN_UNITS;
@@ -226,8 +233,19 @@ const NODE_REVEAL_STEP = 0.09;
 // numeric comparisons.
 const SWEEP_ROTATION_DURATION = 9;
 const SWEEP_TRAIL_DEG = 30;
-const PULSE_DURATION = 1.6;
 const NODE_REACTION_DURATION_MS = 320;
+
+// The radar echo (see the pulse circle below): one soft wave, not an
+// expanding ring — it briefly brightens just after leaving the hub, then
+// spends the rest of its (slow, unhurried) travel simultaneously
+// thinning (strokeWidth) and fading (opacity) toward nothing, so it
+// reads as a wave dissipating into the distance rather than a shape
+// growing outward at constant strength.
+const PULSE_DURATION = 2.2;
+const PULSE_TIMES = [0, 0.12, 1];
+const PULSE_RADIUS_KEYFRAMES = [0, 0.32, 1]; // multiplied by pulseMaxRadius
+const PULSE_OPACITY_KEYFRAMES = [0, 0.14, 0];
+const PULSE_STROKE_KEYFRAMES = [0.9, 0.5, 0.03];
 
 // Our node angles are expressed the usual math way (0deg = right, 90deg
 // = top, counter-clockwise positive). The sweep instead rotates in the
@@ -302,10 +320,14 @@ const Solution = () => {
     };
   }, []);
 
-  // centerY == viewBoxHeight puts the hub exactly on the map's real
-  // bottom edge — the container's own `overflow: hidden`, pinned flush
-  // against the next section (see Solution.css), is what then crops
-  // roughly half of it and the arcs' own lower reach. Before the first
+  // centerY == viewBoxHeight puts the shared radar center exactly on the
+  // map's real bottom edge — every ring, node, the sweep's origin and the
+  // pulse's origin are still built from this exact point, unchanged, so
+  // they still continue past the boundary and get cropped by the
+  // container's own `overflow: hidden` (pinned flush against the next
+  // section, see Solution.css) exactly as before. Only the HUB's own
+  // rendered position (hubCenterY, below) is nudged up off this point —
+  // everything else keeps using `center` directly. Before the first
   // measurement lands, fall back to a plausible ratio so nothing renders
   // from a guess for more than a frame.
   const viewBoxHeight = mapSize ? (mapSize.height / mapSize.width) * 100 : 30;
@@ -314,6 +336,17 @@ const Solution = () => {
   const nodes = buildRadarNodes(center, rings);
   const decorativeArcs = buildDecorativeArcs(rings, center, viewBoxHeight);
   const viewBox = `0 0 100 ${viewBoxHeight}`;
+
+  // The hub is the one radar element that must never be cropped — unlike
+  // every ring/node/the sweep/the pulse, which stay anchored to `center`
+  // and are explicitly allowed to continue past the boundary. Its own div
+  // is rendered `hubClearanceUnits` above that shared center instead —
+  // enough (converted from a real pixel measurement, same pattern as
+  // NODE_BOTTOM_CLEARANCE_PX above) that its full circle + label always
+  // clears the edge, on any breakpoint. This never touches `center`
+  // itself, so no ring/node/arc math is affected.
+  const hubClearanceUnits = mapSize ? (HUB_BOTTOM_CLEARANCE_PX * 100) / mapSize.width : 0;
+  const hubCenterY = Math.max(0, viewBoxHeight - hubClearanceUnits);
 
   const arcsDrawEnd = ARC_DRAW_START + (rings.length - 1) * ARC_DRAW_RING_STEP + ARC_DRAW_DURATION;
   const nodesRevealStart = arcsDrawEnd + 0.1;
@@ -448,18 +481,25 @@ const Solution = () => {
             />
           ))}
 
-          {/* One soft ring, replayed by remounting on every pulseCount
-              bump (see the rotation effect) — travels from the hub out
-              through every arc, then fades away completely. */}
+          {/* One soft radar echo, replayed by remounting on every
+              pulseCount bump (see the rotation effect) — starts at the
+              hub, briefly brightens, then travels outward through every
+              arc while simultaneously thinning and fading, so it reads
+              as a wave dissipating into the distance rather than a shape
+              expanding at constant strength. */}
           {isMapInView && pulseCount > 0 && (
             <motion.circle
               key={pulseCount}
               className="platform-pulse"
               cx={center.x}
               cy={center.y}
-              initial={{ r: 0, opacity: 0.22 }}
-              animate={{ r: pulseMaxRadius, opacity: 0 }}
-              transition={{ duration: PULSE_DURATION, ease: "easeOut" }}
+              initial={{ r: 0, opacity: 0, strokeWidth: PULSE_STROKE_KEYFRAMES[0] }}
+              animate={{
+                r: PULSE_RADIUS_KEYFRAMES.map((f) => f * pulseMaxRadius),
+                opacity: PULSE_OPACITY_KEYFRAMES,
+                strokeWidth: PULSE_STROKE_KEYFRAMES,
+              }}
+              transition={{ duration: PULSE_DURATION, ease: "easeOut", times: PULSE_TIMES }}
             />
           )}
         </svg>
@@ -530,7 +570,7 @@ const Solution = () => {
           );
         })}
 
-        <div className="platform-hub" style={{ "--node-x": `${center.x}%`, "--node-y": `${(center.y / viewBoxHeight) * 100}%` }}>
+        <div className="platform-hub" style={{ "--node-x": `${center.x}%`, "--node-y": `${(hubCenterY / viewBoxHeight) * 100}%` }}>
           <motion.span
             className="platform-hub-circle"
             initial={{ opacity: 0, scale: 0.6 }}
