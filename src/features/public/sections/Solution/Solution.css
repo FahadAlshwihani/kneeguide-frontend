@@ -67,20 +67,25 @@
    constrained to the header's readable column.
 
    `position: absolute; bottom: 0` (against .solution-root's own
-   `position: relative`) is the entire clipping mechanism: this box's
-   bottom edge is always exactly .solution-root's bottom edge — i.e.
-   exactly the top edge of whatever section renders next (Technology) —
-   regardless of the header's height above it. Height is a fixed/clamp()
-   value per width tier below (a deliberately modest "large background
-   visualization" size, not a viewport-proportional one that balloons on
-   wide screens); index.jsx then *measures* this element's real rendered
-   box via ResizeObserver and derives the SVG viewBox from that
-   measurement directly, so a node's computed (x, y) and the arc it sits
-   on can never drift apart — there's only one number (the DOM's own
-   rendered size), never two independently-declared ones to keep in
-   sync. `overflow: hidden` on this element is then what crops the
-   bottom portion of the hub/arcs whose math extends past this box's own
-   bottom edge, without touching any later section's DOM. Nodes are
+   `position: relative`) is what pins this box's bottom edge exactly to
+   .solution-root's bottom edge — i.e. exactly the top edge of whatever
+   section renders next (Technology) — regardless of the header's height
+   above it. Height is a fixed/clamp() value per width tier below (a
+   deliberately modest "large background visualization" size, not a
+   viewport-proportional one that balloons on wide screens); index.jsx
+   then *measures* this element's real rendered box via ResizeObserver
+   and derives the SVG viewBox from that measurement directly, so a
+   node's computed (x, y) and the arc it sits on can never drift apart —
+   there's only one number (the DOM's own rendered size), never two
+   independently-declared ones to keep in sync.
+
+   This element itself is NOT what clips the radar to that bottom edge
+   any more — `.platform-radar-clip` (its own direct child, see
+   index.jsx) is, with its own `overflow: hidden`. `.platform-hub` is
+   this element's OTHER direct child, deliberately outside that wrapper,
+   which is what lets the hub alone stay fully visible even past this
+   box's own bottom edge while everything else (rings, nodes, the sweep,
+   the pulse) still gets cropped there exactly as before. Nodes are
    plain positioned elements (not foreignObject-in-SVG) so real text,
    hover and focus behave normally; only the rings, highlights and
    connectors are real SVG paths. */
@@ -89,8 +94,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: clamp(260px, 58vw, 380px);
-  overflow: hidden;
+  height: clamp(300px, 62vw, 420px);
 }
 
 @media (min-width: 641px) {
@@ -111,24 +115,50 @@
   }
 }
 
+/* Owns the actual clipping now (see .solution-map's own comment above):
+   rings, nodes, the sweep and the pulse all live inside this wrapper
+   (see index.jsx) and are cropped exactly at its edge — i.e. exactly at
+   .solution-map's own edge, since this is `inset: 0` inside it. Only
+   .platform-hub, rendered as this wrapper's own sibling rather than
+   inside it, is exempt. */
+.platform-radar-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
 /* The mask is what turns "clipped by the container's edge" into
    "dissolves into the page": everything this SVG draws (real rings,
-   decorative arcs, highlights, connectors, the pulse) fades to fully
-   transparent over the top ~26% of the box instead of being hard-cut by
-   `overflow: hidden` the instant it crosses that edge. The real,
-   node-bearing rings never reach that zone (TOP_MARGIN_UNITS in
-   index.jsx already keeps them well clear of it), so only the decorative
-   arcs — and the pulse, on the rare moment it travels that far out — are
-   ever actually affected; everything else stays exactly as opaque as it
-   already was. */
+   decorative arcs, highlights, connectors) fades to fully transparent
+   over the top ~26% of the box instead of being hard-cut by
+   `.platform-radar-clip`'s `overflow: hidden` the instant it crosses
+   that edge. The real, node-bearing rings never reach that zone
+   (TOP_MARGIN_UNITS in index.jsx already keeps them well clear of it),
+   so only the decorative arcs are ever actually affected; everything
+   else stays exactly as opaque as it already was. The pulse deliberately
+   lives in its own separate, unmasked SVG (.platform-pulse-layer,
+   below) rather than in here — sharing this mask made it fade away
+   almost immediately on short/wide containers, since its radius grows
+   well past this mask's fade zone long before it's actually done
+   traveling. */
 .platform-radar {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
+}
+
+/* Same coordinate space as .platform-radar (identical viewBox, identical
+   box), just without its mask — see the comment on .platform-radar for
+   why the pulse needs that. Still clipped at the true edge by the shared
+   .platform-radar-clip parent, same as everything else. */
+.platform-pulse-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* The shared radar rings — always visible, always subtle. Never the
@@ -194,8 +224,9 @@
    most of the circle, ramping up to a low-opacity brand-blue only in the
    final --sweep-trail-deg before the 0deg/360deg seam. Rotating that
    whole disc is indistinguishable from rotating just the wedge, but
-   needs no masking/clipping of its own beyond what .platform-radar
-   already provides. */
+   needs no masking/clipping of its own beyond what its parent
+   .platform-radar-clip already provides (see index.jsx — this div is a
+   child of that wrapper, same as the radar SVGs and the nodes). */
 .platform-sweep {
   position: absolute;
   left: 50%;
@@ -286,10 +317,16 @@
 
 /* The hub — larger, brighter, and the strongest element in the map. Same
    plain-anchor + absolutely-positioned-label mechanism as every other
-   node above (computed from the same center used for every ring/node in
-   index.jsx, not a separate top:50%/left:50% special case), positioned
-   low and center, slightly into the innermost ring rather than in the
-   middle of the outer nodes. */
+   node above (computed from the exact same `center` every ring/node in
+   index.jsx uses — never a separate/offset position of its own), so it
+   sits precisely at the radar's true origin, exactly on the section's
+   clipping boundary like everything else. What makes it the one element
+   that stays fully visible there is structural, not positional: it
+   renders as .platform-radar-clip's own sibling (see index.jsx) rather
+   than as a descendant of it, so that wrapper's `overflow: hidden` never
+   applies to it in the first place. z-index keeps it painting above
+   whatever section comes after Solution in normal document flow,
+   wherever the two happen to visually overlap. */
 .platform-hub {
   position: absolute;
   top: var(--node-y);
