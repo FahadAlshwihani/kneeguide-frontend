@@ -73,19 +73,14 @@ const buildRadarNodes = (center, rings) =>
     })
   );
 
-// Same 9 nodes/3 rings on desktop, laptop and tablet — only the scale
-// changes per breakpoint. Mobile drops to 2 rings/5 nodes.
+// Same 9 nodes/3 rings on every breakpoint, mobile included — only the
+// scale changes per tier below, never which nodes exist.
 const FULL_RING_KEYS = [
   ["exercises", "reports", "progress"],
   ["wearables", "ai", "notifications"],
   ["patient", "clinician", "family"],
 ];
 const FULL_RING_OFFSETS = [6, -5, 3];
-const MOBILE_RING_KEYS = [
-  ["progress", "reports"],
-  ["patient", "clinician", "ai"],
-];
-const MOBILE_RING_OFFSETS = [4, -4];
 
 const buildRings = (radii, offsets, keysList) => radii.map((radius, i) => ({ radius, offsetDeg: offsets[i], keys: keysList[i] }));
 
@@ -96,9 +91,11 @@ const buildRings = (radii, offsets, keysList) => radii.map((radius, i) => ({ rad
 // always scales them down further when needed (see fitRings below) to
 // guarantee they fit the container's real, measured height *and* stay
 // within its horizontal edges — never a hand-tuned viewBoxHeight per
-// tier, never eyeballed.
+// tier, never eyeballed. Mobile's are a little tighter than tablet's,
+// trading some of the radial spacing between rings for the room 9 nodes
+// (instead of a reduced set) need on a narrow screen.
 const RADAR_TIERS = [
-  { id: "mobile", minWidth: 0, rings: buildRings([24, 46], MOBILE_RING_OFFSETS, MOBILE_RING_KEYS) },
+  { id: "mobile", minWidth: 0, rings: buildRings([16, 27, 38], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "tablet", minWidth: 641, rings: buildRings([18, 31, 44], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "laptop", minWidth: 1024, rings: buildRings([20, 34, 48], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "desktop", minWidth: 1280, rings: buildRings([22, 36, 50], FULL_RING_OFFSETS, FULL_RING_KEYS) },
@@ -141,13 +138,6 @@ const HORIZONTAL_RADIUS_LIMIT = 50 / Math.cos(ARC_START_RAD) - 2;
 // viewBox units from the container's own measured width every render, so
 // it's exact at any size rather than a per-breakpoint guess.
 const NODE_BOTTOM_CLEARANCE_PX = 64;
-
-// Same idea as NODE_BOTTOM_CLEARANCE_PX, but for the hub div itself
-// (see hubCenterY in the component) — sized for its own, larger circle
-// (max 68px diameter/34px radius) + label margin + one label line, plus
-// a safety buffer, so the hub's full circle and label always clear the
-// bottom edge regardless of breakpoint.
-const HUB_BOTTOM_CLEARANCE_PX = 76;
 
 const fitRings = (rings, viewBoxHeight, mapWidth) => {
   const outerRadius = Math.max(...rings.map((ring) => ring.radius));
@@ -283,6 +273,12 @@ const Solution = () => {
   // ever calling setState per node, per frame.
   const nodeCircleRefs = useRef(new Map());
   const sweepTimeoutsRef = useRef(new Map());
+  // Always the latest `nodes` array (reassigned every render, below —
+  // not read through the rotation effect's dependency array), so the
+  // rotation effect's onUpdate never has to rely on whatever `nodes`
+  // looked like back when the effect last happened to restart. Removes
+  // any chance of the crossing-check working off a stale angle set.
+  const nodesRef = useRef([]);
 
   const mapRef = useRef(null);
   const isMapInView = useInView(mapRef, { once: true, amount: 0.3 });
@@ -320,33 +316,24 @@ const Solution = () => {
     };
   }, []);
 
-  // centerY == viewBoxHeight puts the shared radar center exactly on the
-  // map's real bottom edge — every ring, node, the sweep's origin and the
-  // pulse's origin are still built from this exact point, unchanged, so
-  // they still continue past the boundary and get cropped by the
-  // container's own `overflow: hidden` (pinned flush against the next
-  // section, see Solution.css) exactly as before. Only the HUB's own
-  // rendered position (hubCenterY, below) is nudged up off this point —
-  // everything else keeps using `center` directly. Before the first
-  // measurement lands, fall back to a plausible ratio so nothing renders
-  // from a guess for more than a frame.
+  // centerY == viewBoxHeight puts the radar origin exactly on the map's
+  // real bottom edge — every ring, node, the hub, the sweep's origin and
+  // the pulse's origin are all built from this exact point. Everything
+  // drawn inside .platform-radar-clip (rings, nodes, the sweep, the
+  // pulse) is clipped there, at that same edge, same as before. The hub
+  // alone renders *outside* that clipping wrapper (see the JSX below and
+  // .platform-hub in Solution.css) so it's the one element allowed to
+  // stay fully visible even though it's centered exactly on the boundary
+  // line, same as everything else. Before the first measurement lands,
+  // fall back to a plausible ratio so nothing renders from a guess for
+  // more than a frame.
   const viewBoxHeight = mapSize ? (mapSize.height / mapSize.width) * 100 : 30;
   const center = { x: 50, y: viewBoxHeight };
   const rings = fitRings(tier.rings, viewBoxHeight, mapSize?.width ?? 0);
   const nodes = buildRadarNodes(center, rings);
+  nodesRef.current = nodes;
   const decorativeArcs = buildDecorativeArcs(rings, center, viewBoxHeight);
   const viewBox = `0 0 100 ${viewBoxHeight}`;
-
-  // The hub is the one radar element that must never be cropped — unlike
-  // every ring/node/the sweep/the pulse, which stay anchored to `center`
-  // and are explicitly allowed to continue past the boundary. Its own div
-  // is rendered `hubClearanceUnits` above that shared center instead —
-  // enough (converted from a real pixel measurement, same pattern as
-  // NODE_BOTTOM_CLEARANCE_PX above) that its full circle + label always
-  // clears the edge, on any breakpoint. This never touches `center`
-  // itself, so no ring/node/arc math is affected.
-  const hubClearanceUnits = mapSize ? (HUB_BOTTOM_CLEARANCE_PX * 100) / mapSize.width : 0;
-  const hubCenterY = Math.max(0, viewBoxHeight - hubClearanceUnits);
 
   const arcsDrawEnd = ARC_DRAW_START + (rings.length - 1) * ARC_DRAW_RING_STEP + ARC_DRAW_DURATION;
   const nodesRevealStart = arcsDrawEnd + 0.1;
@@ -391,7 +378,6 @@ const Solution = () => {
   useEffect(() => {
     if (!isMapInView) return undefined;
 
-    const nodeAngles = nodes.map((node) => ({ key: node.key, beta: nodeBeta(node.angle) }));
     let previousDeg = 0;
 
     const controls = animate(0, 360, {
@@ -402,8 +388,12 @@ const Solution = () => {
       onRepeat: () => setPulseCount((count) => count + 1),
       onUpdate: (deg) => {
         rotateMV.set(deg);
-        nodeAngles.forEach(({ key, beta }) => {
-          if (angleCrossed(previousDeg, deg, beta)) triggerNodeReaction(key);
+        // Read nodesRef.current fresh every frame (not a snapshot taken
+        // when this effect last started) — identical logic regardless of
+        // how many nodes/rings exist, so tablet/laptop/desktop's 9 nodes
+        // behave exactly like mobile's.
+        nodesRef.current.forEach((node) => {
+          if (angleCrossed(previousDeg, deg, nodeBeta(node.angle))) triggerNodeReaction(node.key);
         });
         previousDeg = deg;
       },
@@ -430,6 +420,13 @@ const Solution = () => {
           where the next section begins. That's the entire clipping
           mechanism: nothing below that edge is ever painted. */}
       <div className="solution-map" ref={mapRef}>
+        {/* Everything that must stay clipped at the section boundary —
+            rings, nodes, the sweep, the pulse — lives inside this
+            wrapper, which is what now actually owns `overflow: hidden`
+            (see .platform-radar-clip, Solution.css). .platform-hub is
+            deliberately rendered OUTSIDE it, as this div's own sibling
+            below, so it's the one element exempt from that clip. */}
+        <div className="platform-radar-clip">
         <svg className="platform-radar" viewBox={viewBox} preserveAspectRatio="none" aria-hidden="true">
           {decorativeArcs.map((radius, i) => (
             <motion.path
@@ -570,7 +567,7 @@ const Solution = () => {
           );
         })}
 
-        <div className="platform-hub" style={{ "--node-x": `${center.x}%`, "--node-y": `${(hubCenterY / viewBoxHeight) * 100}%` }}>
+        <div className="platform-hub" style={{ "--node-x": `${center.x}%`, "--node-y": `${(center.y / viewBoxHeight) * 100}%` }}>
           <motion.span
             className="platform-hub-circle"
             initial={{ opacity: 0, scale: 0.6 }}
