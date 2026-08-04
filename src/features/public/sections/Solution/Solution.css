@@ -270,9 +270,9 @@
 }
 
 /* Node/hub chrome sizing only (never the map's own geometry — that's
-   entirely driven by RADAR_BREAKPOINTS in index.jsx). Breakpoints match
-   the JS tiers there (1024px, 640px) so the visual chrome and the
-   geometry scale down together. */
+   entirely driven by RADAR_TIERS + the measured container size in
+   index.jsx). Breakpoints match the JS tiers there (1024px, 640px) so
+   the visual chrome and the geometry scale down together. */
 @media (max-width: 1023px) {
   .platform-node-circle {
     width: 38px;
