@@ -36,8 +36,8 @@
 /* The shared canvas. Plain `absolute; inset: 0`, spanning the full
    combined height of all three sections and scrolling normally with
    them — deliberately not sticky. PublicBackground's own oversized
-   insets (percentage-based) size themselves relative to this box exactly
-   as they always have. */
+   camera reproduces the visual crop while the WebGL surface itself stays
+   bounded to this exact box. */
 .scene-background-layer {
   position: absolute;
   inset: 0;
