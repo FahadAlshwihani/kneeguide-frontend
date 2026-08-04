@@ -800,9 +800,10 @@
       "followupLabel": "Faster clinician follow-up"
     },
     "audience": {
-      "patients": "Designed for patients",
-      "clinicians": "Designed for clinicians",
-      "teams": "Designed for healthcare teams"
+      "lead": "Designed for",
+      "patients": "Patients",
+      "clinicians": "Clinicians",
+      "teams": "Healthcare Teams"
     },
     "cards": {
       "exercisesTitle": "Inconsistent home exercises",

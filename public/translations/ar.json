@@ -800,9 +800,10 @@
       "followupLabel": "متابعة أسرع من المختص"
     },
     "audience": {
-      "patients": "مصمم للمرضى",
-      "clinicians": "مصمم للمختصين",
-      "teams": "مصمم للفرق الصحية"
+      "lead": "مصمم",
+      "patients": "للمرضى",
+      "clinicians": "للمختصين",
+      "teams": "للفرق الصحية"
     },
     "cards": {
       "exercisesTitle": "تمارين منزلية غير منتظمة",
