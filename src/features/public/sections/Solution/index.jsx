@@ -398,6 +398,21 @@ const Solution = () => {
           mechanism: nothing below that edge is ever painted. */}
       <div className="solution-map" ref={mapRef}>
         <svg className="platform-radar" viewBox={viewBox} preserveAspectRatio="none" aria-hidden="true">
+          {decorativeArcs.map((radius, i) => (
+            <motion.path
+              key={`decorative-${i}`}
+              d={buildRingPath(center, radius)}
+              className="platform-ring platform-ring--decorative"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={isMapInView ? { pathLength: 1, opacity: 1 } : {}}
+              transition={{
+                duration: ARC_DRAW_DURATION,
+                delay: ARC_DRAW_START + (rings.length + i) * ARC_DRAW_RING_STEP,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+
           {rings.map((ring, ringIndex) => (
             <motion.path
               key={ringIndex}
@@ -429,10 +444,42 @@ const Solution = () => {
             />
           ))}
 
-          {sweepPoint && (
-            <circle className="platform-sweep-blip" cx={sweepPoint.x} cy={sweepPoint.y} r={1.6} style={{ opacity: sweepOpacity }} />
+          {/* One soft ring, replayed by remounting on every pulseCount
+              bump (see the rotation effect) — travels from the hub out
+              through every arc, then fades away completely. */}
+          {isMapInView && pulseCount > 0 && (
+            <motion.circle
+              key={pulseCount}
+              className="platform-pulse"
+              cx={center.x}
+              cy={center.y}
+              initial={{ r: 0, opacity: 0.22 }}
+              animate={{ r: pulseMaxRadius, opacity: 0 }}
+              transition={{ duration: PULSE_DURATION, ease: "easeOut" }}
+            />
           )}
         </svg>
+
+        {/* The rotating beam itself: a static conic-gradient wedge (see
+            .platform-sweep, Solution.css) whose only animated property is
+            `rotate`, bound directly to rotateMV — a Motion value, so this
+            spins via compositor-only GPU transforms and never re-renders
+            React. Anchored at the hub, same as .platform-hub, just with a
+            dynamic pixel diameter (see sweepDiameterPx) since it isn't
+            itself an SVG shape. */}
+        {mapSize && (
+          <motion.div
+            className="platform-sweep"
+            style={{
+              width: `${sweepDiameterPx}px`,
+              height: `${sweepDiameterPx}px`,
+              "--sweep-trail-deg": `${SWEEP_TRAIL_DEG}deg`,
+              x: "-50%",
+              y: "-50%",
+              rotate: rotateMV,
+            }}
+          />
+        )}
 
         {nodes.map((node) => {
           const Icon = NODE_ICONS[node.key];
@@ -459,6 +506,10 @@ const Solution = () => {
               onMouseLeave={() => setHoveredNode(null)}
             >
               <motion.span
+                ref={(el) => {
+                  if (el) nodeCircleRefs.current.set(node.key, el);
+                  else nodeCircleRefs.current.delete(node.key);
+                }}
                 className={`platform-node-circle${hoveredNode === node.key ? " is-hovered" : ""}`}
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
