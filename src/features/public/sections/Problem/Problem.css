@@ -11,13 +11,12 @@
    background (already warm-white by the time it reaches here) shows
    through instead of being covered by a second, separate background.
 
-   Content order (see index.jsx): stats -> audience row -> header ->
-   problem cards. Stats and the audience row are deliberately "printed
-   directly on the page" — no container, no border, no background, no
-   shadow anywhere in those two blocks; only whitespace and (on stats,
-   desktop only) a single hairline divider do the grouping work. The
-   problem cards are the *only* element in this section allowed a
-   card-style surface. */
+   Content order (see index.jsx): stats -> audience statement -> header ->
+   problem cards. Stats and the audience statement are deliberately
+   "printed directly on the page" — no container, no border, no
+   background, no shadow anywhere in those two blocks; whitespace alone
+   groups them. The problem cards are the *only* element in this section
+   allowed a card-style surface. */
 .problem-root {
   position: relative;
   padding: var(--section-padding) 0;
