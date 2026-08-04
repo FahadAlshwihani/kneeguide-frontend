@@ -506,12 +506,45 @@ const Solution = () => {
           ))}
         </svg>
 
+        {/* The rotating beam itself: a static conic-gradient wedge (see
+            .platform-sweep, Solution.css) whose only animated properties
+            are `opacity` (fades in once, see below) and `rotate` (bound
+            directly to rotateMV — a Motion value, so the spin itself is a
+            compositor-only GPU transform and never re-renders React).
+            Anchored at the hub, same as .platform-hub, just with a
+            dynamic pixel diameter (see sweepDiameterPx) since it isn't
+            itself an SVG shape. Inside .platform-fade-layer (opened
+            above), so it dissolves near the same edge the decorative
+            arcs do — see that wrapper's own comment. */}
+        {mapSize && (
+          <motion.div
+            className="platform-sweep"
+            initial={{ opacity: 0 }}
+            // Stays invisible for the whole intro reveal (arcs, nodes,
+            // hub) and only fades in right as the rotation itself starts
+            // (see sweepStart/the rotation effect) — so the beam never
+            // sits there pre-rendered/frozen before the user has even
+            // seen the radar finish appearing.
+            animate={isMapInView ? { opacity: 1 } : {}}
+            transition={{ delay: sweepStart, duration: 0.5, ease: "easeOut" }}
+            style={{
+              width: `${sweepDiameterPx}px`,
+              height: `${sweepDiameterPx}px`,
+              "--sweep-trail-deg": `${SWEEP_TRAIL_DEG}deg`,
+              x: "-50%",
+              y: "-50%",
+              rotate: rotateMV,
+            }}
+          />
+        )}
+        </div>
+
         {/* The radar echo lives in its own, separate (unmasked) SVG layer
             — same viewBox/coordinate space as .platform-radar above, so
             cx/cy/r mean exactly the same thing in both, but this one
-            deliberately has no top-fade mask. .platform-radar's mask is
-            tuned for the *decorative arcs* dissolving near the top edge;
-            the pulse's radius routinely grows much larger than that
+            deliberately has no top-fade mask. .platform-fade-layer's mask
+            is tuned for the decorative arcs/sweep dissolving near the top
+            edge; the pulse's radius routinely grows much larger than that
             (it's meant to travel through every decorative arc, per
             pulseMaxRadius), so sharing that mask made it fade to nothing
             almost immediately after leaving the hub on short/wide
@@ -541,27 +574,6 @@ const Solution = () => {
             />
           )}
         </svg>
-
-        {/* The rotating beam itself: a static conic-gradient wedge (see
-            .platform-sweep, Solution.css) whose only animated property is
-            `rotate`, bound directly to rotateMV — a Motion value, so this
-            spins via compositor-only GPU transforms and never re-renders
-            React. Anchored at the hub, same as .platform-hub, just with a
-            dynamic pixel diameter (see sweepDiameterPx) since it isn't
-            itself an SVG shape. */}
-        {mapSize && (
-          <motion.div
-            className="platform-sweep"
-            style={{
-              width: `${sweepDiameterPx}px`,
-              height: `${sweepDiameterPx}px`,
-              "--sweep-trail-deg": `${SWEEP_TRAIL_DEG}deg`,
-              x: "-50%",
-              y: "-50%",
-              rotate: rotateMV,
-            }}
-          />
-        )}
 
         {nodes.map((node) => {
           const Icon = NODE_ICONS[node.key];
@@ -608,26 +620,44 @@ const Solution = () => {
           );
         })}
         </div>
-
-        {/* Outside .platform-radar-clip on purpose — see the comment
-            above it. Same (--node-x, --node-y) anchoring mechanism as
-            every node, computed from the exact same `center` everything
-            else uses (never moved off it), so the hub visually sits
-            exactly at the radar's true origin; it's just no longer
-            subject to the wrapper's overflow: hidden, so nothing crops
-            it. */}
-        <div className="platform-hub" style={{ "--node-x": `${center.x}%`, "--node-y": `${(center.y / viewBoxHeight) * 100}%` }}>
-          <motion.span
-            className="platform-hub-circle"
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: HUB_REVEAL_DURATION, ease: "easeOut" }}
-          >
-            <span className="platform-hub-mark">KG</span>
-          </motion.span>
-          <span className="platform-hub-label">{t("publicSolution.center")}</span>
-        </div>
       </div>
+
+      {/* The hub is portaled straight to document.body instead of
+          rendering here as a normal descendant. Reason: HeroProblemScene
+          — the shared wrapper around Hero, Problem AND this section (see
+          HeroProblemScene.css) — has its own `overflow: hidden`, an
+          intentional, documented boundary that stops the whole scene
+          (WebGL canvas included) from ever bleeding into whatever section
+          comes next. The hub sits exactly on Solution's own bottom edge,
+          which is also exactly HeroProblemScene's own bottom edge, so
+          that outer overflow: hidden crops it too — no amount of z-index
+          or restructuring *inside* Solution can escape an ancestor's own
+          clip. A portal is the one way to keep the hub visually anchored
+          to the same point (via hubPortalPos, measured from the same rect
+          as mapSize, so it stays correct on scroll/resize with no extra
+          tracking) while its DOM node lives entirely outside that
+          ancestor's subtree. z-index keeps it above ordinary page content
+          (Technology included) without approaching the site's real
+          chrome — see --z-header/--z-dropdown/etc. in src/index.css. */}
+      {typeof document !== "undefined" &&
+        hubPortalPos &&
+        createPortal(
+          <div
+            className="platform-hub"
+            style={{ "--node-x": `${hubPortalPos.x}px`, "--node-y": `${hubPortalPos.y}px` }}
+          >
+            <motion.span
+              className="platform-hub-circle"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: HUB_REVEAL_DURATION, ease: "easeOut" }}
+            >
+              <span className="platform-hub-mark">KG</span>
+            </motion.span>
+            <span className="platform-hub-label">{t("publicSolution.center")}</span>
+          </div>,
+          document.body
+        )}
     </section>
   );
 };
