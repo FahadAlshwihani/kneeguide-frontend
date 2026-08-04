@@ -814,6 +814,23 @@
       "decisionsDescription": "Without daily data, clinicians adjust treatment plans on memory instead of evidence."
     }
   },
+  "publicSolution": {
+    "badge": "The KneeGuide Approach",
+    "title": "One platform, connecting every day of recovery.",
+    "description": "KneeGuide closes the gap between appointments — turning scattered notes and memory into a continuous, shared view of progress.",
+    "center": "KneeGuide",
+    "nodes": {
+      "patient": "Patient",
+      "clinician": "Clinician",
+      "ai": "AI",
+      "exercises": "Exercises",
+      "progress": "Progress",
+      "reports": "Reports",
+      "notifications": "Notifications",
+      "wearables": "Wearables",
+      "family": "Family"
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",

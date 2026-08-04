@@ -2,7 +2,9 @@
    are defined locally below, same pattern as Problem.css, since this
    section is also part of the shared light scene now (see
    HeroProblemScene.css) rather than the public site's dark identity used
-   everywhere past it. */
+   everywhere past it. .solution-root stays transparent (unchanged) so the
+   shared canvas's warm-white treatment keeps showing through — this file
+   never gives the section its own opaque background. */
 
 .solution-root {
   position: relative;
@@ -61,49 +63,152 @@
   color: var(--solution-text);
 }
 
-.solution-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+/* Interactive platform map — replaces the old 3-card grid entirely.
+   `aspect-ratio: 1` is what keeps the 0-100 x 0-100 SVG viewBox mapping
+   1:1 onto real pixels at any width, so the trigonometry in index.jsx
+   (which only ever computes percentages) never needs to know the map's
+   actual rendered size. Nodes are plain positioned elements (not
+   foreignObject-in-SVG) so real text, hover states and focus behave
+   normally; only the connecting lines are real SVG. */
+.solution-map {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  aspect-ratio: 1;
+  margin: 0 auto;
 }
 
-.solution-card {
-  background: var(--solution-card-bg);
-  border: 1px solid var(--solution-border);
-  border-radius: var(--radius-lg);
-  padding: 32px 28px;
+.platform-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.platform-path {
+  fill: none;
+  stroke: var(--solution-border);
+  stroke-width: 0.45;
+  stroke-linecap: round;
+  transition: stroke var(--transition-fast), stroke-width var(--transition-fast), opacity var(--transition-fast);
+}
+
+.platform-path.is-active {
+  stroke: var(--color-primary);
+  stroke-width: 0.7;
+  opacity: 1;
+}
+
+.platform-node {
+  position: absolute;
+  top: var(--node-y);
+  left: var(--node-x);
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 2px 14px rgba(20, 20, 20, 0.04);
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: 92px;
+  text-align: center;
 }
 
-.solution-card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
+.platform-node-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gradient-brand);
-  color: #ffffff;
-  font-size: 1.15rem;
+  background: #ffffff;
+  border: 1px solid var(--solution-border);
+  box-shadow: 0 1px 4px rgba(20, 20, 20, 0.05);
+  color: var(--color-primary);
+  font-size: 1.05rem;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.solution-card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+.platform-node-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--solution-text);
+  line-height: 1.3;
+}
+
+/* The center node — same anchoring mechanism as the outer nodes (top/left
+   at 50%), just without needing --node-x/--node-y, and a larger, more
+   prominent circle. */
+.platform-node--center {
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+}
+
+.platform-node--center .platform-node-circle {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  font-size: 1.6rem;
+  border-color: rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+}
+
+.platform-node--center .platform-node-label {
+  font-weight: 700;
   color: var(--solution-heading);
 }
 
-.solution-card-description {
-  font-size: 0.92rem;
-  line-height: 1.6;
-  color: var(--solution-muted);
+/* Soft expanding ring, looping after the initial reveal finishes (see
+   pulseStart in index.jsx) — a subtle "this is alive" signal, not a
+   flashy effect. Sits behind the circle purely by DOM order (painted
+   first), no z-index needed. */
+.platform-node-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-primary);
+  pointer-events: none;
+}
+
+/* Hover — desktop/pointer devices only, so touch never gets a stuck
+   hover state. The corresponding path's own highlight is driven by React
+   state (hoveredNode), gated the same way here so it never shows on
+   touch either. */
+@media (hover: hover) and (pointer: fine) {
+  .platform-node:not(.platform-node--center):hover .platform-node-circle,
+  .platform-node.is-hovered .platform-node-circle {
+    transform: scale(1.08);
+    border-color: var(--color-primary);
+    color: var(--color-primary-hover);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.16);
+  }
 }
 
 @media (max-width: 960px) {
-  .solution-grid {
-    grid-template-columns: 1fr;
+  .solution-map {
+    max-width: 480px;
+  }
+
+  .platform-node-circle {
+    width: 42px;
+    height: 42px;
+    font-size: 0.95rem;
+  }
+
+  .platform-node--center .platform-node-circle {
+    width: 66px;
+    height: 66px;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .solution-map {
+    max-width: 340px;
+  }
+
+  .platform-node-label {
+    font-size: 0.72rem;
   }
 }

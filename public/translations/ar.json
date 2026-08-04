@@ -814,6 +814,23 @@
       "decisionsDescription": "دون بيانات يومية، يُعدّل الأطباء خطط العلاج اعتمادًا على الذاكرة بدلاً من الأدلة."
     }
   },
+  "publicSolution": {
+    "badge": "نهج KneeGuide",
+    "title": "منصّة واحدة، تواكب كل يوم من رحلة التعافي.",
+    "description": "تُغلق KneeGuide الفجوة بين الزيارات، وتحوّل الملاحظات المتفرقة والذاكرة إلى صورة تعاون مستمرة وواضحة للتقدم.",
+    "center": "KneeGuide",
+    "nodes": {
+      "patient": "المريض",
+      "clinician": "المختص",
+      "ai": "الذكاء الاصطناعي",
+      "exercises": "التمارين",
+      "progress": "التقدم",
+      "reports": "التقارير",
+      "notifications": "الإشعارات",
+      "wearables": "الأجهزة القابلة للارتداء",
+      "family": "العائلة"
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "فتح القائمة",
     "menuToggleClose": "إغلاق القائمة",
