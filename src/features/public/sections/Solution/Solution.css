@@ -66,22 +66,49 @@
    so it spans the section's full width edge to edge instead of being
    constrained to the header's readable column.
 
-   `aspect-ratio` is set inline per breakpoint (see the `viewBoxHeight` in
-   RADAR_BREAKPOINTS, index.jsx) to always exactly match the SVG's own
-   viewBox ratio — that's what keeps a node's computed (x, y) landing on
-   the same physical point the arcs are drawn through, at any width.
-   `overflow: hidden` is the entire mechanism behind "the section crops
-   the lower half of the radar": the hub and the arcs' own math extend
-   down to centerY == viewBoxHeight (the container's own bottom edge), so
-   anything at or past that line — including roughly half of the hub's
-   own circle — is simply never painted, without touching any later
-   section's DOM. Nodes are plain positioned elements (not
-   foreignObject-in-SVG) so real text, hover and focus behave normally;
-   only the rings, highlights and connectors are real SVG paths. */
+   `position: absolute; bottom: 0` (against .solution-root's own
+   `position: relative`) is the entire clipping mechanism: this box's
+   bottom edge is always exactly .solution-root's bottom edge — i.e.
+   exactly the top edge of whatever section renders next (Technology) —
+   regardless of the header's height above it. Height is a fixed/clamp()
+   value per width tier below (a deliberately modest "large background
+   visualization" size, not a viewport-proportional one that balloons on
+   wide screens); index.jsx then *measures* this element's real rendered
+   box via ResizeObserver and derives the SVG viewBox from that
+   measurement directly, so a node's computed (x, y) and the arc it sits
+   on can never drift apart — there's only one number (the DOM's own
+   rendered size), never two independently-declared ones to keep in
+   sync. `overflow: hidden` on this element is then what crops the
+   bottom portion of the hub/arcs whose math extends past this box's own
+   bottom edge, without touching any later section's DOM. Nodes are
+   plain positioned elements (not foreignObject-in-SVG) so real text,
+   hover and focus behave normally; only the rings, highlights and
+   connectors are real SVG paths. */
 .solution-map {
-  position: relative;
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(260px, 58vw, 380px);
   overflow: hidden;
+}
+
+@media (min-width: 641px) {
+  .solution-map {
+    height: clamp(340px, 40vw, 460px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .solution-map {
+    height: clamp(380px, 34vw, 500px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .solution-map {
+    height: clamp(420px, 30vw, 560px);
+  }
 }
 
 .platform-radar {
@@ -179,9 +206,10 @@
 
 /* The hub — larger, brighter, and the strongest element in the map. Same
    --node-x/--node-y anchoring mechanism as every other node (computed
-   from RADAR_CENTER in index.jsx, not a separate top:50%/left:50%
-   special case), positioned low and center, slightly into the innermost
-   ring rather than in the middle of the outer nodes. */
+   from the same center used for every ring/node in index.jsx, not a
+   separate top:50%/left:50% special case), positioned low and center,
+   slightly into the innermost ring rather than in the middle of the
+   outer nodes. */
 .platform-hub {
   position: absolute;
   top: var(--node-y);
