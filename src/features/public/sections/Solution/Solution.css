@@ -145,6 +145,18 @@
   opacity: 0.9;
 }
 
+/* Purely decorative background arcs beyond the last real (node-bearing)
+   ring — a hair thinner than .platform-ring so they read as receding
+   into the distance. Their fainter opacity (0.45 vs the real rings' 1)
+   is set as their own Motion `animate` target in index.jsx instead of
+   here, since Motion owns `opacity` on an element once it's animating it
+   at all — a CSS opacity rule here would just get silently overridden.
+   How many of these arcs exist and how far out they go is entirely
+   computed in index.jsx (buildDecorativeArcs), never here. */
+.platform-ring--decorative {
+  stroke-width: 0.3;
+}
+
 /* Subtle straight connector from the hub to a node — only ever visible
    while that node is hovered. */
 .platform-connector {
@@ -160,12 +172,53 @@
   opacity: 0.55;
 }
 
-/* The slow radar sweep (see sweepProgress in index.jsx) — a small soft
-   dot traveling along the middle ring every few seconds, opacity driven
-   entirely by JS so it fades in/out on its own. */
-.platform-sweep-blip {
-  fill: var(--color-primary);
-  filter: drop-shadow(0 0 2.4px rgba(37, 99, 235, 0.65));
+/* The rotating radar beam (see the rotation effect in index.jsx) — a
+   plain HTML div, not SVG, sized and rotated entirely from JS
+   (width/height/rotate are set inline there; rotate is bound to a Motion
+   value so the spin itself is a compositor-only transform, never a
+   React re-render). This rule only ever paints the *static*, un-rotated
+   look: a circular disc (border-radius: 50%, matching its own square
+   width/height) carrying one soft conic-gradient wedge — transparent for
+   most of the circle, ramping up to a low-opacity brand-blue only in the
+   final --sweep-trail-deg before the 0deg/360deg seam. Rotating that
+   whole disc is indistinguishable from rotating just the wedge, but
+   needs no masking/clipping of its own beyond what .platform-radar
+   already provides. */
+.platform-sweep {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    rgba(37, 99, 235, 0) 0deg,
+    rgba(37, 99, 235, 0) calc(360deg - var(--sweep-trail-deg, 30deg)),
+    rgba(37, 99, 235, 0.16) 360deg
+  );
+}
+
+/* The once-per-revolution radar echo (see pulseCount in index.jsx) — a
+   single soft, stroke-only ring expanding from the hub out through every
+   arc and fading away, never a filled disc, so it reads as a faint
+   traveling wavefront rather than a flash or a burst. */
+.platform-pulse {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 0.5;
+}
+
+/* The brief "the beam just crossed this node" reaction — a soft blue
+   halo via box-shadow rather than a transform/scale change, since Motion
+   already owns this element's `transform` for its mount reveal (see
+   .platform-node-circle above) and a second, CSS-only transform on the
+   same property would just be silently overridden the same way an
+   opacity override would be (see .platform-ring--decorative above).
+   box-shadow has no such conflict, animates just as cheaply, and reads
+   as exactly the "short blue glow" this is meant to be. */
+.platform-node-circle.is-swept {
+  transition: box-shadow 280ms ease;
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.16), 0 1px 4px rgba(20, 20, 20, 0.05);
 }
 
 /* The positioning anchor. Deliberately a plain element (see index.jsx) —

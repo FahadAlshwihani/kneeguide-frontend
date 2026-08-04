@@ -404,7 +404,11 @@ const Solution = () => {
               d={buildRingPath(center, radius)}
               className="platform-ring platform-ring--decorative"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isMapInView ? { pathLength: 1, opacity: 1 } : {}}
+              // Fainter than the real rings (opacity 0.45 vs 1) so they
+              // read as receding into the distance — set as the actual
+              // animate target, not a CSS opacity override, since Motion
+              // owns this element's `opacity` once it animates it at all.
+              animate={isMapInView ? { pathLength: 1, opacity: 0.45 } : {}}
               transition={{
                 duration: ARC_DRAW_DURATION,
                 delay: ARC_DRAW_START + (rings.length + i) * ARC_DRAW_RING_STEP,
