@@ -9,7 +9,15 @@
    HeroProblemScene wrapper around both Hero and Problem — see
    HeroProblemScene.css. .problem-root stays transparent so that shared
    background (already warm-white by the time it reaches here) shows
-   through instead of being covered by a second, separate background. */
+   through instead of being covered by a second, separate background.
+
+   Content order (see index.jsx): stats -> audience row -> header ->
+   problem cards. Stats and the audience row are deliberately "printed
+   directly on the page" — no container, no border, no background, no
+   shadow anywhere in those two blocks; only whitespace and (on stats,
+   desktop only) a single hairline divider do the grouping work. The
+   problem cards are the *only* element in this section allowed a
+   card-style surface. */
 .problem-root {
   position: relative;
   padding: var(--section-padding) 0;
@@ -33,6 +41,107 @@
   padding: 0 24px;
 }
 
+/* 1. Projected impact statistics — first element in the section. Pure
+   typography, no icons, no tiles: a small centered eyebrow, then three
+   large blue numbers with dark labels beneath, separated only by a
+   single subtle vertical rule between items (never around them). */
+.problem-stats {
+  margin-bottom: clamp(48px, 7vw, 72px);
+}
+
+.problem-stats-eyebrow {
+  margin: 0 0 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--problem-muted);
+  text-align: center;
+}
+
+.problem-stats-row {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: clamp(36px, 6vw, 80px);
+}
+
+.problem-stat {
+  position: relative;
+  text-align: center;
+  padding-inline-start: clamp(36px, 6vw, 80px);
+}
+
+.problem-stat:first-child {
+  padding-inline-start: 0;
+}
+
+.problem-stat:first-child::before {
+  content: none;
+}
+
+.problem-stat::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--problem-border);
+}
+
+.problem-stat-value {
+  display: block;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+.problem-stat-label {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.88rem;
+  color: var(--problem-heading);
+}
+
+/* 2. Designed-for audience row — same "no container" rule as the stats
+   above: three evenly distributed icon + label pairs, directly on the
+   background, no card, no strip, no border. */
+.problem-audience {
+  margin-bottom: clamp(48px, 7vw, 72px);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(28px, 5vw, 64px);
+}
+
+.problem-audience-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.problem-audience-icon {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+}
+
+.problem-audience-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--problem-heading);
+}
+
+/* 3. Section header. */
 .problem-header {
   max-width: 640px;
   margin: 0 auto 48px;
@@ -67,6 +176,8 @@
   color: var(--problem-text);
 }
 
+/* 4. Problem cards — the only card-style surfaces in this section:
+   white surface, thin border, no heavy shadow, centered content. */
 .problem-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -76,135 +187,25 @@
 .problem-card {
   background: var(--problem-card-bg);
   border: 1px solid var(--problem-border);
-  border-radius: 24px;
-  padding: 30px 28px;
+  border-radius: 20px;
+  padding: 36px 32px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 14px;
 }
 
-.problem-highlights {
-  margin-top: 32px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid var(--problem-border);
-  border-radius: 28px;
-}
-
-.problem-highlight {
-  position: relative;
-  padding: 30px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 12px;
-  align-items: center;
-}
-
-.problem-highlight + .problem-highlight {
-  border-inline-start: 1px solid var(--problem-border);
-}
-
-.problem-highlight-icon {
-  grid-row: 1 / span 2;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  color: var(--color-primary);
-  background: #eff6ff;
-}
-
-.problem-highlight-value {
-  font-size: 1.35rem;
-  line-height: 1.1;
-  color: var(--problem-heading);
-}
-
-.problem-highlight-title {
-  font-size: 0.86rem;
-  font-weight: 600;
-  color: var(--color-primary);
-}
-
-.public-root .problem-highlight-description {
-  grid-column: 1 / -1;
-  margin-top: 18px;
-  color: var(--problem-muted);
-  font-size: 0.88rem;
-  line-height: 1.55;
-}
-
-.problem-trust {
-  margin-top: 24px;
-  padding: 22px 24px;
-  border: 1px solid var(--problem-border);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.64);
-}
-
-.public-root .problem-trust-label {
-  margin-bottom: 18px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #667085;
-  text-align: center;
-}
-
-.problem-trust-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.problem-trust-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.problem-trust-icon {
-  flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: #eff6ff;
-  color: var(--color-primary);
-}
-
-.problem-trust-item strong,
-.problem-trust-item small {
-  display: block;
-}
-
-.problem-trust-item strong {
-  color: var(--problem-heading);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.problem-trust-item small {
-  margin-top: 3px;
-  color: var(--problem-muted);
-  font-size: 0.78rem;
-  line-height: 1.4;
-}
-
 .problem-card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(37, 99, 235, 0.08);
+  background: #eff6ff;
   color: var(--color-primary);
-  font-size: 1.15rem;
+  font-size: 1.35rem;
 }
 
 .public-root .problem-card-title {
@@ -220,18 +221,29 @@
 }
 
 @media (max-width: 960px) {
-  .problem-grid,
-  .problem-highlights,
-  .problem-trust-grid {
+  .problem-grid {
     grid-template-columns: 1fr;
   }
+}
 
-  .problem-highlight + .problem-highlight {
-    border-inline-start: 0;
-    border-top: 1px solid var(--problem-border);
+@media (max-width: 640px) {
+  .problem-stats-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
   }
 
-  .problem-trust-grid {
-    gap: 16px;
+  .problem-stat {
+    padding-inline-start: 0;
+  }
+
+  .problem-stat::before {
+    content: none;
+  }
+
+  .problem-audience {
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
   }
 }

@@ -786,6 +786,33 @@
       "notificationsLabel": "Notifications"
     }
   },
+  "publicProblem": {
+    "badge": "The Challenge",
+    "title": "Recovery breaks down between appointments.",
+    "description": "Most knee rehabilitation still runs on memory and guesswork — leaving both patients and doctors working with an incomplete picture of how recovery is really going.",
+    "stats": {
+      "eyebrow": "Projected impact",
+      "adherenceValue": "95%",
+      "adherenceLabel": "Home exercise adherence",
+      "dropoutValue": "40%",
+      "dropoutLabel": "Lower rehabilitation dropout",
+      "followupValue": "3x",
+      "followupLabel": "Faster clinician follow-up"
+    },
+    "audience": {
+      "patients": "Designed for patients",
+      "clinicians": "Designed for clinicians",
+      "teams": "Designed for healthcare teams"
+    },
+    "cards": {
+      "exercisesTitle": "Inconsistent home exercises",
+      "exercisesDescription": "Patients leave the clinic with a printed sheet and no way to track whether they actually followed it.",
+      "painTitle": "Pain that goes unreported",
+      "painDescription": "A five-minute visit rarely captures how pain and mobility really changed week to week.",
+      "decisionsTitle": "Decisions made blind between visits",
+      "decisionsDescription": "Without daily data, clinicians adjust treatment plans on memory instead of evidence."
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",
