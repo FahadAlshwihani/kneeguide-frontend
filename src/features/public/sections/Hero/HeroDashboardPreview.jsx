@@ -69,9 +69,9 @@ const jitterX = (id, span = 10) => (hashOf(id) % (span * 2 + 1)) - span;
 // only recomputes the element's own already-rendered pixels — the card
 // stays fully opaque and looks identical no matter what's behind it.
 const DEPTH = {
-  front: { scale: 1, brightness: 1, blur: 0 },
-  mid: { scale: 0.98, brightness: 0.95, blur: 0 },
-  back: { scale: 0.96, brightness: 0.88, blur: 1 },
+  front: { scale: 1, brightness: 1 },
+  mid: { scale: 0.98, brightness: 0.95 },
+  back: { scale: 0.96, brightness: 0.88 },
 };
 
 // `scale` (not a raw `transform` string) because this element's `y` is

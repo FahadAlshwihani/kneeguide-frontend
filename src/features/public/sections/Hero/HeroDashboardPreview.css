@@ -30,17 +30,32 @@
 }
 
 .hero-dashboard-preview-item {
+  position: relative;
   pointer-events: auto;
   min-width: 0;
   transition: filter var(--transition-fast), transform var(--transition-fast);
 }
 
-.hero-dashboard-preview-item > * {
-  filter: drop-shadow(0 6px 16px rgba(15, 23, 42, 0.32));
+.hero-dashboard-preview-item,
+.hero-dashboard-preview-item * {
+  box-shadow: none !important;
 }
 
-.hero-dashboard-preview-item:hover > * {
-  filter: drop-shadow(0 10px 24px rgba(15, 23, 42, 0.42));
+.hero-dashboard-preview-item * {
+  filter: none !important;
+}
+
+.hero-dashboard-preview-item:hover {
+  z-index: 1000;
+}
+
+.hero-scatter-wrap > *:hover {
+  z-index: 999;
+}
+
+.scatter-rail > div:hover,
+.scatter-bottom-slot:hover {
+  z-index: 1000;
 }
 
 /* Different widths per tile so the composition doesn't read as a uniform
@@ -181,12 +196,8 @@
   }
 
   .hero-dashboard-preview-item {
-    filter: brightness(var(--hero-card-brightness, 1)) blur(3px);
+    filter: brightness(var(--hero-card-brightness, 1));
     opacity: 1;
-  }
-
-  .hero-dashboard-preview-item:hover {
-    filter: brightness(var(--hero-card-brightness, 1)) blur(0);
   }
 }
 
