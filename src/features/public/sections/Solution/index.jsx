@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate } from "motion/react";
+import { motion, useInView, useMotionValue, animate } from "motion/react";
 import { FaUser, FaUserDoctor, FaBrain, FaDumbbell, FaChartLine, FaFileLines, FaBell, FaStopwatch, FaPeopleGroup } from "react-icons/fa6";
 import Reveal from "../../components/Reveal";
 import "./Solution.css";
@@ -171,6 +171,41 @@ const fitRings = (rings, viewBoxHeight, mapWidth) => {
   return scaledRings;
 };
 
+// Purely decorative background arcs beyond the last node-bearing ring —
+// they never carry nodes and never feed fitRings/buildRadarNodes, so the
+// real geometry above is completely untouched. Count and spacing are
+// derived every render, never a hand-picked number per breakpoint: the
+// gap reuses the real rings' own average spacing (so the rhythm looks
+// continuous, not a different pattern grafted on), and arcs keep being
+// added outward until they pass the farthest corner of the map — meaning
+// on a wide screen more of them fit before that happens (more arcs) and
+// on a narrow one fewer do, exactly mirroring "however many arcs fit
+// this viewport". The outermost ones are expected to render mostly (or
+// entirely) outside the visible box; `.platform-radar`'s own `overflow:
+// hidden` is what quietly crops them, the same mechanism already used
+// for the hub.
+const DECORATIVE_ARC_MIN = 1;
+const DECORATIVE_ARC_MAX = 6;
+
+const buildDecorativeArcs = (nodeRings, center, viewBoxHeight) => {
+  if (nodeRings.length === 0) return [];
+  const lastRadius = nodeRings[nodeRings.length - 1].radius;
+  const gap = nodeRings.length > 1 ? (lastRadius - nodeRings[0].radius) / (nodeRings.length - 1) : lastRadius * 0.6;
+  if (gap <= 0) return [lastRadius + lastRadius * 0.5];
+
+  const cornerDistance = Math.sqrt(center.x * center.x + viewBoxHeight * viewBoxHeight);
+  const maxRadius = cornerDistance * 1.2;
+
+  const radii = [];
+  let radius = lastRadius + gap;
+  while (radius <= maxRadius && radii.length < DECORATIVE_ARC_MAX) {
+    radii.push(radius);
+    radius += gap;
+  }
+  if (radii.length < DECORATIVE_ARC_MIN) radii.push(lastRadius + gap);
+  return radii;
+};
+
 // Choreography constants (seconds) — named so the sequence below reads as
 // "hub, then arcs ring-by-ring, then nodes ring-by-ring, then the sweep"
 // rather than a wall of unexplained numbers.
@@ -180,14 +215,56 @@ const ARC_DRAW_DURATION = 0.9;
 const ARC_DRAW_RING_STEP = 0.18;
 const NODE_REVEAL_DURATION = 0.45;
 const NODE_REVEAL_STEP = 0.09;
-const SWEEP_DURATION = 4.5;
-const SWEEP_REPEAT_DELAY = 3;
+
+// The sweep is one continuous, never-stopping, constant-speed rotation
+// (a real radar rotates one direction forever, it doesn't ease in/out or
+// pause) — see the rotation effect below. Angles here use the same "0deg
+// = top, clockwise-positive" reference as the CSS conic-gradient that
+// paints the beam (see .platform-sweep, Solution.css) and nodeBeta()
+// below, which converts a node's own polar angle into that same frame so
+// "the beam is currently over this node" can be detected with simple
+// numeric comparisons.
+const SWEEP_ROTATION_DURATION = 9;
+const SWEEP_TRAIL_DEG = 30;
+const PULSE_DURATION = 1.6;
+const NODE_REACTION_DURATION_MS = 320;
+
+// Our node angles are expressed the usual math way (0deg = right, 90deg
+// = top, counter-clockwise positive). The sweep instead rotates in the
+// CSS/SVG convention (0deg = top, clockwise positive) because that's
+// what a CSS conic-gradient and `transform: rotate()` both speak natively
+// — this is the one, single conversion between the two, used both to
+// paint the beam and to know when it's crossing a node.
+const nodeBeta = (angleDeg) => (((90 - angleDeg) % 360) + 360) % 360;
+
+// Did the sweep's angle pass through `target` between last frame (`prev`)
+// and this one (`curr`)? Handles the one wraparound moment per
+// revolution (curr < prev, i.e. the animation just looped back to 0)
+// exactly like the continuous rotation it represents — the beam doesn't
+// stop existing at the 360/0 seam, it just keeps going.
+const angleCrossed = (prev, curr, target) => {
+  if (curr >= prev) return target >= prev && target <= curr;
+  return target >= prev || target <= curr;
+};
 
 const Solution = () => {
   const { t } = useTranslation();
   const tier = useRadarTier();
   const [hoveredNode, setHoveredNode] = useState(null);
-  const [sweepProgress, setSweepProgress] = useState(null);
+  // Increments once per completed sweep revolution — the only React state
+  // the whole radar-realism system touches per frame. The rotation itself
+  // is a Motion value (see rotateMV below), which updates the DOM
+  // directly and never goes through React at all; this counter only
+  // changes roughly once every SWEEP_ROTATION_DURATION seconds, driving a
+  // fresh `key` on the pulse circle so it replays (see render below).
+  const [pulseCount, setPulseCount] = useState(0);
+  const rotateMV = useMotionValue(0);
+
+  // DOM refs for each node's circle, populated as they mount, so the
+  // sweep can flash one directly (classList) when it crosses it without
+  // ever calling setState per node, per frame.
+  const nodeCircleRefs = useRef(new Map());
+  const sweepTimeoutsRef = useRef(new Map());
 
   const mapRef = useRef(null);
   const isMapInView = useInView(mapRef, { once: true, amount: 0.3 });
@@ -235,35 +312,73 @@ const Solution = () => {
   const center = { x: 50, y: viewBoxHeight };
   const rings = fitRings(tier.rings, viewBoxHeight, mapSize?.width ?? 0);
   const nodes = buildRadarNodes(center, rings);
+  const decorativeArcs = buildDecorativeArcs(rings, center, viewBoxHeight);
   const viewBox = `0 0 100 ${viewBoxHeight}`;
 
   const arcsDrawEnd = ARC_DRAW_START + (rings.length - 1) * ARC_DRAW_RING_STEP + ARC_DRAW_DURATION;
   const nodesRevealStart = arcsDrawEnd + 0.1;
   const sweepStart = nodesRevealStart + nodes.length * NODE_REVEAL_STEP + 0.7;
 
-  // A very slow, refined radar sweep along the middle ring — a smooth
-  // progress value (0 -> 1) drives both the blip's angle and its
-  // opacity envelope (sin(progress * PI): 0 at the edges, peak at the
-  // midpoint), so it fades in/out on its own instead of needing a
-  // second, separately-timed animation.
+  // How far out the pulse (and the sweep beam itself) reach — the
+  // farthest decorative arc when there are any, otherwise the outermost
+  // real ring — so both visibly "travel through all radar arcs" per the
+  // spec, whatever that count happens to be on this viewport.
+  const pulseMaxRadius = decorativeArcs.length > 0 ? decorativeArcs[decorativeArcs.length - 1] : rings[rings.length - 1].radius;
+  // 1 viewBox unit == mapSize.width/100 px on both axes (see viewBoxHeight
+  // above — it's derived to make that true), so this is the one place
+  // that ever needs to turn a unit-radius into a real pixel size.
+  const sweepDiameterPx = mapSize ? 2 * pulseMaxRadius * (mapSize.width / 100) : 0;
+
+  // Briefly flashes one node's circle directly via the DOM (no React
+  // state, no re-render) — see the rotation effect below, which calls
+  // this the instant the beam's angle crosses that node's own angle.
+  const triggerNodeReaction = (key) => {
+    const el = nodeCircleRefs.current.get(key);
+    if (!el) return;
+    el.classList.add("is-swept");
+    const pending = sweepTimeoutsRef.current.get(key);
+    if (pending) window.clearTimeout(pending);
+    const timeoutId = window.setTimeout(() => {
+      el.classList.remove("is-swept");
+      sweepTimeoutsRef.current.delete(key);
+    }, NODE_REACTION_DURATION_MS);
+    sweepTimeoutsRef.current.set(key, timeoutId);
+  };
+
+  // The radar sweep: one continuous, constant-speed, never-stopping
+  // rotation (0deg -> 360deg, linear, repeating forever — a real radar
+  // never eases or pauses between revolutions). Driven entirely through a
+  // Motion value (rotateMV, bound to the beam's `rotate` style below) so
+  // the rotation itself never touches React state or triggers a
+  // re-render; onUpdate only does two side-effecting things, neither of
+  // them a setState per frame: it checks each node's angle against the
+  // beam's for a brief DOM-only flash (triggerNodeReaction), and
+  // onRepeat bumps pulseCount once per finished revolution to replay the
+  // pulse ring.
   useEffect(() => {
     if (!isMapInView) return undefined;
-    const controls = animate(0, 1, {
-      duration: SWEEP_DURATION,
+
+    const nodeAngles = nodes.map((node) => ({ key: node.key, beta: nodeBeta(node.angle) }));
+    let previousDeg = 0;
+
+    const controls = animate(0, 360, {
+      duration: SWEEP_ROTATION_DURATION,
       delay: sweepStart,
-      ease: "easeInOut",
+      ease: "linear",
       repeat: Infinity,
-      repeatDelay: SWEEP_REPEAT_DELAY,
-      onUpdate: setSweepProgress,
+      onRepeat: () => setPulseCount((count) => count + 1),
+      onUpdate: (deg) => {
+        rotateMV.set(deg);
+        nodeAngles.forEach(({ key, beta }) => {
+          if (angleCrossed(previousDeg, deg, beta)) triggerNodeReaction(key);
+        });
+        previousDeg = deg;
+      },
     });
+
     return () => controls.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMapInView, tier.id]);
-
-  const sweepRing = rings[Math.min(1, rings.length - 1)];
-  const sweepAngle = sweepProgress === null ? null : 180 - sweepProgress * 180;
-  const sweepPoint = sweepAngle === null ? null : polarToCartesian(center, sweepRing.radius, sweepAngle);
-  const sweepOpacity = sweepProgress === null ? 0 : Math.sin(Math.min(1, Math.max(0, sweepProgress)) * Math.PI) * 0.55;
 
   return (
     <section className="solution-root">
