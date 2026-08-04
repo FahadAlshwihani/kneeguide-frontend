@@ -62,6 +62,46 @@ const Problem = () => {
 
   const audienceWords = AUDIENCE_WORD_KEYS.map((key) => t(`publicProblem.audience.${key}`));
 
+  // "Designed for" must never move, no matter how short/long the current
+  // word is — so the animated word doesn't just flow inline, it sits in a
+  // slot sized to the *widest* of the three words (measured for real,
+  // never estimated), and only that slot's own content changes width as
+  // TextType types/deletes. `.problem-audience-measure` renders all three
+  // words off-screen in the exact same font so the measurement always
+  // matches what's actually on screen — including its clamp()'d,
+  // viewport-relative font-size, which is why this re-measures on resize
+  // too, not just once on mount.
+  const measureRef = useRef(null);
+  const [wordSlotWidth, setWordSlotWidth] = useState(null);
+
+  useLayoutEffect(() => {
+    const node = measureRef.current;
+    if (!node) return undefined;
+    const children = Array.from(node.children);
+    if (!children.length) return undefined;
+
+    const measure = () => {
+      const widest = Math.max(0, ...children.map((child) => child.getBoundingClientRect().width));
+      setWordSlotWidth(widest);
+    };
+
+    measure();
+
+    let observer;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(measure);
+      children.forEach((child) => observer.observe(child));
+    } else {
+      window.addEventListener("resize", measure);
+    }
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audienceWords.join("|")]);
+
   return (
     <section className="problem-root">
       <div className="problem-container">
@@ -79,23 +119,42 @@ const Problem = () => {
         </Reveal>
 
         {/* 2. Designed-for audience statement — one sentence, only the
-            last word changes; "Designed for" / "مصمم" stays put. */}
+            last word changes; "Designed for" / "مصمم" stays put, pixel
+            for pixel, because the word beside it sits in a slot pre-sized
+            to the widest of the three options (see wordSlotWidth). */}
         <Reveal as="div" className="problem-audience" delay={0.05}>
           <span className="problem-audience-lead">{t("publicProblem.audience.lead")}</span>{" "}
-          <TextType
-            key={i18n.language}
-            as="span"
-            className="problem-audience-word"
-            text={audienceWords}
-            textColors={AUDIENCE_WORD_COLORS}
-            typingSpeed={65}
-            deletingSpeed={35}
-            pauseDuration={1800}
-            variableSpeed={{ min: 45, max: 90 }}
-            loop
-            startOnVisible
-            showCursor={false}
-          />
+          <span
+            className="problem-audience-word-slot"
+            style={wordSlotWidth ? { width: wordSlotWidth } : undefined}
+          >
+            <TextType
+              key={i18n.language}
+              as="span"
+              className="problem-audience-word"
+              text={audienceWords}
+              textColors={AUDIENCE_WORD_COLORS}
+              typingSpeed={65}
+              deletingSpeed={35}
+              pauseDuration={1800}
+              variableSpeed={{ min: 45, max: 90 }}
+              loop
+              startOnVisible
+              showCursor
+              hideCursorWhileTyping={false}
+              cursorCharacter="|"
+            />
+          </span>
+          {/* Off-screen twin of the three words, in the exact same font,
+              purely so wordSlotWidth can measure real rendered widths
+              instead of guessing them. */}
+          <span className="problem-audience-measure" ref={measureRef} aria-hidden="true">
+            {audienceWords.map((word) => (
+              <span className="problem-audience-word" key={word}>
+                {word}
+              </span>
+            ))}
+          </span>
         </Reveal>
 
         {/* 3. Section badge, title and description. */}
