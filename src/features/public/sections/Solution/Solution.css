@@ -6,6 +6,15 @@
    shared canvas's warm-white treatment keeps showing through — this file
    never gives the section its own opaque background. */
 
+/* `min-height: 100svh` (desktop/laptop/tablet≥1024px — see the
+   max-width: 1023px override below) is what makes .solution-map's
+   `position: absolute; bottom: 0` (below) land near the very bottom of a
+   nearly-full-viewport box, well clear of the header above it. On
+   narrower screens that same combination produced a large empty gap
+   between the header and the map instead — this section's min-height was
+   dictating a full viewport's worth of space that the (shorter, on
+   mobile/tablet) header + map never actually needed to fill. See the
+   max-width: 1023px block for the mobile/tablet-only fix. */
 .solution-root {
   position: relative;
   padding-top: var(--section-padding);
@@ -66,18 +75,18 @@
    so it spans the section's full width edge to edge instead of being
    constrained to the header's readable column.
 
-   `position: absolute; bottom: 0` (against .solution-root's own
-   `position: relative`) is what pins this box's bottom edge exactly to
-   .solution-root's bottom edge — i.e. exactly the top edge of whatever
-   section renders next (Technology) — regardless of the header's height
-   above it. Height is a fixed/clamp() value per width tier below (a
-   deliberately modest "large background visualization" size, not a
-   viewport-proportional one that balloons on wide screens); index.jsx
-   then *measures* this element's real rendered box via ResizeObserver
-   and derives the SVG viewBox from that measurement directly, so a
-   node's computed (x, y) and the arc it sits on can never drift apart —
-   there's only one number (the DOM's own rendered size), never two
-   independently-declared ones to keep in sync.
+   `position: absolute; bottom: 0` (desktop/laptop/tablet≥1024px — see the
+   max-width: 1023px override below for mobile/tablet<1024px) is what
+   pins this box's bottom edge exactly to .solution-root's bottom edge —
+   i.e. exactly the top edge of whatever section renders next
+   (Technology) — regardless of the header's height above it. Height is a
+   fixed/clamp() value per width tier below (a deliberately modest "large
+   background visualization" size, not a viewport-proportional one that
+   balloons on wide screens); index.jsx then *measures* this element's
+   real rendered box via ResizeObserver and derives the SVG viewBox from
+   that measurement directly, so a node's computed (x, y) and the arc it
+   sits on can never drift apart — there's only one number (the DOM's own
+   rendered size), never two independently-declared ones to keep in sync.
 
    This element's own child, `.platform-radar-clip`, is what actually
    clips the radar to this bottom edge, via its own `overflow: hidden`.
@@ -111,6 +120,38 @@
 @media (min-width: 1280px) {
   .solution-map {
     height: clamp(420px, 30vw, 560px);
+  }
+}
+
+/* Mobile/tablet-only (<1024px, matching the JS tier boundary) vertical
+   rebalance — desktop/laptop are completely untouched by this block.
+   Switches .solution-map from `position: absolute; bottom: 0` (pinned to
+   a min-height: 100svh box's bottom edge, which is what produced the
+   large empty gap between the header and the map on shorter content) to
+   a normal, in-flow block — its own `left`/`right`/`bottom` no longer
+   apply, so it simply renders immediately after .solution-container,
+   directly under the header, at its own `height` (still set above,
+   unaffected). `position: relative` is kept (not `static`) because this
+   element is still the positioning context every one of its own children
+   (.platform-radar-clip, `inset: 0`) resolves against — only how *this*
+   element itself is placed within .solution-root changes, nothing below
+   it. Pairing this with .solution-root's own `min-height: auto` here
+   means .solution-root's real height becomes exactly
+   padding-top + header height + map height — no leftover slack — so the
+   map's bottom edge is still exactly .solution-root's own bottom edge
+   (still exactly where Technology begins, still the same clipping
+   boundary every ring/node/the sweep/the pulse/the hub all rely on),
+   it's just a much shorter distance from the header to get there. */
+@media (max-width: 1023px) {
+  .solution-root {
+    min-height: auto;
+  }
+
+  .solution-map {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
   }
 }
 

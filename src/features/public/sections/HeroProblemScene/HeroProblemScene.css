@@ -115,9 +115,9 @@
 }
 
 /* A plain (no blend mode) warm-white cover that progressively paints
-   over the canvas, fading the now-light-and-gray beams out entirely by
-   Solution's bottom edge, leaving the same clean flat warm-white the
-   rest of the site already uses.
+   over the canvas, fading the now-light-and-gray beams out entirely well
+   before Solution's bottom edge, leaving the same clean flat warm-white
+   the rest of the site already uses.
 
    `bottom: 0` (relative to .scene-light-phase, whose own height always
    matches the real combined content) means this layer's own bottom edge
@@ -126,7 +126,21 @@
    small, deliberate overlap so there is never a gap at the seam, landing
    exactly where the invert-lighten layer above has already finished its
    ramp. Its own mask percentages are safe as plain percentages because
-   this element's own height is exact (`bottom: 0`), not approximated. */
+   this element's own height is exact (`bottom: 0`), not approximated.
+
+   The linear gradient reaches fully-opaque black at 76% (not 100%) of
+   this element's own height, deliberately leaving the last quarter of
+   Solution's own height solidly covered with no further ramp — a wide,
+   guaranteed-opaque margin rather than letting the transition finish
+   right at the true edge. That real margin (not just a tighter mask
+   value) is what actually matters here: this box's own height is exact
+   (`bottom: 0`), but Solution's own contribution to it is still a
+   variable-height, viewport-unit-influenced value (min-height: 100svh on
+   larger screens, a clamp()'d map height everywhere), and this quarter
+   of solid coverage is what absorbs any small mismatch between that
+   value's own layout rounding and where the *next* section's opaque
+   background actually begins, instead of a thin sliver of the beam
+   pattern ever being able to show through right at that seam. */
 .scene-beam-fadeout {
   position: absolute;
   top: calc(var(--problem-real-h, 100svh) - 16px);
@@ -136,7 +150,7 @@
   pointer-events: none;
   background: #f9f4ea;
   mask-image: radial-gradient(ellipse 140% 85% at 55% 100%, black 0%, transparent 66%),
-    linear-gradient(to bottom, transparent 0%, transparent 10%, black 88%, black 100%);
+    linear-gradient(to bottom, transparent 0%, transparent 10%, black 76%, black 100%);
   -webkit-mask-image: radial-gradient(ellipse 140% 85% at 55% 100%, black 0%, transparent 66%),
-    linear-gradient(to bottom, transparent 0%, transparent 10%, black 88%, black 100%);
+    linear-gradient(to bottom, transparent 0%, transparent 10%, black 76%, black 100%);
 }

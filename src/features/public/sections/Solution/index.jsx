@@ -145,7 +145,18 @@ const HORIZONTAL_RADIUS_LIMIT = 50 / Math.cos(ARC_START_RAD) - 2;
 // it's exact at any size rather than a per-breakpoint guess.
 const NODE_BOTTOM_CLEARANCE_PX = 64;
 
-const fitRings = (rings, viewBoxHeight, mapWidth) => {
+// How close the bottom-clearance boost below is allowed to push the
+// inner ring toward the middle one — 2 units was fine everywhere this
+// mattered until mobile's own narrow width started forcing a much larger
+// boost, which (capped at only 2 units of separation) squeezed the two
+// rings' nodes close enough to visually collide. Passing a tier-specific
+// larger value (see RADAR_TIERS' mobile entry) fixes that without
+// touching this default — every other tier keeps calling fitRings with
+// no fourth argument at all, so their own numbers are unaffected, byte
+// for byte, by this change.
+const DEFAULT_MIN_INNER_GAP = 2;
+
+const fitRings = (rings, viewBoxHeight, mapWidth, minInnerGap = DEFAULT_MIN_INNER_GAP) => {
   const outerRadius = Math.max(...rings.map((ring) => ring.radius));
   const verticalAvailable = viewBoxHeight - TOP_MARGIN_UNITS;
   const verticalScale = verticalAvailable > 0 ? Math.min(1, verticalAvailable / outerRadius) : 1;
@@ -167,7 +178,7 @@ const fitRings = (rings, viewBoxHeight, mapWidth) => {
     const requiredInnerRadius = clearanceUnits / Math.sin(ARC_START_RAD);
     const nextRadius = scaledRings[1]?.radius ?? Infinity;
     if (scaledRings[0].radius < requiredInnerRadius) {
-      scaledRings[0] = { ...scaledRings[0], radius: Math.min(requiredInnerRadius, nextRadius - 2) };
+      scaledRings[0] = { ...scaledRings[0], radius: Math.min(requiredInnerRadius, nextRadius - minInnerGap) };
     }
   }
 
@@ -348,7 +359,7 @@ const Solution = () => {
   // ratio so nothing renders from a guess for more than a frame.
   const viewBoxHeight = mapSize ? (mapSize.height / mapSize.width) * 100 : 30;
   const center = { x: 50, y: viewBoxHeight };
-  const rings = fitRings(tier.rings, viewBoxHeight, mapSize?.width ?? 0);
+  const rings = fitRings(tier.rings, viewBoxHeight, mapSize?.width ?? 0, tier.minInnerGap);
   const nodes = buildRadarNodes(center, rings);
   nodesRef.current = nodes;
   const decorativeArcs = buildDecorativeArcs(rings, center, viewBoxHeight);
