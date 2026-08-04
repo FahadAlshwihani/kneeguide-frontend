@@ -8,11 +8,8 @@
 
 .solution-root {
   position: relative;
-  padding: var(--section-padding) 0;
+  padding-top: var(--section-padding);
   min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   background: transparent;
   --solution-heading: #141414;
   --solution-text: #4b4b4b;
