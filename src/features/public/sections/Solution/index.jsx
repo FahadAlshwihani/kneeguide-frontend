@@ -262,6 +262,15 @@ const PULSE_STROKE_KEYFRAMES = [0.9, 0.5, 0.03];
 // paint the beam and to know when it's crossing a node.
 const nodeBeta = (angleDeg) => (((90 - angleDeg) % 360) + 360) % 360;
 
+// The radar's own "origin" — the angle its ring paths themselves start
+// being drawn from (buildRingPath's `M` point, polar angle 180deg, the
+// arc's far-left end) — expressed in the sweep's CSS-rotate frame via
+// nodeBeta(180): 90-180 = -90, normalized to 270. The sweep's visible
+// rotation is this constant plus whatever the underlying 0->360 tween
+// reports (see rotateMV/the rotation effect below), so it always starts
+// exactly here — never mid-sweep — the instant it becomes visible.
+const SWEEP_START_OFFSET_DEG = 270;
+
 // Did the sweep's angle pass through `target` between last frame (`prev`)
 // and this one (`curr`)? Handles the one wraparound moment per
 // revolution (curr < prev, i.e. the animation just looped back to 0)
@@ -283,7 +292,12 @@ const Solution = () => {
   // changes roughly once every SWEEP_ROTATION_DURATION seconds, driving a
   // fresh `key` on the pulse circle so it replays (see render below).
   const [pulseCount, setPulseCount] = useState(0);
-  const rotateMV = useMotionValue(0);
+  // Starts at SWEEP_START_OFFSET_DEG, not 0 — the beam is invisible
+  // (opacity: 0) until the rotation effect's delay elapses, but it still
+  // renders at whatever rotation this holds the whole time; initializing
+  // it to the sweep's real starting angle means there is never a single
+  // frame where a 0deg (unrelated) rotation could show through.
+  const rotateMV = useMotionValue(SWEEP_START_OFFSET_DEG);
 
   // DOM refs for each node's circle, populated as they mount, so the
   // sweep can flash one directly (classList) when it crosses it without
