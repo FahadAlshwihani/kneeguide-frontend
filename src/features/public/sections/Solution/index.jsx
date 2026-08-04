@@ -434,16 +434,15 @@ const Solution = () => {
           Solution.css) — a sibling of .solution-container, not a
           descendant, so it spans the full width instead of being boxed
           inside the header's max-width column, and its bottom is exactly
-          where the next section begins. Everything below that edge is
-          cropped away — except the hub, the one deliberate exception
-          (see .platform-radar-clip below and Solution.css). */}
+          where the next section begins. Everything here (rings, nodes,
+          the sweep, the pulse) is cropped away past that edge — the hub
+          is the one exception, and it isn't even rendered inside this
+          div; see the portal at the end of this component's return. */}
       <div className="solution-map" ref={mapRef}>
         {/* Everything that must stay clipped at the section boundary —
             rings, nodes, the sweep, the pulse — lives inside this
-            wrapper, which is what now actually owns `overflow: hidden`
-            (see .platform-radar-clip, Solution.css). .platform-hub is
-            deliberately rendered OUTSIDE it, as this div's own sibling
-            below, so it's the one element exempt from that clip. */}
+            wrapper, which is what actually owns `overflow: hidden` (see
+            .platform-radar-clip, Solution.css). */}
         <div className="platform-radar-clip">
         {/* Shares one fade mask between the decorative arcs and the sweep
             beam (see .platform-fade-layer, Solution.css) so the beam

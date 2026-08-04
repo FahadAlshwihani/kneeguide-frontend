@@ -93,7 +93,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: clamp(300px, 62vw, 420px);
+  height: clamp(320px, 66vw, 440px);
 }
 
 @media (min-width: 641px) {
@@ -117,9 +117,9 @@
 /* Owns the actual clipping now (see .solution-map's own comment above):
    rings, nodes, the sweep and the pulse all live inside this wrapper
    (see index.jsx) and are cropped exactly at its edge — i.e. exactly at
-   .solution-map's own edge, since this is `inset: 0` inside it. Only
-   .platform-hub, rendered as this wrapper's own sibling rather than
-   inside it, is exempt. */
+   .solution-map's own edge, since this is `inset: 0` inside it. The hub
+   isn't rendered anywhere inside this subtree at all (see index.jsx's
+   portal), so it's never a question of exempting it from this rule. */
 .platform-radar-clip {
   position: absolute;
   inset: 0;
@@ -127,32 +127,39 @@
 }
 
 /* The mask is what turns "clipped by the container's edge" into
-   "dissolves into the page": everything this SVG draws (real rings,
-   decorative arcs, highlights, connectors) fades to fully transparent
-   over the top ~26% of the box instead of being hard-cut by
-   `.platform-radar-clip`'s `overflow: hidden` the instant it crosses
-   that edge. The real, node-bearing rings never reach that zone
+   "dissolves into the page": everything painted inside this wrapper —
+   real rings, decorative arcs, highlights, connectors, AND the sweep
+   beam (see .platform-sweep below, also a child of this element) — fades
+   to fully transparent over the top ~26% of the box instead of being
+   hard-cut by `.platform-radar-clip`'s `overflow: hidden` the instant it
+   crosses that edge. The real, node-bearing rings never reach that zone
    (TOP_MARGIN_UNITS in index.jsx already keeps them well clear of it),
-   so only the decorative arcs are ever actually affected; everything
-   else stays exactly as opaque as it already was. The pulse deliberately
-   lives in its own separate, unmasked SVG (.platform-pulse-layer,
-   below) rather than in here — sharing this mask made it fade away
-   almost immediately on short/wide containers, since its radius grows
-   well past this mask's fade zone long before it's actually done
-   traveling. */
+   so only the decorative arcs and the sweep are ever actually affected;
+   everything else stays exactly as opaque as it already was. The pulse
+   deliberately lives in its own separate, unmasked SVG
+   (.platform-pulse-layer, below) rather than in here — sharing this mask
+   made it fade away almost immediately on short/wide containers, since
+   its radius grows well past this mask's fade zone long before it's
+   actually done traveling. Nodes are also outside this wrapper (they're
+   real UI, never meant to fade). */
+.platform-fade-layer {
+  position: absolute;
+  inset: 0;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
+}
+
 .platform-radar {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
 }
 
 /* Same coordinate space as .platform-radar (identical viewBox, identical
-   box), just without its mask — see the comment on .platform-radar for
-   why the pulse needs that. Still clipped at the true edge by the shared
-   .platform-radar-clip parent, same as everything else. */
+   box), just without its mask — see the comment on .platform-fade-layer
+   for why the pulse needs that. Still clipped at the true edge by the
+   shared .platform-radar-clip parent, same as everything else. */
 .platform-pulse-layer {
   position: absolute;
   inset: 0;
@@ -223,9 +230,11 @@
    most of the circle, ramping up to a low-opacity brand-blue only in the
    final --sweep-trail-deg before the 0deg/360deg seam. Rotating that
    whole disc is indistinguishable from rotating just the wedge, but
-   needs no masking/clipping of its own beyond what its parent
-   .platform-radar-clip already provides (see index.jsx — this div is a
-   child of that wrapper, same as the radar SVGs and the nodes). */
+   needs no masking/clipping of its own beyond what its ancestors already
+   provide: `.platform-radar-clip` crops it at the true edge, and
+   `.platform-fade-layer` (its direct parent, see index.jsx) fades it
+   near the top exactly like the decorative arcs, so it dissolves into
+   the page rather than ending in a hard line. */
 .platform-sweep {
   position: absolute;
   left: 50%;
@@ -314,24 +323,26 @@
   line-height: 1.3;
 }
 
-/* The hub — larger, brighter, and the strongest element in the map. Same
-   plain-anchor + absolutely-positioned-label mechanism as every other
-   node above (computed from the exact same `center` every ring/node in
-   index.jsx uses — never a separate/offset position of its own), so it
-   sits precisely at the radar's true origin, exactly on the section's
-   clipping boundary like everything else. What makes it the one element
-   that stays fully visible there is structural, not positional: it
-   renders as .platform-radar-clip's own sibling (see index.jsx) rather
-   than as a descendant of it, so that wrapper's `overflow: hidden` never
-   applies to it in the first place. z-index keeps it painting above
-   whatever section comes after Solution in normal document flow,
-   wherever the two happen to visually overlap. */
+/* The hub — larger, brighter, and the strongest element in the map.
+   Rendered through a React portal straight onto document.body (see
+   index.jsx), not as a descendant of .solution-map, so it sits precisely
+   at the radar's true origin (same point every ring/node/the sweep/the
+   pulse are built from) while being structurally exempt from every
+   ancestor's `overflow: hidden` — both .platform-radar-clip's and, more
+   importantly, HeroProblemScene's own further up. `--node-x`/`--node-y`
+   still drive `top`/`left` exactly like every other node's, just as real
+   document-relative pixel values (hubPortalPos in index.jsx) instead of
+   percentages of a local container, since this element's offset parent
+   is now the document itself. `z-index` only has to beat ordinary,
+   non-positioned page content now that this is a body-level sibling of
+   the whole app (#root has no position/z-index of its own) — comfortably
+   below the site's real chrome (--z-header and up, src/index.css). */
 .platform-hub {
   position: absolute;
   top: var(--node-y);
   left: var(--node-x);
   transform: translate(-50%, -50%);
-  z-index: 1;
+  z-index: 2;
 }
 
 .platform-hub-circle {
@@ -414,8 +425,21 @@
 }
 
 @media (max-width: 640px) {
+  /* A further step down from the 38px the 1023px block above already
+     set, specifically to give 9 nodes' worth of circles+labels enough
+     breathing room on a narrow screen (paired with tighter ring spacing
+     for this tier, see RADAR_TIERS' mobile entry in index.jsx) without
+     dropping any node. */
+  .platform-node-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
   .platform-node-label {
-    font-size: 0.7rem;
+    width: 54px;
+    font-size: 0.62rem;
+    line-height: 1.2;
   }
 
   .platform-hub-circle {
