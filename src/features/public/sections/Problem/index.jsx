@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { animate, useInView } from "motion/react";
 import { FaClipboardList, FaCommentSlash, FaChartLine } from "react-icons/fa6";
@@ -12,10 +12,9 @@ const CARD_ICONS = [FaClipboardList, FaCommentSlash, FaChartLine];
 const CARD_KEYS = ["exercises", "pain", "decisions"];
 
 const AUDIENCE_WORD_KEYS = ["patients", "clinicians", "teams"];
-// Patients -> primary blue, Clinicians -> dark text, Healthcare Teams ->
-// a slightly lighter blue — all three already-existing brand tokens
-// (index.css), never new colors.
-const AUDIENCE_WORD_COLORS = ["var(--color-primary)", "var(--problem-heading)", "var(--color-accent)"];
+// All three within the brand's existing blue family — never black, never
+// a color outside the palette already defined in index.css.
+const AUDIENCE_WORD_COLORS = ["var(--color-primary)", "var(--color-accent)", "var(--color-primary-hover)"];
 
 // "95%" / "40%" / "3x" (or "3×" in Arabic) -> { target: 95, suffix: "%" }.
 // Keeps the animation driven by the real translated string instead of a
