@@ -186,6 +186,10 @@
 .platform-fade-layer {
   position: absolute;
   inset: 0;
+  /* Keep the hard boundary on the same compositing layer as the mask and
+     the transformed sweep. iPad WebKit promotes both independently and
+     can otherwise let the sweep bypass the identical clip on the parent. */
+  overflow: hidden;
   mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
 }
