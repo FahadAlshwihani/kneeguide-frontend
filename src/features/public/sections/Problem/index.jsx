@@ -118,33 +118,35 @@ const Problem = () => {
           </div>
         </Reveal>
 
-        {/* 2. Designed-for audience statement — one sentence, only the
-            last word changes; "Designed for" / "مصمم" stays put, pixel
-            for pixel, because the word beside it sits in a slot pre-sized
-            to the widest of the three options (see wordSlotWidth). */}
+        {/* 2. Designed-for audience statement — the prefix and the
+            animated word are two independent flex items (never the same
+            inline text run), so nothing about the word's own content can
+            ever move the prefix — see .problem-audience-line. */}
         <Reveal as="div" className="problem-audience" delay={0.05}>
-          <span className="problem-audience-lead">{t("publicProblem.audience.lead")}</span>{" "}
-          <span
-            className="problem-audience-word-slot"
-            style={wordSlotWidth ? { width: wordSlotWidth } : undefined}
-          >
-            <TextType
-              key={i18n.language}
-              as="span"
-              className="problem-audience-word"
-              text={audienceWords}
-              textColors={AUDIENCE_WORD_COLORS}
-              typingSpeed={65}
-              deletingSpeed={35}
-              pauseDuration={1800}
-              variableSpeed={{ min: 45, max: 90 }}
-              loop
-              startOnVisible
-              showCursor
-              hideCursorWhileTyping={false}
-              cursorCharacter="|"
-            />
-          </span>
+          <div className="problem-audience-line">
+            <span className="problem-audience-lead">{t("publicProblem.audience.lead")}</span>
+            <span
+              className="problem-audience-word-slot"
+              style={wordSlotWidth ? { width: wordSlotWidth } : undefined}
+            >
+              <TextType
+                key={i18n.language}
+                as="span"
+                className="problem-audience-word"
+                text={audienceWords}
+                textColors={AUDIENCE_WORD_COLORS}
+                typingSpeed={65}
+                deletingSpeed={35}
+                pauseDuration={1800}
+                variableSpeed={{ min: 45, max: 90 }}
+                loop
+                startOnVisible
+                showCursor
+                hideCursorWhileTyping={false}
+                cursorCharacter="|"
+              />
+            </span>
+          </div>
           {/* Off-screen twin of the three words, in the exact same font,
               purely so wordSlotWidth can measure real rendered widths
               instead of guessing them. */}
