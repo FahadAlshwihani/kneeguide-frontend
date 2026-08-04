@@ -149,11 +149,11 @@ const NODE_BOTTOM_CLEARANCE_PX = 64;
 // inner ring toward the middle one — 2 units was fine everywhere this
 // mattered until mobile's own narrow width started forcing a much larger
 // boost, which (capped at only 2 units of separation) squeezed the two
-// rings' nodes close enough to visually collide. Passing a tier-specific
-// larger value (see RADAR_TIERS' mobile entry) fixes that without
-// touching this default — every other tier keeps calling fitRings with
-// no fourth argument at all, so their own numbers are unaffected, byte
-// for byte, by this change.
+// rings' nodes close enough to visually collide. RADAR_TIERS' mobile
+// entry passes a larger value to fix that; every other tier has no
+// minInnerGap of its own, so `tier.minInnerGap` is `undefined` there —
+// same as never passing a fourth argument at all — so their own numbers
+// are unaffected, byte for byte, by this change.
 const DEFAULT_MIN_INNER_GAP = 2;
 
 const fitRings = (rings, viewBoxHeight, mapWidth, minInnerGap = DEFAULT_MIN_INNER_GAP) => {
