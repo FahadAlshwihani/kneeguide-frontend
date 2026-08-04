@@ -410,19 +410,23 @@ const Solution = () => {
   };
 
   // The radar sweep: one continuous, constant-speed, never-stopping
-  // rotation (0deg -> 360deg, linear, repeating forever — a real radar
-  // never eases or pauses between revolutions). Driven entirely through a
-  // Motion value (rotateMV, bound to the beam's `rotate` style below) so
-  // the rotation itself never touches React state or triggers a
-  // re-render; onUpdate only does two side-effecting things, neither of
-  // them a setState per frame: it checks each node's angle against the
-  // beam's for a brief DOM-only flash (triggerNodeReaction), and
+  // rotation (0deg -> 360deg internally, linear, repeating forever — a
+  // real radar never eases or pauses between revolutions). Driven
+  // entirely through a Motion value (rotateMV, bound to the beam's
+  // `rotate` style below) so the rotation itself never touches React
+  // state or triggers a re-render; onUpdate only does three
+  // side-effecting things, none of them a setState per frame: it offsets
+  // the raw 0->360 value by SWEEP_START_OFFSET_DEG before handing it to
+  // rotateMV, so the beam's very first rendered frame is already at the
+  // radar's real starting angle instead of mounting mid-rotation; it
+  // checks each node's angle (in that same offset frame) against the
+  // beam's for a brief DOM-only flash (triggerNodeReaction); and
   // onRepeat bumps pulseCount once per finished revolution to replay the
   // pulse ring.
   useEffect(() => {
     if (!isMapInView) return undefined;
 
-    let previousDeg = 0;
+    let previousVisualDeg = SWEEP_START_OFFSET_DEG;
 
     const controls = animate(0, 360, {
       duration: SWEEP_ROTATION_DURATION,
@@ -431,15 +435,16 @@ const Solution = () => {
       repeat: Infinity,
       onRepeat: () => setPulseCount((count) => count + 1),
       onUpdate: (deg) => {
-        rotateMV.set(deg);
+        const visualDeg = (deg + SWEEP_START_OFFSET_DEG) % 360;
+        rotateMV.set(visualDeg);
         // Read nodesRef.current fresh every frame (not a snapshot taken
         // when this effect last started) — identical logic regardless of
         // how many nodes/rings exist, so tablet/laptop/desktop's 9 nodes
         // behave exactly like mobile's.
         nodesRef.current.forEach((node) => {
-          if (angleCrossed(previousDeg, deg, nodeBeta(node.angle))) triggerNodeReaction(node.key);
+          if (angleCrossed(previousVisualDeg, visualDeg, nodeBeta(node.angle))) triggerNodeReaction(node.key);
         });
-        previousDeg = deg;
+        previousVisualDeg = visualDeg;
       },
     });
 

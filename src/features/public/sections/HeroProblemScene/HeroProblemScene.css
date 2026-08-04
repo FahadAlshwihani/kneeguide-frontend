@@ -125,22 +125,32 @@
    (`--problem-real-h`, the same measured value Layer above uses) — a
    small, deliberate overlap so there is never a gap at the seam, landing
    exactly where the invert-lighten layer above has already finished its
-   ramp. Its own mask percentages are safe as plain percentages because
-   this element's own height is exact (`bottom: 0`), not approximated.
+   ramp. Its own gradient percentages are safe as plain percentages
+   because this element's own height is exact (`bottom: 0`), not
+   approximated.
 
-   The linear gradient reaches fully-opaque black at 76% (not 100%) of
-   this element's own height, deliberately leaving the last quarter of
+   Deliberately NOT a solid color plus `mask-image` (the previous
+   approach here) — that combination is a known WebKit/Safari rendering
+   bug: masked elements can rasterize onto their own GPU compositing
+   layer with a hairline sub-pixel seam at the mask's own edge, letting
+   whatever is painted underneath (this scene's WebGL canvas) show
+   through as a thin sliver, reproducing specifically on iPad and not on
+   desktop/mobile Safari or any Chromium/Firefox engine — exactly the
+   asymmetry reported. Painting the identical fade directly as
+   two stacked, alpha-varying `background` gradients (below) produces the
+   mathematically same result (browsers already composite stacked
+   background layers via the same over/add math a `mask-composite: add`
+   of two masks over a solid color would) without ever creating a masked
+   compositing layer in the first place — there's no Safari-specific
+   rasterization path left to have a seam in.
+
+   The linear gradient reaches fully-opaque warm-white at 76% (not 100%)
+   of this element's own height, deliberately leaving the last quarter of
    Solution's own height solidly covered with no further ramp — a wide,
    guaranteed-opaque margin rather than letting the transition finish
-   right at the true edge. That real margin (not just a tighter mask
-   value) is what actually matters here: this box's own height is exact
-   (`bottom: 0`), but Solution's own contribution to it is still a
-   variable-height, viewport-unit-influenced value (min-height: 100svh on
-   larger screens, a clamp()'d map height everywhere), and this quarter
-   of solid coverage is what absorbs any small mismatch between that
-   value's own layout rounding and where the *next* section's opaque
-   background actually begins, instead of a thin sliver of the beam
-   pattern ever being able to show through right at that seam. */
+   right at the true edge, absorbing any small mismatch between
+   Solution's own (viewport-unit-influenced) layout height and where the
+   next section's opaque background actually begins. */
 .scene-beam-fadeout {
   position: absolute;
   top: calc(var(--problem-real-h, 100svh) - 16px);
@@ -148,9 +158,6 @@
   right: 0;
   bottom: 0;
   pointer-events: none;
-  background: #f9f4ea;
-  mask-image: radial-gradient(ellipse 140% 85% at 55% 100%, black 0%, transparent 66%),
-    linear-gradient(to bottom, transparent 0%, transparent 10%, black 76%, black 100%);
-  -webkit-mask-image: radial-gradient(ellipse 140% 85% at 55% 100%, black 0%, transparent 66%),
-    linear-gradient(to bottom, transparent 0%, transparent 10%, black 76%, black 100%);
+  background: radial-gradient(ellipse 140% 85% at 55% 100%, #f9f4ea 0%, rgba(249, 244, 234, 0) 66%),
+    linear-gradient(to bottom, rgba(249, 244, 234, 0) 0%, rgba(249, 244, 234, 0) 10%, #f9f4ea 76%, #f9f4ea 100%);
 }
