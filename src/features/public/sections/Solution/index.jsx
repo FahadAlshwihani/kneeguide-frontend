@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, useInView, animate } from "motion/react";
 import { FaUser, FaUserDoctor, FaBrain, FaDumbbell, FaChartLine, FaFileLines, FaBell, FaStopwatch, FaPeopleGroup } from "react-icons/fa6";
@@ -21,8 +21,7 @@ const NODE_ICONS = {
 // Geometry model — the single source of truth for both the SVG arcs and
 // every node's position. `center`/`radius` are always passed in (never
 // read from a module-level constant), so the exact same formula produces
-// the ring path and every node sitting on it, at whatever scale the
-// active breakpoint uses:
+// the ring path and every node sitting on it:
 //   x = center.x + radius * cos(angle)
 //   y = center.y - radius * sin(angle)
 // angle in degrees, 0deg = right, 90deg = top, 180deg = left — a node
@@ -90,30 +89,47 @@ const MOBILE_RING_OFFSETS = [4, -4];
 
 const buildRings = (radii, offsets, keysList) => radii.map((radius, i) => ({ radius, offsetDeg: offsets[i], keys: keysList[i] }));
 
-// Each breakpoint gets its *own* centerY (== viewBoxHeight, so the hub
-// sits exactly on the visible area's bottom edge — roughly half its own
-// circle above, half cropped below by .solution-map's overflow: hidden)
-// and its own ring radii — never a single geometry uniformly scaled down
-// by CSS. minWidth values pick the active tier on resize.
-const RADAR_BREAKPOINTS = [
-  { id: "mobile", minWidth: 0, viewBoxHeight: 42, rings: buildRings([18, 36], MOBILE_RING_OFFSETS, MOBILE_RING_KEYS) },
-  { id: "tablet", minWidth: 641, viewBoxHeight: 48, rings: buildRings([17, 29, 42], FULL_RING_OFFSETS, FULL_RING_KEYS) },
-  { id: "laptop", minWidth: 1024, viewBoxHeight: 56, rings: buildRings([21, 36, 51], FULL_RING_OFFSETS, FULL_RING_KEYS) },
-  { id: "desktop", minWidth: 1280, viewBoxHeight: 60, rings: buildRings([23, 39, 55], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+// Base ring radii per width tier, in "percent of the map's own width"
+// units (viewBox width is always fixed at 100) — deliberately modest
+// ("large background visualization", not oversized circles). These are
+// the *starting* radii; render time may still scale them down further
+// (see fitRings below) to guarantee they fit the container's real,
+// measured height, which is what actually varies per breakpoint here —
+// not a hand-tuned viewBoxHeight per tier.
+const RADAR_TIERS = [
+  { id: "mobile", minWidth: 0, rings: buildRings([11, 22], MOBILE_RING_OFFSETS, MOBILE_RING_KEYS) },
+  { id: "tablet", minWidth: 641, rings: buildRings([10, 17, 24], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+  { id: "laptop", minWidth: 1024, rings: buildRings([11, 19, 27], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+  { id: "desktop", minWidth: 1280, rings: buildRings([12, 21, 30], FULL_RING_OFFSETS, FULL_RING_KEYS) },
 ];
 
-const pickRadarBreakpoint = (width) => RADAR_BREAKPOINTS.reduce((match, bp) => (width >= bp.minWidth ? bp : match), RADAR_BREAKPOINTS[0]);
+const pickRadarTier = (width) => RADAR_TIERS.reduce((match, tier) => (width >= tier.minWidth ? tier : match), RADAR_TIERS[0]);
 
-const useRadarBreakpoint = () => {
-  const [breakpoint, setBreakpoint] = useState(() => pickRadarBreakpoint(typeof window !== "undefined" ? window.innerWidth : 1280));
+const useRadarTier = () => {
+  const [tier, setTier] = useState(() => pickRadarTier(typeof window !== "undefined" ? window.innerWidth : 1280));
 
   useEffect(() => {
-    const handleResize = () => setBreakpoint(pickRadarBreakpoint(window.innerWidth));
+    const handleResize = () => setTier(pickRadarTier(window.innerWidth));
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return breakpoint;
+  return tier;
+};
+
+// Guarantees the outer ring always fits inside the *real, measured*
+// viewBox height with a safety margin — instead of trusting a hand-typed
+// radius/height pair to agree, this derives the correction directly from
+// measurement every time, so it's mathematically correct at any width
+// *and* any height the container actually renders at (a genuinely wide-
+// but-short viewport included).
+const TOP_MARGIN_UNITS = 6;
+
+const fitRings = (rings, viewBoxHeight) => {
+  const outerRadius = Math.max(...rings.map((ring) => ring.radius));
+  const available = viewBoxHeight - TOP_MARGIN_UNITS;
+  const scale = available > 0 ? Math.min(1, available / outerRadius) : 1;
+  return rings.map((ring) => ({ ...ring, radius: ring.radius * scale }));
 };
 
 // Choreography constants (seconds) — named so the sequence below reads as
@@ -130,15 +146,55 @@ const SWEEP_REPEAT_DELAY = 3;
 
 const Solution = () => {
   const { t } = useTranslation();
-  const breakpoint = useRadarBreakpoint();
+  const tier = useRadarTier();
   const [hoveredNode, setHoveredNode] = useState(null);
   const [sweepProgress, setSweepProgress] = useState(null);
 
   const mapRef = useRef(null);
   const isMapInView = useInView(mapRef, { once: true, amount: 0.3 });
 
-  const { viewBoxHeight, rings } = breakpoint;
+  // The map's real rendered (width, height) — the *only* source of truth
+  // for the SVG's coordinate system (see viewBoxHeight below). Measuring
+  // it directly, rather than trying to keep a CSS aspect-ratio and a
+  // hand-picked viewBox in numeric agreement, is what guarantees a node's
+  // icon center and its arc's centerline can never drift apart: there is
+  // only one number, derived from the DOM itself.
+  const [mapSize, setMapSize] = useState(null);
+
+  useLayoutEffect(() => {
+    const node = mapRef.current;
+    if (!node) return undefined;
+
+    const measure = () => {
+      const rect = node.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) setMapSize({ width: rect.width, height: rect.height });
+    };
+
+    measure();
+
+    let observer;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(measure);
+      observer.observe(node);
+    } else {
+      window.addEventListener("resize", measure);
+    }
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  // centerY == viewBoxHeight puts the hub exactly on the map's real
+  // bottom edge — the container's own `overflow: hidden`, pinned flush
+  // against the next section (see Solution.css), is what then crops
+  // roughly half of it and the arcs' own lower reach. Before the first
+  // measurement lands, fall back to a plausible ratio so nothing renders
+  // from a guess for more than a frame.
+  const viewBoxHeight = mapSize ? (mapSize.height / mapSize.width) * 100 : 30;
   const center = { x: 50, y: viewBoxHeight };
+  const rings = fitRings(tier.rings, viewBoxHeight);
   const nodes = buildRadarNodes(center, rings);
   const viewBox = `0 0 100 ${viewBoxHeight}`;
 
@@ -163,7 +219,7 @@ const Solution = () => {
     });
     return () => controls.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMapInView, breakpoint.id]);
+  }, [isMapInView, tier.id]);
 
   const sweepRing = rings[Math.min(1, rings.length - 1)];
   const sweepAngle = sweepProgress === null ? null : 180 - sweepProgress * 180;
@@ -180,12 +236,13 @@ const Solution = () => {
         </Reveal>
       </div>
 
-      {/* Full-bleed on purpose — a sibling of .solution-container, not a
-          descendant, so it spans the Hero's full width instead of being
-          boxed inside the header's max-width column. The radar is the
-          section's visual foundation, not an illustration placed inside
-          it. */}
-      <div className="solution-map" ref={mapRef} style={{ aspectRatio: `100 / ${viewBoxHeight}` }}>
+      {/* Full-bleed and pinned to the section's own bottom edge (see
+          Solution.css) — a sibling of .solution-container, not a
+          descendant, so it spans the full width instead of being boxed
+          inside the header's max-width column, and its bottom is exactly
+          where the next section begins. That's the entire clipping
+          mechanism: nothing below that edge is ever painted. */}
+      <div className="solution-map" ref={mapRef}>
         <svg className="platform-radar" viewBox={viewBox} preserveAspectRatio="none" aria-hidden="true">
           {rings.map((ring, ringIndex) => (
             <motion.path
