@@ -90,17 +90,18 @@ const MOBILE_RING_OFFSETS = [4, -4];
 const buildRings = (radii, offsets, keysList) => radii.map((radius, i) => ({ radius, offsetDeg: offsets[i], keys: keysList[i] }));
 
 // Base ring radii per width tier, in "percent of the map's own width"
-// units (viewBox width is always fixed at 100) — deliberately modest
-// ("large background visualization", not oversized circles). These are
-// the *starting* radii; render time may still scale them down further
-// (see fitRings below) to guarantee they fit the container's real,
-// measured height, which is what actually varies per breakpoint here —
-// not a hand-tuned viewBoxHeight per tier.
+// units (viewBox width is always fixed at 100) — sized to comfortably
+// fill the map ("large background visualization", not a tiny diagram
+// floating in empty space). These are the *starting* radii; render time
+// always scales them down further when needed (see fitRings below) to
+// guarantee they fit the container's real, measured height *and* stay
+// within its horizontal edges — never a hand-tuned viewBoxHeight per
+// tier, never eyeballed.
 const RADAR_TIERS = [
-  { id: "mobile", minWidth: 0, rings: buildRings([11, 22], MOBILE_RING_OFFSETS, MOBILE_RING_KEYS) },
-  { id: "tablet", minWidth: 641, rings: buildRings([10, 17, 24], FULL_RING_OFFSETS, FULL_RING_KEYS) },
-  { id: "laptop", minWidth: 1024, rings: buildRings([11, 19, 27], FULL_RING_OFFSETS, FULL_RING_KEYS) },
-  { id: "desktop", minWidth: 1280, rings: buildRings([12, 21, 30], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+  { id: "mobile", minWidth: 0, rings: buildRings([24, 46], MOBILE_RING_OFFSETS, MOBILE_RING_KEYS) },
+  { id: "tablet", minWidth: 641, rings: buildRings([18, 31, 44], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+  { id: "laptop", minWidth: 1024, rings: buildRings([20, 34, 48], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+  { id: "desktop", minWidth: 1280, rings: buildRings([22, 36, 50], FULL_RING_OFFSETS, FULL_RING_KEYS) },
 ];
 
 const pickRadarTier = (width) => RADAR_TIERS.reduce((match, tier) => (width >= tier.minWidth ? tier : match), RADAR_TIERS[0]);
@@ -118,18 +119,56 @@ const useRadarTier = () => {
 };
 
 // Guarantees the outer ring always fits inside the *real, measured*
-// viewBox height with a safety margin — instead of trusting a hand-typed
-// radius/height pair to agree, this derives the correction directly from
-// measurement every time, so it's mathematically correct at any width
-// *and* any height the container actually renders at (a genuinely wide-
-// but-short viewport included).
+// viewBox on both axes — instead of trusting hand-typed radius/height
+// pairs to agree, this derives the correction directly from measurement
+// every time, so every ring (and therefore every node sitting on it) is
+// mathematically guaranteed to stay inside the map at any width *and*
+// any height the container actually renders at.
 const TOP_MARGIN_UNITS = 6;
+// The arc only spans ARC_START_DEG..ARC_END_DEG, so its widest horizontal
+// reach happens at those two endpoints, not at 180deg — this is the
+// radius, in the same "percent of the fixed 100-wide viewBox" units, at
+// which a node sitting right at ARC_START_DEG would just touch the
+// viewBox's own left/right edge. A couple of units of margin keeps a
+// node's own circle from touching that edge.
+const ARC_START_RAD = (ARC_START_DEG * Math.PI) / 180;
+const HORIZONTAL_RADIUS_LIMIT = 50 / Math.cos(ARC_START_RAD) - 2;
 
-const fitRings = (rings, viewBoxHeight) => {
+// Minimum pixel distance a node's CENTER must keep from the map's bottom
+// edge so its full circle + up-to-two-line label always stays inside the
+// visible box — sized generously for the largest breakpoint's node chrome
+// (22px circle radius + 6px gap + ~2 label lines), then converted to
+// viewBox units from the container's own measured width every render, so
+// it's exact at any size rather than a per-breakpoint guess.
+const NODE_BOTTOM_CLEARANCE_PX = 64;
+
+const fitRings = (rings, viewBoxHeight, mapWidth) => {
   const outerRadius = Math.max(...rings.map((ring) => ring.radius));
-  const available = viewBoxHeight - TOP_MARGIN_UNITS;
-  const scale = available > 0 ? Math.min(1, available / outerRadius) : 1;
-  return rings.map((ring) => ({ ...ring, radius: ring.radius * scale }));
+  const verticalAvailable = viewBoxHeight - TOP_MARGIN_UNITS;
+  const verticalScale = verticalAvailable > 0 ? Math.min(1, verticalAvailable / outerRadius) : 1;
+  const horizontalScale = Math.min(1, HORIZONTAL_RADIUS_LIMIT / outerRadius);
+  const scale = Math.min(verticalScale, horizontalScale);
+  const scaledRings = rings.map((ring) => ({ ...ring, radius: ring.radius * scale }));
+
+  // The innermost ring's side nodes (angle == ARC_START_DEG/ARC_END_DEG)
+  // sit closer to the bottom edge than anything else on the map (every
+  // other node has either a larger radius or a steeper angle, both of
+  // which only move it further away) — so guaranteeing clearance for
+  // that one ring's own side nodes guarantees it for every node. Each
+  // ring's arc and its own nodes always share the same radius (see
+  // buildRingPath/buildRadarNodes), so nudging just this ring outward
+  // keeps its arc and nodes perfectly matched without touching any other
+  // ring's already-correct scale.
+  if (mapWidth > 0 && scaledRings.length > 0) {
+    const clearanceUnits = (NODE_BOTTOM_CLEARANCE_PX * 100) / mapWidth;
+    const requiredInnerRadius = clearanceUnits / Math.sin(ARC_START_RAD);
+    const nextRadius = scaledRings[1]?.radius ?? Infinity;
+    if (scaledRings[0].radius < requiredInnerRadius) {
+      scaledRings[0] = { ...scaledRings[0], radius: Math.min(requiredInnerRadius, nextRadius - 2) };
+    }
+  }
+
+  return scaledRings;
 };
 
 // Choreography constants (seconds) — named so the sequence below reads as
