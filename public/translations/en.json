@@ -786,38 +786,6 @@
       "notificationsLabel": "Notifications"
     }
   },
-  "publicTechnology": {
-    "badge": "Built On",
-    "title": "Modern technology, purpose-built for rehabilitation.",
-    "description": "KneeGuide combines interactive 3D modeling with applied machine learning to make recovery measurable.",
-    "stats": {
-      "modelingValue": "3D",
-      "modelingLabel": "Knee visualization",
-      "syncValue": "Real-time",
-      "syncLabel": "Care team sync",
-      "securityValue": "256-bit",
-      "securityLabel": "Data encryption"
-    },
-    "features": {
-      "modelingTitle": "Interactive 3D knee modeling",
-      "modelingDescription": "Visualize range of motion and exercise mechanics in 3D, not static diagrams.",
-      "aiTitle": "AI pain-pattern analysis",
-      "aiDescription": "Machine learning surfaces trends across weeks of pain and mobility logs.",
-      "securityTitle": "Secure, clinical-grade data",
-      "securityDescription": "Patient data is encrypted end-to-end and handled to clinical privacy standards.",
-      "syncTitle": "Real-time sync",
-      "syncDescription": "Every log a patient submits reaches their care team instantly."
-    },
-    "trust": {
-      "label": "Designed around the people who move recovery forward",
-      "privacyTitle": "Designed for clinical-grade privacy",
-      "privacyDescription": "Every record encrypted and handled to healthcare data standards.",
-      "evidenceTitle": "Designed for evidence-based care",
-      "evidenceDescription": "AI surfaces patterns clinicians can act on, not just data.",
-      "realtimeTitle": "Designed for real-time collaboration",
-      "realtimeDescription": "Patients and care teams always see the same up-to-date picture."
-    }
-  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",
