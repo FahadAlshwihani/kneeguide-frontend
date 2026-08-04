@@ -1,126 +1,73 @@
 import React from "react";
-import {
-  FaClipboardList,
-  FaCommentSlash,
-  FaChartLine,
-  FaBullseye,
-  FaWandMagicSparkles,
-  FaArrowTrendUp,
-  FaUser,
-  FaUserDoctor,
-  FaPeopleGroup,
-} from "react-icons/fa6";
+import { useTranslation } from "react-i18next";
+import { FaClipboardList, FaCommentSlash, FaChartLine, FaUser, FaUserDoctor, FaPeopleGroup } from "react-icons/fa6";
 import Reveal from "../../components/Reveal";
 import "./Problem.css";
 
-const PROBLEMS = [
-  {
-    icon: FaClipboardList,
-    title: "Inconsistent home exercises",
-    description:
-      "Patients leave the clinic with a printed sheet and no way to track whether they actually followed it.",
-  },
-  {
-    icon: FaCommentSlash,
-    title: "Pain that goes unreported",
-    description:
-      "A five-minute visit rarely captures how pain and mobility really changed week to week.",
-  },
-  {
-    icon: FaChartLine,
-    title: "Decisions made blind between visits",
-    description:
-      "Without daily data, clinicians adjust treatment plans on memory instead of evidence.",
-  },
-];
+const STAT_ICONLESS_KEYS = ["adherence", "dropout", "followup"];
 
-const HIGHLIGHTS = [
-  {
-    icon: FaBullseye,
-    value: "Consistent",
-    title: "Exercise adherence",
-    description: "Goal-focused routines designed to make daily rehabilitation easier to follow.",
-  },
-  {
-    icon: FaWandMagicSparkles,
-    value: "24/7",
-    title: "AI-assisted guidance",
-    description: "On-demand support that helps patients stay informed between appointments.",
-  },
-  {
-    icon: FaArrowTrendUp,
-    value: "Faster",
-    title: "Recovery visibility",
-    description: "Clear progress signals that help meaningful changes surface sooner.",
-  },
-];
+const AUDIENCE_ICONS = [FaUser, FaUserDoctor, FaPeopleGroup];
+const AUDIENCE_KEYS = ["patients", "clinicians", "teams"];
 
-const AUDIENCES = [
-  { icon: FaUser, title: "Patients", description: "Clear guidance for every recovery day." },
-  { icon: FaUserDoctor, title: "Clinicians", description: "Useful context between appointments." },
-  { icon: FaPeopleGroup, title: "Healthcare Teams", description: "A shared view of rehabilitation progress." },
-];
+const CARD_ICONS = [FaClipboardList, FaCommentSlash, FaChartLine];
+const CARD_KEYS = ["exercises", "pain", "decisions"];
 
 const Problem = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="problem-root">
       <div className="problem-container">
-        <Reveal className="problem-header">
-          <span className="problem-badge">The Challenge</span>
-          <h2 className="problem-title">Recovery breaks down between appointments.</h2>
-          <p className="problem-description">
-            Most knee rehabilitation still runs on memory and guesswork —
-            leaving both patients and doctors working with an incomplete
-            picture of how recovery is really going.
-          </p>
+        {/* 1. Projected impact statistics — first element, before the badge/title/description. */}
+        <Reveal className="problem-stats">
+          <p className="problem-stats-eyebrow">{t("publicProblem.stats.eyebrow")}</p>
+          <div className="problem-stats-row">
+            {STAT_ICONLESS_KEYS.map((key) => (
+              <div className="problem-stat" key={key}>
+                <span className="problem-stat-value">{t(`publicProblem.stats.${key}Value`)}</span>
+                <span className="problem-stat-label">{t(`publicProblem.stats.${key}Label`)}</span>
+              </div>
+            ))}
+          </div>
         </Reveal>
 
-        <div className="problem-grid">
-          {PROBLEMS.map((item, index) => {
-            const Icon = item.icon;
+        {/* 2. Designed-for audience row — directly after stats, brand-free (no logos). */}
+        <Reveal as="div" className="problem-audience" delay={0.05}>
+          {AUDIENCE_KEYS.map((key, index) => {
+            const Icon = AUDIENCE_ICONS[index];
             return (
-              <Reveal as="div" key={item.title} delay={index * 0.1} className="problem-card">
-                <span className="problem-card-icon">
+              <div className="problem-audience-item" key={key}>
+                <span className="problem-audience-icon">
                   <Icon aria-hidden="true" />
                 </span>
-                <h3 className="problem-card-title">{item.title}</h3>
-                <p className="problem-card-description">{item.description}</p>
-              </Reveal>
-            );
-          })}
-        </div>
-
-        <Reveal as="div" className="problem-highlights">
-          {HIGHLIGHTS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div className="problem-highlight" key={item.title}>
-                <span className="problem-highlight-icon"><Icon aria-hidden="true" /></span>
-                <strong className="problem-highlight-value">{item.value}</strong>
-                <span className="problem-highlight-title">{item.title}</span>
-                <p className="problem-highlight-description">{item.description}</p>
+                <span className="problem-audience-label">{t(`publicProblem.audience.${key}`)}</span>
               </div>
             );
           })}
         </Reveal>
 
-        <Reveal as="div" className="problem-trust">
-          <p className="problem-trust-label">Designed around the people who move recovery forward</p>
-          <div className="problem-trust-grid">
-            {AUDIENCES.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div className="problem-trust-item" key={item.title}>
-                  <span className="problem-trust-icon"><Icon aria-hidden="true" /></span>
-                  <span>
-                    <strong>Designed for {item.title}</strong>
-                    <small>{item.description}</small>
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+        {/* 3. Section badge, title and description. */}
+        <Reveal className="problem-header" delay={0.1}>
+          <span className="problem-badge">{t("publicProblem.badge")}</span>
+          <h2 className="problem-title">{t("publicProblem.title")}</h2>
+          <p className="problem-description">{t("publicProblem.description")}</p>
         </Reveal>
+
+        {/* 4. The only elements in this section allowed to look like cards. */}
+        <div className="problem-grid">
+          {CARD_KEYS.map((key, index) => {
+            const Icon = CARD_ICONS[index];
+            return (
+              <Reveal as="div" key={key} delay={0.15 + index * 0.1} className="problem-card">
+                <span className="problem-card-icon">
+                  <Icon aria-hidden="true" />
+                </span>
+                <h3 className="problem-card-title">{t(`publicProblem.cards.${key}Title`)}</h3>
+                <p className="problem-card-description">{t(`publicProblem.cards.${key}Description`)}</p>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
