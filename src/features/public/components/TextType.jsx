@@ -33,6 +33,12 @@ const TextType = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(!startOnVisible);
+  // True only for the `pauseDuration` window between "word fully typed"
+  // and "starts deleting" — additive to the original component, so the
+  // cursor can disappear specifically there (a real caret settling after
+  // a completed word) without touching hideCursorWhileTyping's own
+  // typing/deleting behavior.
+  const [isPausedAfterType, setIsPausedAfterType] = useState(false);
   const cursorRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -118,7 +124,9 @@ const TextType = ({
           );
         } else if (textArray.length >= 1) {
           if (!loop && currentTextIndex === textArray.length - 1) return;
+          setIsPausedAfterType(true);
           timeout = setTimeout(() => {
+            setIsPausedAfterType(false);
             setIsDeleting(true);
           }, pauseDuration);
         }
@@ -151,7 +159,8 @@ const TextType = ({
   ]);
 
   const shouldHideCursor =
-    hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
+    isPausedAfterType ||
+    (hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting));
 
   return createElement(
     Component,

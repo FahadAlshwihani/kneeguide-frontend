@@ -112,6 +112,34 @@
 
 .problem-audience-word {
   font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Fixed-width slot around the animated word (see wordSlotWidth in
+   index.jsx) — its width is set inline, sized to the widest of the three
+   words, so "Designed for" never shifts as shorter/longer words type or
+   delete. `text-align: start` (not the inherited center) keeps the word
+   growing outward from the edge nearest the lead text instead of
+   re-centering on every keystroke. */
+.problem-audience-word-slot {
+  display: inline-block;
+  text-align: start;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+/* Off-screen twin used only to measure real widths — never painted. */
+.problem-audience-measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.problem-audience-measure .problem-audience-word {
+  display: inline-block;
 }
 
 /* 3. Section header. */
