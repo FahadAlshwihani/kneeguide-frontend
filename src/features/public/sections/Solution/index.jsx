@@ -233,7 +233,7 @@ const Solution = () => {
   // from a guess for more than a frame.
   const viewBoxHeight = mapSize ? (mapSize.height / mapSize.width) * 100 : 30;
   const center = { x: 50, y: viewBoxHeight };
-  const rings = fitRings(tier.rings, viewBoxHeight);
+  const rings = fitRings(tier.rings, viewBoxHeight, mapSize?.width ?? 0);
   const nodes = buildRadarNodes(center, rings);
   const viewBox = `0 0 100 ${viewBoxHeight}`;
 
