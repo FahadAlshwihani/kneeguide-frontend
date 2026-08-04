@@ -326,40 +326,51 @@ const Solution = () => {
           const revealIndex = priorRingNodes + ringNodeIndex;
 
           return (
-            <motion.div
+            // Plain (non-motion) positioning wrapper: `top`/`left` +
+            // `transform: translate(-50%, -50%)` are declared once in CSS
+            // and never touched again, so nothing can override them. Its
+            // own box is exactly the circle's box (the label is
+            // `position: absolute`, out of flow), so that translate
+            // centers the CIRCLE's own center on (node.x, node.y) — the
+            // same point the arc itself is drawn through. The animated
+            // scale/opacity live on the motion.span *inside*, which owns
+            // its own independent transform and can't interfere with the
+            // parent's static one.
+            <div
               key={node.key}
-              className={`platform-node${hoveredNode === node.key ? " is-hovered" : ""}`}
+              className="platform-node"
               style={{ "--node-x": `${node.x}%`, "--node-y": `${(node.y / viewBoxHeight) * 100}%` }}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{
-                duration: NODE_REVEAL_DURATION,
-                delay: nodesRevealStart + revealIndex * NODE_REVEAL_STEP,
-                ease: "easeOut",
-              }}
               onMouseEnter={() => setHoveredNode(node.key)}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <span className="platform-node-circle">
+              <motion.span
+                className={`platform-node-circle${hoveredNode === node.key ? " is-hovered" : ""}`}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{
+                  duration: NODE_REVEAL_DURATION,
+                  delay: nodesRevealStart + revealIndex * NODE_REVEAL_STEP,
+                  ease: "easeOut",
+                }}
+              >
                 <Icon aria-hidden="true" />
-              </span>
+              </motion.span>
               <span className="platform-node-label">{t(`publicSolution.nodes.${node.key}`)}</span>
-            </motion.div>
+            </div>
           );
         })}
 
-        <motion.div
-          className="platform-hub"
-          style={{ "--node-x": `${center.x}%`, "--node-y": `${(center.y / viewBoxHeight) * 100}%` }}
-          initial={{ opacity: 0, scale: 0.6 }}
-          animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: HUB_REVEAL_DURATION, ease: "easeOut" }}
-        >
-          <span className="platform-hub-circle">
+        <div className="platform-hub" style={{ "--node-x": `${center.x}%`, "--node-y": `${(center.y / viewBoxHeight) * 100}%` }}>
+          <motion.span
+            className="platform-hub-circle"
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: HUB_REVEAL_DURATION, ease: "easeOut" }}
+          >
             <span className="platform-hub-mark">KG</span>
-          </span>
+          </motion.span>
           <span className="platform-hub-label">{t("publicSolution.center")}</span>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
