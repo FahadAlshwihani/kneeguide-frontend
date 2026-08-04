@@ -79,16 +79,15 @@
    there's only one number (the DOM's own rendered size), never two
    independently-declared ones to keep in sync.
 
-   This element itself is NOT what clips the radar to that bottom edge
-   any more — `.platform-radar-clip` (its own direct child, see
-   index.jsx) is, with its own `overflow: hidden`. `.platform-hub` is
-   this element's OTHER direct child, deliberately outside that wrapper,
-   which is what lets the hub alone stay fully visible even past this
-   box's own bottom edge while everything else (rings, nodes, the sweep,
-   the pulse) still gets cropped there exactly as before. Nodes are
-   plain positioned elements (not foreignObject-in-SVG) so real text,
-   hover and focus behave normally; only the rings, highlights and
-   connectors are real SVG paths. */
+   This element's own child, `.platform-radar-clip`, is what actually
+   clips the radar to this bottom edge, via its own `overflow: hidden`.
+   The hub is NOT rendered here at all — it's portaled straight to
+   document.body (see index.jsx) so an ancestor several levels up
+   (HeroProblemScene's own `overflow: hidden`, wrapping this box too)
+   never gets a chance to crop it either. Nodes are plain positioned
+   elements (not foreignObject-in-SVG) so real text, hover and focus
+   behave normally; only the rings, highlights and connectors are real
+   SVG paths. */
 .solution-map {
   position: absolute;
   left: 0;
