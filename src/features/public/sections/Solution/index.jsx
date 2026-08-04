@@ -178,9 +178,9 @@ const fitRings = (rings, viewBoxHeight, mapWidth) => {
 // on a wide screen more of them fit before that happens (more arcs) and
 // on a narrow one fewer do, exactly mirroring "however many arcs fit
 // this viewport". The outermost ones are expected to render mostly (or
-// entirely) outside the visible box; `.platform-radar`'s own `overflow:
-// hidden` is what quietly crops them, the same mechanism already used
-// for the hub.
+// entirely) outside the visible box; `.platform-radar-clip`'s own
+// `overflow: hidden` (see index.jsx's JSX and Solution.css) is what
+// quietly crops them.
 const DECORATIVE_ARC_MIN = 1;
 const DECORATIVE_ARC_MAX = 6;
 
@@ -417,8 +417,9 @@ const Solution = () => {
           Solution.css) — a sibling of .solution-container, not a
           descendant, so it spans the full width instead of being boxed
           inside the header's max-width column, and its bottom is exactly
-          where the next section begins. That's the entire clipping
-          mechanism: nothing below that edge is ever painted. */}
+          where the next section begins. Everything below that edge is
+          cropped away — except the hub, the one deliberate exception
+          (see .platform-radar-clip below and Solution.css). */}
       <div className="solution-map" ref={mapRef}>
         {/* Everything that must stay clipped at the section boundary —
             rings, nodes, the sweep, the pulse — lives inside this
