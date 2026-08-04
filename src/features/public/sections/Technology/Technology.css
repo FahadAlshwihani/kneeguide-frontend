@@ -1,19 +1,4 @@
-/* Uses global design tokens from src/index.css for layout only (spacing,
-   container width, radii) — colors are defined locally below, the same
-   pattern Problem.css/Solution.css use, since the page has already
-   turned light by the time it reaches here (Solution ends on a flat
-   warm-white) and this section continues that light identity rather than
-   reverting to the public site's dark theme used further down the page.
-   Unlike Problem/Solution, this section isn't part of the shared Beams
-   scene, so it owns a plain, opaque white background of its own instead
-   of staying transparent.
-
-   Visual direction: a calm, editorial "premium SaaS" read rather than a
-   marketing grid of bordered cards — generous whitespace does the
-   grouping work that borders/shadows used to do. Every item (stat,
-   feature, trust) is just icon/value + title + description floating on
-   the white background; no container, no border, no shadow, no hover
-   lift anywhere in this file. */
+/* Uses global design tokens from src/index.css */
 
 .tech-root {
   padding: var(--section-padding) 0;
@@ -21,11 +6,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #ffffff;
-  --tech-heading: #141414;
-  --tech-text: #4b4b4b;
-  --tech-muted: #6b6b6b;
-  --tech-border: #e8edf5;
+  background: var(--color-background);
 }
 
 .tech-container {
@@ -34,62 +15,9 @@
   padding: 0 24px;
 }
 
-/* Stats: the first thing read in this section, ahead of the title —
-   plain, strong typography, no icons, no bordered tiles. A hairline
-   divider between items (not around them) is the only structure; on
-   narrow screens it rotates to sit above each stat instead of beside it,
-   never a boxed grid. */
-.tech-stats {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  flex-wrap: wrap;
-  gap: clamp(40px, 6vw, 88px);
-  margin-bottom: clamp(56px, 9vw, 96px);
-}
-
-.tech-stat {
-  position: relative;
-  text-align: center;
-  padding-inline-start: clamp(40px, 6vw, 88px);
-}
-
-.tech-stat:first-child {
-  padding-inline-start: 0;
-}
-
-.tech-stat:first-child::before {
-  content: none;
-}
-
-.tech-stat::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 1px;
-  background: var(--tech-border);
-}
-
-.tech-stat-value {
-  display: block;
-  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--tech-heading);
-}
-
-.tech-stat-label {
-  display: block;
-  margin-top: 8px;
-  font-size: 0.88rem;
-  color: var(--tech-muted);
-}
-
 .tech-header {
   max-width: 640px;
-  margin: 0 auto clamp(56px, 8vw, 88px);
+  margin: 0 auto 48px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -102,7 +30,8 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--color-primary);
-  background: #eff6ff;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
   padding: 6px 16px;
   border-radius: 999px;
 }
@@ -110,138 +39,65 @@
 .tech-title {
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 600;
-  color: var(--tech-heading);
+  color: var(--color-heading);
   text-wrap: balance;
 }
 
 .tech-description {
   font-size: 1.05rem;
   line-height: 1.65;
-  color: var(--tech-text);
+  color: var(--color-text);
 }
 
 .tech-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  column-gap: clamp(28px, 4vw, 48px);
-  row-gap: clamp(40px, 5vw, 56px);
+  gap: 20px;
 }
 
-.tech-item {
+.tech-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tech-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border);
 }
 
 .tech-icon {
   width: 42px;
   height: 42px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eff6ff;
-  color: var(--color-primary);
+  background: var(--color-surface-soft);
+  color: var(--color-secondary);
   font-size: 1.1rem;
 }
 
-.tech-item-title {
+.tech-card-title {
   font-size: 1.02rem;
   font-weight: 600;
-  color: var(--tech-heading);
+  color: var(--color-heading);
 }
 
-.tech-item-description {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--tech-muted);
-}
-
-/* Trust: same "no container" rule — just a centered label and a row of
-   icon + "Designed for..." pairs, separated by whitespace and a
-   hairline divider on wide screens, never a bordered/background box. */
-.tech-trust {
-  margin-top: clamp(56px, 8vw, 88px);
-  padding-top: clamp(40px, 6vw, 56px);
-  border-top: 1px solid var(--tech-border);
-}
-
-.tech-trust-label {
-  margin-bottom: 28px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--tech-muted);
-  text-align: center;
-}
-
-.tech-trust-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 32px;
-}
-
-.tech-trust-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.tech-trust-icon {
-  flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #eff6ff;
-  color: var(--color-primary);
-  font-size: 0.95rem;
-}
-
-.tech-trust-item strong,
-.tech-trust-item small {
-  display: block;
-}
-
-.tech-trust-item strong {
-  color: var(--tech-heading);
-  font-size: 0.92rem;
-  font-weight: 600;
-}
-
-.tech-trust-item small {
-  margin-top: 3px;
-  color: var(--tech-muted);
-  font-size: 0.8rem;
-  line-height: 1.45;
+.tech-card-description {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--color-muted);
 }
 
 @media (max-width: 960px) {
   .tech-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .tech-stats {
-    flex-direction: column;
-    align-items: center;
-    gap: 28px;
-  }
-
-  .tech-stat {
-    padding-inline-start: 0;
-  }
-
-  .tech-stat::before {
-    content: none;
-  }
-
-  .tech-trust-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
   }
 }
 
