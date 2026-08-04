@@ -97,9 +97,11 @@ const buildRings = (radii, offsets, keysList) => radii.map((radius, i) => ({ rad
 // tablet's would be (see RADAR_TIERS) specifically to keep 9 nodes'
 // worth of circles+labels from crowding a narrow screen — paired with
 // smaller node/label chrome at that same breakpoint (see the
-// max-width: 640px block, Solution.css).
+// max-width: 640px block, Solution.css) and a larger minInnerGap (see
+// fitRings below and RADAR_TIERS) so the bottom-clearance boost doesn't
+// squeeze the inner ring back up against the middle one.
 const RADAR_TIERS = [
-  { id: "mobile", minWidth: 0, rings: buildRings([16, 29, 43], FULL_RING_OFFSETS, FULL_RING_KEYS) },
+  { id: "mobile", minWidth: 0, minInnerGap: 12, rings: buildRings([20, 37, 49], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "tablet", minWidth: 641, rings: buildRings([18, 31, 44], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "laptop", minWidth: 1024, rings: buildRings([20, 34, 48], FULL_RING_OFFSETS, FULL_RING_KEYS) },
   { id: "desktop", minWidth: 1280, rings: buildRings([22, 36, 50], FULL_RING_OFFSETS, FULL_RING_KEYS) },
