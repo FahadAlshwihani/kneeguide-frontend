@@ -477,7 +477,21 @@ const Solution = () => {
               className={`platform-connector${hoveredNode === node.key ? " is-active" : ""}`}
             />
           ))}
+        </svg>
 
+        {/* The radar echo lives in its own, separate (unmasked) SVG layer
+            — same viewBox/coordinate space as .platform-radar above, so
+            cx/cy/r mean exactly the same thing in both, but this one
+            deliberately has no top-fade mask. .platform-radar's mask is
+            tuned for the *decorative arcs* dissolving near the top edge;
+            the pulse's radius routinely grows much larger than that
+            (it's meant to travel through every decorative arc, per
+            pulseMaxRadius), so sharing that mask made it fade to nothing
+            almost immediately after leaving the hub on short/wide
+            (desktop-ish) containers. This layer still gets a hard clip
+            from .platform-radar-clip at the true edges, same as
+            everything else — it just doesn't *also* fade early. */}
+        <svg className="platform-pulse-layer" viewBox={viewBox} preserveAspectRatio="none" aria-hidden="true">
           {/* One soft radar echo, replayed by remounting on every
               pulseCount bump (see the rotation effect) — starts at the
               hub, briefly brightens, then travels outward through every
