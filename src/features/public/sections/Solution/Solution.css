@@ -111,12 +111,24 @@
   }
 }
 
+/* The mask is what turns "clipped by the container's edge" into
+   "dissolves into the page": everything this SVG draws (real rings,
+   decorative arcs, highlights, connectors, the pulse) fades to fully
+   transparent over the top ~26% of the box instead of being hard-cut by
+   `overflow: hidden` the instant it crosses that edge. The real,
+   node-bearing rings never reach that zone (TOP_MARGIN_UNITS in
+   index.jsx already keeps them well clear of it), so only the decorative
+   arcs — and the pulse, on the rare moment it travels that far out — are
+   ever actually affected; everything else stays exactly as opaque as it
+   already was. */
 .platform-radar {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%);
 }
 
 /* The shared radar rings — always visible, always subtle. Never the
@@ -199,13 +211,16 @@
 }
 
 /* The once-per-revolution radar echo (see pulseCount in index.jsx) — a
-   single soft, stroke-only ring expanding from the hub out through every
-   arc and fading away, never a filled disc, so it reads as a faint
-   traveling wavefront rather than a flash or a burst. */
+   single soft, stroke-only wave traveling from the hub out through every
+   arc, never a filled disc, so it reads as a faint atmospheric wavefront
+   rather than a flash or a burst. Its radius, opacity AND stroke-width
+   are all animated together from index.jsx (thinning as much as fading
+   as it travels) rather than fixed here, since Motion owns every
+   property it's given an animate target for — a fixed stroke-width here
+   would just get silently overridden the moment the animation starts. */
 .platform-pulse {
   fill: none;
   stroke: var(--color-primary);
-  stroke-width: 0.5;
 }
 
 /* The brief "the beam just crossed this node" reaction — a soft blue
