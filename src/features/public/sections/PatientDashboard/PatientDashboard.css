@@ -1,12 +1,22 @@
 /* Uses global design tokens from src/index.css */
 
+/* Continues the deep-navy-on-black wash ScrollStackFeature ends on (see
+   that file's own comment) rather than reverting to the site's plain
+   dark-neutral --color-surface token, so there's no visible seam where
+   this section begins. Same anchor color (#0e2544) top and bottom, with
+   one soft radial glow — every section through Footer repeats this
+   pattern with only the glow's position varied, so any two of them can
+   sit next to each other with no boundary. */
 .patient-preview-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--color-surface);
+  background:
+    radial-gradient(ellipse 80% 55% at 22% 12%, rgba(6, 10, 16, 0.32), transparent 58%),
+    radial-gradient(ellipse 80% 55% at 78% 88%, rgba(20, 55, 95, 0.2), transparent 58%),
+    #0e2544;
 }
 
 .patient-preview-container {
