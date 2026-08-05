@@ -24,8 +24,22 @@ const ScrollStack = ({
   const scrollerRef = useRef(null);
   const stackCompletedRef = useRef(false);
   const animationFrameRef = useRef(null);
+  const resizeFrameRef = useRef(null);
   const lenisRef = useRef(null);
   const cardsRef = useRef([]);
+  // Each card's (and the end-marker's) document-relative top offset,
+  // measured once (on mount and on resize — see measureOffsets below),
+  // never re-queried inside the scroll loop itself. `getBoundingClientRect`
+  // forces a synchronous layout read; calling it for every card on every
+  // single scroll frame (as the original per-frame `getElementOffset`
+  // call did) is exactly what turns a plain transform update into a
+  // layout-thrashing one — and since a card's *document*-relative offset
+  // doesn't actually change while scrolling (its `getBoundingClientRect().top`
+  // shrinks by exactly as much as `scrollY` grows), re-measuring it every
+  // frame was pure, avoidable overhead in the first place, not something
+  // scrolling ever required.
+  const cardOffsetsRef = useRef([]);
+  const endOffsetRef = useRef(0);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
 
