@@ -284,11 +284,36 @@ const ScrollStack = ({
       card.style.webkitPerspective = "1000px";
     });
 
+    measureOffsets();
     setupLenis();
 
     updateCardTransforms();
 
+    // Offsets are cached (see cardOffsetsRef's own comment above) rather
+    // than re-measured every scroll frame, so they need to be explicitly
+    // refreshed whenever the layout that produced them might have
+    // changed — a viewport resize being the realistic case (the cards
+    // themselves never resize from their own transform, so nothing here
+    // needs a ResizeObserver on them). rAF-coalesced the same way
+    // Header's own scroll handler is, so a drag-resize doesn't force a
+    // layout read on every intermediate resize event.
+    let resizeTicking = false;
+    const handleResize = () => {
+      if (resizeTicking) return;
+      resizeTicking = true;
+      resizeFrameRef.current = requestAnimationFrame(() => {
+        measureOffsets();
+        updateCardTransforms();
+        resizeTicking = false;
+      });
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
+      if (resizeFrameRef.current) {
+        cancelAnimationFrame(resizeFrameRef.current);
+      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -297,6 +322,7 @@ const ScrollStack = ({
       }
       stackCompletedRef.current = false;
       cardsRef.current = [];
+      cardOffsetsRef.current = [];
       transformsCache.clear();
       isUpdatingRef.current = false;
     };
@@ -314,6 +340,7 @@ const ScrollStack = ({
     onStackComplete,
     setupLenis,
     updateCardTransforms,
+    measureOffsets,
   ]);
 
   return (
