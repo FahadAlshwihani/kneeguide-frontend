@@ -1,12 +1,17 @@
 /* Uses global design tokens from src/index.css */
 
+/* Continues the deep-navy-on-black wash — see PatientDashboard.css's
+   comment for the shared anchor color/pattern used through Footer. */
 .cta-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--color-background);
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 18%, rgba(20, 55, 95, 0.2), transparent 58%),
+    radial-gradient(ellipse 80% 55% at 50% 88%, rgba(6, 10, 16, 0.28), transparent 58%),
+    #0e2544;
 }
 
 .cta-container {
