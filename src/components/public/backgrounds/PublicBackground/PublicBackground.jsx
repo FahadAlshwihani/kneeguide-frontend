@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Beams from "./Beams";
+import { useSceneDebug } from "../../../../features/public/debug/SceneDebugContext";
 import "./PublicBackground.css";
 
 // Caps render resolution well below Beams' own [1, 2] default — same
@@ -37,6 +38,7 @@ const getResponsiveDpr = () => {
  * appearance while visible does not change.
  */
 const PublicBackground = ({ className = "", active = true }) => {
+  const { enabled: debugEnabled, controls: debugControls } = useSceneDebug();
   const [reducedMotion, setReducedMotion] = useState(false);
   const [dpr, setDpr] = useState(getResponsiveDpr);
 
@@ -68,10 +70,11 @@ const PublicBackground = ({ className = "", active = true }) => {
           noiseIntensity={1.75}
           scale={0.2}
           rotation={20}
-          cameraZoom={1.46}
-          cameraY={0.22}
+          cameraZoom={debugEnabled && debugControls.disableCameraCrop ? 1 : 1.46}
+          cameraY={debugEnabled && debugControls.disableCameraCrop ? 0 : 0.22}
+          clearMode={debugEnabled ? debugControls.clearMode : null}
           dpr={dpr}
-          frameloop={active ? "always" : "never"}
+          frameloop={active && !(debugEnabled && debugControls.pauseBeams) ? "always" : "never"}
         />
       )}
     </div>

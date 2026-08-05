@@ -3,7 +3,7 @@ import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo } from 'rea
 
 import * as THREE from 'three';
 
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
 import { degToRad } from 'three/src/math/MathUtils.js';
 
@@ -56,8 +56,24 @@ function extendMaterial(BaseMaterial, cfg) {
 // offscreen without this component's own shader/geometry/animation logic
 // changing at all, and with no visual difference for any caller that
 // doesn't pass them.
-const CanvasWrapper = ({ children, dpr = [1, 2], frameloop = 'always' }) => (
-  <Canvas dpr={dpr} frameloop={frameloop} className="beams-container">
+const RendererClearState = ({ mode }) => {
+  const { gl } = useThree();
+
+  useEffect(() => {
+    const previousColor = gl.getClearColor(new THREE.Color()).clone();
+    const previousAlpha = gl.getClearAlpha();
+    if (mode === 'transparent') gl.setClearColor('#000000', 0);
+    else if (mode === 'bright') gl.setClearColor('#39ff14', 1);
+    else gl.setClearColor('#000000', 1);
+    return () => gl.setClearColor(previousColor, previousAlpha);
+  }, [gl, mode]);
+
+  return null;
+};
+
+const CanvasWrapper = ({ children, dpr = [1, 2], frameloop = 'always', clearMode = null }) => (
+  <Canvas dpr={dpr} frameloop={frameloop} gl={clearMode ? { alpha: true } : undefined} className="beams-container">
+    {clearMode && <RendererClearState mode={clearMode} />}
     {children}
   </Canvas>
 );
@@ -158,6 +174,7 @@ const Beams = ({
   rotation = 0,
   cameraZoom = 1,
   cameraY = 0,
+  clearMode = null,
   dpr = [1, 2],
   frameloop = 'always'
 }) => {
@@ -220,13 +237,13 @@ const Beams = ({
   );
 
   return (
-    <CanvasWrapper dpr={dpr} frameloop={frameloop}>
+    <CanvasWrapper dpr={dpr} frameloop={frameloop} clearMode={clearMode}>
       <group rotation={[0, 0, degToRad(rotation)]}>
         <PlaneNoise ref={meshRef} material={beamMaterial} count={beamNumber} width={beamWidth} height={beamHeight} />
         <DirLight color={lightColor} position={[0, 3, 10]} />
       </group>
       <ambientLight intensity={1} />
-      <color attach="background" args={['#000000']} />
+      {!clearMode && <color attach="background" args={['#000000']} />}
       <PerspectiveCamera makeDefault position={[0, cameraY, 20]} fov={30} zoom={cameraZoom} />
     </CanvasWrapper>
   );

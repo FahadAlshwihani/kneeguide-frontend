@@ -11,21 +11,26 @@ import AI from "../sections/AI";
 import Roadmap from "../sections/Roadmap";
 import FAQ from "../sections/FAQ";
 import CTA from "../sections/CTA";
+import { SceneDebugProvider } from "../debug/SceneDebugContext";
+import SceneDebugPanel from "../debug/SceneDebugPanel";
 
 const HomePage = () => {
   return (
-    <div className="home-root">
-      <HeroProblemScene />
-      <Technology />
-      <HowItWorks />
-      <Platform />
-      <DoctorDashboard />
-      <PatientDashboard />
-      <AI />
-      <Roadmap />
-      <FAQ />
-      <CTA />
-    </div>
+    <SceneDebugProvider>
+      <div className="home-root">
+        <HeroProblemScene />
+        <Technology />
+        <HowItWorks />
+        <Platform />
+        <DoctorDashboard />
+        <PatientDashboard />
+        <AI />
+        <Roadmap />
+        <FAQ />
+        <CTA />
+      </div>
+      <SceneDebugPanel />
+    </SceneDebugProvider>
   );
 };
 
