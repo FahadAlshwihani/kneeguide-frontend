@@ -76,37 +76,24 @@ const ScrollStack = ({
 
     isUpdatingRef.current = true;
 
-    // --- Read phase: window.scrollY/innerHeight are cheap property reads
-    // (they never force a layout pass), and every card offset below comes
-    // from the cache measureOffsets already populated — so nothing in this
-    // whole phase can trigger a synchronous reflow, no matter how many
-    // cards there are.
     const { scrollTop, containerHeight } = getScrollData();
     const stackPositionPx = parsePercentage(stackPosition, containerHeight);
     const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
-    const endElementTop = endOffsetRef.current;
 
-    let topCardIndex = 0;
-    if (blurAmount) {
-      for (let j = 0; j < cardsRef.current.length; j++) {
-        const jCardTop = cardOffsetsRef.current[j] ?? 0;
-        const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
-        if (scrollTop >= jTriggerStart) topCardIndex = j;
-      }
-    }
+    const endElement = useWindowScroll
+      ? document.querySelector(".scroll-stack-end")
+      : scrollerRef.current?.querySelector(".scroll-stack-end");
 
-    const updates = cardsRef.current.map((card, i) => {
-      if (!card) return null;
+    const endElementTop = endElement ? getElementOffset(endElement) : 0;
 
-      const cardTop = cardOffsetsRef.current[i] ?? 0;
-      const cardHeight = cardHeightsRef.current[i] ?? 0;
-      const stackTop = stackPositionPx + itemStackDistance * i;
-      const revealDistance = Math.max(0, cardHeight - (containerHeight - stackTop));
+    cardsRef.current.forEach((card, i) => {
+      if (!card) return;
+
+      const cardTop = getElementOffset(card);
       const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
       const triggerEnd = cardTop - scaleEndPositionPx;
-      const pinStart = cardTop - stackTop;
-      const basePinEnd = endElementTop - containerHeight / 2;
-      const pinEnd = basePinEnd + releaseRunwayRef.current;
+      const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
+      const pinEnd = endElementTop - containerHeight / 2;
 
       const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
       const targetScale = baseScale + i * itemScale;
@@ -114,43 +101,37 @@ const ScrollStack = ({
       const rotation = rotationAmount ? i * rotationAmount * scaleProgress : 0;
 
       let blur = 0;
-      if (blurAmount && i < topCardIndex) {
-        const depthInStack = topCardIndex - i;
-        blur = Math.max(0, depthInStack * blurAmount);
+      if (blurAmount) {
+        let topCardIndex = 0;
+        for (let j = 0; j < cardsRef.current.length; j++) {
+          const jCardTop = getElementOffset(cardsRef.current[j]);
+          const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
+          if (scrollTop >= jTriggerStart) {
+            topCardIndex = j;
+          }
+        }
+
+        if (i < topCardIndex) {
+          const depthInStack = topCardIndex - i;
+          blur = Math.max(0, depthInStack * blurAmount);
+        }
       }
 
       let translateY = 0;
       const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
 
       if (isPinned) {
-        // Preserve the original stack exactly through basePinEnd. Only in
-        // the added runway does a tall card travel upward, one scroll pixel
-        // per overflow pixel, until its complete content has been exposed.
-        const releaseTravel = Math.min(revealDistance, Math.max(0, scrollTop - basePinEnd));
-        translateY = scrollTop - cardTop + stackTop - releaseTravel;
+        translateY = scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
       } else if (scrollTop > pinEnd) {
-        translateY = pinEnd - cardTop + stackTop - revealDistance;
+        translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
       }
 
-      return {
-        card,
-        i,
-        isInView: scrollTop >= pinStart && scrollTop <= pinEnd,
-        newTransform: {
-          translateY: Math.round(translateY * 100) / 100,
-          scale: Math.round(scale * 1000) / 1000,
-          rotation: Math.round(rotation * 100) / 100,
-          blur: Math.round(blur * 100) / 100,
-        },
+      const newTransform = {
+        translateY: Math.round(translateY * 100) / 100,
+        scale: Math.round(scale * 1000) / 1000,
+        rotation: Math.round(rotation * 100) / 100,
+        blur: Math.round(blur * 100) / 100,
       };
-    });
-
-    // --- Write phase: every DOM mutation happens together, after every
-    // read above is already done — no card write can ever land between
-    // two reads for a later card.
-    updates.forEach((u) => {
-      if (!u) return;
-      const { card, i, newTransform } = u;
 
       const lastTransform = lastTransformsRef.current.get(i);
       const hasChanged =
@@ -161,23 +142,42 @@ const ScrollStack = ({
         Math.abs(lastTransform.blur - newTransform.blur) > 0.1;
 
       if (hasChanged) {
-        card.style.transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
-        card.style.filter = newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : "";
+        const transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
+        const filter = newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : "";
+
+        card.style.transform = transform;
+        card.style.filter = filter;
+
         lastTransformsRef.current.set(i, newTransform);
       }
 
       if (i === cardsRef.current.length - 1) {
-        if (u.isInView && !stackCompletedRef.current) {
+        const isInView = scrollTop >= pinStart && scrollTop <= pinEnd;
+        if (isInView && !stackCompletedRef.current) {
           stackCompletedRef.current = true;
           onStackComplete?.();
-        } else if (!u.isInView && stackCompletedRef.current) {
+        } else if (!isInView && stackCompletedRef.current) {
           stackCompletedRef.current = false;
         }
       }
     });
 
     isUpdatingRef.current = false;
-  }, [itemScale, itemStackDistance, stackPosition, scaleEndPosition, baseScale, rotationAmount, blurAmount, onStackComplete, calculateProgress, parsePercentage, getScrollData]);
+  }, [
+    itemScale,
+    itemStackDistance,
+    stackPosition,
+    scaleEndPosition,
+    baseScale,
+    rotationAmount,
+    blurAmount,
+    useWindowScroll,
+    onStackComplete,
+    calculateProgress,
+    parsePercentage,
+    getScrollData,
+    getElementOffset,
+  ]);
 
   const handleScroll = useCallback(() => {
     updateCardTransforms();
@@ -266,59 +266,11 @@ const ScrollStack = ({
       card.style.webkitPerspective = "1000px";
     });
 
-    // Measure the final natural layout before Lenis/the first transform pass.
-    measureOffsets();
     setupLenis();
 
     updateCardTransforms();
 
-    // Offsets and individual card heights are cached rather than measured
-    // every scroll frame, so refresh both whenever layout can change:
-    //
-    // - window resize: viewport width changes can reflow text into more
-    //   or fewer lines, so both are re-measured. rAF-coalesced the same
-    //   way Header's own scroll handler is, so a drag-resize doesn't
-    //   force a layout read on every intermediate resize event.
-    // - a ResizeObserver on each card catches
-    //   every *other* reason a card's natural content height can change
-    //   without the viewport itself resizing — a language switch
-    //   reflowing text at different metrics, web fonts finishing load, or
-    //   future dynamic content. Measurements are read-only, so observing
-    //   the card itself cannot create a resize loop.
-    let resizeTicking = false;
-    const handleResize = () => {
-      if (resizeTicking) return;
-      resizeTicking = true;
-      resizeFrameRef.current = requestAnimationFrame(() => {
-        measureOffsets();
-        updateCardTransforms();
-        resizeTicking = false;
-      });
-    };
-    window.addEventListener("resize", handleResize);
-
-    let contentResizeTicking = false;
-    const handleContentResize = () => {
-      if (contentResizeTicking) return;
-      contentResizeTicking = true;
-      requestAnimationFrame(() => {
-        measureOffsets();
-        updateCardTransforms();
-        contentResizeTicking = false;
-      });
-    };
-    let contentResizeObserver = null;
-    if (typeof ResizeObserver !== "undefined") {
-      contentResizeObserver = new ResizeObserver(handleContentResize);
-      cards.forEach((card) => contentResizeObserver.observe(card));
-    }
-
     return () => {
-      window.removeEventListener("resize", handleResize);
-      contentResizeObserver?.disconnect();
-      if (resizeFrameRef.current) {
-        cancelAnimationFrame(resizeFrameRef.current);
-      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -327,9 +279,6 @@ const ScrollStack = ({
       }
       stackCompletedRef.current = false;
       cardsRef.current = [];
-      cardOffsetsRef.current = [];
-      cardHeightsRef.current = [];
-      releaseRunwayRef.current = 0;
       transformsCache.clear();
       isUpdatingRef.current = false;
     };
@@ -347,7 +296,6 @@ const ScrollStack = ({
     onStackComplete,
     setupLenis,
     updateCardTransforms,
-    measureOffsets,
   ]);
 
   return (
