@@ -39,7 +39,9 @@ const ScrollStack = ({
   // frame was pure, avoidable overhead in the first place, not something
   // scrolling ever required.
   const cardOffsetsRef = useRef([]);
+  const cardHeightsRef = useRef([]);
   const endOffsetRef = useRef(0);
+  const releaseRunwayRef = useRef(0);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
 
@@ -85,51 +87,54 @@ const ScrollStack = ({
     [useWindowScroll]
   );
 
-  // Every card is pinned/scaled while occupying the exact same slot in
-  // the scroll sequence, but each one wraps genuinely different content
-  // (a 4-item grid, a short list, a 2-column dashboard preview, ...) —
-  // left to its own natural `height: auto`, a shorter card simply had
-  // less room than a taller one, and while a card is the "current" pinned
-  // one, nothing in the pinning math itself grows its box to match its
-  // neighbors. Measuring every card's own natural height and applying the
-  // largest one to all of them as a shared `min-height` guarantees every
-  // card always has enough room for 100% of its own content while pinned
-  // — never a guessed viewport fraction, always whatever the tallest card
-  // actually needs, for whatever content is actually rendered right now
-  // (a language switch included — see the ResizeObserver that calls this
-  // again below). Cleared before measuring: cards are `box-sizing:
-  // border-box`, so a *previous* run's own min-height would otherwise be
-  // read right back as if it were still the card's natural size, and a
-  // card whose content has since gotten shorter would never be able to
-  // shrink back down.
-  const equalizeCardHeights = useCallback(() => {
-    const cards = cardsRef.current;
-    if (!cards.length) return;
-
-    cards.forEach((card) => {
-      if (card) card.style.minHeight = "";
-    });
-
-    const maxHeight = cards.reduce((max, card) => (card ? Math.max(max, card.getBoundingClientRect().height) : max), 0);
-
-    if (maxHeight <= 0) return;
-
-    cards.forEach((card) => {
-      if (card) card.style.minHeight = `${Math.ceil(maxHeight)}px`;
-    });
-  }, []);
-
-  // The only place `getElementOffset` (and therefore `getBoundingClientRect`
-  // / `offsetTop`) is still called — once for every card plus the end
-  // marker, in one batch, never from inside the scroll-driven update loop.
+  // Measure once per layout change, never inside the scroll loop. Card
+  // heights do not alter the original pin starts; they only determine the
+  // additional reading runway after the full stack has formed.
   const measureOffsets = useCallback(() => {
+    // Read document geometry without the transforms written by the scroll
+    // loop. The scroller's GPU containing block makes offsetParent chains
+    // unreliable, while transformed bounding rects include animation state.
+    // Batched removal/read/restore happens synchronously in one frame.
+    const savedTransforms = useWindowScroll
+      ? cardsRef.current.map((card) => ({
+          card,
+          transform: card?.style.transform || "",
+          webkitTransform: card?.style.webkitTransform || "",
+        }))
+      : [];
+
+    savedTransforms.forEach(({ card }) => {
+      if (!card) return;
+      card.style.transform = "none";
+      card.style.webkitTransform = "none";
+    });
+
     cardOffsetsRef.current = cardsRef.current.map((card) => (card ? getElementOffset(card) : 0));
+    cardHeightsRef.current = cardsRef.current.map((card) => (card ? card.offsetHeight : 0));
 
     const endElement = useWindowScroll
       ? document.querySelector(".scroll-stack-end")
       : scrollerRef.current?.querySelector(".scroll-stack-end");
+
+    const containerHeight = useWindowScroll ? window.innerHeight : scrollerRef.current?.clientHeight || 0;
+    const stackPositionPx = parsePercentage(stackPosition, containerHeight);
+    releaseRunwayRef.current = cardHeightsRef.current.reduce((longest, cardHeight, i) => {
+      const stackTop = stackPositionPx + itemStackDistance * i;
+      return Math.max(longest, Math.max(0, cardHeight - (containerHeight - stackTop)));
+    }, 0);
+
+    // The marker's top remains the original shared release point. Its
+    // height contributes only the extra scrollable distance needed by the
+    // longest card, so the stack can remain active through that runway.
+    if (endElement) endElement.style.height = `${Math.max(1, Math.ceil(releaseRunwayRef.current))}px`;
     endOffsetRef.current = endElement ? getElementOffset(endElement) : 0;
-  }, [useWindowScroll, getElementOffset]);
+
+    savedTransforms.forEach(({ card, transform, webkitTransform }) => {
+      if (!card) return;
+      card.style.transform = transform;
+      card.style.webkitTransform = webkitTransform;
+    });
+  }, [useWindowScroll, getElementOffset, itemStackDistance, parsePercentage, stackPosition]);
 
   const updateCardTransforms = useCallback(() => {
     if (!cardsRef.current.length || isUpdatingRef.current) return;
@@ -159,10 +164,14 @@ const ScrollStack = ({
       if (!card) return null;
 
       const cardTop = cardOffsetsRef.current[i] ?? 0;
+      const cardHeight = cardHeightsRef.current[i] ?? 0;
+      const stackTop = stackPositionPx + itemStackDistance * i;
+      const revealDistance = Math.max(0, cardHeight - (containerHeight - stackTop));
       const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
       const triggerEnd = cardTop - scaleEndPositionPx;
-      const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
-      const pinEnd = endElementTop - containerHeight / 2;
+      const pinStart = cardTop - stackTop;
+      const basePinEnd = endElementTop - containerHeight / 2;
+      const pinEnd = basePinEnd + releaseRunwayRef.current;
 
       const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
       const targetScale = baseScale + i * itemScale;
@@ -179,9 +188,13 @@ const ScrollStack = ({
       const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
 
       if (isPinned) {
-        translateY = scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
+        // Preserve the original stack exactly through basePinEnd. Only in
+        // the added runway does a tall card travel upward, one scroll pixel
+        // per overflow pixel, until its complete content has been exposed.
+        const releaseTravel = Math.min(revealDistance, Math.max(0, scrollTop - basePinEnd));
+        translateY = scrollTop - cardTop + stackTop - releaseTravel;
       } else if (scrollTop > pinEnd) {
-        translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
+        translateY = pinEnd - cardTop + stackTop - revealDistance;
       }
 
       return {
@@ -318,39 +331,30 @@ const ScrollStack = ({
       card.style.webkitPerspective = "1000px";
     });
 
-    // Order matters: heights first (changes layout), then offsets (reads
-    // the now-final layout), then Lenis/the first transform pass.
-    equalizeCardHeights();
+    // Measure the final natural layout before Lenis/the first transform pass.
     measureOffsets();
     setupLenis();
 
     updateCardTransforms();
 
-    // Offsets — and the shared card height itself — are both cached
-    // rather than re-measured every scroll frame (see cardOffsetsRef's
-    // and equalizeCardHeights' own comments), so both need to be
-    // explicitly refreshed whenever the layout that produced them might
-    // have changed. Two distinct triggers for that:
+    // Offsets and individual card heights are cached rather than measured
+    // every scroll frame, so refresh both whenever layout can change:
     //
     // - window resize: viewport width changes can reflow text into more
     //   or fewer lines, so both are re-measured. rAF-coalesced the same
     //   way Header's own scroll handler is, so a drag-resize doesn't
     //   force a layout read on every intermediate resize event.
-    // - a ResizeObserver on each card's own wrapped content: catches
+    // - a ResizeObserver on each card catches
     //   every *other* reason a card's natural content height can change
     //   without the viewport itself resizing — a language switch
-    //   reflowing text at different metrics (this is what keeps EN/AR
-    //   consistent — see equalizeCardHeights), web fonts finishing load,
-    //   or any future dynamic content. This observes
-    //   `card.firstElementChild` (the wrapped section), never the card
-    //   element equalizeCardHeights itself writes a height onto, so its
-    //   own writes can never re-trigger this observer.
+    //   reflowing text at different metrics, web fonts finishing load, or
+    //   future dynamic content. Measurements are read-only, so observing
+    //   the card itself cannot create a resize loop.
     let resizeTicking = false;
     const handleResize = () => {
       if (resizeTicking) return;
       resizeTicking = true;
       resizeFrameRef.current = requestAnimationFrame(() => {
-        equalizeCardHeights();
         measureOffsets();
         updateCardTransforms();
         resizeTicking = false;
@@ -363,7 +367,6 @@ const ScrollStack = ({
       if (contentResizeTicking) return;
       contentResizeTicking = true;
       requestAnimationFrame(() => {
-        equalizeCardHeights();
         measureOffsets();
         updateCardTransforms();
         contentResizeTicking = false;
@@ -372,9 +375,7 @@ const ScrollStack = ({
     let contentResizeObserver = null;
     if (typeof ResizeObserver !== "undefined") {
       contentResizeObserver = new ResizeObserver(handleContentResize);
-      cards.forEach((card) => {
-        if (card.firstElementChild) contentResizeObserver.observe(card.firstElementChild);
-      });
+      cards.forEach((card) => contentResizeObserver.observe(card));
     }
 
     return () => {
@@ -392,6 +393,8 @@ const ScrollStack = ({
       stackCompletedRef.current = false;
       cardsRef.current = [];
       cardOffsetsRef.current = [];
+      cardHeightsRef.current = [];
+      releaseRunwayRef.current = 0;
       transformsCache.clear();
       isUpdatingRef.current = false;
     };
@@ -410,7 +413,6 @@ const ScrollStack = ({
     setupLenis,
     updateCardTransforms,
     measureOffsets,
-    equalizeCardHeights,
   ]);
 
   return (
