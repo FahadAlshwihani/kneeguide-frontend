@@ -51,9 +51,9 @@
 }
 
 .doctor-preview-points {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
   margin-top: 4px;
 }
 
@@ -63,6 +63,10 @@
   gap: 10px;
   font-size: 0.95rem;
   color: var(--color-text);
+}
+
+.doctor-preview-points li:last-child {
+  grid-column: 1 / -1;
 }
 
 .doctor-preview-points svg {
