@@ -263,6 +263,17 @@
   }
 }
 
+/* iPad-only (roughly 768-1023px): in English, the last card's own natural
+   height can land shorter than a preceding card's at this width (grids
+   above wrap to fewer columns here, growing taller), letting that card
+   peek out from underneath. Purely a taller floor for the last card —
+   no controller/timing/transform involved. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .scroll-stack-card.scroll-stack-feature-card.scroll-stack-feature-card-last {
+    min-height: 92vh;
+  }
+}
+
 @media (max-width: 640px) {
   .scroll-stack-feature-scroller .scroll-stack-inner {
     padding-inline: 0.75rem;
