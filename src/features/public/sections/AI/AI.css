@@ -1,12 +1,19 @@
 /* Uses global design tokens from src/index.css */
 
+/* Continues the deep-navy-on-black wash from ScrollStackFeature/
+   PatientDashboard (see PatientDashboard.css's comment) instead of the
+   site's green-tinted --gradient-tint-green token, so the whole run from
+   ScrollStack through Footer reads as one canvas. */
 .ai-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--gradient-tint-green);
+  background:
+    radial-gradient(ellipse 80% 55% at 76% 14%, rgba(20, 55, 95, 0.2), transparent 58%),
+    radial-gradient(ellipse 80% 55% at 24% 90%, rgba(6, 10, 16, 0.3), transparent 58%),
+    #0e2544;
 }
 
 .ai-container {
