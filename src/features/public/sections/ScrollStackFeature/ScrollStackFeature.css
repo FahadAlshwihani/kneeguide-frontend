@@ -271,8 +271,7 @@
   .scroll-stack-card.scroll-stack-feature-card {
     min-height: auto;
     padding: 16px;
-    /* Temporarily 0 — performance test only, see conversation. Was: 20px */
-    border-radius: 0;
+    border-radius: 20px;
   }
 
   .scroll-stack-feature-card .hiw-steps,
