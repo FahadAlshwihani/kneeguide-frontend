@@ -1,31 +1,23 @@
-/* Mobile-only structural rules, layered on top of the shared card visuals
+/* Mobile-only deck structure, layered on top of the shared card visuals
    in ScrollStack.css / ScrollStackFeature.css (untouched). Nothing here
    is imported by DesktopStack.jsx, so it has zero effect on desktop. */
 
-/* Extra scroll room after each card: most of it is "free" — the next
-   card's un-stuck top rises into view purely from normal document flow,
-   no JS involved — with only the final slice (see HANDOFF_WINDOW in
-   MobileStack.jsx) driving the actual settle/recede transform. */
-.mobile-stack-item {
-  position: relative;
-  padding-bottom: 55vh;
-}
-
-/* The last card gets just enough room to stick and settle, then releases
-   straight into whatever follows — no trailing dead scroll. */
-.mobile-stack-item-last {
-  padding-bottom: 6vh;
-}
-
-.mobile-stack-sticky {
+/* The pinned "stage": stays stuck to the top of the viewport for the
+   entire scrollable height of .mobile-deck (its tall parent). Every card
+   below is absolutely stacked inside it from the start — nothing is
+   appended or removed as you scroll, only repositioned. */
+.mobile-deck-stage {
   position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: visible;
+}
+
+.mobile-deck-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6vh;
   transform-origin: top center;
   will-change: transform, opacity;
-}
-
-/* Two classes so this reliably beats the base .scroll-stack-inner rule's
-   own padding-block (a ReactBits-pinning-math scroll buffer this engine
-   doesn't need) regardless of CSS source order. */
-.scroll-stack-inner.mobile-stack-inner {
-  padding-block: 20vh 0;
 }

@@ -1,122 +1,87 @@
-import { Children, useCallback, useEffect, useMemo, useRef } from "react";
-import { motion, motionValue, useMotionValueEvent, useScroll, useTransform } from "motion/react";
+import { Children, useCallback, useMemo, useRef } from "react";
+import { motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
 import "./ScrollStack.css";
 import "./MobileStack.css";
 
 /**
- * Purpose-built "stacked deck" interaction for touch — Apple Wallet's
- * interaction philosophy (a card settles into focus, the next one rises
- * from below and takes over, the previous one gently recedes), not its
- * visuals and not a ReactBits port.
+ * A true deck, not a sequence of sections. All cards exist stacked inside
+ * one sticky stage from the very first frame — there is no per-card
+ * runway, no gap between cards, nothing that reads as "scrolling through
+ * sections." One tall wrapper (mobile-deck) drives a single scroll
+ * progress via useScroll; every card's position/scale/opacity is a pure
+ * function of its own distance from the currently active index, computed
+ * with useTransform. Scrolling doesn't move between cards, it turns one
+ * continuous dial that the whole deck reacts to at once — exactly what
+ * "the deck owns the scroll, not the individual cards" means in code.
  *
- * There is no rAF loop, no per-frame getBoundingClientRect, no custom
- * scroll engine. `position: sticky` does the actual pinning, and native
- * scrolling carries each card up from below "for free" — the only JS is a
- * short, scroll-linked settle/recede animation right around the moment a
- * card reaches its stick point, driven by Framer Motion's useScroll /
- * useTransform (which read the browser's own scroll timeline). Because
- * every animated value is a pure function of current scroll position,
- * there's no separate "animation in flight" to desync — scrolling back up
- * mid-transition just re-reads the same values, so it's interruptible by
- * construction.
+ * No rAF loop, no per-frame getBoundingClientRect, no custom scroll
+ * engine — position: sticky pins the stage, and Framer Motion's
+ * useScroll/useTransform read the browser's native scroll-linked timeline.
+ * Every value is a pure function of current scroll position (not a
+ * separate "animation in flight"), so it's interruptible by construction.
  */
-const STICK_OFFSET = 88;
-const HANDOFF_WINDOW = 260;
+const TRANSITION_VH = 85; // scroll distance, per card-to-card handoff
+const PEEK_STEP = 110; // px each queued card sits below the active slot
+const RECEDE_Y = -14; // px the just-passed card shifts up/back
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
-const StickyCard = ({ item, index, isFirst, isLast, nextProgress, onProgress, onEnter, onExit }) => {
-  const wrapperRef = useRef(null);
+const DeckCard = ({ item, index, activeIndex }) => {
+  // Signed distance from "active": 0 = in focus, +1 = next up (peeking),
+  // +2 = queued further back, -1 = just handed off (receding).
+  const distance = useTransform(activeIndex, (a) => index - a);
 
-  const { scrollYProgress } = useScroll({
-    target: wrapperRef,
-    offset: [`start ${STICK_OFFSET + HANDOFF_WINDOW}px`, `start ${STICK_OFFSET}px`],
+  const y = useTransform(distance, [-1, 0, 1, 2], [RECEDE_Y, 0, PEEK_STEP, PEEK_STEP * 2], {
+    ease: easeOutCubic,
   });
-
-  useMotionValueEvent(scrollYProgress, "change", onProgress);
-
-  // Arrival: settles into place as this card approaches its stick point.
-  const enterY = useTransform(scrollYProgress, [0, 1], [isFirst ? 0 : 32, 0], { ease: easeOutCubic });
-  const enterOpacity = useTransform(scrollYProgress, [0, 1], [isFirst ? 1 : 0.7, 1], { ease: easeOutCubic });
-  const enterScale = useTransform(scrollYProgress, [0, 1], [isFirst ? 1 : 0.98, 1], { ease: easeOutCubic });
-
-  // Recede: driven by the NEXT card's own arrival progress, so this card
-  // visibly compresses and steps back exactly as the next one takes over.
-  const recedeSource = nextProgress ?? scrollYProgress;
-  const recedeY = useTransform(recedeSource, [0, 1], [0, isLast ? 0 : -10], { ease: easeOutCubic });
-  const recedeOpacity = useTransform(recedeSource, [0, 1], [1, isLast ? 1 : 0.96], { ease: easeOutCubic });
-  const recedeScale = useTransform(recedeSource, [0, 1], [1, isLast ? 1 : 0.97], { ease: easeOutCubic });
-
-  const y = useTransform([enterY, recedeY], ([a, b]) => a + b);
-  const opacity = useTransform([enterOpacity, recedeOpacity], ([a, b]) => a * b);
-  const scale = useTransform([enterScale, recedeScale], ([a, b]) => a * b);
-
-  useEffect(() => {
-    if (!isLast) return undefined;
-    const wrapper = wrapperRef.current;
-    if (!wrapper || typeof IntersectionObserver === "undefined") return undefined;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          onEnter?.();
-        } else if (entry.boundingClientRect.top < 0) {
-          onExit?.();
-        }
-      },
-      { rootMargin: `-${STICK_OFFSET}px 0px 0px 0px`, threshold: 0 }
-    );
-    observer.observe(wrapper);
-    return () => observer.disconnect();
-  }, [isLast, onEnter, onExit]);
+  const scale = useTransform(distance, [-1, 0, 1, 2], [0.97, 1, 0.98, 0.96], { ease: easeOutCubic });
+  const opacity = useTransform(distance, [-1, 0, 1, 2], [0.96, 1, 0.7, 0.5], { ease: easeOutCubic });
+  // Whichever card is closest to "active" must paint on top, whether it's
+  // approaching from below or only just receded — not just later-in-DOM.
+  const zIndex = useTransform(distance, (d) => Math.round(100 - Math.abs(d) * 10));
 
   return (
-    <div
-      ref={wrapperRef}
-      className={`mobile-stack-item${isLast ? " mobile-stack-item-last" : ""}`}
-      style={{ zIndex: index + 1 }}
-    >
-      <motion.div className="mobile-stack-sticky" style={{ top: STICK_OFFSET, y, scale, opacity }}>
-        {item}
-      </motion.div>
-    </div>
+    <motion.div className="mobile-deck-card" style={{ y, scale, opacity, zIndex }}>
+      {item}
+    </motion.div>
   );
 };
 
 const MobileStack = ({ children, className = "", onStackComplete }) => {
   const items = useMemo(() => Children.toArray(children), [children]);
-  // Intentionally keyed on count, not the items array itself — these
-  // MotionValues must stay stable across re-renders (StickyCard.onProgress
-  // writes into them continuously) and only need to be recreated if the
-  // number of cards actually changes.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const progressValues = useMemo(() => items.map(() => motionValue(0)), [items.length]);
+  const deckRef = useRef(null);
   const completedRef = useRef(false);
 
-  const handleEnter = useCallback(() => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-    onStackComplete?.();
-  }, [onStackComplete]);
+  const { scrollYProgress } = useScroll({
+    target: deckRef,
+    offset: ["start start", "end end"],
+  });
 
-  const handleExit = useCallback(() => {
-    completedRef.current = false;
-  }, []);
+  const activeIndex = useTransform(scrollYProgress, (v) => v * (items.length - 1));
+
+  const handleProgress = useCallback(
+    (v) => {
+      const reachedLast = v >= 0.999;
+      if (reachedLast && !completedRef.current) {
+        completedRef.current = true;
+        onStackComplete?.();
+      } else if (!reachedLast && completedRef.current) {
+        completedRef.current = false;
+      }
+    },
+    [onStackComplete]
+  );
+
+  useMotionValueEvent(scrollYProgress, "change", handleProgress);
 
   return (
-    <div className={`scroll-stack-scroller ${className}`.trim()}>
-      <div className="scroll-stack-inner mobile-stack-inner">
+    <div
+      ref={deckRef}
+      className={`mobile-deck ${className}`.trim()}
+      style={{ height: `${100 + (items.length - 1) * TRANSITION_VH}vh` }}
+    >
+      <div className="scroll-stack-inner mobile-deck-stage">
         {items.map((item, index) => (
-          <StickyCard
-            key={item.key ?? index}
-            item={item}
-            index={index}
-            isFirst={index === 0}
-            isLast={index === items.length - 1}
-            nextProgress={index < items.length - 1 ? progressValues[index + 1] : null}
-            onProgress={(v) => progressValues[index].set(v)}
-            onEnter={handleEnter}
-            onExit={handleExit}
-          />
+          <DeckCard key={item.key ?? index} item={item} index={index} activeIndex={activeIndex} />
         ))}
       </div>
     </div>
