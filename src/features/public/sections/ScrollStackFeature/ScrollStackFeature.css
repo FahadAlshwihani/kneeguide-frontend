@@ -252,17 +252,32 @@
   flex-direction: column;
 }
 
+/* Platform's own standalone list is 2-up (see Platform.css), which inside
+   the card renders as 2 stacked rows — the one clearly taller card next
+   to Technology/HowItWorks' single-row 4-up grids above. Going 4-across
+   here instead — the same horizontal-distribution move already applied
+   to hiw-steps — brings all four capability items onto one row, so this
+   card's natural height lines up with its neighbors instead of standing
+   out. Each row becomes a small vertical card (icon over text) rather
+   than icon-beside-text, since a quarter-width column doesn't have room
+   for the original horizontal arrangement; the divider line is dropped
+   since it separated stacked rows and has no equivalent meaning between
+   side-by-side columns. No font-size, padding, or content changed. */
 .scroll-stack-feature-card .platform-list {
   max-width: none;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
-  gap: 0 32px;
+  gap: 0 24px;
 }
 
 .scroll-stack-feature-card .platform-row {
   min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: none;
 }
 
 @media (max-width: 1023px) {
@@ -275,7 +290,8 @@
     border-radius: 28px;
   }
 
-  .scroll-stack-feature-card .hiw-steps {
+  .scroll-stack-feature-card .hiw-steps,
+  .scroll-stack-feature-card .platform-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
