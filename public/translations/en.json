@@ -831,6 +831,89 @@
       "family": "Family"
     }
   },
+  "publicTechnology": {
+    "badge": "Built On",
+    "title": "Modern technology, purpose-built for rehabilitation.",
+    "description": "KneeGuide combines interactive 3D modeling with applied machine learning to make recovery measurable.",
+    "items": {
+      "modeling": {
+        "title": "Interactive 3D knee modeling",
+        "description": "Visualize range of motion and exercise mechanics in 3D, not static diagrams."
+      },
+      "aiAnalysis": {
+        "title": "AI pain-pattern analysis",
+        "description": "Machine learning surfaces trends across weeks of pain and mobility logs."
+      },
+      "security": {
+        "title": "Secure, clinical-grade data",
+        "description": "Patient data is encrypted end-to-end and handled to clinical privacy standards."
+      },
+      "sync": {
+        "title": "Real-time sync",
+        "description": "Every log a patient submits reaches their care team instantly."
+      }
+    }
+  },
+  "publicHowItWorks": {
+    "badge": "Getting Started",
+    "title": "From first login to full recovery.",
+    "description": "A simple loop, repeated every day of your recovery.",
+    "steps": {
+      "profile": {
+        "title": "Create your profile",
+        "description": "Sign up and connect with your doctor or clinic in a couple of minutes."
+      },
+      "log": {
+        "title": "Log daily progress",
+        "description": "Record pain levels, mobility and completed exercises right from your phone."
+      },
+      "review": {
+        "title": "Your doctor reviews the trends",
+        "description": "AI highlights meaningful changes so your clinician can review what matters."
+      },
+      "adjust": {
+        "title": "Your plan adjusts as you improve",
+        "description": "Exercises and appointments update based on how recovery is actually going."
+      }
+    }
+  },
+  "publicPlatform": {
+    "badge": "The Platform",
+    "title": "Everything recovery needs, in one place.",
+    "description": "One connected platform for the day-to-day of rehabilitation — built around what patients and clinicians actually use.",
+    "capabilities": {
+      "painTracking": {
+        "title": "Daily pain tracking",
+        "description": "A quick pain wheel check-in captures location and intensity in seconds."
+      },
+      "exerciseLibrary": {
+        "title": "Guided exercise library",
+        "description": "Prescribed exercises with clear instructions patients can follow at home."
+      },
+      "scheduling": {
+        "title": "Appointment scheduling",
+        "description": "Book, reschedule and track upcoming visits without a phone call."
+      },
+      "reports": {
+        "title": "Progress reports",
+        "description": "A running history of pain, mobility and exercise completion over time."
+      }
+    }
+  },
+  "publicDoctorDashboard": {
+    "badge": "For Clinicians",
+    "title": "See every patient's progress at a glance.",
+    "description": "Your patient list, calendar and reports live in one dashboard — reviewed in minutes, not hours.",
+    "points": {
+      "roster": "A patient roster with status at a glance",
+      "calendar": "A calendar for upcoming and past appointments",
+      "flagged": "AI-flagged reports worth a closer look first"
+    },
+    "mock": {
+      "title": "Patients",
+      "tag": "Today"
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",
