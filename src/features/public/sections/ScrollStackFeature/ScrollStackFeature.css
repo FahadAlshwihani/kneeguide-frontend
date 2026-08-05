@@ -7,16 +7,34 @@
    section" root styling (min-height/background/padding) now that it's
    living inside a card instead of being the whole viewport. */
 
-/* One continuous, very slow dark-to-deep-blue wash behind the entire
+/* One continuous, very slow dark-to-deep-navy wash behind the entire
    stack — plain normal-flow block, so its height is always exactly
    .scroll-stack-feature-scroller's real rendered height (top padding +
    all four cards/gaps + ScrollStack's own trailing spacer), never a
    guessed viewport multiple. The ramp is intentionally spread across
    that *entire* height so each stop-to-stop shift reads as almost
    imperceptible while scrolling, per spec — not a fast, layered
-   gradient. */
+   gradient. Nine stops rather than the five reference colors alone: each
+   is the exact midpoint (linear RGB average) between two neighboring
+   reference tones, halving the delta the browser has to interpolate
+   across any single span and giving it more real anchor points to
+   dither between — the visible risk with a long, low-contrast, mostly
+   dark ramp like this one is 8-bit banding (perceptible stepping) rather
+   than the color choice itself, and this is what actually addresses
+   that, not just picking "close enough" hex values. */
 .scroll-stack-feature {
-  background: linear-gradient(to bottom, #0a0a0a 0%, #09121e 25%, #0b1e35 50%, #102a43 75%, #163a59 100%);
+  background: linear-gradient(
+    to bottom,
+    #0a0a0a 0%,
+    #0a0f15 12.5%,
+    #09131f 25%,
+    #0a1929 37.5%,
+    #0b1f33 50%,
+    #0f2840 62.5%,
+    #12314d 75%,
+    #163a5b 87.5%,
+    #1a4368 100%
+  );
 }
 
 /* ScrollStack's own `className` prop only reaches this outer scroller
