@@ -113,7 +113,8 @@
   min-height: 62vh;
   width: 100%;
   padding: clamp(16px, 2vw, 28px);
-  border-radius: 32px;
+  /* Temporarily 0 — performance test only, see conversation. Was: 32px */
+  border-radius: 0;
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.07);
@@ -255,7 +256,8 @@
 
   .scroll-stack-card.scroll-stack-feature-card {
     padding: clamp(14px, 1.5vw, 20px);
-    border-radius: 28px;
+    /* Temporarily 0 — performance test only, see conversation. Was: 28px */
+    border-radius: 0;
   }
 
   .scroll-stack-feature-card .hiw-steps {
