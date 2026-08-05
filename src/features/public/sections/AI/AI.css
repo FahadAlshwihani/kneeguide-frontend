@@ -11,9 +11,9 @@
   flex-direction: column;
   justify-content: center;
   background:
-    radial-gradient(ellipse 80% 55% at 76% 14%, rgba(20, 55, 95, 0.2), transparent 58%),
-    radial-gradient(ellipse 80% 55% at 24% 90%, rgba(6, 10, 16, 0.3), transparent 58%),
-    #0e2544;
+    radial-gradient(ellipse 95% 40% at 25% 50%, rgba(40, 90, 155, 0.4), transparent 62%),
+    radial-gradient(ellipse 100% 42% at 78% 50%, rgba(3, 5, 9, 0.5), transparent 62%),
+    #0b1d38;
 }
 
 .ai-container {
