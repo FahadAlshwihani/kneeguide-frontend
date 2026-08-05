@@ -5,7 +5,20 @@
    stack, (b) styles the card shell ScrollStackItem renders around each
    section, or (c) neutralizes that section's own "full standalone
    section" root styling (min-height/background/padding) now that it's
-   living inside a card instead of being the whole viewport. */
+   living inside a card instead of being the whole viewport.
+
+   RTL: `padding-inline` (not `padding-left`/`-right`) below, so side
+   padding follows the document's actual direction rather than assuming
+   LTR. Everything else in this file — the gradient (vertical only),
+   the card's border-radius/shadow/blur (uniform on every side), and the
+   card-scale/translate transform ScrollStack itself applies (vertical
+   translateY + uniform scale only, rotationAmount is 0) — has no
+   horizontal/inline component at all, so none of it needs a logical
+   equivalent; it already renders identically in RTL and LTR. The four
+   wrapped sections were audited the same way and needed no changes of
+   their own: each already lays out via flexbox/grid without any
+   hardcoded left/right, so they already re-flow correctly under
+   `dir="rtl"` (see src/utils/dir.js) with zero edits. */
 
 /* One continuous, very slow dark-to-deep-navy wash behind the entire
    stack — plain normal-flow block, so its height is always exactly
