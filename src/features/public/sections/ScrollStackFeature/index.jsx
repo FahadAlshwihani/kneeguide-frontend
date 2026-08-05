@@ -40,7 +40,7 @@ const ScrollStackFeature = () => (
       <ScrollStackItem itemClassName="scroll-stack-feature-card">
         <Platform />
       </ScrollStackItem>
-      <ScrollStackItem itemClassName="scroll-stack-feature-card">
+      <ScrollStackItem itemClassName="scroll-stack-feature-card scroll-stack-feature-card-last">
         <DoctorDashboard />
       </ScrollStackItem>
     </ScrollStack>
