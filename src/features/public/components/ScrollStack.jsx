@@ -287,11 +287,13 @@ const ScrollStack = ({
       // card for a property that's dead code in that configuration.
       card.style.willChange = blurAmount ? "transform, filter" : "transform";
       card.style.transformOrigin = "top center";
-      card.style.backfaceVisibility = "hidden";
-      card.style.transform = "translateZ(0)";
-      card.style.webkitTransform = "translateZ(0)";
-      card.style.perspective = "1000px";
-      card.style.webkitPerspective = "1000px";
+      // Temporarily disabled — performance test only, see conversation.
+      // Was:
+      // card.style.backfaceVisibility = "hidden";
+      // card.style.transform = "translateZ(0)";
+      // card.style.webkitTransform = "translateZ(0)";
+      // card.style.perspective = "1000px";
+      // card.style.webkitPerspective = "1000px";
     });
 
     measureGeometry();
