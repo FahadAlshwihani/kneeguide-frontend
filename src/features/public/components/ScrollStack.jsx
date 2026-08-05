@@ -159,11 +159,14 @@ const ScrollStack = ({
         Math.abs(lastTransform.blur - newTransform.blur) > 0.1;
 
       if (hasChanged) {
-        const transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
-        const filter = newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : "";
-
-        card.style.transform = transform;
-        card.style.filter = filter;
+        card.style.transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
+        // blur is provably always 0 for the whole lifetime of this
+        // instance when blurAmount itself is falsy (see the topCardIndex
+        // guard above) — skip the write entirely rather than repeatedly
+        // assigning the no-op value "" every changed frame.
+        if (blurAmount) {
+          card.style.filter = newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : "";
+        }
 
         lastTransformsRef.current.set(i, newTransform);
       }
