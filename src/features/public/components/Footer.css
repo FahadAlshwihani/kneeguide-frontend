@@ -4,11 +4,14 @@
    PatientDashboard.css's comment for the shared anchor color/pattern.
    The old border-top is dropped: a 1px hairline here would be exactly
    the visible "this section starts" seam the continuous canvas is
-   meant to avoid. */
+   meant to avoid. Single, softer glow (Footer is much shorter than the
+   full-viewport sections above it, and the terminal element besides —
+   no need for the second black-cloud layer here), kept at the same
+   verified-safe ~25%-of-height margin from both edges. */
 .footer-root {
   background:
-    radial-gradient(ellipse 90% 70% at 50% 4%, rgba(20, 55, 95, 0.16), transparent 55%),
-    #0e2544;
+    radial-gradient(ellipse 100% 40% at 50% 50%, rgba(40, 90, 155, 0.3), transparent 62%),
+    #0b1d38;
 }
 
 .footer-container {
