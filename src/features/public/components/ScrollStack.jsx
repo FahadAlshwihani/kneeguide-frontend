@@ -71,55 +71,6 @@ const ScrollStack = ({
     [useWindowScroll]
   );
 
-  // Measure once per layout change, never inside the scroll loop. Card
-  // heights do not alter the original pin starts; they only determine the
-  // additional reading runway after the full stack has formed.
-  const measureOffsets = useCallback(() => {
-    // Read document geometry without the transforms written by the scroll
-    // loop. The scroller's GPU containing block makes offsetParent chains
-    // unreliable, while transformed bounding rects include animation state.
-    // Batched removal/read/restore happens synchronously in one frame.
-    const savedTransforms = useWindowScroll
-      ? cardsRef.current.map((card) => ({
-          card,
-          transform: card?.style.transform || "",
-          webkitTransform: card?.style.webkitTransform || "",
-        }))
-      : [];
-
-    savedTransforms.forEach(({ card }) => {
-      if (!card) return;
-      card.style.transform = "none";
-      card.style.webkitTransform = "none";
-    });
-
-    cardOffsetsRef.current = cardsRef.current.map((card) => (card ? getElementOffset(card) : 0));
-    cardHeightsRef.current = cardsRef.current.map((card) => (card ? card.offsetHeight : 0));
-
-    const endElement = useWindowScroll
-      ? document.querySelector(".scroll-stack-end")
-      : scrollerRef.current?.querySelector(".scroll-stack-end");
-
-    const containerHeight = useWindowScroll ? window.innerHeight : scrollerRef.current?.clientHeight || 0;
-    const stackPositionPx = parsePercentage(stackPosition, containerHeight);
-    releaseRunwayRef.current = cardHeightsRef.current.reduce((longest, cardHeight, i) => {
-      const stackTop = stackPositionPx + itemStackDistance * i;
-      return Math.max(longest, Math.max(0, cardHeight - (containerHeight - stackTop)));
-    }, 0);
-
-    // The marker's top remains the original shared release point. Its
-    // height contributes only the extra scrollable distance needed by the
-    // longest card, so the stack can remain active through that runway.
-    if (endElement) endElement.style.height = `${Math.max(1, Math.ceil(releaseRunwayRef.current))}px`;
-    endOffsetRef.current = endElement ? getElementOffset(endElement) : 0;
-
-    savedTransforms.forEach(({ card, transform, webkitTransform }) => {
-      if (!card) return;
-      card.style.transform = transform;
-      card.style.webkitTransform = webkitTransform;
-    });
-  }, [useWindowScroll, getElementOffset, itemStackDistance, parsePercentage, stackPosition]);
-
   const updateCardTransforms = useCallback(() => {
     if (!cardsRef.current.length || isUpdatingRef.current) return;
 
