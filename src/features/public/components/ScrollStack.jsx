@@ -42,6 +42,7 @@ const ScrollStack = ({
   const endOffsetRef = useRef(0);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
+  const contentResizeObserverRef = useRef(null);
 
   const calculateProgress = useCallback((scrollTop, start, end) => {
     if (scrollTop < start) return 0;
