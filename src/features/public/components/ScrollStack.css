@@ -24,7 +24,9 @@
 
 .scroll-stack-card {
   transform-origin: top center;
+  /* Temporarily disabled — performance test only, see conversation.
   will-change: transform, filter;
+  */
   backface-visibility: hidden;
   transform-style: preserve-3d;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);

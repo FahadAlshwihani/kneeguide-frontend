@@ -279,13 +279,8 @@ const ScrollStack = ({
       if (i < cards.length - 1) {
         card.style.marginBottom = `${itemDistance}px`;
       }
-      // Only ask the browser to reserve a filter-capable compositing
-      // layer when this instance can ever actually set one (blurAmount
-      // truthy) — with blurAmount at 0, filter is never written at all
-      // (see the write loop below), so declaring will-change: filter
-      // here would only add a persistent, unused compositing layer per
-      // card for a property that's dead code in that configuration.
-      card.style.willChange = blurAmount ? "transform, filter" : "transform";
+      // Temporarily disabled — performance test only, see conversation.
+      // Was: card.style.willChange = blurAmount ? "transform, filter" : "transform";
       card.style.transformOrigin = "top center";
       card.style.backfaceVisibility = "hidden";
       card.style.transform = "translateZ(0)";
