@@ -86,6 +86,39 @@ const ScrollStack = ({
     [useWindowScroll]
   );
 
+  // Every card is pinned/scaled while occupying the exact same slot in
+  // the scroll sequence, but each one wraps genuinely different content
+  // (a 4-item grid, a short list, a 2-column dashboard preview, ...) —
+  // left to its own natural `height: auto`, a shorter card simply had
+  // less room than a taller one, and while a card is the "current" pinned
+  // one, nothing in the pinning math itself grows its box to match its
+  // neighbors. Measuring every card's own (unconstrained) content height
+  // and applying the largest one to all of them as a shared `min-height`
+  // guarantees every card always has enough room for 100% of its own
+  // content while pinned — never a guessed viewport fraction, always
+  // whatever the tallest card actually needs, for whatever content is
+  // actually rendered right now. Reads `card.firstElementChild` (the
+  // wrapped section's own root) rather than the card itself, since the
+  // card is the element this function is about to *write* a height onto
+  // — measuring anything else would fold a previous run's own result
+  // back into the next one.
+  const equalizeCardHeights = useCallback(() => {
+    const cards = cardsRef.current;
+    if (!cards.length) return;
+
+    const maxHeight = cards.reduce((max, card) => {
+      const content = card?.firstElementChild;
+      if (!content) return max;
+      return Math.max(max, content.getBoundingClientRect().height);
+    }, 0);
+
+    if (maxHeight <= 0) return;
+
+    cards.forEach((card) => {
+      if (card) card.style.minHeight = `${Math.ceil(maxHeight)}px`;
+    });
+  }, []);
+
   // The only place `getElementOffset` (and therefore `getBoundingClientRect`
   // / `offsetTop`) is still called — once for every card plus the end
   // marker, in one batch, never from inside the scroll-driven update loop.
@@ -285,24 +318,39 @@ const ScrollStack = ({
       card.style.webkitPerspective = "1000px";
     });
 
+    // Order matters: heights first (changes layout), then offsets (reads
+    // the now-final layout), then Lenis/the first transform pass.
+    equalizeCardHeights();
     measureOffsets();
     setupLenis();
 
     updateCardTransforms();
 
-    // Offsets are cached (see cardOffsetsRef's own comment above) rather
-    // than re-measured every scroll frame, so they need to be explicitly
-    // refreshed whenever the layout that produced them might have
-    // changed — a viewport resize being the realistic case (the cards
-    // themselves never resize from their own transform, so nothing here
-    // needs a ResizeObserver on them). rAF-coalesced the same way
-    // Header's own scroll handler is, so a drag-resize doesn't force a
-    // layout read on every intermediate resize event.
+    // Offsets — and the shared card height itself — are both cached
+    // rather than re-measured every scroll frame (see cardOffsetsRef's
+    // and equalizeCardHeights' own comments), so both need to be
+    // explicitly refreshed whenever the layout that produced them might
+    // have changed. Two distinct triggers for that:
+    //
+    // - window resize: viewport width changes can reflow text into more
+    //   or fewer lines, so both are re-measured. rAF-coalesced the same
+    //   way Header's own scroll handler is, so a drag-resize doesn't
+    //   force a layout read on every intermediate resize event.
+    // - a ResizeObserver on each card's own wrapped content: catches
+    //   every *other* reason a card's natural content height can change
+    //   without the viewport itself resizing — a language switch
+    //   reflowing text at different metrics (this is what keeps EN/AR
+    //   consistent — see equalizeCardHeights), web fonts finishing load,
+    //   or any future dynamic content. This observes
+    //   `card.firstElementChild` (the wrapped section), never the card
+    //   element equalizeCardHeights itself writes a height onto, so its
+    //   own writes can never re-trigger this observer.
     let resizeTicking = false;
     const handleResize = () => {
       if (resizeTicking) return;
       resizeTicking = true;
       resizeFrameRef.current = requestAnimationFrame(() => {
+        equalizeCardHeights();
         measureOffsets();
         updateCardTransforms();
         resizeTicking = false;
@@ -310,8 +358,29 @@ const ScrollStack = ({
     };
     window.addEventListener("resize", handleResize);
 
+    let contentResizeTicking = false;
+    const handleContentResize = () => {
+      if (contentResizeTicking) return;
+      contentResizeTicking = true;
+      requestAnimationFrame(() => {
+        equalizeCardHeights();
+        measureOffsets();
+        updateCardTransforms();
+        contentResizeTicking = false;
+      });
+    };
+    let contentResizeObserver = null;
+    if (typeof ResizeObserver !== "undefined") {
+      contentResizeObserver = new ResizeObserver(handleContentResize);
+      cards.forEach((card) => {
+        if (card.firstElementChild) contentResizeObserver.observe(card.firstElementChild);
+      });
+      contentResizeObserverRef.current = contentResizeObserver;
+    }
+
     return () => {
       window.removeEventListener("resize", handleResize);
+      contentResizeObserver?.disconnect();
       if (resizeFrameRef.current) {
         cancelAnimationFrame(resizeFrameRef.current);
       }
@@ -342,6 +411,7 @@ const ScrollStack = ({
     setupLenis,
     updateCardTransforms,
     measureOffsets,
+    equalizeCardHeights,
   ]);
 
   return (
