@@ -85,6 +85,18 @@ const ScrollStack = ({
     [useWindowScroll]
   );
 
+  // The only place `getElementOffset` (and therefore `getBoundingClientRect`
+  // / `offsetTop`) is still called — once for every card plus the end
+  // marker, in one batch, never from inside the scroll-driven update loop.
+  const measureOffsets = useCallback(() => {
+    cardOffsetsRef.current = cardsRef.current.map((card) => (card ? getElementOffset(card) : 0));
+
+    const endElement = useWindowScroll
+      ? document.querySelector(".scroll-stack-end")
+      : scrollerRef.current?.querySelector(".scroll-stack-end");
+    endOffsetRef.current = endElement ? getElementOffset(endElement) : 0;
+  }, [useWindowScroll, getElementOffset]);
+
   const updateCardTransforms = useCallback(() => {
     if (!cardsRef.current.length || isUpdatingRef.current) return;
 
