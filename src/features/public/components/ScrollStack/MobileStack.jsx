@@ -84,6 +84,11 @@ const StickyCard = ({ item, index, isFirst, isLast, nextProgress, onProgress, on
 
 const MobileStack = ({ children, className = "", onStackComplete }) => {
   const items = useMemo(() => Children.toArray(children), [children]);
+  // Intentionally keyed on count, not the items array itself — these
+  // MotionValues must stay stable across re-renders (StickyCard.onProgress
+  // writes into them continuously) and only need to be recreated if the
+  // number of cards actually changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const progressValues = useMemo(() => items.map(() => motionValue(0)), [items.length]);
   const completedRef = useRef(false);
 
