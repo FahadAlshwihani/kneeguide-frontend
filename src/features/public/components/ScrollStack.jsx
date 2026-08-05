@@ -92,25 +92,26 @@ const ScrollStack = ({
   // left to its own natural `height: auto`, a shorter card simply had
   // less room than a taller one, and while a card is the "current" pinned
   // one, nothing in the pinning math itself grows its box to match its
-  // neighbors. Measuring every card's own (unconstrained) content height
-  // and applying the largest one to all of them as a shared `min-height`
-  // guarantees every card always has enough room for 100% of its own
-  // content while pinned — never a guessed viewport fraction, always
-  // whatever the tallest card actually needs, for whatever content is
-  // actually rendered right now. Reads `card.firstElementChild` (the
-  // wrapped section's own root) rather than the card itself, since the
-  // card is the element this function is about to *write* a height onto
-  // — measuring anything else would fold a previous run's own result
-  // back into the next one.
+  // neighbors. Measuring every card's own natural height and applying the
+  // largest one to all of them as a shared `min-height` guarantees every
+  // card always has enough room for 100% of its own content while pinned
+  // — never a guessed viewport fraction, always whatever the tallest card
+  // actually needs, for whatever content is actually rendered right now
+  // (a language switch included — see the ResizeObserver that calls this
+  // again below). Cleared before measuring: cards are `box-sizing:
+  // border-box`, so a *previous* run's own min-height would otherwise be
+  // read right back as if it were still the card's natural size, and a
+  // card whose content has since gotten shorter would never be able to
+  // shrink back down.
   const equalizeCardHeights = useCallback(() => {
     const cards = cardsRef.current;
     if (!cards.length) return;
 
-    const maxHeight = cards.reduce((max, card) => {
-      const content = card?.firstElementChild;
-      if (!content) return max;
-      return Math.max(max, content.getBoundingClientRect().height);
-    }, 0);
+    cards.forEach((card) => {
+      if (card) card.style.minHeight = "";
+    });
+
+    const maxHeight = cards.reduce((max, card) => (card ? Math.max(max, card.getBoundingClientRect().height) : max), 0);
 
     if (maxHeight <= 0) return;
 
