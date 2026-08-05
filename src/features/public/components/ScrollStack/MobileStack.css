@@ -1,0 +1,21 @@
+/* Mobile-only structural rules, layered on top of the shared card visuals
+   in ScrollStack.css / ScrollStackFeature.css (untouched). Nothing here
+   is imported by DesktopStack.jsx, so it has zero effect on desktop. */
+
+.mobile-stack-item {
+  position: relative;
+  padding-bottom: 14vh;
+}
+
+.mobile-stack-sticky {
+  position: sticky;
+  transform-origin: top center;
+  will-change: transform, opacity, filter;
+}
+
+/* Two classes so this reliably beats the base .scroll-stack-inner rule's
+   own padding-block (a ReactBits-pinning-math scroll buffer this engine
+   doesn't need) regardless of CSS source order. */
+.scroll-stack-inner.mobile-stack-inner {
+  padding-block: 20vh 4rem;
+}
