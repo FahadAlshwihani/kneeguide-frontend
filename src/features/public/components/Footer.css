@@ -1,8 +1,14 @@
 /* Uses global design tokens from src/index.css */
 
+/* Continues the deep-navy-on-black wash all the way to the end — see
+   PatientDashboard.css's comment for the shared anchor color/pattern.
+   The old border-top is dropped: a 1px hairline here would be exactly
+   the visible "this section starts" seam the continuous canvas is
+   meant to avoid. */
 .footer-root {
-  border-top: 1px solid var(--color-border);
-  background: var(--color-surface-soft);
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 4%, rgba(20, 55, 95, 0.16), transparent 55%),
+    #0e2544;
 }
 
 .footer-container {
