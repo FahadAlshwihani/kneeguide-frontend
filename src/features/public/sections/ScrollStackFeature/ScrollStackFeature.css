@@ -54,8 +54,7 @@
 }
 
 .scroll-stack-feature-scroller .scroll-stack-inner {
-  padding-left: 5rem;
-  padding-right: 5rem;
+  padding-inline: 5rem;
 }
 
 /* The card shell. Combined with the library's own `.scroll-stack-card`
