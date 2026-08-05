@@ -31,6 +31,7 @@ const ScrollStack = ({
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
   const measurementFrameRef = useRef(null);
+  const updateCardTransformsRef = useRef(null);
 
   const calculateProgress = useCallback((scrollTop, start, end) => {
     if (scrollTop < start) return 0;
@@ -105,8 +106,6 @@ const ScrollStack = ({
       updateCardTransformsRef.current?.();
     });
   }, [measureGeometry]);
-
-  const updateCardTransformsRef = useRef(null);
 
   const updateCardTransforms = useCallback(() => {
     if (!cardsRef.current.length || isUpdatingRef.current) return;
@@ -311,10 +310,23 @@ const ScrollStack = ({
 
     window.addEventListener("resize", scheduleMeasurement);
     window.addEventListener("orientationchange", scheduleMeasurement);
-    document.fonts?.ready.then(scheduleMeasurement);
+    const languageObserver = new MutationObserver(scheduleMeasurement);
+    languageObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["lang", "dir"],
+    });
+
+    let isMounted = true;
+    document.fonts?.ready.then(() => {
+      if (isMounted) scheduleMeasurement();
+    });
+    document.fonts?.addEventListener?.("loadingdone", scheduleMeasurement);
 
     return () => {
+      isMounted = false;
       resizeObserver?.disconnect();
+      languageObserver.disconnect();
+      document.fonts?.removeEventListener?.("loadingdone", scheduleMeasurement);
       window.removeEventListener("resize", scheduleMeasurement);
       window.removeEventListener("orientationchange", scheduleMeasurement);
       if (measurementFrameRef.current !== null) {
