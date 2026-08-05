@@ -34,34 +34,41 @@
    is what actually addresses that, not just picking "close enough" hex
    values.
 
-   Three large, soft radial fields are layered on top of that linear base
-   (painted first = on top, per CSS background-layer order) rather than
-   relying on the linear ramp alone — a black vignette anchored high, a
-   navy glow anchored low, and a soft blue core near the center — so the
-   result reads as a cinematic, uneven wash rather than a flat printed
-   ramp. Every radial fades to fully transparent well inside the box
-   (by ~55-60% of its own radius, nowhere near 0%/100%), so the very top
-   and bottom edges are always exactly the plain linear stop color —
-   #050506 at the top (this section's own starting black) and #0e2544 at
-   the bottom, which is the same anchor color every section from
-   PatientDashboard through Footer starts and ends on (see their own
-   files), so the wash continues into them with no visible seam. */
+   Two large, soft radial fields sit on top of that linear base (painted
+   first = on top, per CSS background-layer order) — a navy glow and a
+   black cloud, offset to opposite sides — so the result reads as an
+   uneven, cinematic wash rather than a flat printed ramp, and the blue
+   never fills the frame on its own: the cloud keeps it visibly mixed
+   with black wherever they overlap.
+
+   Both radials are deliberately kept away from the top/bottom edges by
+   a wide, verified margin, not just eyeballed: centered at the vertical
+   midpoint (50%) with a 40%-of-box-height radius and a "transparent" stop
+   at 62% of that radius, the color reaches at most 0.62 x 40% = 24.8%
+   above and below center — i.e. it never gets closer than ~25% of the
+   box's own height to either edge, regardless of how tall this section
+   actually renders. That's what makes the *plain linear* stop the only
+   thing visible right at the seam: #050506 at the very top (this
+   section's own starting black) and #0b1d38 at the very bottom, which is
+   the exact anchor color every section from PatientDashboard through
+   Footer opens and closes on too (see their own files) — so the wash
+   continues into them with nothing to see at the boundary, independent
+   of any section's real height. */
 .scroll-stack-feature {
   background:
-    radial-gradient(ellipse 80% 55% at 20% 12%, rgba(5, 8, 13, 0.5), transparent 58%),
-    radial-gradient(ellipse 80% 55% at 80% 88%, rgba(14, 37, 68, 0.38), transparent 58%),
-    radial-gradient(ellipse 65% 50% at 50% 50%, rgba(24, 64, 108, 0.16), transparent 62%),
+    radial-gradient(ellipse 95% 40% at 28% 50%, rgba(40, 90, 155, 0.4), transparent 62%),
+    radial-gradient(ellipse 100% 42% at 76% 50%, rgba(3, 5, 9, 0.5), transparent 62%),
     linear-gradient(
       to bottom,
       #050506 0%,
-      #060a10 12.5%,
-      #071019 25%,
-      #0a1929 37.5%,
-      #0d2038 50%,
-      #0e2740 62.5%,
-      #0d2b48 75%,
-      #0e2a46 87.5%,
-      #0e2544 100%
+      #06090d 12.5%,
+      #070c14 25%,
+      #080f1c 37.5%,
+      #091324 50%,
+      #0a162b 62.5%,
+      #0a1832 75%,
+      #0b1b36 87.5%,
+      #0b1d38 100%
     );
 }
 
