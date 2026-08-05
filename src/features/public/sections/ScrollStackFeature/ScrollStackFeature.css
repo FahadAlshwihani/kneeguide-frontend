@@ -80,7 +80,15 @@
    top-edge highlight, reading as true frosted glass rather than a flat
    translucent box. `height: auto` replaces the library default's fixed
    20rem — these are real, fairly content-heavy sections (a 4-item grid,
-   a 2-column dashboard preview, etc.), not short demo placeholders. */
+   a 2-column dashboard preview, etc.), not short demo placeholders.
+
+   `align-items: stretch` (not `center`) is what actually makes the fill
+   rules below work: it's what makes the wrapped section's own root
+   (`.tech-root` etc., this card's only child) fill the card's full
+   height via ordinary flexbox stretch in the first place, instead of
+   sitting at its own shorter natural height, centered, with dead space
+   above and below it — the exact "wasted space" the fill rules below are
+   about putting to use. */
 .scroll-stack-card.scroll-stack-feature-card {
   height: auto;
   min-height: 62vh;
@@ -94,7 +102,7 @@
   -webkit-backdrop-filter: blur(24px);
   overflow: hidden;
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
 .scroll-stack-card.scroll-stack-feature-card > * {
@@ -119,6 +127,64 @@
   background: transparent;
   padding: 0;
   width: 100%;
+}
+
+/* Content fill. Every wrapped section already has the same shape: a root
+   (`display: flex; flex-direction: column`, unmodified, from the
+   section's own CSS) containing one "container" div, which in turn holds
+   a header block and one main-content block (a grid or a short list — or,
+   for DoctorDashboard, the container *is* the two-column main content,
+   there being no separate header block at this level). None of that
+   original structure changes; these rules only decide how the *existing*
+   boxes share the height the card above now actually has (rather than
+   each section falling back to its own shorter natural height, centered
+   in the remainder — the reason cards previously had to grow taller than
+   any single section actually needed just to avoid clipping the tallest
+   one).
+     - `flex: 1` on the container is what claims the root's full stretched
+       height for it in the first place (a plain flex item otherwise stays
+       at its own intrinsic size, same as the root would without
+       `align-items: stretch` above) — `min-height: 0` alongside it is the
+       standard guard against a flex item's default `min-height: auto`
+       silently refusing to shrink below its content's own minimum.
+     - `flex: 1` again on the header's sibling (the grid/list/2-column
+       block) is what then gives *that* box — not the header, which keeps
+       its own natural size since it has no flex-grow of its own — every
+       bit of space left over inside the now-full-height container.
+     - `justify-content`/`align-content: center` on that same box centers
+       its *existing* content (unchanged spacing, unchanged item sizes)
+       within whatever extra room that leaves, rather than stretching
+       individual grid cells/rows to some arbitrary taller size, or
+       leaving them pinned to the top with dead space beneath — the same
+       treatment every section gets, just expressed as `justify-content`
+       for the two flex lists and `align-content` for the one CSS grid,
+       since that's the property each layout model actually uses for it. */
+.scroll-stack-feature-card .tech-container,
+.scroll-stack-feature-card .hiw-container,
+.scroll-stack-feature-card .platform-container,
+.scroll-stack-feature-card .doctor-preview-container {
+  flex: 1;
+  min-height: 0;
+}
+
+.scroll-stack-feature-card .tech-container,
+.scroll-stack-feature-card .hiw-container,
+.scroll-stack-feature-card .platform-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll-stack-feature-card .tech-grid {
+  flex: 1;
+  min-height: 0;
+  align-content: center;
+}
+
+.scroll-stack-feature-card .hiw-steps,
+.scroll-stack-feature-card .platform-list {
+  flex: 1;
+  min-height: 0;
+  justify-content: center;
 }
 
 @media (max-width: 1023px) {
