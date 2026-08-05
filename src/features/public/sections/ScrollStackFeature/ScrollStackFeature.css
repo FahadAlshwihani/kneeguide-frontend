@@ -1,11 +1,9 @@
 /* Purely a presentation wrapper around four existing, unmodified section
    components (Technology, HowItWorks, Platform, DoctorDashboard — see
    index.jsx). Nothing here touches their own content or internal layout;
-   every rule below either (a) paints the shared background behind the
-   stack, (b) styles the card shell ScrollStackItem renders around each
-   section, or (c) neutralizes that section's own "full standalone
-   section" root styling (min-height/background/padding) now that it's
-   living inside a card instead of being the whole viewport.
+   rules below paint the stack background, style the shared card shell,
+   neutralize standalone-section root styling, and let the two list-shaped
+   middle sections use the card's horizontal space more effectively.
 
    RTL: `padding-inline` (not `padding-left`/`-right`) below, so side
    padding follows the document's actual direction rather than assuming
@@ -176,10 +174,7 @@
        its *existing* content (unchanged spacing, unchanged item sizes)
        within whatever extra room that leaves, rather than stretching
        individual grid cells/rows to some arbitrary taller size, or
-       leaving them pinned to the top with dead space beneath — the same
-       treatment every section gets, just expressed as `justify-content`
-       for the two flex lists and `align-content` for the one CSS grid,
-       since that's the property each layout model actually uses for it. */
+       leaving them pinned to the top with dead space beneath. */
 .scroll-stack-feature-card .tech-container,
 .scroll-stack-feature-card .hiw-container,
 .scroll-stack-feature-card .platform-container,
@@ -222,6 +217,37 @@
   justify-content: center;
 }
 
+/* The two middle sections are naturally list-shaped when rendered as
+   standalone pages. Inside the wide ScrollStack card, distribute the same
+   content across the available inline space instead of spending four full
+   rows on it. Typography, item padding and content gaps remain unchanged. */
+.scroll-stack-feature-card .hiw-steps {
+  max-width: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0 24px;
+}
+
+.scroll-stack-feature-card .hiw-step {
+  min-width: 0;
+  flex-direction: column;
+}
+
+.scroll-stack-feature-card .platform-list {
+  max-width: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0 32px;
+}
+
+.scroll-stack-feature-card .platform-row {
+  min-width: 0;
+}
+
 @media (max-width: 1023px) {
   .scroll-stack-feature-scroller .scroll-stack-inner {
     padding-inline: 1rem;
@@ -230,6 +256,10 @@
   .scroll-stack-card.scroll-stack-feature-card {
     padding: clamp(14px, 1.5vw, 20px);
     border-radius: 28px;
+  }
+
+  .scroll-stack-feature-card .hiw-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -242,5 +272,15 @@
     min-height: auto;
     padding: 16px;
     border-radius: 20px;
+  }
+
+  .scroll-stack-feature-card .hiw-steps,
+  .scroll-stack-feature-card .platform-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+
+  .scroll-stack-feature-card .platform-row {
+    flex-direction: column;
   }
 }
