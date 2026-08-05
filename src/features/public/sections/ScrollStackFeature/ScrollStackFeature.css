@@ -174,6 +174,20 @@
   flex-direction: column;
 }
 
+/* DoctorDashboard has no separate header block at this level — its
+   container *is* the two-column main content — so it only needs the
+   same "center what's there instead of stretching it apart" treatment
+   as the grid/lists above, expressed as `align-content` since it stays a
+   CSS grid (unchanged) rather than becoming a flex column like the other
+   three. Matters on its own <900px single-column layout too (see
+   DoctorDashboard.css) — without it, the copy block and the mock preview
+   would default to stretching apart to fill the extra height instead of
+   sitting together, centered, the way they already do side by side on
+   wider screens. */
+.scroll-stack-feature-card .doctor-preview-container {
+  align-content: center;
+}
+
 .scroll-stack-feature-card .tech-grid {
   flex: 1;
   min-height: 0;
