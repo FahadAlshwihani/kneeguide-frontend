@@ -24,28 +24,45 @@
    all four cards/gaps + ScrollStack's own trailing spacer), never a
    guessed viewport multiple. The ramp is intentionally spread across
    that *entire* height so each stop-to-stop shift reads as almost
-   imperceptible while scrolling, per spec — not a fast, layered
-   gradient. Nine stops rather than the five reference colors alone: each
-   is the exact midpoint (linear RGB average) between two neighboring
-   reference tones, halving the delta the browser has to interpolate
-   across any single span and giving it more real anchor points to
-   dither between — the visible risk with a long, low-contrast, mostly
-   dark ramp like this one is 8-bit banding (perceptible stepping) rather
-   than the color choice itself, and this is what actually addresses
-   that, not just picking "close enough" hex values. */
+   imperceptible while scrolling, per spec. Nine stops rather than the
+   five reference colors alone: each is the exact midpoint (linear RGB
+   average) between two neighboring reference tones, halving the delta
+   the browser has to interpolate across any single span and giving it
+   more real anchor points to dither between — the visible risk with a
+   long, low-contrast, mostly dark ramp like this one is 8-bit banding
+   (perceptible stepping) rather than the color choice itself, and this
+   is what actually addresses that, not just picking "close enough" hex
+   values.
+
+   Three large, soft radial fields are layered on top of that linear base
+   (painted first = on top, per CSS background-layer order) rather than
+   relying on the linear ramp alone — a black vignette anchored high, a
+   navy glow anchored low, and a soft blue core near the center — so the
+   result reads as a cinematic, uneven wash rather than a flat printed
+   ramp. Every radial fades to fully transparent well inside the box
+   (by ~55-60% of its own radius, nowhere near 0%/100%), so the very top
+   and bottom edges are always exactly the plain linear stop color —
+   #050506 at the top (this section's own starting black) and #0e2544 at
+   the bottom, which is the same anchor color every section from
+   PatientDashboard through Footer starts and ends on (see their own
+   files), so the wash continues into them with no visible seam. */
 .scroll-stack-feature {
-  background: linear-gradient(
-    to bottom,
-    #0a0a0a 0%,
-    #0a0f15 12.5%,
-    #09131f 25%,
-    #0a1929 37.5%,
-    #0b1f33 50%,
-    #0f2840 62.5%,
-    #12314d 75%,
-    #163a5b 87.5%,
-    #1a4368 100%
-  );
+  background:
+    radial-gradient(ellipse 80% 55% at 20% 12%, rgba(5, 8, 13, 0.5), transparent 58%),
+    radial-gradient(ellipse 80% 55% at 80% 88%, rgba(14, 37, 68, 0.38), transparent 58%),
+    radial-gradient(ellipse 65% 50% at 50% 50%, rgba(24, 64, 108, 0.16), transparent 62%),
+    linear-gradient(
+      to bottom,
+      #050506 0%,
+      #060a10 12.5%,
+      #071019 25%,
+      #0a1929 37.5%,
+      #0d2038 50%,
+      #0e2740 62.5%,
+      #0d2b48 75%,
+      #0e2a46 87.5%,
+      #0e2544 100%
+    );
 }
 
 /* ScrollStack's own `className` prop only reaches this outer scroller
