@@ -2,10 +2,7 @@ import React from "react";
 import "./HomePage.css";
 
 import HeroProblemScene from "../sections/HeroProblemScene";
-import Technology from "../sections/Technology";
-import HowItWorks from "../sections/HowItWorks";
-import Platform from "../sections/Platform";
-import DoctorDashboard from "../sections/DoctorDashboard";
+import ScrollStackFeature from "../sections/ScrollStackFeature";
 import PatientDashboard from "../sections/PatientDashboard";
 import AI from "../sections/AI";
 import Roadmap from "../sections/Roadmap";
@@ -16,10 +13,7 @@ const HomePage = () => {
   return (
     <div className="home-root">
       <HeroProblemScene />
-      <Technology />
-      <HowItWorks />
-      <Platform />
-      <DoctorDashboard />
+      <ScrollStackFeature />
       <PatientDashboard />
       <AI />
       <Roadmap />

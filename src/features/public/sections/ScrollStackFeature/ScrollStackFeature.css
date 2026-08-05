@@ -1,0 +1,117 @@
+/* Purely a presentation wrapper around four existing, unmodified section
+   components (Technology, HowItWorks, Platform, DoctorDashboard — see
+   index.jsx). Nothing here touches their own content or internal layout;
+   every rule below either (a) paints the shared background behind the
+   stack, (b) styles the card shell ScrollStackItem renders around each
+   section, or (c) neutralizes that section's own "full standalone
+   section" root styling (min-height/background/padding) now that it's
+   living inside a card instead of being the whole viewport. */
+
+/* One continuous, very slow dark-to-deep-blue wash behind the entire
+   stack — plain normal-flow block, so its height is always exactly
+   .scroll-stack-feature-scroller's real rendered height (top padding +
+   all four cards/gaps + ScrollStack's own trailing spacer), never a
+   guessed viewport multiple. The ramp is intentionally spread across
+   that *entire* height so each stop-to-stop shift reads as almost
+   imperceptible while scrolling, per spec — not a fast, layered
+   gradient. */
+.scroll-stack-feature {
+  background: linear-gradient(to bottom, #0a0a0a 0%, #09121e 25%, #0b1e35 50%, #102a43 75%, #163a59 100%);
+}
+
+/* ScrollStack's own `className` prop only reaches this outer scroller
+   div (see ScrollStack.jsx), not `.scroll-stack-inner` — reached here via
+   a descendant selector instead. `overflow-y`/`height` are reset because
+   the component's base CSS assumes it might be its own internally
+   scrolling container; in `useWindowScroll` mode (used here) the actual
+   page/window scrolls instead, so this element should just take its
+   natural content height rather than carrying a redundant nested
+   scroll-box. Only the *horizontal* padding is tuned per breakpoint below
+   — the large vertical padding is load-bearing for the library's own
+   pin-release math (see its `.scroll-stack-end` spacer) and is left
+   exactly as documented. */
+.scroll-stack-feature-scroller {
+  height: auto;
+  overflow: visible;
+}
+
+.scroll-stack-feature-scroller .scroll-stack-inner {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
+/* The card shell. Combined with the library's own `.scroll-stack-card`
+   (see ScrollStack.jsx's `${itemClassName}` construction), this rule's
+   extra class gives it higher specificity so every value here wins over
+   that base rule, without editing the vendored file. Large radius,
+   generous padding, and a soft, wide-diffused shadow rather than a hard
+   drop shadow; the fill is a low-opacity white over the section's own
+   dark gradient background (never a flat opaque panel) with a hairline
+   top-edge highlight, reading as true frosted glass rather than a flat
+   translucent box. `height: auto` replaces the library default's fixed
+   20rem — these are real, fairly content-heavy sections (a 4-item grid,
+   a 2-column dashboard preview, etc.), not short demo placeholders. */
+.scroll-stack-card.scroll-stack-feature-card {
+  height: auto;
+  min-height: 62vh;
+  width: 100%;
+  padding: clamp(32px, 5vw, 72px);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.scroll-stack-card.scroll-stack-feature-card > * {
+  width: 100%;
+}
+
+/* Each wrapped section still renders its own real root element (e.g.
+   `.tech-root`) with its original "standalone full-viewport section"
+   styling — `min-height: 100svh`, an opaque background, its own
+   `padding: var(--section-padding) 0`. All three are redundant/wrong once
+   that root is living inside the card above instead of being the whole
+   page section, so they're neutralized here, scoped to only apply inside
+   this specific card wrapper — the section's own CSS file is never
+   touched, so it renders exactly as it always has anywhere else it might
+   ever be used outside the stack. Everything below the root (grids,
+   headers, card content) is intentionally left alone. */
+.scroll-stack-feature-card .tech-root,
+.scroll-stack-feature-card .hiw-root,
+.scroll-stack-feature-card .platform-root,
+.scroll-stack-feature-card .doctor-preview-root {
+  min-height: auto;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .scroll-stack-feature-scroller .scroll-stack-inner {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .scroll-stack-card.scroll-stack-feature-card {
+    padding: clamp(28px, 4vw, 48px);
+    border-radius: 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .scroll-stack-feature-scroller .scroll-stack-inner {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .scroll-stack-card.scroll-stack-feature-card {
+    min-height: auto;
+    padding: 24px;
+    border-radius: 20px;
+  }
+}
