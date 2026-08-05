@@ -57,30 +57,51 @@
    scrolling container; in `useWindowScroll` mode (used here) the actual
    page/window scrolls instead, so this element should just take its
    natural content height rather than carrying a redundant nested
-   scroll-box. Only the *horizontal* padding is tuned per breakpoint below
-   — the large vertical padding is load-bearing for the library's own
-   pin-release math (see its `.scroll-stack-end` spacer) and is left
-   exactly as documented. */
+   scroll-box.
+
+   The *horizontal* padding (tuned per breakpoint below, `.scroll-stack-
+   card`'s own padding further down, and nothing else) is the entire gap
+   between the viewport edge and where each section's own, unchanged
+   `.tech-container`-style wrapper (max-width: var(--container-width);
+   padding: 0 24px) starts doing its own width-capping. Both used to be
+   far larger than they needed to be (a leftover 5rem/clamp(…72px) more
+   suited to content with no gutter of its own) — since every wrapped
+   section already carries its own 24px gutter and 1200px cap, these two
+   only need to add a thin frame around the card, not a second full
+   gutter on top of the section's real one. At 24px each here, measured
+   against the real breakpoints in this file: content width matches the
+   standalone section exactly above ~1300px (both hit the same 1200px
+   cap), and the gap that remains below that — where the wrapper's own
+   padding is structurally unavoidable if the card is to read as a card
+   at all — is a few percent, not the 20-27% these were losing before.
+   The large *vertical* padding on `.scroll-stack-inner` is untouched —
+   it's load-bearing for the library's own pin-release math (see its
+   `.scroll-stack-end` spacer). */
 .scroll-stack-feature-scroller {
   height: auto;
   overflow: visible;
 }
 
 .scroll-stack-feature-scroller .scroll-stack-inner {
-  padding-inline: 5rem;
+  padding-inline: 1.5rem;
 }
 
 /* The card shell. Combined with the library's own `.scroll-stack-card`
    (see ScrollStack.jsx's `${itemClassName}` construction), this rule's
    extra class gives it higher specificity so every value here wins over
-   that base rule, without editing the vendored file. Large radius,
-   generous padding, and a soft, wide-diffused shadow rather than a hard
-   drop shadow; the fill is a low-opacity white over the section's own
-   dark gradient background (never a flat opaque panel) with a hairline
-   top-edge highlight, reading as true frosted glass rather than a flat
-   translucent box. `height: auto` replaces the library default's fixed
-   20rem — these are real, fairly content-heavy sections (a 4-item grid,
-   a 2-column dashboard preview, etc.), not short demo placeholders.
+   that base rule, without editing the vendored file. Large radius and a
+   soft, wide-diffused shadow rather than a hard drop shadow; the fill is
+   a low-opacity white over the section's own dark gradient background
+   (never a flat opaque panel) with a hairline top-edge highlight,
+   reading as true frosted glass rather than a flat translucent box.
+   `height: auto` replaces the library default's fixed 20rem — these are
+   real, fairly content-heavy sections (a 4-item grid, a 2-column
+   dashboard preview, etc.), not short demo placeholders.
+
+   Padding is deliberately modest (see .scroll-stack-inner's own comment
+   above) — the section inside already supplies its own real 24px gutter,
+   so this only needs to read as a thin frame between the card's rounded
+   edge and that gutter, not a second, larger one stacked on top of it.
 
    `align-items: stretch` (not `center`) is what actually makes the fill
    rules below work: it's what makes the wrapped section's own root
@@ -93,7 +114,7 @@
   height: auto;
   min-height: 62vh;
   width: 100%;
-  padding: clamp(32px, 5vw, 72px);
+  padding: clamp(16px, 2vw, 28px);
   border-radius: 32px;
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid rgba(255, 255, 255, 0.09);
