@@ -1,24 +1,16 @@
 /* Uses global design tokens from src/index.css */
 
-/* Continues the near-black room from ScrollStackFeature/PatientDashboard
-   (see PatientDashboard.css's comment) instead of the site's
-   green-tinted --gradient-tint-green token, so the whole run from
-   ScrollStack through Footer reads as one canvas. */
+/* No background of its own anymore — see ScrollStackFeature.css's
+   comment. The shared .atmosphere-wrapper carries the flat #040404 base
+   and the real lighting layer; transparent here lets it show through
+   instead of the site's green-tinted --gradient-tint-green token. */
 .ai-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background:
-    radial-gradient(ellipse 280% 175% at -65% 30%, rgba(28, 37, 92, 0.045), transparent 62%),
-    radial-gradient(ellipse 260% 155% at 155% -15%, rgba(23, 26, 82, 0.04), transparent 60%),
-    radial-gradient(ellipse 215% 150% at -25% 90%, rgba(23, 26, 82, 0.05), transparent 62%),
-    radial-gradient(ellipse 195% 135% at 120% 60%, rgba(28, 37, 92, 0.055), transparent 60%),
-    radial-gradient(ellipse 175% 120% at 65% 30%, rgba(46, 62, 143, 0.065), transparent 58%),
-    radial-gradient(ellipse 150% 108% at 24% 55%, rgba(46, 62, 143, 0.115), transparent 55%),
-    radial-gradient(ellipse 235% 90% at 60% 98%, rgba(23, 26, 82, 0.04), transparent 64%),
-    #040404;
+  background: transparent;
 }
 
 .ai-container {

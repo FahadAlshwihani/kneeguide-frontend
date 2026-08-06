@@ -1,25 +1,15 @@
 /* Uses global design tokens from src/index.css */
 
-/* Continues the near-black room — see PatientDashboard.css's comment for
-   the shared base/recipe used through Footer. Several centers sit past
-   100%/below 0% on purpose (genuinely off-screen), for variety —
-   horizontal position never risks the top/bottom seam. */
+/* No background of its own anymore — see ScrollStackFeature.css's
+   comment. The shared .atmosphere-wrapper carries the flat #040404 base
+   and the real lighting layer; transparent here lets it show through. */
 .roadmap-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background:
-    radial-gradient(ellipse 275% 165% at 160% 60%, rgba(23, 26, 82, 0.045), transparent 60%),
-    radial-gradient(ellipse 255% 150% at -55% 10%, rgba(28, 37, 92, 0.04), transparent 62%),
-    radial-gradient(ellipse 205% 145% at 125% 100%, rgba(28, 37, 92, 0.05), transparent 60%),
-    radial-gradient(ellipse 190% 130% at -15% 45%, rgba(23, 26, 82, 0.055), transparent 62%),
-    radial-gradient(ellipse 170% 118% at 32% 22%, rgba(46, 62, 143, 0.06), transparent 58%),
-    radial-gradient(ellipse 148% 108% at 30% 62%, rgba(46, 62, 143, 0.12), transparent 55%),
-    radial-gradient(ellipse 245% 92% at 55% -8%, rgba(23, 26, 82, 0.04), transparent 64%),
-    radial-gradient(ellipse 65% 50% at 78% 40%, rgba(74, 43, 255, 0.03), transparent 55%),
-    #040404;
+  background: transparent;
 }
 
 .roadmap-container {
