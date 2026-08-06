@@ -3,13 +3,14 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/public/components/Header";
 import Footer from "../features/public/components/Footer";
 import Grainient from "../features/public/components/Grainient";
-import "./SiteAtmosphere.css";
+import "./SiteBackground.css";
 
-// Deep base -> mid accent -> soft highlight, using only the already
-// approved palette (see ScrollStackFeature.css history) — no new hues.
-const ATMOSPHERE_COLOR_DARK = "#040404";
-const ATMOSPHERE_COLOR_MID = "#171A52";
-const ATMOSPHERE_COLOR_LIGHT = "#2E3E8F";
+// TODO: waiting on the exact approved hex values for these three —
+// placeholders only, not to be treated as final. Do not ship without
+// replacing them.
+const GRAINIENT_COLOR_1 = "#PENDING_DARK_BLUE";
+const GRAINIENT_COLOR_2 = "#PENDING_BLACK";
+const GRAINIENT_COLOR_3 = "#PENDING_DEEP_BLUE";
 
 const PublicLayout = () => {
   const { pathname } = useLocation();
@@ -17,36 +18,19 @@ const PublicLayout = () => {
 
   return (
     <div className="public-root">
-      {/* Exactly one Grainient instance for the whole layout — see
-          SiteAtmosphere.css. Only mounted on the home route: it would be
-          fully invisible elsewhere anyway (every other page keeps opaque
-          section backgrounds), so skipping the mount there avoids running
-          a WebGL render loop no one will ever see. */}
+      {/* Exactly one Grainient instance, used as-is — only the three
+          colors are overridden, every other prop is the component's own
+          default (see Grainient.jsx). Rendered here rather than inside
+          HomePage so the same canvas can also sit behind <Footer/>, which
+          PublicLayout renders once per page across every public route.
+          Only mounted on the home route: it would be fully hidden behind
+          every other page's normal opaque section backgrounds anyway. */}
       {isHomeRoute && (
         <Grainient
-          className="site-atmosphere-canvas"
-          color1={ATMOSPHERE_COLOR_LIGHT}
-          color2={ATMOSPHERE_COLOR_MID}
-          color3={ATMOSPHERE_COLOR_DARK}
-          timeSpeed={0.02}
-          colorBalance={-0.35}
-          warpStrength={0.6}
-          warpFrequency={1.8}
-          warpSpeed={0.2}
-          warpAmplitude={90}
-          blendAngle={20}
-          blendSoftness={0.45}
-          rotationAmount={60}
-          noiseScale={1}
-          grainAmount={0.035}
-          grainScale={1.5}
-          grainAnimated={false}
-          contrast={2}
-          gamma={0.88}
-          saturation={0.8}
-          centerX={0}
-          centerY={0}
-          zoom={3.2}
+          className="site-background-canvas"
+          color1={GRAINIENT_COLOR_1}
+          color2={GRAINIENT_COLOR_2}
+          color3={GRAINIENT_COLOR_3}
         />
       )}
       <Header />

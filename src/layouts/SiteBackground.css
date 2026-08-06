@@ -1,0 +1,29 @@
+/* Plain placement CSS for the one <Grainient> instance rendered in
+   PublicLayout.jsx — no custom effects added on top of it.
+
+   .public-root gets position: relative here (not in index.css, to avoid
+   touching that shared file) purely so the canvas below has a
+   containing block to size `inset: 0` against; it doesn't change how
+   .public-root paints or how the sticky header inside it behaves —
+   position: sticky still resolves against the viewport exactly as
+   before, since position: relative on an ancestor never creates a
+   scroll container.
+
+   The canvas itself overrides Grainient's own width/height: 100% (which
+   can't resolve correctly against an auto-height ancestor) with
+   inset: 0, the standard way to stretch an absolutely positioned element
+   to its containing block's real height regardless of whether that
+   height is auto or explicit. z-index: -1 puts it behind every other
+   child of .public-root unconditionally. */
+.public-root {
+  position: relative;
+}
+
+.grainient-container.site-background-canvas {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
+}
