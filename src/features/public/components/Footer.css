@@ -1,17 +1,15 @@
 /* Uses global design tokens from src/index.css */
 
-/* Flat #040404 — same base color the shared lighting layer sits on top
-   of higher up the page (see AtmosphereLighting.jsx / HomePage.jsx).
-   Footer itself can't share that layer: it's rendered by PublicLayout,
-   not HomePage, once per page across every public route (About,
-   Technology, etc.), not just this one — so it stays its own component
-   with no lighting of its own. Its last blob (atmosphere-blob-c) is
-   positioned to have faded out well before CTA ends, so by the time the
-   page reaches here the light has already dissolved back into black
-   rather than cutting off abruptly. The old border-top stays dropped: a
-   1px hairline would be a visible seam against that same flat color. */
+/* Transparent so the single shared Grainient canvas (mounted once in
+   PublicLayout.jsx, behind Header/Outlet/Footer together — see
+   SiteAtmosphere.css) shows through here too. Footer is rendered by
+   PublicLayout rather than HomePage, on every public route, which is
+   exactly why the canvas lives at that level instead of inside HomePage
+   — it's what lets this section share the one instance instead of
+   needing a second. The old border-top stays dropped: a 1px hairline
+   would be a visible seam against a continuous background. */
 .footer-root {
-  background: #040404;
+  background: transparent;
 }
 
 .footer-container {
