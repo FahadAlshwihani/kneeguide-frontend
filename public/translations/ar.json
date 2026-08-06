@@ -979,14 +979,14 @@
         }
       },
       "stage2": {
-        "heading": "دمج الأجهزة",
-        "description": "تم دمج أجهزة التأهيل بنجاح مع المنصة، وهي تتواصل بالكامل مع النظام.",
+        "heading": "النموذج الأولي للجهاز",
+        "description": "تم تصميم جهاز إعادة التأهيل وإنتاج نموذجه الأولي فعليًا، وتجري حاليًا أعمال دمج البرمجيات مع المنصة.",
         "items": {
+          "industrialDesign": "التصميم الصناعي",
+          "hardwarePrototype": "نموذج الجهاز الأولي",
           "sensorIntegration": "دمج الحساسات",
           "deviceCommunication": "التواصل بين الأجهزة",
-          "liveDataTransmission": "نقل البيانات المباشر",
-          "calibration": "المعايرة",
-          "hardwareTesting": "اختبار الأجهزة"
+          "softwareIntegration": "دمج البرمجيات"
         }
       },
       "stage3": {
