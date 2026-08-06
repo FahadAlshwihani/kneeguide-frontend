@@ -394,12 +394,19 @@
     transform: none;
   }
 
-  .roadmap-progress-node-now::before,
   .roadmap-progress-node-next::before,
   .roadmap-progress-node-later::before,
   .roadmap-progress-node-future::before,
   .roadmap-progress-sweep::after,
   .roadmap-item-now::after {
     animation: none;
+  }
+
+  /* now keeps its glow, just static instead of sweep-synced — the other
+     three nodes and the sweep only ever exist as animated flashes, so
+     they simply stay off. */
+  .roadmap-progress-node-now::before {
+    animation: none;
+    opacity: 0.4;
   }
 }
