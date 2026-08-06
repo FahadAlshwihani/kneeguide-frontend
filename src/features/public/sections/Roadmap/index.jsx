@@ -6,7 +6,7 @@ import "./Roadmap.css";
 
 const STAGES = [
   { id: "stage1", status: "completed" },
-  { id: "stage2", status: "completed" },
+  { id: "stage2", status: "inProgress" },
   { id: "stage3", status: "inProgress" },
   { id: "stage4", status: "future" },
 ];
@@ -14,7 +14,7 @@ const STAGES = [
 // Empty array = no bullet list for that stage (it's optional per stage).
 const STAGE_ITEM_KEYS = {
   stage1: ["authentication", "dashboard", "patientManagement", "exerciseTracking"],
-  stage2: ["sensorIntegration", "deviceCommunication", "liveDataTransmission", "calibration", "hardwareTesting"],
+  stage2: ["industrialDesign", "hardwarePrototype", "sensorIntegration", "deviceCommunication", "softwareIntegration"],
   stage3: ["patternDetection", "clinicalSummaries", "recoveryInsights"],
   stage4: ["appleWatch", "healthKit", "wearables", "multiConditionRehab"],
 };
