@@ -970,23 +970,28 @@
     "stages": {
       "stage1": {
         "heading": "Core Platform",
-        "description": "The foundation everything else is built on — real accounts, real data, real workflows, live today."
-      },
-      "stage2": {
-        "heading": "Platform Experience",
-        "description": "Turning that foundation into a complete, everyday product for patients and clinicians.",
+        "description": "The foundation of the rehabilitation platform is complete.",
         "items": {
           "authentication": "Authentication",
           "dashboard": "Dashboard",
-          "patientWorkflow": "Patient workflow",
-          "exerciseTracking": "Exercise tracking",
-          "responsiveUI": "Responsive UI",
-          "localization": "Localization"
+          "patientManagement": "Patient management",
+          "exerciseTracking": "Exercise tracking"
+        }
+      },
+      "stage2": {
+        "heading": "Hardware Integration",
+        "description": "The rehabilitation hardware has been successfully integrated with the platform and is fully communicating with the system.",
+        "items": {
+          "sensorIntegration": "Sensor integration",
+          "deviceCommunication": "Device communication",
+          "liveDataTransmission": "Live data transmission",
+          "calibration": "Calibration",
+          "hardwareTesting": "Hardware testing"
         }
       },
       "stage3": {
         "heading": "AI Foundation",
-        "description": "Pattern detection and recovery insights, already helping care teams focus on what matters.",
+        "description": "Building the AI layer that understands rehabilitation progress and assists clinicians.",
         "items": {
           "patternDetection": "Pattern detection",
           "clinicalSummaries": "Clinical summaries",
@@ -995,11 +1000,11 @@
       },
       "stage4": {
         "heading": "Beyond the Knee",
-        "description": "Extending the same approach to wearables and other rehabilitation programs.",
+        "description": "Expanding the platform beyond knee rehabilitation into additional recovery programs.",
         "items": {
-          "wearables": "Wearables",
-          "healthKit": "HealthKit",
           "appleWatch": "Apple Watch",
+          "healthKit": "HealthKit",
+          "wearables": "Wearables",
           "multiConditionRehab": "Multi-condition rehabilitation"
         }
       }
