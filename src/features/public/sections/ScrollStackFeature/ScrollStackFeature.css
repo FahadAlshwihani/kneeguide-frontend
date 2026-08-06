@@ -18,58 +18,59 @@
    hardcoded left/right, so they already re-flow correctly under
    `dir="rtl"` (see src/utils/dir.js) with zero edits. */
 
-/* One continuous, very slow dark-to-deep-navy wash behind the entire
-   stack — plain normal-flow block, so its height is always exactly
-   .scroll-stack-feature-scroller's real rendered height (top padding +
-   all four cards/gaps + ScrollStack's own trailing spacer), never a
-   guessed viewport multiple. The ramp is intentionally spread across
-   that *entire* height so each stop-to-stop shift reads as almost
-   imperceptible while scrolling, per spec. Nine stops rather than the
-   five reference colors alone: each is the exact midpoint (linear RGB
-   average) between two neighboring reference tones, halving the delta
-   the browser has to interpolate across any single span and giving it
-   more real anchor points to dither between — the visible risk with a
-   long, low-contrast, mostly dark ramp like this one is 8-bit banding
-   (perceptible stepping) rather than the color choice itself, and this
-   is what actually addresses that, not just picking "close enough" hex
-   values.
+/* A near-black room, not a blue gradient — #040404 is the entire base,
+   flat and uniform, the same solid value every section from here through
+   Footer opens and closes on (see their own files). Color exists only as
+   ambient light layered on top: several very soft, very low-opacity
+   radial glows (never higher than ~0.2 alpha), each with a three-stop
+   falloff (full color at its core, half that at ~35% of its own radius,
+   fully transparent by ~60-64%) so it dissipates like real light rather
+   than fading in a straight ramp to nothing. No linear gradient anywhere
+   — the previous version's black-to-navy ramp read as "a blue background
+   with some black" no matter how dark its opening stop was, because the
+   base itself was still a color. A flat black base with light drifting
+   across it reads the opposite way: black first, color discovered inside
+   it.
 
-   Two large, soft radial fields sit on top of that linear base (painted
-   first = on top, per CSS background-layer order) — a navy glow and a
-   black cloud, offset to opposite sides — so the result reads as an
-   uneven, cinematic wash rather than a flat printed ramp, and the blue
-   never fills the frame on its own: the cloud keeps it visibly mixed
-   with black wherever they overlap.
-
-   Both radials are deliberately kept away from the top/bottom edges by
-   a wide, verified margin, not just eyeballed: centered at the vertical
-   midpoint (50%) with a 40%-of-box-height radius and a "transparent" stop
-   at 62% of that radius, the color reaches at most 0.62 x 40% = 24.8%
-   above and below center — i.e. it never gets closer than ~25% of the
-   box's own height to either edge, regardless of how tall this section
-   actually renders. That's what makes the *plain linear* stop the only
-   thing visible right at the seam: #050506 at the very top (this
-   section's own starting black) and #0b1d38 at the very bottom, which is
-   the exact anchor color every section from PatientDashboard through
-   Footer opens and closes on too (see their own files) — so the wash
-   continues into them with nothing to see at the boundary, independent
-   of any section's real height. */
+   Every glow's *vertical* radius and position are chosen so its color
+   never reaches within a wide, deliberately verified margin of the top
+   or bottom edge (worked example: a radius of 34% of box height with its
+   transparent stop at 64% reaches at most 0.64 x 34% = 21.76% from its
+   own center — centered at 50%, that's ~28% of clearance on both sides,
+   independent of this section's real rendered height). That's what keeps
+   the very top/bottom rows of every section pure #040404, so adjacent
+   sections meet with nothing visible at the seam — only the ambient
+   light moves; the floor underneath it never does. Horizontal position
+   and size are unconstrained (no seam risk there), which is what lets
+   each section's glows sit somewhere different — top-left, center,
+   off-screen past an edge — without looking procedurally repeated. */
 .scroll-stack-feature {
   background:
-    radial-gradient(ellipse 95% 40% at 28% 50%, rgba(40, 90, 155, 0.4), transparent 62%),
-    radial-gradient(ellipse 100% 42% at 76% 50%, rgba(3, 5, 9, 0.5), transparent 62%),
-    linear-gradient(
-      to bottom,
-      #050506 0%,
-      #06090d 12.5%,
-      #070c14 25%,
-      #080f1c 37.5%,
-      #091324 50%,
-      #0a162b 62.5%,
-      #0a1832 75%,
-      #0b1b36 87.5%,
-      #0b1d38 100%
-    );
+    radial-gradient(
+      ellipse 45% 14% at 58% 42%,
+      rgba(74, 43, 255, 0.05) 0%,
+      rgba(74, 43, 255, 0.02) 40%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 65% 20% at 55% 38%,
+      rgba(46, 62, 143, 0.12) 0%,
+      rgba(46, 62, 143, 0.05) 40%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 130% 34% at 24% 56%,
+      rgba(23, 26, 82, 0.2) 0%,
+      rgba(23, 26, 82, 0.09) 35%,
+      transparent 64%
+    ),
+    radial-gradient(
+      ellipse 120% 34% at 84% 50%,
+      rgba(28, 37, 92, 0.17) 0%,
+      rgba(28, 37, 92, 0.07) 35%,
+      transparent 64%
+    ),
+    #040404;
 }
 
 /* ScrollStack's own `className` prop only reaches this outer scroller
