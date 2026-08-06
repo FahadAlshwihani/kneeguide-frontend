@@ -18,12 +18,11 @@
    hardcoded left/right, so they already re-flow correctly under
    `dir="rtl"` (see src/utils/dir.js) with zero edits. */
 
-/* No background of its own anymore — the atmosphere (flat #040404 base
-   + the real blurred lighting layer) now lives once on the shared
-   .atmosphere-wrapper this section is rendered inside of (see
-   HomePage.jsx / HomePage.css / AtmosphereLighting.jsx), not repainted
-   per section. Transparent is what lets that shared layer show through
-   instead of this section's own box occluding it. */
+/* No background of its own anymore — the atmosphere is a single
+   Grainient WebGL canvas (see PublicLayout.jsx / SiteAtmosphere.css),
+   mounted once for the whole public layout, not repainted per section.
+   Transparent is what lets that shared canvas show through instead of
+   this section's own box occluding it. */
 .scroll-stack-feature {
   background: transparent;
 }
