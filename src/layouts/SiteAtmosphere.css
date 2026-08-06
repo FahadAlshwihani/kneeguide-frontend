@@ -1,0 +1,40 @@
+/* Exactly one Grainient instance lives here (see PublicLayout.jsx),
+   mounted once for the whole public layout rather than per-page or
+   per-section, and positioned to cover Header + <Outlet/> + <Footer/>
+   together — not just the home route's own content — so it can reach
+   behind Footer (rendered here, not inside HomePage) without a second
+   instance.
+
+   It stays completely invisible on every route except the home page:
+   every other page's sections keep their normal opaque backgrounds, so
+   this canvas — despite existing behind them — never shows through.
+   Only ScrollStackFeature/PatientDashboard/AI/Roadmap/FAQ/CTA and Footer
+   set background: transparent, which is what actually makes the
+   atmosphere visible, and only there.
+
+   .public-root itself gets position: relative here (not in index.css,
+   to avoid touching that shared file) purely so this canvas has a
+   containing block to size `inset: 0` against; it doesn't change how
+   .public-root paints or how the sticky header inside it behaves —
+   position: sticky continues to resolve against the viewport exactly as
+   before, since position: relative on an ancestor never creates a
+   scroll container. */
+.public-root {
+  position: relative;
+}
+
+/* Overrides Grainient.css's own width/height: 100% (which can't resolve
+   correctly against an auto-height ancestor) with inset: 0, the robust
+   way to stretch an absolutely positioned element to its containing
+   block's *real* height regardless of whether that height is auto or
+   explicit. z-index: -1 puts it behind every other child of
+   .public-root unconditionally, static or positioned, so nothing here
+   needs to worry about the sticky header's own stacking. */
+.grainient-container.site-atmosphere-canvas {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
+}
