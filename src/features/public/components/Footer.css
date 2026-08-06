@@ -1,21 +1,17 @@
 /* Uses global design tokens from src/index.css */
 
-/* Continues the near-black room all the way to the end — see
-   PatientDashboard.css's comment for the shared base/recipe. The old
-   border-top is dropped: a 1px hairline here would be exactly the
-   visible "this section starts" seam the continuous canvas is meant to
-   avoid. Fewer, dimmer layers than the sections above — Footer is much
-   shorter than a full-viewport section and is the terminal element
-   besides, so the light should read as fading back into black by the
-   time the page ends, not competing for attention on the quietest
-   section. */
+/* Flat #040404 — same base color the shared lighting layer sits on top
+   of higher up the page (see AtmosphereLighting.jsx / HomePage.jsx).
+   Footer itself can't share that layer: it's rendered by PublicLayout,
+   not HomePage, once per page across every public route (About,
+   Technology, etc.), not just this one — so it stays its own component
+   with no lighting of its own. Its last blob (atmosphere-blob-c) is
+   positioned to have faded out well before CTA ends, so by the time the
+   page reaches here the light has already dissolved back into black
+   rather than cutting off abruptly. The old border-top stays dropped: a
+   1px hairline would be a visible seam against that same flat color. */
 .footer-root {
-  background:
-    radial-gradient(ellipse 260% 200% at 50% -60%, rgba(23, 26, 82, 0.035), transparent 60%),
-    radial-gradient(ellipse 220% 170% at -40% 120%, rgba(28, 37, 92, 0.03), transparent 62%),
-    radial-gradient(ellipse 190% 150% at 130% 100%, rgba(23, 26, 82, 0.035), transparent 60%),
-    radial-gradient(ellipse 130% 95% at 50% 45%, rgba(46, 62, 143, 0.06), transparent 55%),
-    #040404;
+  background: #040404;
 }
 
 .footer-container {

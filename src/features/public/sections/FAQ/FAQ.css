@@ -12,17 +12,6 @@
   background: transparent;
 }
 
-/* REMOVED_TAIL_MARKER
-    radial-gradient(ellipse 285% 170% at -60% 65%, rgba(28, 37, 92, 0.04), transparent 60%),
-    radial-gradient(ellipse 260% 150% at 155% 5%, rgba(23, 26, 82, 0.045), transparent 62%),
-    radial-gradient(ellipse 210% 145% at -20% 8%, rgba(23, 26, 82, 0.05), transparent 60%),
-    radial-gradient(ellipse 195% 135% at 118% 78%, rgba(28, 37, 92, 0.055), transparent 62%),
-    radial-gradient(ellipse 178% 122% at 68% 40%, rgba(46, 62, 143, 0.065), transparent 58%),
-    radial-gradient(ellipse 150% 108% at 45% 60%, rgba(46, 62, 143, 0.115), transparent 55%),
-    radial-gradient(ellipse 240% 90% at 30% 100%, rgba(23, 26, 82, 0.04), transparent 64%),
-    #040404;
-}
-
 .faq-container {
   max-width: var(--container-width);
   margin: 0 auto;
