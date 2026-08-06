@@ -938,6 +938,25 @@
       }
     }
   },
+  "publicAI": {
+    "badge": "AI Analysis",
+    "title": "Patterns no five-minute visit can catch.",
+    "description": "KneeGuide's models watch daily pain, mobility and exercise data so your care team can focus on what actually needs attention.",
+    "highlights": {
+      "trendDetection": {
+        "title": "Trend detection",
+        "description": "Flags a gradual worsening or a stalled plateau in pain and mobility before it becomes a setback."
+      },
+      "adherenceSignals": {
+        "title": "Adherence signals",
+        "description": "Notices when logged exercises drop off, so check-ins happen before recovery stalls."
+      },
+      "clinicianSummaries": {
+        "title": "Clinician-ready summaries",
+        "description": "Condenses weeks of daily logs into a short summary worth an actual look."
+      }
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",
