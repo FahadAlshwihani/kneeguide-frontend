@@ -1,14 +1,18 @@
 /* Uses global design tokens from src/index.css */
 
-/* Continues the near-black room — see PatientDashboard.css's comment for
-   the shared base/recipe used through Footer. */
+/* No background of its own anymore — see ScrollStackFeature.css's
+   comment. The shared .atmosphere-wrapper carries the flat #040404 base
+   and the real lighting layer; transparent here lets it show through. */
 .faq-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background:
+  background: transparent;
+}
+
+/* REMOVED_TAIL_MARKER
     radial-gradient(ellipse 285% 170% at -60% 65%, rgba(28, 37, 92, 0.04), transparent 60%),
     radial-gradient(ellipse 260% 150% at 155% 5%, rgba(23, 26, 82, 0.045), transparent 62%),
     radial-gradient(ellipse 210% 145% at -20% 8%, rgba(23, 26, 82, 0.05), transparent 60%),
