@@ -336,6 +336,44 @@
   }
 }
 
+/* translateX is a physical transform — there is no logical equivalent —
+   so under RTL the grid's own inline-axis reversal (stage 1 now on the
+   right, stage 4 on the left; see the RTL comment above) leaves this
+   sweep still travelling physically left-to-right, i.e. stage 4 -> stage
+   1 instead of stage 1 -> stage 4. :dir(rtl) (directionality-aware, not
+   the [dir="rtl"] attribute-hack this file otherwise avoids — there is
+   simply no non-attribute way to key off direction for a physical
+   transform) swaps just the animation-name so the light starts at stage
+   1's now-rightmost node and finishes at stage 4's now-leftmost one.
+   The four roadmapNodeGlow* keyframes below need no RTL variant: they're
+   timed by travel-fraction (0%/6%/12%/18% = each node's position along
+   the path, not an absolute side), so stage 1 still glows first and
+   stage 4 last regardless of which physical direction the path runs. */
+:dir(rtl) .roadmap-progress-visible .roadmap-progress-sweep::after {
+  animation-name: roadmapSweepRtl;
+}
+
+@keyframes roadmapSweepRtl {
+  0% {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+  2% {
+    opacity: 0.9;
+  }
+  16% {
+    opacity: 0.9;
+  }
+  18% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+}
+
 /* Plain content — no card, no border, no background, no shadow. Status,
    a neutral "Stage N" eyebrow, heading, description and items, in that
    reading order, directly under this stage's own node. */
@@ -476,11 +514,24 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
 }
 
+/* Worked out exactly, not eyeballed: with flex:1 and this row's own
+   height H, the connector's rendered bottom edge sits at (H - margin-
+   bottom). The next stage's dot sits (4px marker padding-top + 4.5px
+   half its own 9px diameter =) 8.5px below H. A plain margin-bottom
+   (previously 6px) stops the line 14.5px short of that, which is why
+   growing a stage's content used to leave the next node floating past
+   the visible end of the line. margin-bottom: -12.5px moves the
+   endpoint to H + 12.5, i.e. 4px past that node's center — the line
+   now visibly reaches through every node, with a small deliberate
+   overshoot beyond the last one, and this holds regardless of how tall
+   any given stage's content is (H cancels out of the placement, it
+   only changes how much the connector itself stretches). */
 .roadmap-mobile-connector {
   flex: 1;
   width: 1px;
   min-height: 32px;
-  margin-block: 6px;
+  margin-top: 6px;
+  margin-bottom: -12.5px;
   background: var(--color-border);
 }
 
@@ -560,17 +611,24 @@
     transform: none;
   }
 
-  .roadmap-progress-node-1::before,
-  .roadmap-progress-node-2::before,
-  .roadmap-progress-node-4::before,
-  .roadmap-progress-sweep::after {
+  /* Specificity matches the animated rules above exactly (.roadmap-
+     progress-visible + the node/sweep class + the pseudo-element) so
+     these actually win the cascade — a bare .roadmap-progress-node-1::
+     before etc. here would lose to the higher-specificity animated
+     rule and silently keep animating. The RTL sweep variant is included
+     explicitly since it's an even-higher-specificity rule of its own. */
+  .roadmap-progress-visible .roadmap-progress-node-1::before,
+  .roadmap-progress-visible .roadmap-progress-node-2::before,
+  .roadmap-progress-visible .roadmap-progress-node-4::before,
+  .roadmap-progress-visible .roadmap-progress-sweep::after,
+  :dir(rtl) .roadmap-progress-visible .roadmap-progress-sweep::after {
     animation: none;
   }
 
   /* Stage 3 keeps its glow, just static instead of sweep-synced — the
      other three nodes and the sweep only ever exist as animated
      flashes, so they simply stay off. */
-  .roadmap-progress-node-3::before {
+  .roadmap-progress-visible .roadmap-progress-node-3::before {
     animation: none;
     opacity: 0.4;
   }
