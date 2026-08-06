@@ -1,5 +1,17 @@
 /* Uses global design tokens from src/index.css */
 
+/* Lets the browser smoothly interpolate --ring-deg (used inside the
+   dial's conic-gradient below) instead of jumping between values —
+   without this, animating a value baked into a gradient function has no
+   native transition. Unsupported browsers (older Firefox) just ignore
+   the registration and the ring updates instantly instead — a graceful
+   fallback, not a break. */
+@property --ring-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 108deg;
+}
+
 /* No background of its own anymore — see ScrollStackFeature.css's
    comment. The single shared Grainient canvas (PublicLayout.jsx) shows
    through wherever transparent lets it. */
@@ -94,11 +106,23 @@
 
 .patient-preview-mock-header {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .patient-preview-mock-title {
   font-weight: 600;
   color: var(--color-heading);
+}
+
+/* Updates alongside the checklist below — see index.jsx. Tabular figures
+   so the row doesn't jitter in width as the digits change. */
+.patient-preview-mock-time {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  transition: opacity 400ms ease;
 }
 
 .patient-preview-mock-dial {
