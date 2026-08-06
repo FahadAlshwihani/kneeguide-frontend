@@ -51,6 +51,129 @@
   color: var(--color-text);
 }
 
+/* The minimal progress indicator above the cards — purely decorative
+   (see index.jsx for the aria-hidden split between the dots/line and the
+   real, accessible stage labels). Same 4-column grid as .roadmap-timeline
+   below so the two stay loosely aligned without being coupled.
+
+   RTL: no left/right or edge-anchored transform-origin used anywhere
+   here — the line's reveal is a center-anchored opacity+scale (see
+   .roadmap-progress-line below), which looks identical regardless of
+   direction, and the track/labels are plain grids, so document order
+   alone is what determines "now" reading first — under dir="rtl" the
+   grid's own inline-axis reversal (same mechanism already relied on by
+   every other 4-up grid in this project) puts it on the right and lets
+   the whole row read Future <- Later <- Next <- Now for free. */
+.roadmap-progress {
+  margin-bottom: 40px;
+}
+
+.roadmap-progress-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  height: 9px;
+}
+
+.roadmap-progress-line {
+  position: absolute;
+  inset-inline-start: 12.5%;
+  inset-inline-end: 12.5%;
+  top: 50%;
+  height: 1px;
+  background: var(--color-border);
+  transform: translateY(-50%) scaleX(0.94);
+  transform-origin: center;
+  opacity: 0;
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.roadmap-progress-visible .roadmap-progress-line {
+  opacity: 1;
+  transform: translateY(-50%) scaleX(1);
+}
+
+.roadmap-progress-node {
+  justify-self: center;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-border);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 450ms ease, transform 450ms ease;
+}
+
+.roadmap-progress-visible .roadmap-progress-node {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* The active stage: a touch bigger and bright, plus a slow breathing
+   glow — opacity only, never a scale pulse, so it reads as "alive"
+   without drawing the eye the way motion would. */
+.roadmap-progress-node-now {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  background: var(--color-primary);
+}
+
+.roadmap-progress-node-now::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.35), transparent 70%);
+  opacity: 0;
+}
+
+.roadmap-progress-visible .roadmap-progress-node-now::before {
+  animation: roadmapBreathe 3600ms ease-in-out infinite;
+}
+
+@keyframes roadmapBreathe {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.roadmap-progress-labels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 10px;
+}
+
+.roadmap-progress-label {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.roadmap-progress-label-now {
+  color: var(--color-primary);
+}
+
+.roadmap-progress-label-next {
+  opacity: 0.85;
+}
+
+.roadmap-progress-label-later {
+  opacity: 0.68;
+}
+
+.roadmap-progress-label-future {
+  opacity: 0.55;
+}
+
 .roadmap-timeline {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -58,6 +181,7 @@
 }
 
 .roadmap-item {
+  position: relative;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-top: 3px solid var(--color-primary);
@@ -68,12 +192,77 @@
   gap: 8px;
 }
 
+/* Same accent hue on every card (unchanged from before) — only its
+   strength steps down stage by stage, which is what actually reads as
+   "further away" without touching type, spacing, or the muted body
+   copy's own contrast. */
+.roadmap-item-next {
+  border-top-color: rgba(37, 99, 235, 0.6);
+}
+
+.roadmap-item-later {
+  border-top-color: rgba(37, 99, 235, 0.4);
+}
+
+.roadmap-item-future {
+  border-top-color: rgba(37, 99, 235, 0.25);
+}
+
+/* A tiny, occasional shimmer over the active card's top accent only —
+   transform + opacity, so it stays compositor-only even though it loops
+   continuously. Long idle stretch between sweeps (see the keyframe
+   timing) is what keeps it from reading as "attention-grabbing". */
+.roadmap-item-now {
+  overflow: hidden;
+}
+
+.roadmap-item-now::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  transform: translateX(-120%);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: roadmapShimmer 7000ms ease-in-out infinite;
+}
+
+@keyframes roadmapShimmer {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  4% {
+    opacity: 0.9;
+  }
+  10%,
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
 .roadmap-item-phase {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-primary);
+}
+
+.roadmap-item-next .roadmap-item-phase {
+  color: rgba(37, 99, 235, 0.75);
+}
+
+.roadmap-item-later .roadmap-item-phase {
+  color: rgba(37, 99, 235, 0.55);
+}
+
+.roadmap-item-future .roadmap-item-phase {
+  color: rgba(37, 99, 235, 0.4);
 }
 
 .roadmap-item-title {
