@@ -5,12 +5,10 @@ import Footer from "../features/public/components/Footer";
 import Grainient from "../features/public/components/Grainient";
 import "./SiteBackground.css";
 
-// TODO: waiting on the exact approved hex values for these three —
-// placeholders only, not to be treated as final. Do not ship without
-// replacing them.
-const GRAINIENT_COLOR_1 = "#PENDING_DARK_BLUE";
-const GRAINIENT_COLOR_2 = "#PENDING_BLACK";
-const GRAINIENT_COLOR_3 = "#PENDING_DEEP_BLUE";
+// Mirrors the approved brand tokens in index.css.
+const GRAINIENT_COLOR_1 = "#2563EB";
+const GRAINIENT_COLOR_2 = "#050505";
+const GRAINIENT_COLOR_3 = "#1D4ED8";
 
 const PublicLayout = () => {
   const { pathname } = useLocation();
