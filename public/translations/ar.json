@@ -970,15 +970,21 @@
     "stages": {
       "stage1": {
         "heading": "المنصة الأساسية",
-        "description": "تسجيل يومي للألم والتمارين، متاح الآن للمرضى والأطباء.",
-        "items": {
-          "dashboard": "لوحة المعلومات",
-          "authentication": "تسجيل الدخول والتحقق",
-          "patientLogging": "تسجيل بيانات المرضى",
-          "exerciseTracking": "تتبع التمارين"
-        }
+        "description": "الأساس الذي يُبنى عليه كل شيء آخر — حسابات وبيانات وسير عمل حقيقي، متاح اليوم."
       },
       "stage2": {
+        "heading": "تجربة المنصة",
+        "description": "تحويل ذلك الأساس إلى منتج يومي متكامل للمرضى والأطباء.",
+        "items": {
+          "authentication": "تسجيل الدخول والتحقق",
+          "dashboard": "لوحة المعلومات",
+          "patientWorkflow": "سير عمل المريض",
+          "exerciseTracking": "تتبع التمارين",
+          "responsiveUI": "واجهة متجاوبة",
+          "localization": "دعم تعدّد اللغات"
+        }
+      },
+      "stage3": {
         "heading": "أساسيات الذكاء الاصطناعي",
         "description": "رصد الأنماط ورؤى التعافي، تساعد فرق الرعاية بالفعل على التركيز على ما يهم.",
         "items": {
@@ -987,22 +993,14 @@
           "recoveryInsights": "رؤى التعافي"
         }
       },
-      "stage3": {
-        "heading": "تكامل الأجهزة القابلة للارتداء",
-        "description": "مزامنة بيانات الحركة تلقائيًا من الأجهزة القابلة للارتداء.",
-        "items": {
-          "appleWatch": "ساعة Apple Watch",
-          "healthKit": "HealthKit",
-          "sensorSyncing": "مزامنة أجهزة الاستشعار"
-        }
-      },
       "stage4": {
         "heading": "أبعد من الركبة",
-        "description": "توسيع النهج نفسه ليشمل برامج تأهيل أخرى.",
+        "description": "توسيع النهج نفسه ليشمل الأجهزة القابلة للارتداء وبرامج تأهيل أخرى.",
         "items": {
-          "rehabPrograms": "برامج تأهيل إضافية",
-          "multiCondition": "دعم حالات متعددة",
-          "expandedPlatform": "منصة تعافٍ موسّعة"
+          "wearables": "الأجهزة القابلة للارتداء",
+          "healthKit": "HealthKit",
+          "appleWatch": "ساعة Apple Watch",
+          "multiConditionRehab": "تأهيل متعدد الحالات"
         }
       }
     }

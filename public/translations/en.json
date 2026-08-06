@@ -970,15 +970,21 @@
     "stages": {
       "stage1": {
         "heading": "Core Platform",
-        "description": "Daily pain and exercise logging, live for patients and clinicians today.",
-        "items": {
-          "dashboard": "Dashboard",
-          "authentication": "Authentication",
-          "patientLogging": "Patient logging",
-          "exerciseTracking": "Exercise tracking"
-        }
+        "description": "The foundation everything else is built on — real accounts, real data, real workflows, live today."
       },
       "stage2": {
+        "heading": "Platform Experience",
+        "description": "Turning that foundation into a complete, everyday product for patients and clinicians.",
+        "items": {
+          "authentication": "Authentication",
+          "dashboard": "Dashboard",
+          "patientWorkflow": "Patient workflow",
+          "exerciseTracking": "Exercise tracking",
+          "responsiveUI": "Responsive UI",
+          "localization": "Localization"
+        }
+      },
+      "stage3": {
         "heading": "AI Foundation",
         "description": "Pattern detection and recovery insights, already helping care teams focus on what matters.",
         "items": {
@@ -987,22 +993,14 @@
           "recoveryInsights": "Recovery insights"
         }
       },
-      "stage3": {
-        "heading": "Wearable Integration",
-        "description": "Syncing mobility data automatically from wearable devices.",
-        "items": {
-          "appleWatch": "Apple Watch",
-          "healthKit": "HealthKit",
-          "sensorSyncing": "Sensor syncing"
-        }
-      },
       "stage4": {
         "heading": "Beyond the Knee",
-        "description": "Extending the same approach to other rehabilitation programs.",
+        "description": "Extending the same approach to wearables and other rehabilitation programs.",
         "items": {
-          "rehabPrograms": "Additional rehabilitation programs",
-          "multiCondition": "Multi-condition support",
-          "expandedPlatform": "Expanded recovery platform"
+          "wearables": "Wearables",
+          "healthKit": "HealthKit",
+          "appleWatch": "Apple Watch",
+          "multiConditionRehab": "Multi-condition rehabilitation"
         }
       }
     }

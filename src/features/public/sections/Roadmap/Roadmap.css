@@ -97,19 +97,26 @@
   position: relative;
 }
 
-/* Spans from stage 1's node to stage 4's node — not full width. With
-   four equal 1fr columns and a 24px gap, stage 4's column starts at
-   exactly 75% + 18px from the start (three column-widths plus three
-   gaps); adding ~4px to reach each dot's own center rather than its
-   edge gives the inset-inline-end value below. This is what lets the
-   line (and the sweep clipped inside it) start and end exactly at the
-   first and last node instead of overshooting into empty space or
-   undershooting short of stage 4. */
+/* Spans from stage 1's node CENTER to stage 4's node CENTER — worked out
+   exactly, not approximated:
+   - 4 equal 1fr columns + 24px gaps -> stage 4's column starts at
+     precisely 0.75 * 100% + 18px (three column-widths plus three gaps).
+   - Stage 1 and stage 4's nodes are both 7px (the "completed"/"future"
+     size — see .roadmap-progress-node below), flush against their
+     column's own start with no horizontal padding/margin anywhere above
+     them, so each one's center sits exactly 3.5px (half its own
+     diameter) in from that column's start edge.
+   - inset-inline-start is therefore exactly 3.5px (stage 1's center).
+   - inset-inline-end is exactly 100% - (75% + 18px + 3.5px) = 25% - 21.5px
+     (the distance from the far edge back to stage 4's center).
+   top: 4.5px matches the shared vertical center every node is aligned
+   to below (see .roadmap-progress-node's margin-top comment) — this is
+   what makes the line pass through, not above or below, every dot. */
 .roadmap-desktop-connector {
   position: absolute;
-  top: 4px;
-  inset-inline-start: 4px;
-  inset-inline-end: calc(25% - 22px);
+  top: 4.5px;
+  inset-inline-start: 3.5px;
+  inset-inline-end: calc(25% - 21.5px);
   height: 1px;
   pointer-events: none;
 }
@@ -137,17 +144,28 @@
   gap: 24px;
 }
 
+/* gap, not padding-top: the node must stay flush against the top of the
+   stage (y=0) to land on the connector above — padding-top here would
+   push the node itself down instead of just adding space after it,
+   which is exactly what broke the alignment before. */
 .roadmap-desktop-stage {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-top: 24px;
+  gap: 24px;
 }
 
+/* All nodes share one vertical center regardless of their own diameter
+   (7px for completed/future, 9px for in-progress — see
+   .roadmap-progress-node-3 below): centered against a shared 9px
+   reference slot, i.e. this 7px node gets margin-top: (9-7)/2 = 1px, so
+   its center lands at 1 + 7/2 = 4.5px — the same 4.5px the connector
+   line sits at. */
 .roadmap-progress-node {
   position: relative;
   width: 7px;
   height: 7px;
+  margin-top: 1px;
   border-radius: 50%;
   background: var(--color-border);
   opacity: 0;
