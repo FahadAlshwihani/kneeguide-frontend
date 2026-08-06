@@ -4,13 +4,25 @@ import RevealSection from "../../components/RevealSection";
 import { useSectionReveal } from "../../components/useSectionReveal";
 import "./Roadmap.css";
 
-const MILESTONE_KEYS = ["now", "next", "later", "future"];
+const STAGES = [
+  { id: "stage1", status: "completed" },
+  { id: "stage2", status: "completed" },
+  { id: "stage3", status: "inProgress" },
+  { id: "stage4", status: "future" },
+];
+
+const STAGE_ITEM_KEYS = {
+  stage1: ["dashboard", "authentication", "patientLogging", "exerciseTracking"],
+  stage2: ["patternDetection", "clinicalSummaries", "recoveryInsights"],
+  stage3: ["appleWatch", "healthKit", "sensorSyncing"],
+  stage4: ["rehabPrograms", "multiCondition", "expandedPlatform"],
+};
 
 const Roadmap = () => {
   const { t } = useTranslation();
-  // Drives the timeline's own reveal (line settle + staggered nodes),
-  // independent of each card's own RevealSection below — same shared
-  // IntersectionObserver pool either way, see useSectionReveal.js.
+  // Drives the horizontal timeline's own reveal (line settle + staggered
+  // nodes + sweep/glow start) — independent of each block's own
+  // RevealSection, same shared IntersectionObserver pool either way.
   const { ref: timelineRef, isVisible: timelineVisible } = useSectionReveal();
 
   return (
@@ -22,40 +34,82 @@ const Roadmap = () => {
           <p className="roadmap-description">{t("publicRoadmap.description")}</p>
         </RevealSection>
 
-        {/* The only place the stage names appear now — cards below start
-            directly with their title, no repeated NOW/NEXT/LATER/FUTURE.
-            Dots/line/sweep carry no information of their own, so they're
-            aria-hidden; the stage labels are kept as real, accessible
-            text. */}
-        <div ref={timelineRef} className={`roadmap-progress${timelineVisible ? " roadmap-progress-visible" : ""}`}>
-          <div className="roadmap-progress-track" aria-hidden="true">
-            <span className="roadmap-progress-line" />
-            <span className="roadmap-progress-sweep" />
-            {MILESTONE_KEYS.map((key, index) => (
-              <span
-                key={key}
-                className={`roadmap-progress-node roadmap-progress-node-${key}`}
-                style={{ transitionDelay: `${index * 0.12}s` }}
-              />
-            ))}
+        {/* >=768px: horizontal timeline + plain content blocks below it.
+            The timeline is the only place stage status appears — blocks
+            only get a neutral "Stage N" eyebrow, never repeating
+            Completed/In Progress/Future a second time. */}
+        <div className="roadmap-desktop-view">
+          <div
+            ref={timelineRef}
+            className={`roadmap-progress${timelineVisible ? " roadmap-progress-visible" : ""}`}
+          >
+            <div className="roadmap-progress-track" aria-hidden="true">
+              <span className="roadmap-progress-line" />
+              <span className="roadmap-progress-sweep" />
+              {STAGES.map((stage, index) => (
+                <span
+                  key={stage.id}
+                  className={`roadmap-progress-node roadmap-progress-node-${index + 1}`}
+                  style={{ transitionDelay: `${index * 0.12}s` }}
+                />
+              ))}
+            </div>
+            <div className="roadmap-progress-labels">
+              {STAGES.map((stage) => (
+                <span key={stage.id} className={`roadmap-progress-label roadmap-progress-label-${stage.status}`}>
+                  {t(`publicRoadmap.status.${stage.status}`)}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="roadmap-progress-labels">
-            {MILESTONE_KEYS.map((key) => (
-              <span key={key} className={`roadmap-progress-label roadmap-progress-label-${key}`}>
-                {t(`publicRoadmap.timeline.${key}`)}
-              </span>
+
+          <div className="roadmap-blocks">
+            {STAGES.map((stage, index) => (
+              <RevealSection as="div" key={stage.id} delay={index * 0.1} className="roadmap-block">
+                <span className="roadmap-block-eyebrow">
+                  {t("publicRoadmap.stageLabel", { number: index + 1 })}
+                </span>
+                <h3 className="roadmap-block-heading">{t(`publicRoadmap.stages.${stage.id}.heading`)}</h3>
+                <p className="roadmap-block-description">{t(`publicRoadmap.stages.${stage.id}.description`)}</p>
+                <ul className="roadmap-block-items">
+                  {STAGE_ITEM_KEYS[stage.id].map((itemKey) => (
+                    <li key={itemKey}>{t(`publicRoadmap.stages.${stage.id}.items.${itemKey}`)}</li>
+                  ))}
+                </ul>
+              </RevealSection>
             ))}
           </div>
         </div>
 
-        <div className="roadmap-timeline">
-          {MILESTONE_KEYS.map((key, index) => (
-            <RevealSection as="div" key={key} delay={index * 0.1} className={`roadmap-item roadmap-item-${key}`}>
-              <h3 className="roadmap-item-title">{t(`publicRoadmap.milestones.${key}.title`)}</h3>
-              <p className="roadmap-item-description">{t(`publicRoadmap.milestones.${key}.description`)}</p>
+        {/* <768px: a dedicated vertical timeline — dot/connector, status
+            and heading together per stage, exactly the structure a
+            vertical roadmap needs instead of the horizontal one
+            squeezed into a narrow viewport. */}
+        <ol className="roadmap-mobile-view">
+          {STAGES.map((stage, index) => (
+            <RevealSection
+              as="li"
+              key={stage.id}
+              delay={index * 0.08}
+              className={`roadmap-mobile-item roadmap-mobile-item-${index + 1}`}
+            >
+              <span className="roadmap-mobile-marker" aria-hidden="true">
+                <span className="roadmap-mobile-dot" />
+                {index < STAGES.length - 1 && <span className="roadmap-mobile-connector" />}
+              </span>
+              <div className="roadmap-mobile-content">
+                <span className="roadmap-mobile-status">{t(`publicRoadmap.status.${stage.status}`)}</span>
+                <h3 className="roadmap-mobile-heading">{t(`publicRoadmap.stages.${stage.id}.heading`)}</h3>
+                <p className="roadmap-mobile-description">{t(`publicRoadmap.stages.${stage.id}.description`)}</p>
+                <ul className="roadmap-mobile-items">
+                  {STAGE_ITEM_KEYS[stage.id].map((itemKey) => (
+                    <li key={itemKey}>{t(`publicRoadmap.stages.${stage.id}.items.${itemKey}`)}</li>
+                  ))}
+                </ul>
+              </div>
             </RevealSection>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );
