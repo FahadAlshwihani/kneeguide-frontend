@@ -957,6 +957,35 @@
       }
     }
   },
+  "publicRoadmap": {
+    "badge": "What's Next",
+    "title": "We're just getting started.",
+    "description": "KneeGuide is being built with clinics, one release at a time.",
+    "timeline": {
+      "now": "Now",
+      "next": "Next",
+      "later": "Later",
+      "future": "Future"
+    },
+    "milestones": {
+      "now": {
+        "title": "Core tracking & dashboards",
+        "description": "Daily pain and exercise logging, live for patients and clinicians today."
+      },
+      "next": {
+        "title": "AI trend analysis",
+        "description": "Rolling out pattern detection across pilot clinics."
+      },
+      "later": {
+        "title": "Wearable integration",
+        "description": "Syncing mobility data automatically from wearable devices."
+      },
+      "future": {
+        "title": "Beyond the knee",
+        "description": "Extending the same approach to other rehabilitation programs."
+      }
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",

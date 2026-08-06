@@ -288,3 +288,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .roadmap-progress-line,
+  .roadmap-progress-node {
+    transition: opacity 300ms ease;
+    transform: none;
+  }
+
+  .roadmap-progress-visible .roadmap-progress-line {
+    transform: none;
+  }
+
+  .roadmap-progress-node-now::before,
+  .roadmap-item-now::after {
+    animation: none;
+  }
+}
