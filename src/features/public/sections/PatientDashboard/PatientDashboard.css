@@ -3,10 +3,11 @@
 /* Continues the near-black room ScrollStackFeature ends on (see that
    file's own comment for the full reasoning) rather than reverting to
    the site's plain dark-neutral --color-surface token, so there's no
-   visible seam where this section begins. Same flat #040404 base top
-   and bottom as every section through Footer — only the ambient glow
-   positions/sizes differ, each kept within the same verified safe
-   margin from both edges. */
+   visible seam where this section begins. Same flat #040404 base as
+   every section through Footer, same oversized/off-screen/low-opacity
+   layering recipe — only the individual glows' positions and sizes
+   differ, so the light drifts to a new spot each section instead of
+   repeating. */
 .patient-preview-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
@@ -14,18 +15,14 @@
   flex-direction: column;
   justify-content: center;
   background:
-    radial-gradient(
-      ellipse 130% 34% at 78% 50%,
-      rgba(28, 37, 92, 0.19) 0%,
-      rgba(28, 37, 92, 0.08) 35%,
-      transparent 64%
-    ),
-    radial-gradient(
-      ellipse 65% 20% at 15% 34%,
-      rgba(23, 26, 82, 0.13) 0%,
-      rgba(23, 26, 82, 0.05) 40%,
-      transparent 60%
-    ),
+    radial-gradient(ellipse 290% 180% at 145% -25%, rgba(23, 26, 82, 0.04), transparent 60%),
+    radial-gradient(ellipse 270% 160% at -60% 55%, rgba(28, 37, 92, 0.045), transparent 62%),
+    radial-gradient(ellipse 210% 145% at 130% 90%, rgba(23, 26, 82, 0.05), transparent 60%),
+    radial-gradient(ellipse 200% 140% at -20% 20%, rgba(28, 37, 92, 0.055), transparent 62%),
+    radial-gradient(ellipse 180% 125% at 30% 65%, rgba(46, 62, 143, 0.065), transparent 58%),
+    radial-gradient(ellipse 145% 105% at 76% 48%, rgba(46, 62, 143, 0.125), transparent 55%),
+    radial-gradient(ellipse 250% 95% at 55% 100%, rgba(23, 26, 82, 0.04), transparent 64%),
+    radial-gradient(ellipse 70% 55% at 20% 35%, rgba(74, 43, 255, 0.03), transparent 55%),
     #040404;
 }
 
