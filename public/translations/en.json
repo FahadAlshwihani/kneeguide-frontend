@@ -979,14 +979,14 @@
         }
       },
       "stage2": {
-        "heading": "Hardware Integration",
-        "description": "The rehabilitation hardware has been successfully integrated with the platform and is fully communicating with the system.",
+        "heading": "Hardware Prototype",
+        "description": "The rehabilitation hardware has been designed and physically prototyped. Software integration with the platform is currently underway.",
         "items": {
+          "industrialDesign": "Industrial design",
+          "hardwarePrototype": "Hardware prototype",
           "sensorIntegration": "Sensor integration",
           "deviceCommunication": "Device communication",
-          "liveDataTransmission": "Live data transmission",
-          "calibration": "Calibration",
-          "hardwareTesting": "Hardware testing"
+          "softwareIntegration": "Software integration"
         }
       },
       "stage3": {
