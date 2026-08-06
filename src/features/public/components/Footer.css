@@ -1,20 +1,20 @@
 /* Uses global design tokens from src/index.css */
 
 /* Continues the near-black room all the way to the end — see
-   PatientDashboard.css's comment for the shared base/margin pattern. The
-   old border-top is dropped: a 1px hairline here would be exactly the
+   PatientDashboard.css's comment for the shared base/recipe. The old
+   border-top is dropped: a 1px hairline here would be exactly the
    visible "this section starts" seam the continuous canvas is meant to
-   avoid. Single, dim glow — the light fading back into black by the time
-   the page ends, rather than a second layer competing for attention on
-   what's meant to be the quietest section. */
+   avoid. Fewer, dimmer layers than the sections above — Footer is much
+   shorter than a full-viewport section and is the terminal element
+   besides, so the light should read as fading back into black by the
+   time the page ends, not competing for attention on the quietest
+   section. */
 .footer-root {
   background:
-    radial-gradient(
-      ellipse 90% 26% at 50% 50%,
-      rgba(23, 26, 82, 0.14) 0%,
-      rgba(23, 26, 82, 0.06) 38%,
-      transparent 62%
-    ),
+    radial-gradient(ellipse 260% 200% at 50% -60%, rgba(23, 26, 82, 0.035), transparent 60%),
+    radial-gradient(ellipse 220% 170% at -40% 120%, rgba(28, 37, 92, 0.03), transparent 62%),
+    radial-gradient(ellipse 190% 150% at 130% 100%, rgba(23, 26, 82, 0.035), transparent 60%),
+    radial-gradient(ellipse 130% 95% at 50% 45%, rgba(46, 62, 143, 0.06), transparent 55%),
     #040404;
 }
 
