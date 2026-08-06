@@ -85,6 +85,33 @@
   flex-shrink: 0;
 }
 
+/* Occasional "confirming" pop for a single point icon — see index.jsx,
+   where each of the three is scheduled independently on its own
+   randomized timer so they never animate together. Single small
+   overshoot then settle, no repeated bounce. drop-shadow uses the same
+   --color-primary blue, not a new color. */
+@keyframes patientPointIconConfirm {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0));
+  }
+  35% {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.55));
+  }
+  65% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0));
+  }
+}
+
+.patient-preview-point-icon-pulse {
+  animation: patientPointIconConfirm 650ms ease-out;
+}
+
 .patient-preview-mock {
   display: flex;
   justify-content: center;
@@ -211,10 +238,28 @@
   gap: 12px;
   font-size: 0.9rem;
   color: var(--color-muted);
+  transition: color 400ms ease;
 }
 
 .patient-preview-mock-item-done {
   color: var(--color-text);
+}
+
+/* Fade + a few px of slide for whichever row just became done — see
+   index.jsx. transform/opacity only, so this stays compositor-only. */
+@keyframes patientItemActivate {
+  0% {
+    opacity: 0.6;
+    transform: translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.patient-preview-mock-item-activate {
+  animation: patientItemActivate 450ms ease-out;
 }
 
 .patient-preview-mock-check {
@@ -223,11 +268,30 @@
   border-radius: 6px;
   border: 2px solid var(--color-border);
   flex-shrink: 0;
+  transition: background-color 300ms ease, border-color 300ms ease;
 }
 
 .patient-preview-mock-item-done .patient-preview-mock-check {
   background: var(--color-secondary);
   border-color: var(--color-secondary);
+}
+
+/* Tiny confirmation pulse on the checkbox that just became done. No
+   bounce/overshoot beyond the single 1.05 peak the spec asks for. */
+@keyframes patientCheckPulse {
+  0% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.patient-preview-mock-check-pulse {
+  animation: patientCheckPulse 300ms ease-out;
 }
 
 @media (max-width: 900px) {
@@ -242,5 +306,30 @@
   .patient-preview-copy {
     align-items: center;
     text-align: center;
+  }
+}
+
+/* The loop keeps running (the ring/checklist values still update — that's
+   still useful, correct content, not motion), but every visible transition
+   collapses to instant for anyone who's asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .patient-preview-mock-dial {
+    transition: none;
+  }
+
+  .patient-preview-mock-dial::before {
+    transition: none;
+  }
+
+  .patient-preview-mock-item,
+  .patient-preview-mock-check {
+    transition: none;
+  }
+
+  .patient-preview-mock-item-activate,
+  .patient-preview-mock-check-pulse,
+  .patient-preview-mock-time-update,
+  .patient-preview-point-icon-pulse {
+    animation: none;
   }
 }
