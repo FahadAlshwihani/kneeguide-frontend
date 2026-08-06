@@ -533,10 +533,4 @@
     animation: none;
     opacity: 0.4;
   }
-
-  .roadmap-mobile-item {
-    transition: opacity 300ms ease;
-    filter: none;
-    transform: none;
-  }
 }
