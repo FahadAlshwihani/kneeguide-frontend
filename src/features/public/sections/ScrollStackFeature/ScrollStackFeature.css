@@ -20,56 +20,44 @@
 
 /* A near-black room, not a blue gradient — #040404 is the entire base,
    flat and uniform, the same solid value every section from here through
-   Footer opens and closes on (see their own files). Color exists only as
-   ambient light layered on top: several very soft, very low-opacity
-   radial glows (never higher than ~0.2 alpha), each with a three-stop
-   falloff (full color at its core, half that at ~35% of its own radius,
-   fully transparent by ~60-64%) so it dissipates like real light rather
-   than fading in a straight ramp to nothing. No linear gradient anywhere
-   — the previous version's black-to-navy ramp read as "a blue background
-   with some black" no matter how dark its opening stop was, because the
-   base itself was still a color. A flat black base with light drifting
-   across it reads the opposite way: black first, color discovered inside
-   it.
+   Footer opens and closes on (see their own files). No linear gradient
+   anywhere: the previous version's black-to-navy ramp read as "a blue
+   background with some black" no matter how dark its opening stop was,
+   because the base itself was still a color.
 
-   Every glow's *vertical* radius and position are chosen so its color
-   never reaches within a wide, deliberately verified margin of the top
-   or bottom edge (worked example: a radius of 34% of box height with its
-   transparent stop at 64% reaches at most 0.64 x 34% = 21.76% from its
-   own center — centered at 50%, that's ~28% of clearance on both sides,
-   independent of this section's real rendered height). That's what keeps
-   the very top/bottom rows of every section pure #040404, so adjacent
-   sections meet with nothing visible at the seam — only the ambient
-   light moves; the floor underneath it never does. Horizontal position
-   and size are unconstrained (no seam risk there), which is what lets
-   each section's glows sit somewhere different — top-left, center,
-   off-screen past an edge — without looking procedurally repeated. */
+   Color exists only as many (8-12) very large, very low-opacity radial
+   layers, each sized well beyond the section's own box (150-320% of it)
+   and mostly centered outside the visible box entirely. That's the part
+   that actually produces diffusion rather than decoration: a radial
+   gradient that size only ever shows the box a small, gradual slice of
+   a much larger falloff, so nothing inside the frame ever resolves to a
+   crisp "this is the edge of the glow" ring the way a smaller, on-screen
+   blob does. With 8+ of these overlapping at offset positions and sizes,
+   no single one is visually separable from the rest — the eye reads
+   accumulated light, not individual sources. Individual layers stay
+   inside the 0.03-0.16 band (most 0.03-0.08, one or two brighter accents
+   at 0.10-0.13, the violet whisper barely above 0), so even heavy
+   overlap can't compound into a "blue region" — the black underneath is
+   never fully overtaken. Ellipses are deliberately non-circular (width
+   and height ratios vary per layer) for organic stretch rather than a
+   grid of uniform circles.
+
+   Every section from here through Footer repeats this same recipe —
+   same base, same opacity bands, same oversized/off-screen sizing logic
+   — with only the individual layers' positions, sizes and which color
+   leads varied, so the light feels like it's drifting to a different
+   place each time rather than the same composition shifted sideways. */
 .scroll-stack-feature {
   background:
-    radial-gradient(
-      ellipse 45% 14% at 58% 42%,
-      rgba(74, 43, 255, 0.05) 0%,
-      rgba(74, 43, 255, 0.02) 40%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 65% 20% at 55% 38%,
-      rgba(46, 62, 143, 0.12) 0%,
-      rgba(46, 62, 143, 0.05) 40%,
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 130% 34% at 24% 56%,
-      rgba(23, 26, 82, 0.2) 0%,
-      rgba(23, 26, 82, 0.09) 35%,
-      transparent 64%
-    ),
-    radial-gradient(
-      ellipse 120% 34% at 84% 50%,
-      rgba(28, 37, 92, 0.17) 0%,
-      rgba(28, 37, 92, 0.07) 35%,
-      transparent 64%
-    ),
+    radial-gradient(ellipse 300% 190% at -70% -20%, rgba(28, 37, 92, 0.04), transparent 62%),
+    radial-gradient(ellipse 280% 170% at 150% 40%, rgba(23, 26, 82, 0.045), transparent 60%),
+    radial-gradient(ellipse 220% 140% at -30% 70%, rgba(23, 26, 82, 0.05), transparent 60%),
+    radial-gradient(ellipse 200% 150% at 115% 85%, rgba(28, 37, 92, 0.055), transparent 62%),
+    radial-gradient(ellipse 190% 130% at 60% 20%, rgba(46, 62, 143, 0.06), transparent 58%),
+    radial-gradient(ellipse 150% 110% at 52% 44%, rgba(46, 62, 143, 0.12), transparent 56%),
+    radial-gradient(ellipse 240% 100% at 35% 96%, rgba(23, 26, 82, 0.045), transparent 64%),
+    radial-gradient(ellipse 260% 160% at 40% -35%, rgba(28, 37, 92, 0.035), transparent 62%),
+    radial-gradient(ellipse 80% 65% at 58% 38%, rgba(74, 43, 255, 0.035), transparent 55%),
     #040404;
 }
 
