@@ -105,7 +105,11 @@ const PatientDashboard = () => {
           <div className="patient-preview-mock-card">
             <div className="patient-preview-mock-header">
               <span className="patient-preview-mock-title">Today&apos;s check-in</span>
-              <span className="patient-preview-mock-time">{timestamp}</span>
+              <span
+                className={`patient-preview-mock-time${pulseIndex !== null ? " patient-preview-mock-time-update" : ""}`}
+              >
+                {timestamp}
+              </span>
             </div>
 
             <div
