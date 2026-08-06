@@ -914,6 +914,30 @@
       "tag": "اليوم"
     }
   },
+  "publicPatientDashboard": {
+    "badge": "للمرضى",
+    "title": "تعافٍ يمكنك رؤيته بنفسك.",
+    "description": "سجّل شعورك، تابع تمارينك، وشاهد تقدّمك يتراكم — كل ذلك من هاتفك.",
+    "points": {
+      "checkIn": "تسجيل حالة الألم بلمسة واحدة يوميًا",
+      "checklist": "قائمة واضحة بتمارين اليوم",
+      "appointment": "موعدك القادم على بُعد لمسة واحدة دائمًا"
+    },
+    "mock": {
+      "title": "تسجيل اليوم",
+      "ringUnit": "من 10",
+      "exercises": {
+        "heelSlides": "انزلاق الكعب",
+        "quadSets": "تمارين الفخذ الرباعي",
+        "straightLegRaises": "رفع الساق مستقيمة"
+      },
+      "timestamps": {
+        "step1": "7:42 ص",
+        "step2": "7:45 ص",
+        "step3": "7:48 ص"
+      }
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "فتح القائمة",
     "menuToggleClose": "إغلاق القائمة",

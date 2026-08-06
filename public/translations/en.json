@@ -914,6 +914,30 @@
       "tag": "Today"
     }
   },
+  "publicPatientDashboard": {
+    "badge": "For Patients",
+    "title": "Recovery you can actually see.",
+    "description": "Log how you feel, follow your exercises, and watch your progress add up — all from your phone.",
+    "points": {
+      "checkIn": "A one-tap pain wheel check-in each day",
+      "checklist": "A clear checklist of today's exercises",
+      "appointment": "Your next appointment, always one tap away"
+    },
+    "mock": {
+      "title": "Today's check-in",
+      "ringUnit": "/ 10",
+      "exercises": {
+        "heelSlides": "Heel slides",
+        "quadSets": "Quad sets",
+        "straightLegRaises": "Straight leg raises"
+      },
+      "timestamps": {
+        "step1": "7:42 AM",
+        "step2": "7:45 AM",
+        "step3": "7:48 AM"
+      }
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",
