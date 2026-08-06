@@ -1,14 +1,12 @@
 /* Uses global design tokens from src/index.css */
 
-/* Continues the deep-navy-on-black wash ScrollStackFeature ends on (see
-   that file's own comment for the full reasoning) rather than reverting
-   to the site's plain dark-neutral --color-surface token, so there's no
-   visible seam where this section begins. Same anchor color (#0b1d38)
-   top and bottom, with a navy glow + a black cloud kept a verified ~25%
-   of the box's height away from every edge (see ScrollStackFeature.css)
-   — every section through Footer repeats this exact pattern with only
-   the glow/cloud x-position varied, so any two of them sit next to each
-   other with nothing visible at the boundary. */
+/* Continues the near-black room ScrollStackFeature ends on (see that
+   file's own comment for the full reasoning) rather than reverting to
+   the site's plain dark-neutral --color-surface token, so there's no
+   visible seam where this section begins. Same flat #040404 base top
+   and bottom as every section through Footer — only the ambient glow
+   positions/sizes differ, each kept within the same verified safe
+   margin from both edges. */
 .patient-preview-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
@@ -16,9 +14,19 @@
   flex-direction: column;
   justify-content: center;
   background:
-    radial-gradient(ellipse 95% 40% at 72% 50%, rgba(40, 90, 155, 0.4), transparent 62%),
-    radial-gradient(ellipse 100% 42% at 24% 50%, rgba(3, 5, 9, 0.5), transparent 62%),
-    #0b1d38;
+    radial-gradient(
+      ellipse 130% 34% at 78% 50%,
+      rgba(28, 37, 92, 0.19) 0%,
+      rgba(28, 37, 92, 0.08) 35%,
+      transparent 64%
+    ),
+    radial-gradient(
+      ellipse 65% 20% at 15% 34%,
+      rgba(23, 26, 82, 0.13) 0%,
+      rgba(23, 26, 82, 0.05) 40%,
+      transparent 60%
+    ),
+    #040404;
 }
 
 .patient-preview-container {
