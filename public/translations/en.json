@@ -961,28 +961,49 @@
     "badge": "What's Next",
     "title": "We're just getting started.",
     "description": "KneeGuide is being built with clinics, one release at a time.",
-    "timeline": {
-      "now": "Now",
-      "next": "Next",
-      "later": "Later",
+    "stageLabel": "Stage {{number}}",
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In Progress",
       "future": "Future"
     },
-    "milestones": {
-      "now": {
-        "title": "Core tracking & dashboards",
-        "description": "Daily pain and exercise logging, live for patients and clinicians today."
+    "stages": {
+      "stage1": {
+        "heading": "Core Platform",
+        "description": "Daily pain and exercise logging, live for patients and clinicians today.",
+        "items": {
+          "dashboard": "Dashboard",
+          "authentication": "Authentication",
+          "patientLogging": "Patient logging",
+          "exerciseTracking": "Exercise tracking"
+        }
       },
-      "next": {
-        "title": "AI trend analysis",
-        "description": "Rolling out pattern detection across pilot clinics."
+      "stage2": {
+        "heading": "AI Foundation",
+        "description": "Pattern detection and recovery insights, already helping care teams focus on what matters.",
+        "items": {
+          "patternDetection": "Pattern detection",
+          "clinicalSummaries": "Clinical summaries",
+          "recoveryInsights": "Recovery insights"
+        }
       },
-      "later": {
-        "title": "Wearable integration",
-        "description": "Syncing mobility data automatically from wearable devices."
+      "stage3": {
+        "heading": "Wearable Integration",
+        "description": "Syncing mobility data automatically from wearable devices.",
+        "items": {
+          "appleWatch": "Apple Watch",
+          "healthKit": "HealthKit",
+          "sensorSyncing": "Sensor syncing"
+        }
       },
-      "future": {
-        "title": "Beyond the knee",
-        "description": "Extending the same approach to other rehabilitation programs."
+      "stage4": {
+        "heading": "Beyond the Knee",
+        "description": "Extending the same approach to other rehabilitation programs.",
+        "items": {
+          "rehabPrograms": "Additional rehabilitation programs",
+          "multiCondition": "Multi-condition support",
+          "expandedPlatform": "Expanded recovery platform"
+        }
       }
     }
   },
