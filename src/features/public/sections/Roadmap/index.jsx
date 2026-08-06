@@ -22,13 +22,15 @@ const Roadmap = () => {
           <p className="roadmap-description">{t("publicRoadmap.description")}</p>
         </RevealSection>
 
-        {/* Purely a visual progress indicator restating the "now" each
-            card already labels itself with below — the dots/line carry
-            no information of their own, so they're aria-hidden; the
-            stage labels are kept as real, accessible text. */}
+        {/* The only place the stage names appear now — cards below start
+            directly with their title, no repeated NOW/NEXT/LATER/FUTURE.
+            Dots/line/sweep carry no information of their own, so they're
+            aria-hidden; the stage labels are kept as real, accessible
+            text. */}
         <div ref={timelineRef} className={`roadmap-progress${timelineVisible ? " roadmap-progress-visible" : ""}`}>
           <div className="roadmap-progress-track" aria-hidden="true">
             <span className="roadmap-progress-line" />
+            <span className="roadmap-progress-sweep" />
             {MILESTONE_KEYS.map((key, index) => (
               <span
                 key={key}
@@ -49,7 +51,6 @@ const Roadmap = () => {
         <div className="roadmap-timeline">
           {MILESTONE_KEYS.map((key, index) => (
             <RevealSection as="div" key={key} delay={index * 0.1} className={`roadmap-item roadmap-item-${key}`}>
-              <span className="roadmap-item-phase">{t(`publicRoadmap.timeline.${key}`)}</span>
               <h3 className="roadmap-item-title">{t(`publicRoadmap.milestones.${key}.title`)}</h3>
               <p className="roadmap-item-description">{t(`publicRoadmap.milestones.${key}.description`)}</p>
             </RevealSection>
