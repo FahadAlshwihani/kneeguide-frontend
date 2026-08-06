@@ -11,18 +11,13 @@
   flex-direction: column;
   justify-content: center;
   background:
-    radial-gradient(
-      ellipse 125% 34% at 22% 52%,
-      rgba(23, 26, 82, 0.19) 0%,
-      rgba(23, 26, 82, 0.08) 35%,
-      transparent 64%
-    ),
-    radial-gradient(
-      ellipse 60% 20% at 85% 66%,
-      rgba(46, 62, 143, 0.13) 0%,
-      rgba(46, 62, 143, 0.05) 40%,
-      transparent 60%
-    ),
+    radial-gradient(ellipse 280% 175% at -65% 30%, rgba(28, 37, 92, 0.045), transparent 62%),
+    radial-gradient(ellipse 260% 155% at 155% -15%, rgba(23, 26, 82, 0.04), transparent 60%),
+    radial-gradient(ellipse 215% 150% at -25% 90%, rgba(23, 26, 82, 0.05), transparent 62%),
+    radial-gradient(ellipse 195% 135% at 120% 60%, rgba(28, 37, 92, 0.055), transparent 60%),
+    radial-gradient(ellipse 175% 120% at 65% 30%, rgba(46, 62, 143, 0.065), transparent 58%),
+    radial-gradient(ellipse 150% 108% at 24% 55%, rgba(46, 62, 143, 0.115), transparent 55%),
+    radial-gradient(ellipse 235% 90% at 60% 98%, rgba(23, 26, 82, 0.04), transparent 64%),
     #040404;
 }
 
