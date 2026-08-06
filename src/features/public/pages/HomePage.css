@@ -3,3 +3,12 @@
 .home-root {
   display: block;
 }
+
+/* Layer 1 of the atmosphere: a flat #040404 base, nothing else. Layer 2
+   (the actual lighting) is AtmosphereLighting, absolutely positioned
+   inside this element with z-index: -1, so position: relative here is
+   what gives it something to size against and stack behind. */
+.atmosphere-wrapper {
+  position: relative;
+  background: #040404;
+}

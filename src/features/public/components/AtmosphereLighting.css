@@ -1,0 +1,73 @@
+/* A real lighting layer, not a background gradient trying to imitate
+   one. Each blob is a plain solid-color shape — softness comes entirely
+   from filter: blur() at extreme radii (280-400px), and "emitted" rather
+   than "painted" comes from mix-blend-mode: screen, which can only
+   brighten what's beneath it (the way overlapping light beams do),
+   never lay down a flat colored fill the way normal blending would.
+   Opacity here controls intensity only (how bright the light is), not
+   softness — softness is the blur's job alone.
+
+   Sized in vw/vh, not percentages of this layer's own box, because that
+   box is the combined height of six sections and could run to several
+   thousand pixels — vw/vh keeps each blob a consistent real-world size
+   regardless of how tall the content underneath adds up to be. Only 4
+   blobs, positioned far apart (top: 2%, 28%, 62%) and part-way off-canvas
+   (negative/>100% left), on purpose: most of that six-section run should
+   read as near-black, with light pooling in only a few places, not one
+   glow evenly smeared across every section. */
+.atmosphere-lighting {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atmosphere-blob {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+
+.atmosphere-blob-a {
+  top: 2%;
+  left: -15vw;
+  width: 85vw;
+  height: 140vh;
+  background: #1c255c;
+  opacity: 0.32;
+  filter: blur(320px);
+}
+
+.atmosphere-blob-b {
+  top: 28%;
+  left: 55vw;
+  width: 75vw;
+  height: 120vh;
+  background: #2e3e8f;
+  opacity: 0.4;
+  filter: blur(280px);
+}
+
+.atmosphere-blob-c {
+  top: 62%;
+  left: -25vw;
+  width: 90vw;
+  height: 150vh;
+  background: #171a52;
+  opacity: 0.28;
+  filter: blur(400px);
+}
+
+/* The violet whisper — small, faint, positioned inside blob-b's reach so
+   it only ever tints that brighter region rather than reading as its
+   own separate light source. */
+.atmosphere-blob-d {
+  top: 22%;
+  left: 40vw;
+  width: 40vw;
+  height: 60vh;
+  background: #4a2bff;
+  opacity: 0.06;
+  filter: blur(260px);
+}
