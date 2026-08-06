@@ -1,0 +1,23 @@
+/* transform/opacity/filter only — no layout-affecting properties, so
+   this never triggers layout thrashing regardless of how many sections
+   adopt it. */
+.reveal-section {
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(24px);
+  transition: opacity 600ms ease, filter 600ms ease, transform 600ms ease;
+}
+
+.reveal-section-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-section {
+    transition: opacity 300ms ease;
+    filter: none;
+    transform: none;
+  }
+}
