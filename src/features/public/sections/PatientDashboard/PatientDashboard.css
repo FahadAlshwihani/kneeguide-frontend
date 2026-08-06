@@ -1,9 +1,8 @@
 /* Uses global design tokens from src/index.css */
 
 /* No background of its own anymore — see ScrollStackFeature.css's
-   comment. The shared .atmosphere-wrapper this renders inside of
-   (HomePage.jsx) carries the flat #040404 base and the real lighting
-   layer; transparent here lets it show through. */
+   comment. The single shared Grainient canvas (PublicLayout.jsx) shows
+   through wherever transparent lets it. */
 .patient-preview-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
