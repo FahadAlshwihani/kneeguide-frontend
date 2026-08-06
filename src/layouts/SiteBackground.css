@@ -17,13 +17,14 @@
    child of .public-root unconditionally. */
 .public-root {
   position: relative;
+  isolation: isolate;
 }
 
 .grainient-container.site-background-canvas {
-  position: fixed;
+  position: absolute;
   inset: 0;
   width: auto;
   height: auto;
-  z-index: 999999;
+  z-index: -1;
   pointer-events: none;
 }
