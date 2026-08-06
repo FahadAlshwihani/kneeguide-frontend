@@ -1,7 +1,9 @@
 /* Uses global design tokens from src/index.css */
 
-/* Continues the deep-navy-on-black wash — see PatientDashboard.css's
-   comment for the shared anchor color/pattern used through Footer. */
+/* Continues the near-black room — see PatientDashboard.css's comment for
+   the shared base/margin pattern used through Footer. Off-screen glow
+   (x > 100%) here on purpose, for variety — horizontal position never
+   risks the top/bottom seam. */
 .roadmap-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
@@ -9,9 +11,19 @@
   flex-direction: column;
   justify-content: center;
   background:
-    radial-gradient(ellipse 95% 40% at 78% 50%, rgba(40, 90, 155, 0.4), transparent 62%),
-    radial-gradient(ellipse 100% 42% at 22% 50%, rgba(3, 5, 9, 0.5), transparent 62%),
-    #0b1d38;
+    radial-gradient(
+      ellipse 140% 32% at 104% 48%,
+      rgba(28, 37, 92, 0.17) 0%,
+      rgba(28, 37, 92, 0.07) 35%,
+      transparent 64%
+    ),
+    radial-gradient(
+      ellipse 55% 20% at 12% 32%,
+      rgba(23, 26, 82, 0.13) 0%,
+      rgba(23, 26, 82, 0.05) 40%,
+      transparent 60%
+    ),
+    #040404;
 }
 
 .roadmap-container {
