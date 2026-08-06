@@ -70,6 +70,7 @@
 }
 
 .ai-card-icon {
+  position: relative;
   width: 44px;
   height: 44px;
   border-radius: var(--radius-md);
@@ -79,6 +80,71 @@
   background: var(--gradient-brand);
   color: #ffffff;
   font-size: 1.1rem;
+}
+
+/* Trend detection — a gentle horizontal scan, transform-only. */
+@keyframes aiIconScan {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-3px);
+  }
+  70% {
+    transform: translateX(3px);
+  }
+}
+
+.ai-card-icon-scan svg:first-child {
+  animation: aiIconScan 1400ms ease-in-out;
+}
+
+/* Adherence signals — one tiny bell shake, swinging from near its top
+   rather than its center so it reads as physical. */
+@keyframes aiIconShake {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(7deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+}
+
+.ai-card-icon-shake svg:first-child {
+  transform-origin: 50% 20%;
+  animation: aiIconShake 550ms ease-in-out;
+}
+
+/* Clinician-ready summaries — a small confirmation badge that appears
+   and fades over the document icon, opacity-only so it stays
+   compositor-friendly. Doesn't change the icon container's own size. */
+.ai-card-icon-confirm {
+  position: absolute;
+  bottom: -4px;
+  inset-inline-end: -4px;
+  width: 16px;
+  height: 16px;
+  font-size: 0.7rem;
+  color: var(--color-secondary);
+  background: var(--color-surface);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.ai-card-icon-confirm-visible {
+  opacity: 1;
 }
 
 .ai-card-title {
