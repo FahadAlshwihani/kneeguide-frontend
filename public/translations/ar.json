@@ -970,23 +970,28 @@
     "stages": {
       "stage1": {
         "heading": "المنصة الأساسية",
-        "description": "الأساس الذي يُبنى عليه كل شيء آخر — حسابات وبيانات وسير عمل حقيقي، متاح اليوم."
-      },
-      "stage2": {
-        "heading": "تجربة المنصة",
-        "description": "تحويل ذلك الأساس إلى منتج يومي متكامل للمرضى والأطباء.",
+        "description": "اكتمل الأساس الذي تقوم عليه منصة التأهيل.",
         "items": {
           "authentication": "تسجيل الدخول والتحقق",
           "dashboard": "لوحة المعلومات",
-          "patientWorkflow": "سير عمل المريض",
-          "exerciseTracking": "تتبع التمارين",
-          "responsiveUI": "واجهة متجاوبة",
-          "localization": "دعم تعدّد اللغات"
+          "patientManagement": "إدارة المرضى",
+          "exerciseTracking": "تتبع التمارين"
+        }
+      },
+      "stage2": {
+        "heading": "دمج الأجهزة",
+        "description": "تم دمج أجهزة التأهيل بنجاح مع المنصة، وهي تتواصل بالكامل مع النظام.",
+        "items": {
+          "sensorIntegration": "دمج الحساسات",
+          "deviceCommunication": "التواصل بين الأجهزة",
+          "liveDataTransmission": "نقل البيانات المباشر",
+          "calibration": "المعايرة",
+          "hardwareTesting": "اختبار الأجهزة"
         }
       },
       "stage3": {
         "heading": "أساسيات الذكاء الاصطناعي",
-        "description": "رصد الأنماط ورؤى التعافي، تساعد فرق الرعاية بالفعل على التركيز على ما يهم.",
+        "description": "بناء طبقة الذكاء الاصطناعي التي تفهم تقدّم التأهيل وتساعد الأطباء.",
         "items": {
           "patternDetection": "رصد الأنماط",
           "clinicalSummaries": "ملخّصات سريرية",
@@ -995,11 +1000,11 @@
       },
       "stage4": {
         "heading": "أبعد من الركبة",
-        "description": "توسيع النهج نفسه ليشمل الأجهزة القابلة للارتداء وبرامج تأهيل أخرى.",
+        "description": "توسيع نطاق المنصة إلى ما هو أبعد من تأهيل الركبة ليشمل برامج تعافٍ إضافية.",
         "items": {
-          "wearables": "الأجهزة القابلة للارتداء",
-          "healthKit": "HealthKit",
           "appleWatch": "ساعة Apple Watch",
+          "healthKit": "HealthKit",
+          "wearables": "الأجهزة القابلة للارتداء",
           "multiConditionRehab": "تأهيل متعدد الحالات"
         }
       }
