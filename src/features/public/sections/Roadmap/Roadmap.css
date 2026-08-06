@@ -51,19 +51,42 @@
   color: var(--color-text);
 }
 
-/* The minimal progress indicator above the cards — purely decorative
-   (see index.jsx for the aria-hidden split between the dots/line and the
-   real, accessible stage labels). Same 4-column grid as .roadmap-timeline
-   below so the two stay loosely aligned without being coupled.
+/* Two completely independent layouts, toggled purely by viewport width —
+   see index.jsx for why both exist in the DOM at once: whichever one is
+   display:none simply never renders or runs its animations, so there's
+   no duplicated cost, just duplicated (and much simpler this way)
+   markup. */
+.roadmap-mobile-view {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .roadmap-desktop-view {
+    display: none;
+  }
+
+  .roadmap-mobile-view {
+    display: block;
+  }
+}
+
+/* ============================================================
+   Desktop (>=768px): horizontal timeline, unchanged in spirit from
+   before, plus plain content blocks below it (no cards).
+   ============================================================ */
+
+/* The minimal progress indicator above the blocks — purely decorative
+   (see index.jsx for the aria-hidden split between the dots/line/sweep
+   and the real, accessible status labels).
 
    RTL: no left/right or edge-anchored transform-origin used anywhere
-   here — the line's reveal is a center-anchored opacity+scale (see
-   .roadmap-progress-line below), which looks identical regardless of
-   direction, and the track/labels are plain grids, so document order
-   alone is what determines "now" reading first — under dir="rtl" the
-   grid's own inline-axis reversal (same mechanism already relied on by
-   every other 4-up grid in this project) puts it on the right and lets
-   the whole row read Future <- Later <- Next <- Now for free. */
+   here — the line's reveal is a center-anchored opacity+scale, which
+   looks identical regardless of direction, and the track/labels are
+   plain grids, so document order alone is what determines which stage
+   reads first — under dir="rtl" the grid's own inline-axis reversal
+   (same mechanism already relied on by every other 4-up grid in this
+   project) puts stage 1 on the right and lets the whole row read in
+   reverse for free. */
 .roadmap-progress {
   margin-bottom: 40px;
 }
@@ -103,7 +126,7 @@
   background: var(--color-border);
   opacity: 0;
   transform: scale(0.5);
-  transition: opacity 450ms ease, transform 450ms ease;
+  transition: opacity 450ms ease, transform 450ms ease, background-color 450ms ease;
 }
 
 .roadmap-progress-visible .roadmap-progress-node {
@@ -111,11 +134,29 @@
   transform: scale(1);
 }
 
-/* Every node gets this halo (opacity-only, never scaled), but only lights
-   up when the travelling sweep below reaches it — see the four
-   roadmapNodeGlow* keyframes, each timed to the same 7s cycle as
-   .roadmap-progress-sweep so the "light" and the node flash arrive
-   together. */
+/* Completed stages (1 and 2): solid, settled — no glow, they're done. */
+.roadmap-progress-node-1,
+.roadmap-progress-node-2 {
+  background: var(--color-primary);
+}
+
+/* The in-progress stage (3): a touch bigger, plus the one node that
+   keeps a constant glow between sweeps (see roadmapNodeGlow3 below). */
+.roadmap-progress-node-3 {
+  width: 9px;
+  height: 9px;
+  background: var(--color-primary);
+}
+
+/* Future (4): outline only, nothing solid yet. */
+.roadmap-progress-node-4 {
+  background: var(--color-border);
+}
+
+/* Every node gets this halo (opacity-only, never scaled), lit only when
+   the travelling sweep reaches it — see the four roadmapNodeGlow*
+   keyframes, each timed to the same 7s cycle as .roadmap-progress-sweep
+   so the light and the node flash arrive together. */
 .roadmap-progress-node::before {
   content: "";
   position: absolute;
@@ -125,47 +166,33 @@
   opacity: 0;
 }
 
-/* The active stage stays a touch bigger and brighter at rest — no
-   animation needed here beyond the shared sweep-synced flash below. */
-.roadmap-progress-node-now {
-  width: 9px;
-  height: 9px;
-  background: var(--color-primary);
+.roadmap-progress-visible .roadmap-progress-node-1::before {
+  animation: roadmapNodeGlow1 7000ms ease-in-out infinite;
 }
 
-.roadmap-progress-visible .roadmap-progress-node-now::before {
-  animation: roadmapNodeGlowNow 7000ms ease-in-out infinite;
+.roadmap-progress-visible .roadmap-progress-node-2::before {
+  animation: roadmapNodeGlow2 7000ms ease-in-out infinite;
 }
 
-.roadmap-progress-visible .roadmap-progress-node-next::before {
-  animation: roadmapNodeGlowNext 7000ms ease-in-out infinite;
+.roadmap-progress-visible .roadmap-progress-node-3::before {
+  animation: roadmapNodeGlow3 7000ms ease-in-out infinite;
 }
 
-.roadmap-progress-visible .roadmap-progress-node-later::before {
-  animation: roadmapNodeGlowLater 7000ms ease-in-out infinite;
+.roadmap-progress-visible .roadmap-progress-node-4::before {
+  animation: roadmapNodeGlow4 7000ms ease-in-out infinite;
 }
 
-.roadmap-progress-visible .roadmap-progress-node-future::before {
-  animation: roadmapNodeGlowFuture 7000ms ease-in-out infinite;
-}
-
-/* now sits at the very start of the sweep's travel (see
-   .roadmap-progress-sweep), so its flash lands at 0% — and since it never
-   fully returns to zero, it also doubles as "now"'s constant subtle glow
-   between sweeps. */
-@keyframes roadmapNodeGlowNow {
+@keyframes roadmapNodeGlow1 {
   0% {
-    opacity: 0.9;
+    opacity: 0.7;
   }
-  6% {
-    opacity: 0.4;
-  }
+  4%,
   100% {
-    opacity: 0.4;
+    opacity: 0;
   }
 }
 
-@keyframes roadmapNodeGlowNext {
+@keyframes roadmapNodeGlow2 {
   0%,
   4% {
     opacity: 0;
@@ -179,21 +206,23 @@
   }
 }
 
-@keyframes roadmapNodeGlowLater {
-  0%,
-  10% {
-    opacity: 0;
+/* Stage 3 is "in progress" — this is the one node that never fully
+   returns to zero, which is what reads as its constant subtle glow
+   between sweeps, briefly brightening right as the light passes. */
+@keyframes roadmapNodeGlow3 {
+  0% {
+    opacity: 0.4;
   }
   12% {
-    opacity: 0.7;
+    opacity: 0.9;
   }
   16%,
   100% {
-    opacity: 0;
+    opacity: 0.4;
   }
 }
 
-@keyframes roadmapNodeGlowFuture {
+@keyframes roadmapNodeGlow4 {
   0%,
   16% {
     opacity: 0;
@@ -207,12 +236,17 @@
   }
 }
 
-/* The travelling light itself — a narrow highlight band sliding the full
-   length of the line, transform + opacity only. Same 0-18% window of the
-   7s cycle as the four node flashes above, so the light visibly reaches
-   each node exactly as that node's own glow peaks. Idle for the
-   remaining ~82% of the cycle before repeating — the line underneath
-   never permanently fills, this only ever passes over it. */
+/* The travelling light. Clipped to the line's own bounds by
+   overflow: hidden here, so it can never visually extend past where the
+   line starts or ends — the translateX range on the ::after below
+   (-50% to 50% of its own, line-matching width) is what keeps its
+   *visible* highlight exactly inside [0%, 100%] of that clipped box
+   too, so the two constraints agree rather than one silently relying on
+   the other. Same 0-18% window of the 7s cycle as the four node flashes
+   above, so the light visibly reaches each node exactly as that node's
+   own glow peaks. Idle for the remaining ~82% of the cycle before
+   repeating — the line underneath never permanently fills, this only
+   ever passes over it. */
 .roadmap-progress-sweep {
   position: absolute;
   inset-inline-start: 12.5%;
@@ -220,6 +254,7 @@
   top: 50%;
   height: 1px;
   transform: translateY(-50%);
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -228,7 +263,7 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent 42%, rgba(37, 99, 235, 0.95) 50%, transparent 58%);
-  transform: translateX(-100%);
+  transform: translateX(-50%);
   opacity: 0;
 }
 
@@ -238,7 +273,7 @@
 
 @keyframes roadmapSweep {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
     opacity: 0;
   }
   2% {
@@ -248,11 +283,11 @@
     opacity: 0.9;
   }
   18% {
-    transform: translateX(100%);
+    transform: translateX(50%);
     opacity: 0;
   }
   100% {
-    transform: translateX(100%);
+    transform: translateX(50%);
     opacity: 0;
   }
 }
@@ -272,115 +307,211 @@
   color: var(--color-muted);
 }
 
-.roadmap-progress-label-now {
+.roadmap-progress-label-inProgress {
   color: var(--color-primary);
 }
 
-.roadmap-progress-label-next {
-  opacity: 0.85;
-}
-
-.roadmap-progress-label-later {
-  opacity: 0.68;
-}
-
 .roadmap-progress-label-future {
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
-.roadmap-timeline {
+/* Plain content blocks — no card, no border, no background, no shadow.
+   Only a neutral "Stage N" eyebrow above the heading; the actual status
+   word (Completed/In Progress/Future) lives solely in the timeline
+   above, never repeated here. */
+.roadmap-blocks {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 24px;
 }
 
-.roadmap-item {
-  position: relative;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-top: 3px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  padding: 24px 20px;
+.roadmap-block {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* Same accent hue on every card (unchanged from before) — only its
-   strength steps down stage by stage, which is what actually reads as
-   "further away" without touching type, spacing, or the muted body
-   copy's own contrast. */
-.roadmap-item-next {
-  border-top-color: rgba(37, 99, 235, 0.6);
+.roadmap-block-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
 }
 
-.roadmap-item-later {
-  border-top-color: rgba(37, 99, 235, 0.4);
-}
-
-.roadmap-item-future {
-  border-top-color: rgba(37, 99, 235, 0.25);
-}
-
-/* A tiny, occasional shimmer over the active card's top accent only —
-   transform + opacity, so it stays compositor-only even though it loops
-   continuously. Long idle stretch between sweeps (see the keyframe
-   timing) is what keeps it from reading as "attention-grabbing". */
-.roadmap-item-now {
-  overflow: hidden;
-}
-
-.roadmap-item-now::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  inset-inline: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
-  transform: translateX(-120%);
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform, opacity;
-  animation: roadmapShimmer 7000ms ease-in-out infinite;
-}
-
-@keyframes roadmapShimmer {
-  0% {
-    transform: translateX(-120%);
-    opacity: 0;
-  }
-  4% {
-    opacity: 0.9;
-  }
-  10%,
-  100% {
-    transform: translateX(120%);
-    opacity: 0;
-  }
-}
-
-.roadmap-item-title {
+.roadmap-block-heading {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-heading);
 }
 
-.roadmap-item-description {
+.roadmap-block-description {
   font-size: 0.88rem;
   line-height: 1.55;
   color: var(--color-muted);
 }
 
-@media (max-width: 960px) {
-  .roadmap-timeline {
+.roadmap-block-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+.roadmap-block-items li {
+  position: relative;
+  padding-inline-start: 14px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.roadmap-block-items li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.55em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-border);
+}
+
+@media (max-width: 960px) and (min-width: 768px) {
+  .roadmap-blocks {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 560px) {
-  .roadmap-timeline {
-    grid-template-columns: 1fr;
-  }
+/* ============================================================
+   Mobile (<768px): a dedicated vertical timeline. Status, heading,
+   description and items all live together per stage — there's no
+   separate horizontal strip to look up at first.
+   ============================================================ */
+
+.roadmap-mobile-view {
+  list-style: none;
+  padding-inline-start: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.roadmap-mobile-item {
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(24px);
+  transition: opacity 600ms ease, filter 600ms ease, transform 600ms ease;
+}
+
+.roadmap-mobile-item.reveal-section-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+.roadmap-mobile-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.roadmap-mobile-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.roadmap-mobile-item-1 .roadmap-mobile-dot,
+.roadmap-mobile-item-2 .roadmap-mobile-dot {
+  background: var(--color-primary);
+}
+
+.roadmap-mobile-item-3 .roadmap-mobile-dot {
+  width: 11px;
+  height: 11px;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+}
+
+.roadmap-mobile-connector {
+  flex: 1;
+  width: 1px;
+  min-height: 32px;
+  margin-block: 6px;
+  background: var(--color-border);
+}
+
+.roadmap-mobile-content {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 32px;
+}
+
+.roadmap-mobile-status {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 4px;
+}
+
+.roadmap-mobile-item-3 .roadmap-mobile-status {
+  color: var(--color-primary);
+}
+
+.roadmap-mobile-item-4 .roadmap-mobile-status {
+  opacity: 0.6;
+}
+
+.roadmap-mobile-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  margin-bottom: 6px;
+}
+
+.roadmap-mobile-description {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.roadmap-mobile-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+.roadmap-mobile-items li {
+  position: relative;
+  padding-inline-start: 14px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.roadmap-mobile-items li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.55em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-border);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -394,19 +525,24 @@
     transform: none;
   }
 
-  .roadmap-progress-node-next::before,
-  .roadmap-progress-node-later::before,
-  .roadmap-progress-node-future::before,
-  .roadmap-progress-sweep::after,
-  .roadmap-item-now::after {
+  .roadmap-progress-node-1::before,
+  .roadmap-progress-node-2::before,
+  .roadmap-progress-node-4::before,
+  .roadmap-progress-sweep::after {
     animation: none;
   }
 
-  /* now keeps its glow, just static instead of sweep-synced — the other
-     three nodes and the sweep only ever exist as animated flashes, so
-     they simply stay off. */
-  .roadmap-progress-node-now::before {
+  /* Stage 3 keeps its glow, just static instead of sweep-synced — the
+     other three nodes and the sweep only ever exist as animated
+     flashes, so they simply stay off. */
+  .roadmap-progress-node-3::before {
     animation: none;
     opacity: 0.4;
+  }
+
+  .roadmap-mobile-item {
+    transition: opacity 300ms ease;
+    filter: none;
+    transform: none;
   }
 }
