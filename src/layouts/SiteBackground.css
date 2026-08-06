@@ -20,10 +20,10 @@
 }
 
 .grainient-container.site-background-canvas {
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: auto;
   height: auto;
-  z-index: -1;
+  z-index: 999999;
   pointer-events: none;
 }
