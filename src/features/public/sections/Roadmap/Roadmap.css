@@ -399,19 +399,13 @@
   flex-direction: column;
 }
 
+/* Reveal (opacity/blur/translateY, repeatable) comes from the shared
+   .reveal-section / .reveal-section-visible classes already applied by
+   RevealSection — including its own prefers-reduced-motion handling —
+   so this only needs its own layout, not a second copy of that logic. */
 .roadmap-mobile-item {
   display: flex;
   gap: 16px;
-  opacity: 0;
-  filter: blur(8px);
-  transform: translateY(24px);
-  transition: opacity 600ms ease, filter 600ms ease, transform 600ms ease;
-}
-
-.roadmap-mobile-item.reveal-section-visible {
-  opacity: 1;
-  filter: blur(0);
-  transform: translateY(0);
 }
 
 .roadmap-mobile-marker {
