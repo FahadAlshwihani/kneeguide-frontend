@@ -185,10 +185,13 @@
 }
 
 /* The in-progress stage (3): a touch bigger, plus the one node that
-   keeps a constant glow between sweeps (see roadmapNodeGlow3 below). */
+   keeps a constant glow between sweeps (see roadmapNodeGlow3 below).
+   margin-top: 0 because this dot already fills the 9px reference slot
+   exactly — see .roadmap-progress-node's own comment. */
 .roadmap-progress-node-3 {
   width: 9px;
   height: 9px;
+  margin-top: 0;
   background: var(--color-primary);
 }
 

@@ -13,10 +13,10 @@ const STAGES = [
 
 // Empty array = no bullet list for that stage (it's optional per stage).
 const STAGE_ITEM_KEYS = {
-  stage1: [],
-  stage2: ["authentication", "dashboard", "patientWorkflow", "exerciseTracking", "responsiveUI", "localization"],
+  stage1: ["authentication", "dashboard", "patientManagement", "exerciseTracking"],
+  stage2: ["sensorIntegration", "deviceCommunication", "liveDataTransmission", "calibration", "hardwareTesting"],
   stage3: ["patternDetection", "clinicalSummaries", "recoveryInsights"],
-  stage4: ["wearables", "healthKit", "appleWatch", "multiConditionRehab"],
+  stage4: ["appleWatch", "healthKit", "wearables", "multiConditionRehab"],
 };
 
 const Roadmap = () => {
