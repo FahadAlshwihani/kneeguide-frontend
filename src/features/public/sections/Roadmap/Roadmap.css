@@ -51,11 +51,19 @@
   color: var(--color-text);
 }
 
-/* Two completely independent layouts, toggled purely by viewport width —
-   see index.jsx for why both exist in the DOM at once: whichever one is
-   display:none simply never renders or runs its animations, so there's
-   no duplicated cost, just duplicated (and much simpler this way)
-   markup. */
+/* Two completely independent layouts, toggled purely by viewport width.
+   Both exist in the DOM at once (see index.jsx); a display:none subtree
+   never renders or runs its animations, so there's no duplicated cost.
+   Each selector below is declared exactly once, in one place — the
+   previous version accidentally declared .roadmap-mobile-view a second
+   time further down the file with its own (unconditional) display
+   value, which won the cascade over this default and made both layouts
+   visible together regardless of viewport. Not repeating that mistake:
+   every display-related rule for these two lives here, nowhere else. */
+.roadmap-desktop-view {
+  display: block;
+}
+
 .roadmap-mobile-view {
   display: none;
 }
@@ -66,47 +74,53 @@
   }
 
   .roadmap-mobile-view {
-    display: block;
+    display: flex;
   }
 }
 
 /* ============================================================
-   Desktop (>=768px): horizontal timeline, unchanged in spirit from
-   before, plus plain content blocks below it (no cards).
-   ============================================================ */
+   Desktop (>=768px). One grid, one column per stage: the node,
+   status, stage label, heading, description and items for a given
+   stage all live inside that same column, so nothing can drift out of
+   alignment with a separately-positioned row above it.
 
-/* The minimal progress indicator above the blocks — purely decorative
-   (see index.jsx for the aria-hidden split between the dots/line/sweep
-   and the real, accessible status labels).
-
-   RTL: no left/right or edge-anchored transform-origin used anywhere
-   here — the line's reveal is a center-anchored opacity+scale, which
-   looks identical regardless of direction, and the track/labels are
-   plain grids, so document order alone is what determines which stage
-   reads first — under dir="rtl" the grid's own inline-axis reversal
-   (same mechanism already relied on by every other 4-up grid in this
-   project) puts stage 1 on the right and lets the whole row read in
-   reverse for free. */
-.roadmap-progress {
-  margin-bottom: 40px;
+   RTL: no left/right anywhere here, and no edge-anchored
+   transform-origin — the line's reveal is a center-anchored
+   opacity+scale, identical regardless of direction. Stage order is
+   determined purely by document order, so under dir="rtl" the grid's
+   own inline-axis reversal (same mechanism already relied on by every
+   other 4-up grid in this project) puts stage 1 on the right and lets
+   the whole row read in reverse for free — the connector line's
+   asymmetric inset below is intentionally still logical
+   (inset-inline-start/end), so it mirrors along with everything else. */
+.roadmap-desktop-view {
+  position: relative;
 }
 
-.roadmap-progress-track {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: center;
-  height: 9px;
+/* Spans from stage 1's node to stage 4's node — not full width. With
+   four equal 1fr columns and a 24px gap, stage 4's column starts at
+   exactly 75% + 18px from the start (three column-widths plus three
+   gaps); adding ~4px to reach each dot's own center rather than its
+   edge gives the inset-inline-end value below. This is what lets the
+   line (and the sweep clipped inside it) start and end exactly at the
+   first and last node instead of overshooting into empty space or
+   undershooting short of stage 4. */
+.roadmap-desktop-connector {
+  position: absolute;
+  top: 4px;
+  inset-inline-start: 4px;
+  inset-inline-end: calc(25% - 22px);
+  height: 1px;
+  pointer-events: none;
 }
 
 .roadmap-progress-line {
   position: absolute;
-  inset-inline-start: 12.5%;
-  inset-inline-end: 12.5%;
-  top: 50%;
+  inset-inline: 0;
+  top: 0;
   height: 1px;
   background: var(--color-border);
-  transform: translateY(-50%) scaleX(0.94);
+  transform: scaleX(0.94);
   transform-origin: center;
   opacity: 0;
   transition: opacity 700ms ease, transform 700ms ease;
@@ -114,12 +128,24 @@
 
 .roadmap-progress-visible .roadmap-progress-line {
   opacity: 1;
-  transform: translateY(-50%) scaleX(1);
+  transform: scaleX(1);
+}
+
+.roadmap-desktop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.roadmap-desktop-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 24px;
 }
 
 .roadmap-progress-node {
   position: relative;
-  justify-self: center;
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -236,24 +262,21 @@
   }
 }
 
-/* The travelling light. Clipped to the line's own bounds by
-   overflow: hidden here, so it can never visually extend past where the
-   line starts or ends — the translateX range on the ::after below
-   (-50% to 50% of its own, line-matching width) is what keeps its
-   *visible* highlight exactly inside [0%, 100%] of that clipped box
-   too, so the two constraints agree rather than one silently relying on
-   the other. Same 0-18% window of the 7s cycle as the four node flashes
-   above, so the light visibly reaches each node exactly as that node's
-   own glow peaks. Idle for the remaining ~82% of the cycle before
-   repeating — the line underneath never permanently fills, this only
-   ever passes over it. */
+/* The travelling light. Clipped to the connector's own bounds by
+   overflow: hidden here, so it can never visually extend past the first
+   or last node — the translateX range on the ::after below (-50% to 50%
+   of its own width) is what keeps its *visible* highlight exactly
+   inside [0%, 100%] of that clipped box too, so the two constraints
+   agree rather than one silently relying on the other. Same 0-18%
+   window of the 7s cycle as the four node flashes above, so the light
+   visibly reaches each node exactly as that node's own glow peaks. Idle
+   for the remaining ~82% of the cycle before repeating — the line
+   underneath never permanently fills, this only ever passes over it. */
 .roadmap-progress-sweep {
   position: absolute;
-  inset-inline-start: 12.5%;
-  inset-inline-end: 12.5%;
-  top: 50%;
+  inset-inline: 0;
+  top: 0;
   height: 1px;
-  transform: translateY(-50%);
   overflow: hidden;
   pointer-events: none;
 }
@@ -292,14 +315,18 @@
   }
 }
 
-.roadmap-progress-labels {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 10px;
+/* Plain content — no card, no border, no background, no shadow. Status,
+   a neutral "Stage N" eyebrow, heading, description and items, in that
+   reading order, directly under this stage's own node. */
+.roadmap-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
 }
 
-.roadmap-progress-label {
-  text-align: center;
+.roadmap-block-status {
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -307,28 +334,12 @@
   color: var(--color-muted);
 }
 
-.roadmap-progress-label-inProgress {
+.roadmap-block-status-inProgress {
   color: var(--color-primary);
 }
 
-.roadmap-progress-label-future {
+.roadmap-block-status-future {
   opacity: 0.6;
-}
-
-/* Plain content blocks — no card, no border, no background, no shadow.
-   Only a neutral "Stage N" eyebrow above the heading; the actual status
-   word (Completed/In Progress/Future) lives solely in the timeline
-   above, never repeated here. */
-.roadmap-blocks {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-}
-
-.roadmap-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .roadmap-block-eyebrow {
@@ -337,6 +348,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-muted);
+  opacity: 0.7;
 }
 
 .roadmap-block-heading {
@@ -358,6 +370,7 @@
   margin-top: 4px;
   padding-inline-start: 0;
   list-style: none;
+  width: 100%;
 }
 
 .roadmap-block-items li {
@@ -380,22 +393,29 @@
 }
 
 @media (max-width: 960px) and (min-width: 768px) {
-  .roadmap-blocks {
+  .roadmap-desktop-grid {
     grid-template-columns: repeat(2, 1fr);
+    row-gap: 40px;
+  }
+
+  /* The connector only ever spans a 4-column row; at 2 columns it no
+     longer means anything, so it's hidden rather than drawn wrong. */
+  .roadmap-desktop-connector {
+    display: none;
   }
 }
 
 /* ============================================================
    Mobile (<768px): a dedicated vertical timeline. Status, heading,
    description and items all live together per stage — there's no
-   separate horizontal strip to look up at first.
+   separate horizontal strip to look up at first. Untouched from the
+   previous round.
    ============================================================ */
 
 .roadmap-mobile-view {
   list-style: none;
   padding-inline-start: 0;
   margin: 0;
-  display: flex;
   flex-direction: column;
 }
 
