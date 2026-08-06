@@ -1,9 +1,9 @@
 /* Uses global design tokens from src/index.css */
 
 /* Continues the near-black room — see PatientDashboard.css's comment for
-   the shared base/margin pattern used through Footer. This is the one
-   section that gets the faint violet whisper too (see the recommended
-   accent color) — used once, sparingly, not on every section. */
+   the shared base/recipe used through Footer. One of the sections that
+   also carries the violet whisper (barely above 0 opacity — it should
+   influence the atmosphere, not be identifiable as its own light). */
 .cta-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
@@ -11,24 +11,13 @@
   flex-direction: column;
   justify-content: center;
   background:
-    radial-gradient(
-      ellipse 110% 34% at 50% 50%,
-      rgba(46, 62, 143, 0.2) 0%,
-      rgba(46, 62, 143, 0.09) 35%,
-      transparent 64%
-    ),
-    radial-gradient(
-      ellipse 40% 14% at 50% 46%,
-      rgba(74, 43, 255, 0.06) 0%,
-      rgba(74, 43, 255, 0.025) 40%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 60% 18% at -8% 60%,
-      rgba(23, 26, 82, 0.12) 0%,
-      rgba(23, 26, 82, 0.05) 40%,
-      transparent 58%
-    ),
+    radial-gradient(ellipse 270% 165% at 145% 75%, rgba(28, 37, 92, 0.045), transparent 62%),
+    radial-gradient(ellipse 250% 150% at -60% -10%, rgba(23, 26, 82, 0.04), transparent 60%),
+    radial-gradient(ellipse 200% 140% at -20% 90%, rgba(23, 26, 82, 0.05), transparent 62%),
+    radial-gradient(ellipse 185% 128% at 55% 25%, rgba(46, 62, 143, 0.065), transparent 58%),
+    radial-gradient(ellipse 155% 112% at 50% 48%, rgba(46, 62, 143, 0.125), transparent 55%),
+    radial-gradient(ellipse 235% 90% at 25% 5%, rgba(23, 26, 82, 0.04), transparent 64%),
+    radial-gradient(ellipse 55% 42% at 52% 44%, rgba(74, 43, 255, 0.028), transparent 55%),
     #040404;
 }
 
