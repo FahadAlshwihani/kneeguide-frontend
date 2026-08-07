@@ -1010,6 +1010,32 @@
       }
     }
   },
+  "publicFaq": {
+    "badge": "Common Questions",
+    "title": "Frequently asked questions.",
+    "items": {
+      "physicalTherapy": {
+        "question": "Is KneeGuide a replacement for physical therapy?",
+        "answer": "No. KneeGuide is designed to complement your care team's treatment plan by keeping them informed between visits, not to replace clinical guidance."
+      },
+      "doctorVisibility": {
+        "question": "How does my doctor see my daily logs?",
+        "answer": "Everything you log — pain levels, mobility and exercises — syncs to your care team's dashboard in real time."
+      },
+      "dataSecurity": {
+        "question": "Is my health data secure?",
+        "answer": "Yes. All data is encrypted end-to-end and handled to clinical-grade privacy standards."
+      },
+      "equipment": {
+        "question": "Do I need special equipment to use KneeGuide?",
+        "answer": "No. Just your phone or a browser. The 3D model and tracking tools run directly, with no extra hardware required."
+      },
+      "noReferral": {
+        "question": "Can I use KneeGuide without a referring doctor?",
+        "answer": "Yes. You can create a patient account directly. Connecting with a clinician is optional, though recommended for the full experience."
+      }
+    }
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",

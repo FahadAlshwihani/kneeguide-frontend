@@ -1,8 +1,8 @@
 /* Uses global design tokens from src/index.css */
 
-/* No background of its own anymore — see ScrollStackFeature.css's
-   comment. The single shared Grainient canvas (PublicLayout.jsx) shows
-   through wherever transparent lets it. */
+/* No background of its own — see ScrollStackFeature.css's comment. The
+   single shared Grainient canvas (PublicLayout.jsx) shows through
+   wherever transparent lets it. */
 .faq-root {
   padding: var(--section-padding) 0;
   min-height: 100svh;
@@ -15,12 +15,13 @@
 .faq-container {
   max-width: var(--container-width);
   margin: 0 auto;
-  padding: 0 24px;
+  padding-inline: 24px;
 }
 
 .faq-header {
   max-width: 640px;
-  margin: 0 auto 40px;
+  margin-inline: auto;
+  margin-block-end: 48px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -35,7 +36,8 @@
   color: var(--color-primary);
   background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
-  padding: 6px 16px;
+  padding-inline: 16px;
+  padding-block: 6px;
   border-radius: 999px;
 }
 
@@ -46,51 +48,185 @@
   text-wrap: balance;
 }
 
+/* ---------- List ---------- */
+
 .faq-list {
-  max-width: 720px;
-  margin: 0 auto;
+  max-width: 920px;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
 }
 
-.faq-item {
-  border-bottom: 1px solid var(--color-border);
+.faq-item-heading {
+  margin: 0;
+  font: inherit;
 }
+
+.faq-item {
+  border-block-end: 1px solid var(--color-border);
+  transition: border-color var(--transition-normal);
+}
+
+.faq-item-open {
+  border-block-end-color: var(--color-primary-soft, rgba(37, 99, 235, 0.28));
+}
+
+/* ---------- Question row ---------- */
 
 .faq-question {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 22px 4px;
+  gap: 24px;
+  padding-block: 26px;
+  padding-inline: 4px;
   background: none;
   border: none;
-  text-align: left;
-  font-size: 1rem;
-  font-weight: 600;
+  cursor: pointer;
+  text-align: start;
   color: var(--color-heading);
 }
 
 .faq-question:focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
+
+.faq-question-text {
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text);
+  transition: color var(--transition-normal);
+
+  /* Isolates this run's bidi resolution to its own content, so a purely
+     LTR (or RTL) question never inherits a mismatched paragraph
+     direction from an ancestor — the fix for punctuation landing on the
+     wrong edge, without ever touching the string content itself. */
+  unicode-bidi: plaintext;
+}
+
+.faq-item-open .faq-question-text {
+  color: var(--color-heading);
+}
+
+/* Desktop/pointer-only hover — never relied on for touch. */
+@media (hover: hover) and (pointer: fine) {
+  .faq-question:hover .faq-question-text {
+    color: var(--color-heading);
+  }
+
+  .faq-question:hover .faq-icon {
+    border-color: var(--color-border-strong, rgba(255, 255, 255, 0.2));
+  }
+}
+
+/* ---------- Plus / close control ---------- */
 
 .faq-icon {
-  display: flex;
-  color: var(--color-muted);
+  position: relative;
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), border-color var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
-.faq-answer-wrapper {
+.faq-item-open .faq-icon {
+  transform: rotate(45deg);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.faq-icon-bar {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  background: var(--color-muted);
+  transition: background-color var(--transition-normal);
+}
+
+.faq-icon-bar-h {
+  width: 12px;
+  height: 1.5px;
+  transform: translate(-50%, -50%);
+}
+
+.faq-icon-bar-v {
+  width: 1.5px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+}
+
+.faq-item-open .faq-icon-bar {
+  background: var(--color-primary-hover);
+}
+
+/* ---------- Answer panel ---------- */
+
+/* Grid-rows technique: animates to the content's natural height with no
+   JS measurement and no snapping. The row track itself carries the
+   height transition; opacity/translate/blur below animate the content
+   inside it on the same timeline. */
+.faq-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 380ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item-open .faq-panel {
+  grid-template-rows: 1fr;
+}
+
+.faq-panel-inner {
   overflow: hidden;
+  min-height: 0;
 }
 
 .faq-answer {
-  padding: 0 4px 22px;
-  font-size: 0.92rem;
-  line-height: 1.65;
+  padding-inline: 4px;
+  padding-block-end: 26px;
+  font-size: 0.95rem;
+  line-height: 1.7;
   color: var(--color-muted);
   max-width: 62ch;
+
+  opacity: 0;
+  transform: translateY(-6px);
+  filter: blur(4px);
+  transition: opacity 350ms ease, transform 350ms ease, filter 350ms ease;
+
+  unicode-bidi: plaintext;
+}
+
+.faq-item-open .faq-answer {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-panel {
+    transition: grid-template-rows 120ms linear;
+  }
+
+  .faq-answer {
+    transition: opacity 120ms linear;
+    transform: none;
+    filter: none;
+  }
+
+  .faq-icon {
+    transition: border-color 120ms linear, box-shadow 120ms linear;
+  }
+
+  .faq-item-open .faq-icon {
+    transform: rotate(45deg);
+  }
 }
