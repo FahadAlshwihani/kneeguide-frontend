@@ -343,6 +343,12 @@ body.ltr .form-group label {
   --container-width: var(--max-width);
   --section-padding: clamp(48px, 8vw, 96px);
 
+  /* Sticky Header height (see Header.css: 12px top padding + 64px nav)
+     plus breathing room — used as scroll-margin-top on the homepage
+     sections that public navigation can land on, so a hash/anchor jump
+     never tucks a section's heading behind the fixed Header. */
+  --nav-scroll-offset: 96px;
+
   /* Radius — --radius-sm/md/lg/xl are already defined above and reused as-is. */
 
   /* Shadows — 3-tier scale reusing the dashboard's own dark-tuned shadows
@@ -372,6 +378,20 @@ body.ltr .form-group label {
 
 /* ---------- Public site reset + typography + utilities ---------- */
 /* Scoped to .public-root so the dashboard/auth pages are unaffected. */
+
+/* Every homepage section the public navigation (Header mega-menu,
+   Footer columns) can link to — see
+   src/features/public/navigation/publicNavigation.js for the canonical
+   list these ids must match. Centralized here instead of scattering a
+   scroll-offset calculation through Header/Footer navigation code. */
+#platform,
+#technology,
+#how-it-works,
+#ai-assistant,
+#roadmap,
+#faq {
+  scroll-margin-top: var(--nav-scroll-offset);
+}
 
 body.rtl .public-root {
   font-family: var(--font-ar);

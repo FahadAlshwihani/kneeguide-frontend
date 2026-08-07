@@ -9,7 +9,7 @@ const HowItWorks = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="hiw-root">
+    <section className="hiw-root" id="how-it-works">
       <div className="hiw-container">
         <Reveal className="hiw-header">
           <span className="hiw-badge">{t("publicHowItWorks.badge")}</span>
