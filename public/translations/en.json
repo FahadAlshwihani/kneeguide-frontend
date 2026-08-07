@@ -1036,6 +1036,29 @@
       }
     }
   },
+  "publicCta": {
+    "badge": "Join KneeGuide",
+    "title": "Ready to guide your recovery?",
+    "description": "Join patients and clinicians already using KneeGuide to make every day of recovery count.",
+    "patientAction": "Start Your Recovery",
+    "clinicianAction": "I'm a Clinician"
+  },
+  "publicFooter": {
+    "brand": "KneeGuide",
+    "description": "AI-guided knee rehabilitation, connecting patients and clinicians between every appointment.",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "technology": "Technology",
+      "howItWorks": "How It Works"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "copyright": "© {{year}} KneeGuide. All rights reserved."
+  },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",

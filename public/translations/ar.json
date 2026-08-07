@@ -1036,6 +1036,29 @@
       }
     }
   },
+  "publicCta": {
+    "badge": "انضم إلى KneeGuide",
+    "title": "جاهز لبدء رحلة تعافيك؟",
+    "description": "انضم إلى المرضى والأطباء الذين يعتمدون على KneeGuide بالفعل، ليكون كل يوم في رحلة التعافي محسوبًا.",
+    "patientAction": "ابدأ رحلة تعافيك",
+    "clinicianAction": "أنا طبيب"
+  },
+  "publicFooter": {
+    "brand": "KneeGuide",
+    "description": "تأهيل ركبة موجّه بالذكاء الاصطناعي، يربط بين المريض وطبيبه بين كل زيارة وأخرى.",
+    "product": {
+      "title": "المنتج",
+      "features": "المزايا",
+      "technology": "التقنية",
+      "howItWorks": "كيف يعمل"
+    },
+    "company": {
+      "title": "الشركة",
+      "about": "من نحن",
+      "contact": "تواصل معنا"
+    },
+    "copyright": "© {{year}} KneeGuide. جميع الحقوق محفوظة."
+  },
   "publicHeader": {
     "menuToggleOpen": "فتح القائمة",
     "menuToggleClose": "إغلاق القائمة",
