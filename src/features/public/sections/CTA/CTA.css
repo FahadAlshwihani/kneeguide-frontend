@@ -14,12 +14,22 @@
 
 .cta-container {
   max-width: var(--container-width);
-  margin: 0 auto;
-  padding: 0 24px;
+  margin-inline: auto;
+  padding-inline: 24px;
 }
 
+/* Premium dark glass panel — near-black translucent surface + blur
+   (reusing the site's existing --glass-bg/--glass-blur tokens) instead
+   of a solid brand-gradient card, so the Grainient behind it keeps
+   reading through instead of competing with it. The radial layer is the
+   same "quiet glow, not a tint" technique already used by
+   --gradient-tint-blue in index.css — here at CTA scale. */
 .cta-content {
-  background: var(--gradient-brand);
+  position: relative;
+  background: radial-gradient(120% 90% at 50% -10%, rgba(37, 99, 235, 0.14), transparent 60%), var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-primary-soft);
   border-radius: var(--radius-xl);
   padding: clamp(48px, 8vw, 80px) clamp(24px, 6vw, 64px);
   display: flex;
@@ -27,26 +37,43 @@
   align-items: center;
   text-align: center;
   gap: 18px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.cta-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  padding-inline: 16px;
+  padding-block: 6px;
+  border-radius: 999px;
 }
 
 .cta-title {
   font-size: clamp(1.85rem, 3.8vw, 2.6rem);
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-heading);
   text-wrap: balance;
+  unicode-bidi: plaintext;
 }
 
 .cta-description {
   font-size: 1.05rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text);
   max-width: 52ch;
+  unicode-bidi: plaintext;
 }
 
 /* Button styling itself lives in components/ui/PrimaryButton.css and
-   SecondaryButton.css (the public site's shared button design system) —
-   this only lays out the pair of them side by side. */
+   SecondaryButton.css (the public site's shared button design system).
+   This lays out the pair, and the two rule blocks below add CTA-only
+   hierarchy on top via the shared components' className prop — the
+   base .ui-primary-btn/.ui-secondary-btn rules stay untouched, so every
+   other button on the site keeps its current look. */
 .cta-actions {
   display: flex;
   align-items: center;
@@ -54,4 +81,44 @@
   justify-content: center;
   gap: 14px;
   margin-top: 8px;
+}
+
+.ui-primary-btn.cta-btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, opacity 200ms ease,
+    transform 150ms ease;
+}
+
+.ui-primary-btn.cta-btn-primary:hover:not(:disabled),
+.ui-primary-btn.cta-btn-primary:focus-visible {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.ui-primary-btn.cta-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ui-secondary-btn.cta-btn-secondary {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: var(--glass-border);
+  color: var(--color-heading);
+}
+
+.ui-secondary-btn.cta-btn-secondary:hover:not(:disabled),
+.ui-secondary-btn.cta-btn-secondary:focus-visible {
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-primary-btn.cta-btn-primary:hover:not(:disabled),
+  .ui-primary-btn.cta-btn-primary:focus-visible {
+    transform: none;
+  }
 }

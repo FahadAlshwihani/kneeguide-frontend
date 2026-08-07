@@ -6,23 +6,23 @@
    PublicLayout rather than HomePage, on every public route, which is
    exactly why the canvas lives at that level instead of inside HomePage
    — it's what lets this section share the one instance instead of
-   needing a second. The old border-top stays dropped: a 1px hairline
-   would be a visible seam against a continuous background. */
+   needing a second. */
 .footer-root {
   background: transparent;
 }
 
 .footer-container {
   max-width: var(--container-width);
-  margin: 0 auto;
-  padding: 56px 24px 28px;
+  margin-inline: auto;
+  padding-block: 56px 28px;
+  padding-inline: 24px;
 }
 
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   gap: 40px;
-  padding-bottom: 40px;
+  padding-block-end: 40px;
 }
 
 .footer-brand {
@@ -30,6 +30,7 @@
   flex-direction: column;
   gap: 14px;
   max-width: 320px;
+  text-align: start;
 }
 
 .footer-logo {
@@ -42,35 +43,14 @@
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--color-muted);
-}
-
-.footer-social {
-  display: flex;
-  gap: 10px;
-}
-
-.footer-social-link {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  transition: color var(--transition-fast), border-color var(--transition-fast);
-}
-
-.footer-social-link:hover {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  unicode-bidi: plaintext;
 }
 
 .footer-links-col {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  text-align: start;
 }
 
 .footer-links-title {
@@ -93,18 +73,30 @@
   transition: color var(--transition-fast);
 }
 
-.footer-links a:hover {
+.footer-links a:hover,
+.footer-links a:focus-visible {
   color: var(--color-primary);
 }
 
+.footer-links a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Deliberately quieter than a standard --color-border hairline — this
+   only needs to separate the copyright line from the columns above it,
+   not visually cut the Grainient background into sections. */
 .footer-bottom {
-  border-top: 1px solid var(--color-border);
-  padding-top: 24px;
+  border-block-start: 1px solid rgba(255, 255, 255, 0.06);
+  padding-block-start: 24px;
+  text-align: start;
 }
 
 .footer-copyright {
   font-size: 0.8rem;
   color: var(--color-muted);
+  unicode-bidi: plaintext;
 }
 
 @media (max-width: 768px) {
