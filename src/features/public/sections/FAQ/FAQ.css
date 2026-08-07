@@ -143,9 +143,16 @@
 }
 
 .faq-icon-bar {
+  /* Physical (not logical) anchoring on purpose: this centers the bars
+     inside their own circle via top/left + translate(-50%, -50%). The
+     translate() offset is always physical, so pairing it with a logical
+     inset-inline-start/inset-block-start flips only the anchor edge
+     under dir="rtl" while the compensating translate stays put — that
+     mismatch is what detached the bars in RTL. The plus-sign geometry
+     is symmetric and must never mirror, regardless of direction. */
   position: absolute;
-  inset-inline-start: 50%;
-  inset-block-start: 50%;
+  top: 50%;
+  left: 50%;
   background: var(--color-muted);
   transition: background-color var(--transition-normal);
 }
