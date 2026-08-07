@@ -1046,50 +1046,27 @@
   "publicFooter": {
     "brand": "KneeGuide",
     "description": "AI-guided knee rehabilitation, connecting patients and clinicians between every appointment.",
-    "product": {
-      "title": "Product",
-      "features": "Features",
-      "technology": "Technology",
-      "howItWorks": "How It Works"
-    },
-    "company": {
-      "title": "Company",
-      "about": "About",
-      "contact": "Contact"
-    },
     "copyright": "© {{year}} KneeGuide. All rights reserved."
+  },
+  "publicNavigation": {
+    "groups": {
+      "product": "Product",
+      "explore": "Explore"
+    },
+    "items": {
+      "overview": "Overview",
+      "technology": "Technology",
+      "howItWorks": "How It Works",
+      "ai": "AI Assistant",
+      "roadmap": "Roadmap",
+      "faq": "FAQ"
+    }
   },
   "publicHeader": {
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",
     "login": "Login",
     "languageSwitchLabel": "Switch language",
-    "languageSwitchTo": "AR",
-    "menu": {
-      "platform": {
-        "title": "Platform",
-        "links": {
-          "overview": "Overview",
-          "patientDashboard": "Patient Dashboard",
-          "doctorDashboard": "Doctor Dashboard"
-        }
-      },
-      "technology": {
-        "title": "Technology",
-        "links": {
-          "motionTracking": "Motion Tracking",
-          "aiAssistant": "AI Assistant",
-          "wearables": "Wearables"
-        }
-      },
-      "company": {
-        "title": "Company",
-        "links": {
-          "roadmap": "Roadmap",
-          "contact": "Contact",
-          "documentation": "Documentation"
-        }
-      }
-    }
+    "languageSwitchTo": "AR"
   }
 }

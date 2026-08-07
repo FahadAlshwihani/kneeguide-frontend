@@ -2,49 +2,24 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
-import { LuLanguages, LuLayoutDashboard, LuCpu, LuBuilding2 } from "react-icons/lu";
+import { LuLanguages, LuLayoutDashboard, LuCompass } from "react-icons/lu";
 import { ROUTES } from "../../../utils/routes";
+import { PUBLIC_NAVIGATION } from "../navigation/publicNavigation";
+import { useSectionNavigation } from "../navigation/useSectionNavigation";
 import SecondaryButton from "../../../components/ui/SecondaryButton";
 import ButtonArrow from "../../../components/ui/ButtonArrow";
 import "./Header.css";
 
-// Three cards — KneeGuide is a single-scroll landing page, not a
-// multi-page corporate site, so almost every link below points at a
-// homepage section anchor rather than a dedicated route. The only
-// dedicated pages kept are ones that already existed (/technology,
-// /contact) — no new routes were added.
-const MENU_SECTIONS = [
-  {
-    key: "platform",
-    colorClass: "header-menu-card--platform",
-    Icon: LuLayoutDashboard,
-    links: [
-      { key: "overview", to: "/#platform" },
-      { key: "patientDashboard", to: "/#patient-portal" },
-      { key: "doctorDashboard", to: "/#doctor-dashboard" },
-    ],
-  },
-  {
-    key: "technology",
-    colorClass: "header-menu-card--technology",
-    Icon: LuCpu,
-    links: [
-      { key: "motionTracking", to: "/#technology" },
-      { key: "aiAssistant", to: "/#ai-assistant" },
-      { key: "wearables", to: "/#technology" },
-    ],
-  },
-  {
-    key: "company",
-    colorClass: "header-menu-card--company",
-    Icon: LuBuilding2,
-    links: [
-      { key: "roadmap", to: "/#roadmap" },
-      { key: "contact", to: "/contact" },
-      { key: "documentation", to: "/#faq" },
-    ],
-  },
-];
+// KneeGuide is a single-scroll landing page, not a multi-page corporate
+// site — every mega-menu link targets a homepage section anchor from the
+// canonical PUBLIC_NAVIGATION model (shared with Footer.jsx), never a
+// standalone routed page. Icons are a Header-presentation-only concern,
+// so they're mapped locally by group key instead of living in the shared
+// nav config.
+const GROUP_ICONS = {
+  product: LuLayoutDashboard,
+  explore: LuCompass,
+};
 
 const TOP_BAR_HEIGHT = 64;
 const PANEL_BOTTOM_GAP = 16;
@@ -53,6 +28,7 @@ const HIDE_SCROLL_THRESHOLD = 96;
 
 const Header = () => {
   const { t, i18n } = useTranslation();
+  const { goToSection, goHome } = useSectionNavigation();
 
   // Two states, not one: `hamburgerOpen` flips the icon-to-X instantly.
   // `panelExpanded` is what actually gates the panel's visibility/
@@ -275,7 +251,15 @@ const Header = () => {
               <span className="header-menu-toggle-line" />
             </button>
 
-            <Link className="header-logo" to="/" onClick={closeMenu}>
+            <Link
+              className="header-logo"
+              to="/"
+              onClick={(event) => {
+                event.preventDefault();
+                closeMenu();
+                goHome();
+              }}
+            >
               <span className="header-logo-mark">KG</span>
               KneeGuide
             </Link>
@@ -301,28 +285,38 @@ const Header = () => {
 
           <div ref={panelRef} className="header-menu-panel" aria-hidden={!panelExpanded}>
             <div className="header-menu-cards">
-              {MENU_SECTIONS.map((section, index) => (
-                <div
-                  key={section.key}
-                  ref={setCardRef(index)}
-                  className={`header-menu-card ${section.colorClass}`}
-                >
-                  <div className="header-menu-card-title">
-                    <section.Icon className="header-menu-card-icon" aria-hidden="true" strokeWidth={2} />
-                    <span className="header-menu-card-label">
-                      {t(`publicHeader.menu.${section.key}.title`)}
-                    </span>
+              {PUBLIC_NAVIGATION.map((group, index) => {
+                const Icon = GROUP_ICONS[group.key];
+                return (
+                  <div
+                    key={group.key}
+                    ref={setCardRef(index)}
+                    className={`header-menu-card header-menu-card--${group.key}`}
+                  >
+                    <div className="header-menu-card-title">
+                      <Icon className="header-menu-card-icon" aria-hidden="true" strokeWidth={2} />
+                      <span className="header-menu-card-label">{t(group.labelKey)}</span>
+                    </div>
+                    <div className="header-menu-card-links">
+                      {group.items.map((item) => (
+                        <Link
+                          key={item.key}
+                          to={`/#${item.id}`}
+                          className="header-menu-card-link"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            closeMenu();
+                            goToSection(item.id);
+                          }}
+                        >
+                          <ButtonArrow />
+                          {t(item.labelKey)}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                  <div className="header-menu-card-links">
-                    {section.links.map((link) => (
-                      <Link key={link.key} to={link.to} className="header-menu-card-link" onClick={closeMenu}>
-                        <ButtonArrow />
-                        {t(`publicHeader.menu.${section.key}.links.${link.key}`)}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Mobile only (hidden on desktop via CSS, where the top-bar

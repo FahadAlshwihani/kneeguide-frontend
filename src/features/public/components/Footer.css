@@ -37,6 +37,20 @@
   font-weight: 700;
   font-size: 1.15rem;
   color: var(--color-heading);
+  text-decoration: none;
+  width: fit-content;
+  transition: color var(--transition-fast);
+}
+
+.footer-logo:hover,
+.footer-logo:focus-visible {
+  color: var(--color-primary);
+}
+
+.footer-logo:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .footer-tagline {

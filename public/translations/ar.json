@@ -1046,50 +1046,27 @@
   "publicFooter": {
     "brand": "KneeGuide",
     "description": "تأهيل ركبة موجّه بالذكاء الاصطناعي، يربط بين المريض وطبيبه بين كل زيارة وأخرى.",
-    "product": {
-      "title": "المنتج",
-      "features": "المزايا",
-      "technology": "التقنية",
-      "howItWorks": "كيف يعمل"
-    },
-    "company": {
-      "title": "الشركة",
-      "about": "من نحن",
-      "contact": "تواصل معنا"
-    },
     "copyright": "© {{year}} KneeGuide. جميع الحقوق محفوظة."
+  },
+  "publicNavigation": {
+    "groups": {
+      "product": "المنتج",
+      "explore": "استكشف"
+    },
+    "items": {
+      "overview": "نظرة عامة",
+      "technology": "التقنية",
+      "howItWorks": "كيف يعمل",
+      "ai": "المساعد الذكي",
+      "roadmap": "خارطة الطريق",
+      "faq": "الأسئلة الشائعة"
+    }
   },
   "publicHeader": {
     "menuToggleOpen": "فتح القائمة",
     "menuToggleClose": "إغلاق القائمة",
     "login": "تسجيل الدخول",
     "languageSwitchLabel": "تغيير اللغة",
-    "languageSwitchTo": "EN",
-    "menu": {
-      "platform": {
-        "title": "المنصة",
-        "links": {
-          "overview": "نظرة عامة",
-          "patientDashboard": "لوحة المريض",
-          "doctorDashboard": "لوحة تحكم الطبيب"
-        }
-      },
-      "technology": {
-        "title": "التقنيات",
-        "links": {
-          "motionTracking": "تتبع الحركة",
-          "aiAssistant": "المساعد الذكي",
-          "wearables": "الأجهزة القابلة للارتداء"
-        }
-      },
-      "company": {
-        "title": "الشركة",
-        "links": {
-          "roadmap": "خارطة الطريق",
-          "contact": "تواصل معنا",
-          "documentation": "التوثيق"
-        }
-      }
-    }
+    "languageSwitchTo": "EN"
   }
 }
