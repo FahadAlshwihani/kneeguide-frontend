@@ -1,82 +1,38 @@
 /* Uses global design tokens from src/index.css */
 
-/* The entire Hero — copy, CTAs and the dashboard preview — is one single
-   section that must never exceed 100svh (strict). The preview is never
-   split into its own section; it starts immediately below the CTAs inside
-   this same block. Every measurement below is fluid (clamp, svh-relative)
-   so the whole thing compresses to fit rather than growing past the fold.
-
-   `.hero-root` clips its own overflow again — the fold-anchored card band
-   no longer lives inside it at all. HeroDashboardBottomBand now renders
-   at the HeroProblemScene level instead (as the scene's last element,
-   after Problem/Solution), specifically so it's guaranteed to paint above
-   their light-transition layers by plain DOM order, not by any z-index
-   arithmetic across this component's own ancestor chain — see
-   HeroProblemScene/index.jsx and HeroDashboardPreview.css. The mobile
-   carousel (HeroMobileCarousel) stays entirely inside the Hero, since it
-   never needs to cross the fold.
-
-   `.hero-content`'s z-index below is only for the *local* case: keeping
-   the copy above `.hero-scatter-wrap`'s corners/rails, which are allowed
-   to run behind it wherever the fixed composition happens to overlap. */
+/* Central copy followed by the compact KPI preview (HeroKpiGrid.css), both
+   in normal document flow now — the previous scattered/floating card
+   composition lived outside this flow entirely (an absolute overlay), which
+   is why the Hero used to be clamped to a strict `height: 100svh` (the
+   overlay never affected layout height, so the fold-fit was guaranteed by
+   construction). Real flowing content can legitimately need more room than
+   one fold on shorter viewports, so this is `min-height`, not a hard cap:
+   tall viewports still get a comfortably centered single-screen Hero,
+   shorter ones (1366x768 and below) grow to fit the KPI grid rather than
+   clipping or hiding it. */
 .hero-root {
   position: relative;
-  overflow: hidden;
-  /* The sticky Header sits above this in normal flow (~65-70px), so the
-     Hero itself must be shorter than 100svh by that amount, or the two
-     together push past the fold and force a scroll. */
-  height: calc(100svh - 72px);
-  max-height: calc(100svh - 72px);
+  min-height: calc(100svh - 72px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(16px, 3svh, 32px) 0;
+  padding: clamp(28px, 5svh, 56px) 0;
 }
 
 .hero-container {
   position: relative;
   max-width: 1680px;
   width: 100%;
-  height: 100%;
   margin: 0 auto;
   padding: 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-/* React Bits' composition reads as: navbar, then a large breathing gap,
-   then the copy block, then another large gap, then content emerging from
-   the bottom. Two flexible spacers (never a fixed margin, never a top
-   padding) carry that rhythm — they grow when there's room and shrink
-   toward 0 first when the viewport is short, so the 100svh fit never
-   breaks. The top spacer is weighted larger than the bottom one: it's the
-   whole lever for how far the copy block sits from the navbar, and giving
-   it the bigger share is what settles the copy's visual center a little
-   below the Hero's true vertical middle instead of hugging the top —
-   Apple/Stripe/Linear read exactly this way. */
-.hero-spacer {
-  flex: 1 1 0;
-  min-height: 0;
-}
-
-.hero-spacer-top {
-  flex-grow: 1.35;
-}
-
-/* Carries its own original share (1) plus the dashboard preview's former
-   flex share (1) now that the preview is a full-bleed absolute overlay
-   (see .hero-scatter-wrap below) instead of a third flex participant.
-   Folding both into this one value keeps the top spacer's own share of
-   the leftover space — and therefore the copy block's vertical position —
-   byte-identical to before. */
-.hero-spacer-bottom {
-  flex-grow: 2;
+  gap: clamp(28px, 5svh, 48px);
 }
 
 .hero-content {
   position: relative;
-  z-index: 2;
   max-width: 720px;
   display: flex;
   flex-direction: column;
@@ -126,13 +82,6 @@
   margin-top: clamp(4px, 0.8svh, 10px);
 }
 
-/* Dashboard preview: HeroDashboardPreview renders its own root
-   (`.hero-scatter-wrap`, styled in HeroDashboardPreview.css) as a
-   `position: absolute; inset: 0` overlay across this entire container —
-   not a flex participant, so it never affects the copy block's layout
-   above, and it's free to frame the copy from the edges (corners, side
-   rails, a wide bottom band) instead of sitting in flow beneath it. */
-
 /* No background/canvas of its own: the shared, page-wide Grainient canvas
    (mounted once in PublicLayout.jsx, behind the entire homepage) and this
    scene's own dark vignette treatment both live one level up, in the
@@ -141,38 +90,15 @@
 
 @media (max-width: 640px) {
   .hero-root {
-    height: calc(100svh - 72px);
-    padding: clamp(12px, 2svh, 20px) 0;
+    padding: clamp(20px, 4svh, 32px) 0;
   }
 
   .hero-container {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: clamp(10px, 2svh, 18px);
     padding: 0 16px;
-  }
-
-  .hero-spacer {
-    display: none;
-  }
-
-  .hero-content {
-    grid-row: 1;
-  }
-
-  .hero-mobile-carousel {
-    grid-row: 2;
+    gap: clamp(18px, 3svh, 28px);
   }
 
   .hero-description {
     max-width: 60ch;
-  }
-}
-
-@media (min-width: 641px) {
-  .hero-root {
-    overflow: visible;
-    z-index: 1;
   }
 }
