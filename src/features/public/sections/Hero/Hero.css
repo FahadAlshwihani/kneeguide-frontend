@@ -120,12 +120,21 @@
    (Header.css) — on initial load, before any scrolling, that's real
    document flow, not an overlay: it occupies genuine space above Hero,
    so that space has to come out of the viewport for Hero to correctly
-   fill "the rest of the first screen". 76px is the sticky header's own
-   real rendered footprint (`.header-root`'s 12px top padding + `.header-
-   nav`'s 64px height, the latter set via GSAP inline style from Header.
-   jsx's TOP_BAR_HEIGHT, so it's fixed regardless of breakpoint) — the
-   exact same value HeroProblemScene.css already relies on for this
-   identical question, not a fresh guess.
+   fill "the rest of the first screen". 74px is the sticky header's own
+   *mobile* rendered footprint, measured precisely rather than reused
+   from the desktop figure: `.header-root`'s mobile top padding is 10px
+   (its own `@media (max-width: 768px)` block, not the 12px desktop
+   value), plus `.header-nav`'s 64px height (GSAP inline style, fixed
+   regardless of breakpoint — see Header.jsx's TOP_BAR_HEIGHT). `.header-
+   nav`'s 1px border adds nothing on top of that 64px — this project's
+   global reset sets `box-sizing: border-box` (index.css), so the border
+   is already inside the declared height, not additive. Margin is 0 on
+   both. 10 + 64 = 74px exactly. (HeroProblemScene.css's own 76px is the
+   *desktop* footprint — 12px root padding, not 10 — a genuinely
+   different, both-correct number for a different breakpoint, not the
+   same value reused twice.) The previous 76px here undershot Hero's
+   floor by those same 2px, which is precisely why Projected Impact was
+   visible as a thin strip at scrollY 0 before this was corrected.
 
    `min-height`, not `height`: this is a floor, not a cap. If Arabic
    wraps to more lines, text scales up under accessibility settings, or
@@ -150,7 +159,7 @@
 @media (max-width: 767px) {
   .hero-root {
     padding: clamp(20px, 4svh, 32px) 0;
-    min-height: calc(100svh - 76px);
+    min-height: calc(100svh - 74px);
     justify-content: flex-start;
   }
 
@@ -161,5 +170,33 @@
 
   .hero-description {
     max-width: 60ch;
+  }
+}
+
+/* Large desktop only. `min-width: 1200px` matches useHeroResponsiveMode.
+   js's own DESKTOP_QUERY (the six-card mode) exactly. `min-height: 950px`
+   is what keeps this from leaking into laptop/iPad: it sits comfortably
+   above common laptop heights (1366x768, 1440x900 — both already
+   approved and must stay untouched) and comfortably below common large-
+   desktop heights (1920x1080, 2560x1440 and taller), so a laptop that
+   happens to be >=1200px wide but not actually tall never matches this
+   rule and renders exactly as it already does today.
+
+   Trims two pure-whitespace clamp() ceilings — nothing else. On a
+   genuinely tall monitor, `.hero-root`'s own top+bottom padding and
+   `.hero-container`'s gap (the space between the copy block and the KPI
+   grid — the base rules above, unchanged for every other size) were
+   already hitting their fixed maximums (64px x2 = 128px of padding, 48px
+   of gap) well before the six-card composition actually needed that
+   much room, which is what pushed Hero past one screen. Typography, KPI
+   card sizing, and the KPI grid's own internal spacing are untouched —
+   only these two structural gaps are capped lower here. */
+@media (min-width: 1200px) and (min-height: 950px) {
+  .hero-root {
+    padding: 36px 0;
+  }
+
+  .hero-container {
+    gap: 36px;
   }
 }
