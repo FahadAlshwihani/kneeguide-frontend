@@ -1,64 +1,26 @@
-/* See BrandLogo.jsx for why this is a background-image on a <span>
-   instead of `<img src={...}>` — CRA's webpack config has no way to
-   import this specific SVG from a .jsx file. A CSS `url()` reference
-   loads the identical, unmodified file (referenced directly from its
-   real location, never copied/duplicated) without going through the
-   loader that can't parse it.
-
-   Sizing (width/height) is intentionally NOT set here — each call site
-   owns its own footprint via its own className (Header.css/Footer.css/
-   Solution.css), matching whatever fake mark it replaced. `background-
-   size: contain` + `background-repeat: no-repeat` is this component's
-   equivalent of `object-fit: contain` for an <img>: the artwork is never
-   stretched/distorted inside whatever box it's given, and its own aspect
-   ratio is always respected. */
+/* KneeGuideLogo1024.png is a clean, dedicated 1000x1000 RGBA export (see
+   BrandLogo.jsx) — a real <img>, so sizing/scaling is the browser's normal
+   raster image pipeline, not a CSS background-image. Sizing is
+   intentionally NOT set here — each call site owns its own footprint via
+   its own className (Header.css/Footer.css/Solution.css), applied
+   directly to this same <img> element. `object-fit: contain` guards
+   against distortion if a call site's box ever isn't perfectly square
+   (the source itself is square, so this is normally a no-op). */
 .brand-logo {
   display: block;
   flex-shrink: 0;
-  background-image: url("../../../assets/images/logo/KneeGuideLogo.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+  object-fit: contain;
 }
 
-/* The artwork itself is a fixed blue-to-teal gradient raster (confirmed
-   by extracting and viewing its actual embedded content layer — a prior
-   pass mis-identified an internal mask-generation source image as the
-   real output and assumed it rendered solid white; it doesn't). It does
-   not use `currentColor` and the source file is never edited/duplicated
-   per contexts, so producing a light/white reading of it is a CSS
-   concern, not an asset concern.
-
-   Previously implemented as `filter: brightness(0) invert(1)` on the
-   colored background-image. Replaced with CSS masking instead: the
-   background-image is turned off, a plain white background-color takes
-   its place, and the SAME unmodified SVG is used as a `mask-image` —
-   its alpha shape becomes a stencil that reveals the white fill through
-   exactly the artwork's own silhouette, with no color-transform step on
-   rendered pixels at all. This is the more likely fix for the reported
-   softness on iPad/mobile: CSS `filter` on an element commonly forces
-   the browser to rasterize that element into an intermediate offscreen
-   buffer *before* applying the filter, and that intermediate buffer is
-   not guaranteed to be produced at the display's true device-pixel
-   resolution in every engine — a well-documented class of issue for
-   filtered content specifically, and one that would selectively affect
-   high-DPR devices (the iPads/phones/Retina laptops actually reported as
-   blurry) while leaving standard-DPR desktop monitors (reported sharp)
-   unaffected, exactly matching what was seen. `mask-image` doesn't
-   require that same per-pixel filter pass — it's a stencil/compositing
-   operation, not a color transform — so it doesn't carry the same risk.
-   `-webkit-` prefixes included alongside the unprefixed properties,
-   matching this project's existing convention for `backdrop-filter`
-   (Header.css). */
+/* White reading of the mark for Header/Footer/Radar — the source PNG's
+   own artwork is a fixed blue-to-teal gradient, not `currentColor`.
+   Previously this went through `mask-image` on the old Canva SVG
+   specifically to avoid a `filter` compositing risk that came from that
+   SVG's own embedded-raster/mask/transform chain; that whole chain is
+   retired along with the asset it existed for. Applied directly to a
+   plain <img> of a clean opaque-canvas PNG, `filter` no longer carries
+   the same risk — there's no intermediate mask compositing step for it to
+   interact with. */
 .brand-logo-light {
-  background-image: none;
-  background-color: #ffffff;
-  -webkit-mask-image: url("../../../assets/images/logo/KneeGuideLogo.svg");
-  mask-image: url("../../../assets/images/logo/KneeGuideLogo.svg");
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
+  filter: brightness(0) invert(1);
 }

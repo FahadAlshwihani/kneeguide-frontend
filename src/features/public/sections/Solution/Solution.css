@@ -440,19 +440,20 @@
   background: var(--color-bg-elevated);
 }
 
-/* 40px within the 46px disc (up from 28px, ~61%) — ~87% occupancy, a
-   flat 3px gap on every side (46-40=6, halved evenly by `place-items:
+/* 42px within the 46px disc (46-42=4, halved evenly by `place-items:
    center` with no fractional remainder — see the two responsive
    overrides below for the same even-difference reasoning at their own
-   disc sizes). The artwork itself was measured directly (extracting and
-   analyzing the SVG's actual embedded raster + its own transform/
-   viewBox clip, not eyeballed) to already fill ~97% of its own square
-   canvas — see BrandLogo.css / this project's audit notes — so a CSS
-   box this close to the disc's own size reads as the mark visually
-   filling the hub, per the 80-90% target, without touching its edge. */
+   disc sizes). Sized against the NEW KneeGuideLogo1024.png specifically
+   (not carried over from the old SVG's numbers): its own visible-pixel
+   bounds were measured directly (decoding the PNG and finding the
+   farthest opaque pixel from the image's own canvas center, not
+   eyeballed) at ~98% of the image's own half-width. At 42px that places
+   the artwork's own farthest point ~2.4px inside the 23px disc radius —
+   close enough to read as filling the hub (~89-90% visual occupancy)
+   without ever touching the circle's edge. */
 .platform-hub-mark-icon {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
 }
 
 .platform-hub-label {
@@ -506,11 +507,13 @@
     height: 40px;
   }
 
-  /* Same even-difference reasoning as the base rule: 40-34=6px, halved
-     evenly, no fractional centering offset. 34/40 = 85%. */
+  /* Same even-difference reasoning as the base rule, retuned for the new
+     PNG's measured ~98% own-canvas extent: 40-36=4px, halved evenly, no
+     fractional centering offset. Artwork's farthest point sits ~2.4px
+     inside the 20px disc radius. */
   .platform-hub-mark-icon {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
   }
 }
 
@@ -542,10 +545,12 @@
     height: 36px;
   }
 
-  /* Same even-difference reasoning as the base rule: 36-30=6px, halved
-     evenly, no fractional centering offset. 30/36 = 83%. */
+  /* Same even-difference reasoning as the base rule, retuned for the new
+     PNG's measured ~98% own-canvas extent: 36-32=4px, halved evenly, no
+     fractional centering offset. Artwork's farthest point sits ~2.3px
+     inside the 18px disc radius. */
   .platform-hub-mark-icon {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
   }
 }
