@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ROUTES } from "../../../../utils/routes";
 import PrimaryButton from "../../../../components/ui/PrimaryButton";
 import SecondaryButton from "../../../../components/ui/SecondaryButton";
-import HeroDashboardPreview from "./HeroDashboardPreview";
-import HeroMobileCarousel from "./HeroMobileCarousel";
+import HeroKpiGrid from "./HeroKpiGrid";
 import "./Hero.css";
 
 const fadeUp = {
@@ -17,24 +16,19 @@ const fadeUp = {
   }),
 };
 
-// The fold-crossing bottom band no longer renders here at all — it's
-// rendered by HeroProblemScene, as the scene's last element, so it's
-// guaranteed (by plain DOM order) to paint above Problem/Solution's own
-// light-transition layers. Hero only ever renders what stays entirely
-// inside its own bounds: the corner/rail composition (desktop) and the
-// carousel (mobile) — neither needs to cross the fold, so neither needs
-// any measurement or escape mechanism.
+// Central content (badge/heading/description/CTAs) followed by a compact
+// six-card KPI preview in normal document flow — replacing the previous
+// ~25-widget scattered/floating composition (corners, side rails, a
+// fold-crossing bottom band, a separate mobile carousel) that used to
+// live outside the flex layout entirely as an absolute overlay. The KPI
+// grid is real content now, not a background decoration, so the Hero is
+// no longer clamped to a strict 100svh — see Hero.css.
 const Hero = () => {
   const { t } = useTranslation();
 
   return (
     <section className="hero-root">
       <div className="hero-container">
-        <HeroDashboardPreview />
-        <HeroMobileCarousel />
-
-        <div className="hero-spacer hero-spacer-top" aria-hidden="true" />
-
         <motion.div className="hero-content" initial="hidden" animate="visible">
           <motion.span className="hero-badge" variants={fadeUp} custom={0}>
             {t("publicHero.badge")}
@@ -60,7 +54,7 @@ const Hero = () => {
           </motion.div>
         </motion.div>
 
-        <div className="hero-spacer hero-spacer-bottom" aria-hidden="true" />
+        <HeroKpiGrid />
       </div>
     </section>
   );
