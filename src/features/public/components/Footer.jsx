@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import RevealSection from "./RevealSection";
+import BrandLogo from "./BrandLogo";
 import { PUBLIC_NAVIGATION } from "../navigation/publicNavigation";
 import { useSectionNavigation } from "../navigation/useSectionNavigation";
 import "./Footer.css";
