@@ -52,14 +52,20 @@
 .hero-kpi-card-slot:nth-child(5) { transition-delay: 240ms; }
 .hero-kpi-card-slot:nth-child(6) { transition-delay: 300ms; }
 
+/* Subtle glass surface: a soft corner highlight over the flat surface
+   token, same structural pattern as the site's existing --gradient-tint-*
+   tokens (index.css) — low-opacity white radial, never a loud/colored
+   gradient — kept generic here rather than reusing those specific tokens
+   since they're semantically tied to other sections. */
 .hero-kpi-card {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
   padding: clamp(12px, 1.6vw, 20px);
-  background: var(--color-surface);
+  background: radial-gradient(140% 120% at 18% 0%, rgba(255, 255, 255, 0.04), transparent 60%), var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   text-align: start;
@@ -84,6 +90,7 @@
 }
 
 .hero-kpi-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,6 +100,33 @@
   background: var(--kpi-accent-soft);
   color: var(--kpi-accent);
   font-size: clamp(0.8rem, 1vw, 0.95rem);
+}
+
+/* Staggered ambient micro-interaction: a tiny indicator dot, invisible at
+   rest, that briefly appears on whichever single card is "active" this
+   tick (see CARD_ORDER/activeCard in HeroKpiGrid.jsx) — opacity + scale
+   only, no box-shadow animation, no rotation, no bounce. Never more than
+   one card at a time. */
+.hero-kpi-icon-dot {
+  position: absolute;
+  inset-inline-end: -2px;
+  top: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--kpi-accent);
+  opacity: 0;
+}
+
+.hero-kpi-icon-active .hero-kpi-icon-dot {
+  animation: heroKpiIconPulse 1900ms ease-out;
+}
+
+@keyframes heroKpiIconPulse {
+  0% { opacity: 0; transform: scale(0.5); }
+  30% { opacity: 1; transform: scale(1.1); }
+  65% { opacity: 0.85; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
 }
 
 .hero-kpi-label {
@@ -113,7 +147,7 @@
   font-size: clamp(1.35rem, 2.1vw, 1.85rem);
   font-weight: 700;
   line-height: 1;
-  color: var(--color-heading);
+  color: var(--kpi-accent);
   animation: heroKpiValueIn 400ms ease;
 }
 
@@ -127,17 +161,51 @@
   height: clamp(16px, 2vw, 22px);
   flex-shrink: 0;
   overflow: visible;
-  animation: heroKpiSparklineIn 500ms ease;
 }
 
-.hero-kpi-sparkline polyline {
+/* Draws in once per mount — which happens on the Hero's first reveal and
+   again each time this card's `key` changes (its value advancing), so
+   the same one-shot animation covers both "reveal when Hero becomes
+   visible" and "chart subtly responds to data changes" without a
+   continuously running loop. `stroke-dasharray` is a safe overestimate of
+   these paths' real length, not an exact measurement — it only needs to
+   be >= the true length for the reveal to complete cleanly. */
+.hero-kpi-sparkline-line {
   stroke: var(--kpi-accent);
-  opacity: 0.9;
+  opacity: 0.95;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: heroKpiChartDraw 700ms ease forwards;
 }
 
-@keyframes heroKpiSparklineIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes heroKpiChartDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+.hero-kpi-sparkline-dot {
+  fill: var(--kpi-accent);
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+  animation: heroKpiDotIn 400ms ease 550ms forwards;
+}
+
+.hero-kpi-sparkline-glow {
+  fill: var(--kpi-accent);
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+  animation: heroKpiGlowIn 400ms ease 550ms forwards;
+}
+
+@keyframes heroKpiDotIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes heroKpiGlowIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 0.28; transform: scale(1); }
 }
 
 .hero-kpi-progress-track {
@@ -306,7 +374,6 @@
       "s5 s5"
       "s6 .";
     gap: 10px;
-    margin-top: 16px;
   }
 
   .hero-kpi-card {
@@ -323,6 +390,15 @@
   }
 }
 
+/* Reduced motion: the demo ticker itself never starts (see the `active`
+   gate in useKpiTicker, HeroKpiGrid.jsx), so every value/chart/appointment
+   state freezes at its first entry — this section only needs to make sure
+   nothing is left stuck in an animation's *starting* (invisible) frame.
+   Plain `animation: none` alone isn't enough for the chart draw-in and
+   icon-pulse dot specifically: without `forwards`, they already revert to
+   their un-animated base rule (dashoffset 100 / opacity 0, i.e. hidden)
+   the instant the one-shot play finishes, so those need their real end
+   values set explicitly here too. */
 @media (prefers-reduced-motion: reduce) {
   .hero-kpi-card-slot {
     transition: opacity 250ms ease;
@@ -330,10 +406,29 @@
   }
 
   .hero-kpi-value,
-  .hero-kpi-sparkline,
   .hero-kpi-appointment-date,
   .hero-kpi-appointment-time {
     animation: none;
+  }
+
+  .hero-kpi-sparkline-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .hero-kpi-sparkline-dot {
+    animation: none;
+    opacity: 1;
+  }
+
+  .hero-kpi-sparkline-glow {
+    animation: none;
+    opacity: 0.28;
+  }
+
+  .hero-kpi-icon-active .hero-kpi-icon-dot {
+    animation: none;
+    opacity: 0;
   }
 
   .hero-kpi-progress-fill {
