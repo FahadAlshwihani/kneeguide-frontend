@@ -134,14 +134,19 @@
   color: var(--color-heading);
 }
 
-/* Same 30px footprint the old generated "KG" mark used — only the mark
-   itself changed (real KneeGuideLogo.svg via BrandLogo, see Header.jsx),
-   not the space it occupies. The old mark's own background/border-radius/
-   centered-text styling doesn't apply to an <img> and is dropped rather
-   than carried over unused. */
+/* 34px (up from the old generated "KG" mark's 30px) — the real artwork
+   carries its own internal padding within its square frame (it's a
+   Canva-export raster, not a tight vector bounding box), so at 30px it
+   read as smaller/weaker than the adjacent wordmark than the nominal box
+   size suggested. `.header-nav`'s own height (64px, GSAP-set, see
+   Header.jsx) and `.header-logo`'s absolute vertical centering
+   (top: 50%/translateY(-50%) above) both stay exactly as they are — this
+   only changes the mark's own box, never the bar around it. Mobile keeps
+   the previous 30px below (max-width: 768px) rather than growing too,
+   per "do not increase Header height, preferably not at all". */
 .header-logo-mark {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
 }
 
 .header-actions {
@@ -337,6 +342,15 @@
     position: static;
     transform: none;
     justify-self: center;
+  }
+
+  /* Stays at the previous 30px rather than growing with desktop's 34px —
+     the mobile top bar is already tighter (grid layout above, smaller
+     Login button below), and "do not increase Header height" applies
+     here most directly. */
+  .header-logo-mark {
+    width: 30px;
+    height: 30px;
   }
 
   .header-actions {

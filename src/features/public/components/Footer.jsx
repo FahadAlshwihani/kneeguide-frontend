@@ -25,7 +25,7 @@ const Footer = () => {
                   goHome();
                 }}
               >
-                <BrandLogo className="footer-logo-mark" />
+                <BrandLogo className="footer-logo-mark brand-logo-light" />
                 {t("publicFooter.brand")}
               </Link>
               <p className="footer-tagline">{t("publicFooter.description")}</p>
