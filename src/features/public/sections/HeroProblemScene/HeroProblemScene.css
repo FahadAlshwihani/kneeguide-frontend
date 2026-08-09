@@ -35,19 +35,27 @@
   overflow: hidden;
   margin-top: -76px;
   padding-top: 76px;
-  --hero-h: calc(100svh - 72px);
 }
 
-/* Hero's own cinematic vignette. Confined to exactly Hero's own height,
-   which is exact, not approximated — Hero uses a real `height`, not
-   `min-height`. The Hero/Problem boundary below this is intentionally
-   left as a plain, visible section break; nothing bridges it. */
+/* Hero's own cinematic vignette. Confined to exactly Hero's own real
+   rendered height (`--hero-real-h`, measured by a ResizeObserver in
+   HeroProblemScene/index.jsx — the same pattern `--problem-real-h` below
+   already uses), plus the 76px this wrapper pulls Hero up by (see
+   margin-top/padding-top above) so the vignette also covers that
+   overlapped region, not just Hero's own visible box. `100svh` is only a
+   fallback for the brief moment before the first observation lands, not
+   a steady-state assumption — Hero's real height is content-driven now
+   (see Hero.css) and can be shorter than a full viewport, so a flat
+   guess here would keep this dark, Hero-only layer painting past Hero's
+   real bottom edge and visibly bleed into Problem's own top content. The
+   Hero/Problem boundary is intentionally left as a plain, visible section
+   break otherwise; nothing else bridges it. */
 .scene-hero-vignette {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: calc(var(--hero-h) + 76px);
+  height: calc(var(--hero-real-h, 100svh) + 76px);
   pointer-events: none;
   background: radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 55%, rgba(0, 0, 0, 0.85) 100%),
     rgba(0, 0, 0, 0.25);
