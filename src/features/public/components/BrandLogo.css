@@ -20,3 +20,21 @@
   background-position: center;
   background-size: contain;
 }
+
+/* The artwork itself is a fixed blue-to-teal gradient raster (confirmed
+   by extracting and viewing its actual embedded content layer — a prior
+   pass mis-identified an internal mask-generation source image as the
+   real output and assumed it rendered solid white; it doesn't). It does
+   not use `currentColor` and the source file is never edited/duplicated
+   per contexts, so producing a light/white reading of it is a CSS
+   concern, not an asset concern. `brightness(0) invert(1)` is the
+   standard, deterministic recipe for this: brightness(0) crushes every
+   RGB channel to black while leaving alpha untouched, invert(1) flips
+   that black to white — the result is a solid white silhouette of
+   exactly the artwork's own alpha shape, not a guessed/stacked filter
+   combination. Applied via className (`brand-logo-light`) at each call
+   site that needs it (Header/Footer/radar hub — all dark or
+   dark-surfaced contexts), never as runtime background detection. */
+.brand-logo-light {
+  filter: brightness(0) invert(1);
+}

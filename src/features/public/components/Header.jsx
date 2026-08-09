@@ -261,7 +261,7 @@ const Header = () => {
                 goHome();
               }}
             >
-              <BrandLogo className="header-logo-mark" />
+              <BrandLogo className="header-logo-mark brand-logo-light" />
               KneeGuide
             </Link>
 
