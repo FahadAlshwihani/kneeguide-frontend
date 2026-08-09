@@ -428,9 +428,8 @@
    place-items: center` is a more direct centering statement than the
    equivalent flex pair it replaces — same math, not a fix for a
    previously-broken value (.platform-hub-mark-icon below already used
-   explicit square dimensions + background-position: center +
-   background-size: contain, see BrandLogo.css — there was no manual
-   offset anywhere in this chain to remove). */
+   explicit square dimensions on the mark's own <img>, see BrandLogo.css
+   — there was no manual offset anywhere in this chain to remove). */
 .platform-hub-mark {
   width: 46px;
   height: 46px;
