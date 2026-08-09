@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { motion, useInView, useMotionValue, animate } from "motion/react";
 import { FaUser, FaUserDoctor, FaBrain, FaDumbbell, FaChartLine, FaFileLines, FaBell, FaStopwatch, FaPeopleGroup } from "react-icons/fa6";
 import Reveal from "../../components/Reveal";
+import BrandLogo from "../../components/BrandLogo";
 import "./Solution.css";
 
 const NODE_ICONS = {
@@ -694,8 +695,14 @@ const Solution = () => {
               animate={isMapInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: HUB_REVEAL_DURATION, ease: "easeOut" }}
             >
-              <span className="platform-hub-mark">KG</span>
+              <span className="platform-hub-mark">
+                <BrandLogo className="platform-hub-mark-icon" />
+              </span>
             </motion.span>
+            {/* Visible text label right below the mark already reads
+                "KneeGuide" (publicSolution.center) — BrandLogo defaults to
+                decorative (empty alt) precisely so this is the one place
+                a screen reader announces the brand name, not twice. */}
             <span className="platform-hub-label">{t("publicSolution.center")}</span>
           </div>,
           document.body
