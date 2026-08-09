@@ -1,29 +1,44 @@
 /* Plain placement CSS for the one <Grainient> instance rendered in
    PublicLayout.jsx — no custom effects added on top of it.
 
-   .public-root gets position: relative here (not in index.css, to avoid
-   touching that shared file) purely so the canvas below has a
-   containing block to size `inset: 0` against. `isolation: isolate`
-   keeps the negative-z canvas inside this stacking context, above the
-   root's own background but below every normal child. Neither property
-   creates a scroll container, so the sticky header remains unchanged.
+   `isolation: isolate` on .public-root keeps the negative-z canvas inside
+   this stacking context, above the root's own background but below every
+   normal child (Header/Outlet/Footer, all default z-index: auto, so they
+   paint over it in plain DOM order — no z-index arithmetic needed against
+   them). `position: relative` isn't required for the canvas's own sizing
+   below (position: fixed sizes against the viewport regardless of any
+   ancestor's position), but is left in place since nothing else depends
+   on removing it. Neither property creates a scroll container, so the
+   sticky header remains unchanged.
 
-   The canvas itself overrides Grainient's own width/height: 100% (which
-   can't resolve correctly against an auto-height ancestor) with
-   inset: 0, the standard way to stretch an absolutely positioned element
-   to its containing block's real height regardless of whether that
-   height is auto or explicit. z-index: -1 puts it behind every other
-   child of .public-root unconditionally. */
+   The canvas itself is `position: fixed`, not `absolute` — it no longer
+   spans the scrolling document (previously inset: 0 against .public-root,
+   whose own height is the full homepage's, which meant an equally tall
+   WebGL drawing buffer). Fixed positioning binds it to the actual
+   viewport instead, so its rendered size — and therefore Grainient's own
+   `container.getBoundingClientRect()` read in its resize logic — is
+   bounded to roughly viewportWidth x viewportHeight regardless of how
+   tall the page is. `height: 100svh` (rather than relying on inset: 0's
+   implicit bottom: 0, which some browsers resolve against a *dynamic*
+   viewport that shrinks/grows as mobile browser chrome shows or hides
+   while scrolling) pins the canvas to the *small* viewport height, which
+   by definition never changes just from scrolling — this is what keeps
+   mobile scrolling from repeatedly triggering Grainient's own
+   ResizeObserver (see its own debounce as a second line of defense).
+   z-index: -1 puts it behind every other child of .public-root
+   unconditionally; content still scrolls normally above this fixed
+   layer, all the way through Footer, since nothing about the content's
+   own layout changed. */
 .public-root {
   position: relative;
   isolation: isolate;
 }
 
 .grainient-container.site-background-canvas {
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: auto;
-  height: auto;
+  height: 100svh;
   z-index: -1;
   pointer-events: none;
 }
