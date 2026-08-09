@@ -39,12 +39,39 @@ import "./HeroProblemScene.css";
  * boundary is intentionally left as a plain, visible section break — no
  * bridging layer there.
  *
+ * A second ResizeObserver, the exact same pattern, measures Hero's own
+ * wrapper and exposes `--hero-real-h` — `.scene-hero-vignette` (Hero-
+ * ProblemScene.css) sizes itself against that instead of a flat `100svh`-
+ * based guess. Hero used to always render at a fixed, near-full-viewport
+ * height, so a static guess was safe; now that Hero sizes itself to its
+ * own content (see Hero.css), a static guess can be taller than Hero's
+ * real content, and the vignette (a dark, Hero-only atmosphere layer)
+ * would keep painting past Hero's real bottom edge and visibly bleed over
+ * Problem's own top content — reading as "the Hero keeps going" even
+ * though Hero's actual copy/cards have already ended. Measuring, the same
+ * way Problem's own seam already does, is what keeps it exact regardless
+ * of viewport, content length, or language.
+ *
  * Hero/Problem/Solution below render only their own foreground content;
  * none of them owns a background.
  */
 const HeroProblemScene = () => {
+  const heroMeasureRef = useRef(null);
   const problemMeasureRef = useRef(null);
+  const [heroRealHeight, setHeroRealHeight] = useState(null);
   const [problemRealHeight, setProblemRealHeight] = useState(null);
+
+  useEffect(() => {
+    const node = heroMeasureRef.current;
+    if (!node || typeof ResizeObserver === "undefined") return undefined;
+
+    const observer = new ResizeObserver(([entry]) => {
+      setHeroRealHeight(entry.contentRect.height);
+    });
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const node = problemMeasureRef.current;
@@ -58,15 +85,18 @@ const HeroProblemScene = () => {
     return () => observer.disconnect();
   }, []);
 
-  const sceneStyle = problemRealHeight
-    ? { "--problem-real-h": `${problemRealHeight}px` }
-    : undefined;
+  const sceneStyle = {
+    ...(heroRealHeight ? { "--hero-real-h": `${heroRealHeight}px` } : null),
+    ...(problemRealHeight ? { "--problem-real-h": `${problemRealHeight}px` } : null),
+  };
 
   return (
     <section className="hero-problem-scene" style={sceneStyle}>
       <div className="scene-hero-vignette" aria-hidden="true" />
 
-      <Hero />
+      <div ref={heroMeasureRef}>
+        <Hero />
+      </div>
 
       <div className="scene-light-phase">
         <div className="scene-invert-lighten" aria-hidden="true" />
