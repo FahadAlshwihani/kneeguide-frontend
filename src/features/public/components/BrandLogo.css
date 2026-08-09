@@ -1,17 +1,22 @@
-/* Sizing (width/height) is intentionally NOT set here — each call site
-   owns its own footprint via its own className (Header.css/Footer.css/
-   Solution.css), matching whatever fake mark it replaced. This only ever
-   guarantees the artwork itself is never stretched/distorted inside
-   whatever box it's given.
+/* See BrandLogo.jsx for why this is a background-image on a <span>
+   instead of `<img src={...}>` — CRA's webpack config has no way to
+   import this specific SVG from a .jsx file. A CSS `url()` reference
+   loads the identical, unmodified file (referenced directly from its
+   real location, never copied/duplicated) without going through the
+   loader that can't parse it.
 
-   Rendered as a real <img src="....svg">, not an inlined <svg>, which
-   also means the site's existing directional-icon rules (e.g.
-   `[dir="rtl"] .ui-secondary-btn-icon svg`, all scoped to literal `svg`
-   elements for drawn arrow icons) can never match this element at all —
-   no risk of the logo ever being caught by a generic RTL svg-mirror
-   selector, by construction, not by careful scoping. */
+   Sizing (width/height) is intentionally NOT set here — each call site
+   owns its own footprint via its own className (Header.css/Footer.css/
+   Solution.css), matching whatever fake mark it replaced. `background-
+   size: contain` + `background-repeat: no-repeat` is this component's
+   equivalent of `object-fit: contain` for an <img>: the artwork is never
+   stretched/distorted inside whatever box it's given, and its own aspect
+   ratio is always respected. */
 .brand-logo {
   display: block;
-  object-fit: contain;
   flex-shrink: 0;
+  background-image: url("../../../assets/images/logo/KneeGuideLogo.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
