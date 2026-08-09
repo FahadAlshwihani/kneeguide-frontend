@@ -18,10 +18,22 @@
    background, no shadow anywhere in those two blocks; whitespace alone
    groups them. The problem cards are the *only* element in this section
    allowed a card-style surface. */
+/* No min-height (there used to be one, 100svh) — found and removed as
+   part of tracing the Hero-tail gap bug: this was the exact same class of
+   bug already fixed in Hero.css (a near-full-viewport floor + `justify-
+   content: center`), just one section later. Whenever Problem's own real
+   content (stats + audience line + header + cards) rendered shorter than
+   100svh, centering split the leftover space above/below it, pushing
+   Problem's own visible content down inside its own box — compounding
+   with the Hero vignette bleed (see HeroProblemScene.css) into what read
+   as one large "Hero still going" region. Sizing purely to content, the
+   same fix already applied to Hero, removes that leading gap here too.
+   `--problem-real-h` (the ResizeObserver-measured height the light-
+   transition treatment layers anchor to) already reads Problem's real
+   rendered box either way, so this needs no change anywhere else. */
 .problem-root {
   position: relative;
   padding: var(--section-padding) 0;
-  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
