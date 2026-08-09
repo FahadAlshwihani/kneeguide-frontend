@@ -239,9 +239,25 @@ const Grainient = ({
       renderer.render({ scene: mesh });
     };
 
-    const ro = new ResizeObserver(setSize);
+    // The container is now viewport-bound (position: fixed; height:
+    // 100svh — see SiteBackground.css) rather than document-tall, so its
+    // rendered size should only actually change on a real resize/
+    // orientation change. `100svh` alone should already keep mobile
+    // scroll-driven browser-chrome show/hide from firing this at all, but
+    // debouncing here is a cheap second line of defense against any
+    // residual ResizeObserver churn — coalesces a burst of firings (e.g.
+    // a dragged window resize, or a toolbar mid-transition) into a single
+    // `setSize()` call once things settle, rather than resizing the
+    // renderer on every intermediate frame.
+    let resizeTimeout = null;
+    const scheduleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(setSize, 120);
+    };
+
+    const ro = new ResizeObserver(scheduleResize);
     ro.observe(container);
-    setSize();
+    setSize(); // immediate first size — no debounce delay before the first frame
 
     // Distinct from performance tier: prefers-reduced-motion means "calmer
     // motion", not "weaker device" (a slow device still gets the real,
