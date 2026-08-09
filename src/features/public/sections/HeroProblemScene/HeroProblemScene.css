@@ -1,22 +1,27 @@
-/* Hero + Problem + Solution as one continuous animated scene: a single
-   Beams canvas (PublicBackground) absolutely positioned behind all three
-   sections, scrolling with the document like any other page content (no
-   `position: sticky`/`fixed` here — that was tried for its performance
-   benefit and reverted because it read as a fixed/parallax background
-   instead of one continuous canvas moving with the page). A layered,
-   static treatment overlay does the atmosphere journey while the same
-   animation keeps running underneath — only the WebGL canvas animates.
+/* Hero + Problem + Solution as one continuous scene, sitting on top of
+   the single, page-wide Grainient canvas mounted once in PublicLayout.jsx
+   (behind the entire homepage, not just this scene) — this wrapper no
+   longer renders any background/canvas of its own at all. It previously
+   mounted its own separate Beams (Three.js) canvas here, positioned and
+   scrolling exactly like normal page content (no `position: sticky`/
+   `fixed` — that was tried for its performance benefit and reverted
+   because it read as a fixed/parallax background instead of one
+   continuous canvas moving with the page); that second engine has been
+   removed in favor of the one shared Grainient canvas, which eases its
+   own palette across `.scene-light-phase` below (see Grainient.jsx's
+   `regionBoundarySelector`). The layered, static CSS treatment overlay
+   below still does its own atmosphere journey on top of whatever's
+   rendered underneath, unchanged.
 
    Stacking note: none of the elements below (or Hero's/Problem's/
    Solution's own section roots) set an explicit z-index, and the only
-   positioned elements are .scene-background-layer and the treatment
-   divs (all absolute). Per the CSS stacking spec, positioned descendants
-   with z-index either 0 or auto paint together in DOM order — so simply
-   keeping background layers first in markup and real content last is
-   what guarantees the real content always paints on top, with no
-   z-index arithmetic needed. This same rule is reapplied one level
-   deeper inside .scene-light-phase (its own treatment layers first,
-   Problem/Solution last).
+   positioned elements are the treatment divs (all absolute). Per the CSS
+   stacking spec, positioned descendants with z-index either 0 or auto
+   paint together in DOM order — so simply keeping treatment layers first
+   in markup and real content last is what guarantees the real content
+   always paints on top, with no z-index arithmetic needed. This same
+   rule is reapplied one level deeper inside .scene-light-phase (its own
+   treatment layers first, Problem/Solution last).
 
    Section 4 (Technology) and everything after it is a plain sibling of
    this wrapper in HomePage.jsx, entirely outside it — `overflow: hidden`
@@ -31,19 +36,6 @@
   margin-top: -76px;
   padding-top: 76px;
   --hero-h: calc(100svh - 72px);
-}
-
-/* The shared canvas. Plain `absolute; inset: 0`, spanning the full
-   combined height of all three sections and scrolling normally with
-   them — deliberately not sticky. PublicBackground's internal
-   camera reproduces the visual crop while the WebGL surface itself stays
-   bounded to this exact box. */
-.scene-background-layer {
-  position: absolute;
-  inset: 0;
-  overflow: clip;
-  contain: paint;
-  pointer-events: none;
 }
 
 /* Hero's own cinematic vignette. Confined to exactly Hero's own height,

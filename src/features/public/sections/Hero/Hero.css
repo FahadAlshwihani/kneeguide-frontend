@@ -133,10 +133,10 @@
    above, and it's free to frame the copy from the edges (corners, side
    rails, a wide bottom band) instead of sitting in flow beneath it. */
 
-/* The Beams canvas and its dark vignette treatment used to live directly
-   inside .hero-root; both now live one level up, in the shared
-   HeroProblemScene wrapper (spanning Hero + Problem's combined height as
-   one continuous canvas/animation) — see HeroProblemScene.css. .hero-root
+/* No background/canvas of its own: the shared, page-wide Grainient canvas
+   (mounted once in PublicLayout.jsx, behind the entire homepage) and this
+   scene's own dark vignette treatment both live one level up, in the
+   shared HeroProblemScene wrapper — see HeroProblemScene.css. .hero-root
    itself stays transparent so that shared background shows through. */
 
 @media (max-width: 640px) {

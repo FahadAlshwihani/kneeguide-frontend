@@ -1,32 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
-import PublicBackground from "../../../../components/public/backgrounds/PublicBackground";
-import { setBeamsRegionActive } from "../../performance/backgroundRegion";
 import Hero from "../Hero";
 import Problem from "../Problem";
 import Solution from "../Solution";
 import "./HeroProblemScene.css";
 
 /**
- * Hero, Problem AND Solution share ONE continuous Beams canvas instead of
- * each rendering its own separate background — mounted exactly once here,
- * absolutely positioned behind all three sections' combined height, and
- * scrolling with the document exactly like the rest of the page (no
- * `position: sticky`/`fixed` anywhere in this wrapper — a sticky-canvas
- * version was tried for its performance benefit and reverted: it read as
- * a fixed/parallax background with content scrolling over it, which is
- * explicitly not the intended feel here. The background must move with
- * the page like a normal, continuous canvas; only its color treatment
- * changes while scrolling, never its position).
- *
- * Beams.jsx gets only a narrow, additive performance extension (see its
- * own file) — never touched for shader/geometry/visual-behavior reasons —
- * and PublicBackground (the existing wrapper around it) drives a DPR cap
- * and a pause-when-offscreen signal without changing its own rendered
- * appearance while visible or restarting its animation. Visibility is
- * tracked once, here, on the whole three-section wrapper via
- * IntersectionObserver + document.visibilityState, and passed down as a
- * plain `active` prop that only toggles the existing Canvas's `frameloop`
- * — pause/resume only, never a remount.
+ * Hero, Problem AND Solution no longer render their own background at
+ * all — the single, page-wide Grainient canvas (mounted once in
+ * PublicLayout, behind the entire homepage including this scene) shows
+ * straight through, since nothing in this wrapper sets an opaque
+ * background of its own. This scene used to mount its own separate Beams
+ * (Three.js) canvas here and coordinate pausing it against Grainient
+ * elsewhere on the page; that second rendering engine — and the
+ * cross-component visibility coordination it required — has been removed
+ * in favor of one shared engine for the whole page. Grainient itself
+ * eases its palette from a Beams-derived "hero" tone toward its existing
+ * main palette as the user scrolls past `.scene-light-phase` below (see
+ * Grainient.jsx's `regionBoundarySelector` and the color props passed to
+ * it in PublicLayout.jsx) — this component doesn't need to know that's
+ * happening.
  *
  * Problem and Solution are wrapped in `.scene-light-phase`, a plain
  * normal-flow container with no explicit height of its own — its real
@@ -48,72 +40,11 @@ import "./HeroProblemScene.css";
  * bridging layer there.
  *
  * Hero/Problem/Solution below render only their own foreground content;
- * none of them owns a background anymore.
- *
- * HeroDashboardBottomBand (the Hero's fold-crossing bottom card row) is
- * rendered here, as this scene's very last element — after Hero, after
- * `.scene-light-phase` (Problem + Solution) — instead of inside Hero
- * itself. That's the entire mechanism that guarantees it paints above
- * Problem/Solution's own light-transition layers: this scene already
- * relies on "z-index auto elements paint in DOM order" everywhere else
- * (see the stacking note in HeroProblemScene.css), and being last means
- * winning that comparison outright, with no z-index arithmetic needed
- * across Hero's own ancestor chain. `contentEdge` (Hero's real content
- * box, found via a plain `querySelector` within this scene's own ref —
- * Hero itself stays a normal, unmodified component, with no forwarded
- * ref or measurement of its own) is what lets that band know where the
- * Hero's copy ends and how tall the Hero itself is, without either of
- * those needing to live inside Hero.
+ * none of them owns a background.
  */
 const HeroProblemScene = () => {
-  const sceneRef = useRef(null);
   const problemMeasureRef = useRef(null);
-  const [isSceneActive, setIsSceneActive] = useState(true);
   const [problemRealHeight, setProblemRealHeight] = useState(null);
-
-  useEffect(() => {
-    const node = sceneRef.current;
-    if (!node) return undefined;
-
-    // Two independent signals (intersection, tab visibility) combined
-    // into one `active` boolean every time either one changes.
-    let isIntersecting = true;
-    const recompute = () => {
-      setIsSceneActive(isIntersecting && document.visibilityState !== "hidden");
-    };
-
-    let observer;
-    if (typeof IntersectionObserver !== "undefined") {
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          isIntersecting = entry.isIntersecting;
-          // Same signal this scene already uses to pause/resume its own
-          // Beams canvas — also published here so Grainient (mounted
-          // separately, in PublicLayout, behind everything from
-          // ScrollStackFeature down) knows when Beams' opaque canvas is
-          // covering the viewport and can skip rendering frames nobody
-          // can see. See backgroundRegion.js for why this can't just be
-          // Grainient's own IntersectionObserver.
-          setBeamsRegionActive(isIntersecting);
-          recompute();
-        },
-        { rootMargin: "200px 0px" }
-      );
-      observer.observe(node);
-    }
-
-    document.addEventListener("visibilitychange", recompute);
-
-    return () => {
-      observer?.disconnect();
-      document.removeEventListener("visibilitychange", recompute);
-      // Defensive: if this scene ever unmounts while something is still
-      // subscribed, don't leave Grainient permanently gated off — `false`
-      // (not covering) is the same fail-open default backgroundRegion.js
-      // itself starts with, for the same reason.
-      setBeamsRegionActive(false);
-    };
-  }, []);
 
   useEffect(() => {
     const node = problemMeasureRef.current;
@@ -127,20 +58,12 @@ const HeroProblemScene = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Finds Hero's own root/content nodes via plain DOM queries (scoped to
-  // this scene's own ref) rather than a forwarded ref — Hero stays a
-  // normal, self-contained component; only this scene needs to know where
-  // its content box is, purely to position HeroDashboardBottomBand.
   const sceneStyle = problemRealHeight
     ? { "--problem-real-h": `${problemRealHeight}px` }
     : undefined;
 
   return (
-    <section className="hero-problem-scene" ref={sceneRef} style={sceneStyle}>
-      <div className="scene-background-layer" aria-hidden="true">
-        <PublicBackground active={isSceneActive} />
-      </div>
-
+    <section className="hero-problem-scene" style={sceneStyle}>
       <div className="scene-hero-vignette" aria-hidden="true" />
 
       <Hero />
@@ -154,7 +77,6 @@ const HeroProblemScene = () => {
         </div>
         <Solution />
       </div>
-
     </section>
   );
 };
