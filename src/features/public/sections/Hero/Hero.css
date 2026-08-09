@@ -111,10 +111,47 @@
 }
 
 /* Matches useHeroResponsiveMode.js's own mobile threshold — the KPI grid
-   drops to its single permanent card at the same width. */
+   drops to its single permanent card at the same width, so this is the
+   one mode where the Hero also needs to behave like an opening screen
+   (see the min-height below) rather than purely content-sized like
+   desktop/tablet remain.
+
+   Mobile-only opening-screen floor. Header is `position: sticky`
+   (Header.css) — on initial load, before any scrolling, that's real
+   document flow, not an overlay: it occupies genuine space above Hero,
+   so that space has to come out of the viewport for Hero to correctly
+   fill "the rest of the first screen". 76px is the sticky header's own
+   real rendered footprint (`.header-root`'s 12px top padding + `.header-
+   nav`'s 64px height, the latter set via GSAP inline style from Header.
+   jsx's TOP_BAR_HEIGHT, so it's fixed regardless of breakpoint) — the
+   exact same value HeroProblemScene.css already relies on for this
+   identical question, not a fresh guess.
+
+   `min-height`, not `height`: this is a floor, not a cap. If Arabic
+   wraps to more lines, text scales up under accessibility settings, or
+   the KPI card needs more room than usual, Hero simply grows past this
+   value to whatever its real content needs — same as it already does on
+   desktop/tablet, just with a guaranteed minimum on top here.
+
+   `svh` (small viewport height — a stable value, unaffected by mobile
+   browser chrome expanding/collapsing) rather than `dvh`: a `dvh`-based
+   floor would grow as the chrome auto-collapses mid-scroll, visibly
+   shifting Projected Impact underneath the user; `svh` is a fixed
+   reference instead, so the layout never jumps — the same reasoning
+   already used for Grainient's own canvas sizing (SiteBackground.css).
+
+   `justify-content: flex-start` (overriding the `center` above, which
+   remains correct and untouched for desktop/tablet) — with `center`,
+   any leftover space between this floor and shorter content would split
+   evenly above *and* below it, the exact bug already fixed once before.
+   `flex-start` packs copy/CTAs/KPI from the top instead, so any leftover
+   height reads as intentional breathing room after the KPI card, not a
+   gap before the badge. */
 @media (max-width: 767px) {
   .hero-root {
     padding: clamp(20px, 4svh, 32px) 0;
+    min-height: calc(100svh - 76px);
+    justify-content: flex-start;
   }
 
   .hero-container {
