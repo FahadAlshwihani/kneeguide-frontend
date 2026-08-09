@@ -728,62 +728,35 @@
     "description": "منصة رقمية تربط المريض بالمختص، وتحوّل بيانات الحركة إلى متابعة واضحة وتنبيهات لحظية تساعد على تحسين جودة التأهيل المنزلي.",
     "ctaPrimary": "ابدأ الآن",
     "ctaSecondary": "تسجيل الدخول",
-    "preview": {
-      "doctorBadge": "واجهة الطبيب",
-      "patientBadge": "واجهة المريض",
-      "activePatientsLabel": "المرضى النشطون",
-      "upcomingAppointmentTitle": "الموعد القادم",
-      "withPatientPrefix": "المريض",
-      "withDoctorPrefix": "د.",
-      "progressLabel": "تقدّم التأهيل",
-      "progressSub": "أحمد علي — الأسبوع الرابع",
-      "alertLabel": "تنبيه يحتاج مراجعة",
-      "alertSub": "قبل ساعتين",
-      "exerciseName": "انزلاق الكعب",
-      "exerciseReps": "3 × 15",
-      "exerciseLastDone": "الأمس",
-      "romLabel": "مدى الحركة",
-      "romSub": "مدى البسط",
-      "adherenceLabel": "الالتزام الأسبوعي",
-      "adherenceSub": "5 أيام متتالية",
-      "appointmentType": "متابعة",
-      "reschedule": "إعادة الجدولة",
-      "viewAll": "عرض الكل",
-      "start": "ابدأ",
-      "lastDoneLabel": "آخر مرة",
-      "romValue": "82°",
-      "adherenceValue": "76%",
-      "appointmentDateDay": "25",
-      "appointmentDateMonth": "نوفمبر",
-      "appointmentTime": "3:30 م",
-      "todayAppointmentsLabel": "مواعيد اليوم",
-      "newReportsLabel": "تقارير جديدة",
-      "exercisesAssignedLabel": "التمارين المخصصة اليوم",
-      "messagesLabel": "الرسائل",
-      "messagesSub": "رسائل غير مقروءة",
-      "notesLabel": "الملاحظات",
-      "notesSub": "ملاحظات حديثة",
-      "sessionCompletionLabel": "نسبة إتمام الجلسات",
-      "sessionCompletionSub": "هذا الأسبوع",
-      "avgExerciseTimeLabel": "متوسط وقت التمرين",
-      "avgExerciseTimeSub": "هذا الأسبوع",
-      "romImprovementLabel": "تحسّن مدى الحركة",
-      "romImprovementSub": "هذا الشهر",
-      "todaySessionsLabel": "جلسات اليوم",
-      "weeklyProgressLabel": "التقدّم الأسبوعي",
-      "weeklyProgressSub": "مقارنة بالأسبوع الماضي",
-      "recoveryScoreLabel": "مؤشر التعافي",
-      "painLevelLabel": "مستوى الألم",
-      "painLevelTrend": "انخفاض من 4",
-      "dailyGoalLabel": "الهدف اليومي",
-      "dailyGoalSub": "3 من 4 تمارين",
-      "exerciseCompletionLabel": "إتمام التمارين",
-      "aiRecommendationLabel": "توصية الذكاء الاصطناعي",
-      "aiRecommendationSub": "زيادة تمارين مدى الحركة بنسبة 10%",
-      "streakLabel": "التتابع",
-      "streakTrend": "يوم متتالي",
-      "complianceLabel": "الالتزام",
-      "notificationsLabel": "الإشعارات"
+    "kpi": {
+      "ariaLabel": "معاينة مباشرة للوحة تحكم التأهيل",
+      "exercisesAssigned": {
+        "label": "التمارين المخصصة اليوم",
+        "trend": "+20% مقارنة بالأمس"
+      },
+      "activePatients": {
+        "label": "المرضى النشطون",
+        "trend": "+12% مقارنة بالأسبوع الماضي"
+      },
+      "rehabProgress": {
+        "label": "تقدّم التأهيل",
+        "trend": "+8% مقارنة بالأسبوع الماضي"
+      },
+      "sessionCompletion": {
+        "label": "نسبة إتمام الجلسات",
+        "trend": "+10% مقارنة بالأسبوع الماضي"
+      },
+      "weeklyAdherence": {
+        "label": "الالتزام الأسبوعي",
+        "trend": "+6% مقارنة بالأسبوع الماضي"
+      },
+      "appointment": {
+        "label": "الموعد القادم",
+        "month": "مايو",
+        "sessionType": "جلسة متابعة",
+        "patientTag": "مريض",
+        "viewDetails": "عرض التفاصيل"
+      }
     }
   },
   "publicProblem": {
