@@ -121,12 +121,26 @@
    actions group are pinned to the two ends via absolute positioning, not
    flex, so the logo's own centering never has to account for their
    widths. */
+/* `direction: ltr` — without it this flex row inherits `dir="rtl"` from
+   the document root in Arabic, and `flex-direction: row`'s start edge is
+   direction-relative: the same DOM order (BrandLogo, then "KneeGuide")
+   renders icon-left/text-right in LTR but flips to text-left/icon-right
+   in RTL, visually reversing the lockup even though nothing in the DOM
+   or flex-direction actually changed. Pinning this one wrapper to `ltr`
+   makes its row's start edge always the physical left, in both
+   languages, so the brand's internal order is fixed — a single
+   direction-independent rule, not a duplicated/conditional markup path.
+   Scoped to just this element: it doesn't affect `left: 50%` above
+   (already a physical property, not direction-relative) or anything
+   outside this flex row — the rest of the Header's RTL layout
+   (mega-menu cards, top-bar actions) is untouched. */
 .header-logo {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   display: flex;
+  direction: ltr;
   align-items: center;
   gap: 10px;
   font-weight: 700;

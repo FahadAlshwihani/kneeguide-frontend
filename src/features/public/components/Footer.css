@@ -39,9 +39,16 @@
 
 /* Brand lockup: the real KneeGuideLogo1024.png (icon-only artwork — see
    BrandLogo.jsx) plus the existing "KneeGuide" text, same [icon] + text
-   pattern as Header.css's .header-logo. Previously this was text-only. */
+   pattern as Header.css's .header-logo — including the same `direction:
+   ltr` fix and the same reasoning: this flex row would otherwise inherit
+   `dir="rtl"` in Arabic and flip which side the icon/text render on
+   (flex row's start edge is direction-relative), reversing the lockup's
+   internal order even though the DOM order never changes. Rest of the
+   Footer's own RTL behavior (`text-align: start` etc. elsewhere in this
+   file) is untouched — scoped to just this element. */
 .footer-logo {
   display: flex;
+  direction: ltr;
   align-items: center;
   gap: 8px;
   font-weight: 700;
