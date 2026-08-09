@@ -413,25 +413,39 @@
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.16);
 }
 
-/* Kept as a colored circular backdrop (unchanged from when it held the
-   placeholder "KG" text) specifically because KneeGuideLogo.svg's artwork
-   renders solid white (see BrandLogo.jsx) — sitting directly on
-   .platform-hub-circle's own white background would be invisible.
-   .platform-hub-mark-icon below is the actual logo, sized smaller than
-   this circle so it doesn't touch the edges. */
+/* A restrained, solid dark-navy backdrop (--color-bg-elevated, an
+   existing token — not a new color) rather than the previous
+   --gradient-brand blue-to-teal gradient: the logo's own real artwork is
+   itself a fixed blue-to-teal gradient (confirmed by extracting its
+   actual embedded content layer, not the mask-generation source a prior
+   pass mistook for the real output), so a same-family colored gradient
+   disc behind a `brand-logo-light`-whitened mark competed with the
+   radar's own blue/teal palette and made the mark read as low-contrast/
+   "teal" rather than a clean white focal point. Solid dark navy against
+   .platform-hub-circle's white outer ring gives the white mark the
+   highest, simplest contrast available from existing tokens, with no
+   gradient to compete with the surrounding rings/nodes. `display: grid;
+   place-items: center` is a more direct centering statement than the
+   equivalent flex pair it replaces — same math, not a fix for a
+   previously-broken value (.platform-hub-mark-icon below already used
+   explicit square dimensions + background-position: center +
+   background-size: contain, see BrandLogo.css — there was no manual
+   offset anywhere in this chain to remove). */
 .platform-hub-mark {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--gradient-brand);
+  display: grid;
+  place-items: center;
+  background: var(--color-bg-elevated);
 }
 
+/* ~61% of .platform-hub-mark's 46px (up from 26px, ~57%) — within the
+   "~50-60% of the usable inner circle" target, giving the mark visible
+   breathing room against the navy disc without crowding its edge. */
 .platform-hub-mark-icon {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
 }
 
 .platform-hub-label {
@@ -485,9 +499,10 @@
     height: 40px;
   }
 
+  /* Same ~60% ratio as the base rule's 46px/28px pairing. */
   .platform-hub-mark-icon {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -519,8 +534,9 @@
     height: 36px;
   }
 
+  /* Same ~60% ratio as the base rule's 46px/28px pairing. */
   .platform-hub-mark-icon {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
   }
 }
