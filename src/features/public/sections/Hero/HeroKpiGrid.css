@@ -6,11 +6,15 @@
    hardcoded left/right) so the grid mirrors correctly under RTL for free,
    the same way every other grid on this site already does. */
 
+/* No margin-top here — `.hero-container`'s own `gap` (Hero.css) already
+   creates the space between the copy block and this grid. Adding both
+   was compounding into a visibly larger-than-intended gap (up to ~84px
+   at the widest clamp values), part of what made the English Hero read
+   as too tall/loose. */
 .hero-kpi-grid {
   width: 100%;
   max-width: 1080px;
   margin-inline: auto;
-  margin-top: clamp(20px, 3svh, 36px);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-areas:

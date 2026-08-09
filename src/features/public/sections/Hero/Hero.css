@@ -5,18 +5,31 @@
    composition lived outside this flow entirely (an absolute overlay), which
    is why the Hero used to be clamped to a strict `height: 100svh` (the
    overlay never affected layout height, so the fold-fit was guaranteed by
-   construction). Real flowing content can legitimately need more room than
-   one fold on shorter viewports, so this is `min-height`, not a hard cap:
-   tall viewports still get a comfortably centered single-screen Hero,
-   shorter ones (1366x768 and below) grow to fit the KPI grid rather than
-   clipping or hiding it. */
+   construction).
+
+   Deliberately NO min-height here (there used to be one, `calc(100svh -
+   72px)`, i.e. "fill nearly the whole fold"). That combined with `justify-
+   content: center` below is what produced the English-only dead-space bug:
+   whenever the Hero's actual content (badge + heading + description + CTAs
+   + 6 cards) renders shorter than that near-full-viewport floor, centering
+   splits the leftover space above *and* below it — a visible gap before
+   the next section. It wasn't language-specific code, just a viewport-
+   sized floor being compared against content whose real height varies by
+   language (different text length/line-wrapping between English and
+   Arabic copy) — Arabic's own content happened to render close enough to
+   that floor that the gap was barely visible; English's did not. Sizing
+   `.hero-root` purely to its own content (padding + children, no floor)
+   fixes both languages the same way, structurally, with no per-language
+   number anywhere. `justify-content: center` is harmless with no min-
+   height to distribute (content already fills the box exactly) and is
+   left in place only so a future, deliberately modest min-height could be
+   reintroduced without also having to re-add this. */
 .hero-root {
   position: relative;
-  min-height: calc(100svh - 72px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(28px, 5svh, 56px) 0;
+  padding: clamp(32px, 6svh, 64px) 0;
 }
 
 .hero-container {
