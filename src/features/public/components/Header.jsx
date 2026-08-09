@@ -280,12 +280,38 @@ const Header = () => {
                 {langToggleText}
               </button>
 
-              {/* The single top-level auth CTA. Create Account is
-                  deliberately not duplicated here — it lives inside the
-                  Account mega-menu card below, alongside Patient Login/
-                  Clinician Login, so the top bar stays to one action. */}
-              <SecondaryButton to={ROUTES.LOGIN} size="sm" className="header-cta">
-                {t("publicHeader.login")}
+              {/* The single top-level auth CTA. Icon-only (user + the same
+                  ButtonArrow every other nav/menu link already uses) —
+                  now that Account's mega-menu card spells out Patient
+                  Login/Clinician Login/Create Account in full, this top-
+                  level control just needs to read as "auth" and get out
+                  of the way; a text label here would also make the
+                  Header's own proportions differ between EN/AR purely
+                  from translated string length, which an icon pair never
+                  does. `icon`/`children` are repurposed from their usual
+                  arrow/text-label roles — `children` (normally the
+                  button's text) holds the user icon instead, `icon`
+                  (normally an optional override of the default arrow)
+                  holds ButtonArrow explicitly, same as always — so this
+                  is still exactly SecondaryButton's existing two-slot
+                  layout, just with an icon in the slot that's usually
+                  text. That also means RTL isn't reinvented here: the
+                  arrow keeps going through SecondaryButton.css's existing
+                  `[dir="rtl"] .ui-secondary-btn-icon svg` mirror rule
+                  unchanged, while the user icon sits in the *label* slot,
+                  which that selector never targets — so it can never be
+                  mirrored, without a single new RTL rule. aria-label
+                  reuses the existing "Login" key as the button's
+                  accessible name now that there's no visible text to
+                  supply one. */}
+              <SecondaryButton
+                to={ROUTES.LOGIN}
+                size="sm"
+                className="header-cta"
+                icon={<ButtonArrow />}
+                aria-label={t("publicHeader.login")}
+              >
+                <LuUserRound aria-hidden="true" />
               </SecondaryButton>
             </div>
           </div>
