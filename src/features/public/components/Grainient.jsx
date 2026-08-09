@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Triangle } from "ogl";
+import { getDprForTier, subscribePerformanceTier } from "../performance/performanceTier";
+import { isBeamsRegionActive, subscribeBeamsRegion } from "../performance/backgroundRegion";
 import "./Grainient.css";
 
 const hexToRgb = (hex) => {
@@ -139,7 +141,7 @@ const Grainient = ({
       webgl: 2,
       alpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: getDprForTier(),
     });
 
     const gl = renderer.gl;
@@ -199,8 +201,16 @@ const Grainient = ({
     setSize();
 
     let raf = 0;
+    // This container is sized via `inset: 0` against `.public-root`, which
+    // spans the *entire* page (Header through Footer) — so its own
+    // IntersectionObserver is intersecting at almost every scroll
+    // position; it alone can't tell "offscreen" from "onscreen". The real
+    // occlusion signal is `isBeamsCovering`: whether Beams' opaque canvas
+    // (a separate WebGL scene, mounted only across Hero/Problem/Solution)
+    // currently covers the viewport instead. See backgroundRegion.js.
     let isVisible = true;
     let isPageVisible = !document.hidden;
+    let isBeamsCovering = isBeamsRegionActive();
     const t0 = performance.now();
 
     const loop = (t) => {
@@ -210,21 +220,38 @@ const Grainient = ({
     };
 
     const tryStart = () => {
-      if (isVisible && isPageVisible && raf === 0) raf = requestAnimationFrame(loop);
+      if (isVisible && isPageVisible && !isBeamsCovering && raf === 0) {
+        raf = requestAnimationFrame(loop);
+        if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+          window.__KG_PERF__ = window.__KG_PERF__ || {};
+          window.__KG_PERF__.grainientActive = true;
+        }
+      }
     };
     const tryStop = () => {
       if (raf !== 0) {
         cancelAnimationFrame(raf);
         raf = 0;
       }
+      if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+        window.__KG_PERF__ = window.__KG_PERF__ || {};
+        window.__KG_PERF__.grainientActive = false;
+      }
     };
 
+    // rootMargin gives a buffer either side of the exact edge — starts
+    // shortly before this (nearly page-spanning) container would first
+    // intersect, stops shortly after, avoiding a visible startup pop at
+    // the precise pixel boundary. In practice `isBeamsCovering` above is
+    // what actually gates most of the page; this remains a correct,
+    // self-contained fallback for any future page where Grainient isn't
+    // full-page (or simply scrolled fully out, top or bottom).
     const io = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
         isVisible ? tryStart() : tryStop();
       },
-      { threshold: 0 }
+      { threshold: 0, rootMargin: "20% 0px 20% 0px" }
     );
     io.observe(container);
 
@@ -234,12 +261,27 @@ const Grainient = ({
     };
     document.addEventListener("visibilitychange", onVisibility);
 
+    const unsubscribeRegion = subscribeBeamsRegion((beamsActive) => {
+      isBeamsCovering = beamsActive;
+      isBeamsCovering ? tryStop() : tryStart();
+    });
+
+    // Downgrade-only, at most once per session (see performanceTier.js) —
+    // resizes the existing renderer/backing-store in place, never
+    // recreates the Renderer/Program/Mesh built above.
+    const unsubscribeTier = subscribePerformanceTier((tier) => {
+      renderer.dpr = getDprForTier(tier);
+      setSize();
+    });
+
     tryStart();
 
     return () => {
       tryStop();
       ro.disconnect();
       io.disconnect();
+      unsubscribeRegion();
+      unsubscribeTier();
       document.removeEventListener("visibilitychange", onVisibility);
       ctxMap.delete(container);
       try {

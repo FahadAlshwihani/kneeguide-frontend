@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import PublicBackground from "../../../../components/public/backgrounds/PublicBackground";
+import { setBeamsRegionActive } from "../../performance/backgroundRegion";
 import Hero from "../Hero";
 import Problem from "../Problem";
 import Solution from "../Solution";
@@ -86,6 +87,14 @@ const HeroProblemScene = () => {
       observer = new IntersectionObserver(
         ([entry]) => {
           isIntersecting = entry.isIntersecting;
+          // Same signal this scene already uses to pause/resume its own
+          // Beams canvas — also published here so Grainient (mounted
+          // separately, in PublicLayout, behind everything from
+          // ScrollStackFeature down) knows when Beams' opaque canvas is
+          // covering the viewport and can skip rendering frames nobody
+          // can see. See backgroundRegion.js for why this can't just be
+          // Grainient's own IntersectionObserver.
+          setBeamsRegionActive(isIntersecting);
           recompute();
         },
         { rootMargin: "200px 0px" }
@@ -98,6 +107,9 @@ const HeroProblemScene = () => {
     return () => {
       observer?.disconnect();
       document.removeEventListener("visibilitychange", recompute);
+      // Defensive: if this scene ever unmounts while something is still
+      // subscribed, don't leave Grainient permanently gated off.
+      setBeamsRegionActive(true);
     };
   }, []);
 

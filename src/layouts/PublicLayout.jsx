@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../features/public/components/Header";
 import Footer from "../features/public/components/Footer";
 import Grainient from "../features/public/components/Grainient";
+import { initPerformanceTier } from "../features/public/performance/performanceTier";
 import "./SiteBackground.css";
 
 // Mirrors the approved brand tokens in index.css.
@@ -13,6 +14,15 @@ const GRAINIENT_COLOR_3 = "#1D4ED8";
 const PublicLayout = () => {
   const { pathname } = useLocation();
   const isHomeRoute = pathname === "/";
+
+  // Only where the tier is actually consumed (Beams + Grainient, both
+  // home-only) — resolves from a hint instantly, refines with a one-shot
+  // runtime sample at most once per session (see performanceTier.js), and
+  // is a no-op on every navigation after the first thanks to its own
+  // internal sessionStorage/in-flight-promise caching.
+  useEffect(() => {
+    if (isHomeRoute) initPerformanceTier();
+  }, [isHomeRoute]);
 
   return (
     <div className="public-root">
