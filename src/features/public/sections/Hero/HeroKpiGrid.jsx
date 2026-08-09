@@ -14,10 +14,11 @@ import {
 } from "react-icons/fa6";
 import { ROUTES } from "../../../../utils/routes";
 import { useSectionReveal } from "../../components/useSectionReveal";
+import useHeroResponsiveMode from "./useHeroResponsiveMode";
 import "./HeroKpiGrid.css";
 
 // Deterministic demo sequences — never Math.random(), never regenerated
-// per render. Matches the values already approved for this preview.
+// per render.
 const SEQUENCES = {
   exercises: [3, 4, 3, 5, 3],
   patients: [42, 43, 42, 44],
@@ -34,9 +35,8 @@ const APPOINTMENT_STATES = [
 ];
 
 // [period, phase] in shared ticks — deliberately staggered so cards
-// (almost) never change in the same tick, satisfying "different timing
-// offsets, not everything simultaneously" from one single interval rather
-// than six independent timers.
+// (almost) never change in the same tick, from one single interval
+// rather than six independent timers.
 const TIMING = {
   exercises: { period: 3, phase: 0 },
   patients: { period: 4, phase: 1 },
@@ -53,27 +53,73 @@ const stepIndex = (tick, key, length) => {
   return Math.floor((tick + phase) / period) % length;
 };
 
-// Card render order — also drives the staggered icon micro-interaction
-// (one card "reacts" per tick, in this order, looping) so it reuses the
-// exact same shared tick as the demo data instead of a timer of its own.
+// Fixed 6-slot rotation used only to pace the icon micro-interaction (see
+// `activeCard` below) — independent of which cards are actually rendered
+// in the current responsive mode, so a single visible card (mobile) still
+// pulses only "occasionally" (roughly 1 turn in 6) rather than every tick.
 const CARD_ORDER = ["exercises", "patients", "progress", "completion", "appointment", "adherence"];
 
-// Three deterministic, hand-authored trend shapes (never randomized) —
-// which one a chart shows is derived from that card's own current step
-// index, so the shape changes in step with its number, never arbitrarily.
-// Endpoint coordinates are listed alongside each path so the glow dot
-// lands exactly on the line's own last point.
-const SPARKLINE_VARIANTS = [
-  { path: "M2,18 C14,16 20,10 28,11 C36,12 42,6 50,7 C54,7 56,5 58,4", endX: 58, endY: 4 },
-  { path: "M2,16 C10,12 16,17 24,13 C32,9 38,11 44,6 C50,3 54,5 58,3", endX: 58, endY: 3 },
-  { path: "M2,19 C12,18 20,17 28,14 C36,11 44,9 50,5 C54,3 56,4 58,2", endX: 58, endY: 2 },
-];
+// Card metadata, keyed by id — the single source every render pass reads
+// from. Only entries present in the current mode's key list (see
+// CARD_KEYS_BY_MODE) are ever looked up, computed, or rendered.
+const CARD_DEFINITIONS = {
+  exercises: {
+    accent: "info",
+    icon: FaListCheck,
+    labelKey: "publicHero.kpi.exercisesAssigned.label",
+    trendKey: "publicHero.kpi.exercisesAssigned.trend",
+    visual: "sparkline",
+  },
+  patients: {
+    accent: "success",
+    icon: FaUsers,
+    labelKey: "publicHero.kpi.activePatients.label",
+    trendKey: "publicHero.kpi.activePatients.trend",
+    visual: "sparkline",
+  },
+  progress: {
+    accent: "info",
+    icon: FaHeartPulse,
+    labelKey: "publicHero.kpi.rehabProgress.label",
+    trendKey: "publicHero.kpi.rehabProgress.trend",
+    visual: "progress",
+    isPercent: true,
+  },
+  completion: {
+    accent: "success",
+    icon: FaClipboardCheck,
+    labelKey: "publicHero.kpi.sessionCompletion.label",
+    trendKey: "publicHero.kpi.sessionCompletion.trend",
+    visual: "progress",
+    isPercent: true,
+  },
+  adherence: {
+    accent: "info",
+    icon: FaDroplet,
+    labelKey: "publicHero.kpi.weeklyAdherence.label",
+    trendKey: "publicHero.kpi.weeklyAdherence.trend",
+    visual: "progress",
+    isPercent: true,
+  },
+};
 
-// One shared lifecycle for all six cards: a single pooled IntersectionObserver
-// (via useSectionReveal, the same primitive every other reveal on this site
-// already shares), one page-visibility listener, one interval, one tick
-// counter. No card owns its own observer or timer. Reduced motion and an
-// offscreen/hidden Hero both simply stop the interval — the demo values
+// The actual responsive-reduction requirement: desktop keeps the full
+// product-preview (row 1: exercises/patients/progress, row 2: completion/
+// appointment/adherence — DOM order doubles as grid order, see
+// HeroKpiGrid.css). Tablet and mobile render fewer *elements*, not the
+// same six hidden behind CSS — a card key absent here is never looked up,
+// never has its sequence/step computed, and never mounts a DOM node.
+const CARD_KEYS_BY_MODE = {
+  desktop: ["exercises", "patients", "progress", "completion", "appointment", "adherence"],
+  tablet: ["progress", "appointment"],
+  mobile: ["progress"],
+};
+
+// One shared lifecycle for every rendered card: a single pooled
+// IntersectionObserver (via useSectionReveal, the same primitive every
+// other reveal on this site already shares), one page-visibility
+// listener, one interval, one tick counter. Reduced motion and an
+// offscreen/hidden Hero both simply stop the interval — demo values
 // freeze at whatever they last were rather than resetting, and resume
 // advancing (not restarting) once relevant again.
 const useKpiTicker = () => {
@@ -99,30 +145,83 @@ const useKpiTicker = () => {
   return { ref, tick, isVisible };
 };
 
-// Deterministic, non-random trend line — which of the three hand-authored
-// shapes renders is picked by `variantIndex` (that card's own current step
-// in its demo sequence), and the whole `<svg>` is re-keyed by `animKey`
-// (the card's current value) so it remounts — and its CSS draw-in
-// animation (see HeroKpiGrid.css) replays — exactly when the number
-// changes, never on an independent continuous loop. The endpoint dot +
-// soft glow sit exactly on the line's own last point, not a separate
-// guess.
-const HeroSparkline = ({ variantIndex, animKey }) => {
-  const { path, endX, endY } = SPARKLINE_VARIANTS[variantIndex % SPARKLINE_VARIANTS.length];
+// Catmull-Rom -> cubic Bezier, tension 1/6 — a standard, compact way to
+// draw one smooth continuous curve through an arbitrary list of [x, y]
+// points without hand-tuning bezier control handles for each one.
+const smoothPath = (points) => {
+  let d = `M${points[0][0]},${points[0][1]}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] || p2;
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+};
+
+// Deterministic, hand-authored datasets — never Math.random(). Each chart
+// is a stable "history" (7 points, never changes) plus one of three
+// "tail" variants (the last 1-2 points) selected by that metric's own
+// current step — so a metric changing doesn't redraw a whole new random
+// shape, it reads as "the newest data point moved", the rest of the line
+// staying visually put. viewBox is 180x56: wide enough to read as an
+// actual trend rather than an icon-sized squiggle.
+const SPARKLINE_DATA = {
+  exercises: {
+    history: [[0, 40], [22, 36], [44, 38], [66, 27], [88, 30], [110, 19], [132, 23]],
+    tails: [
+      [[152, 14], [176, 9]],
+      [[152, 19], [176, 14]],
+      [[152, 25], [176, 17]],
+    ],
+  },
+  patients: {
+    history: [[0, 34], [22, 38], [44, 30], [66, 33], [88, 24], [110, 28], [132, 20]],
+    tails: [
+      [[152, 12], [176, 8]],
+      [[152, 17], [176, 13]],
+      [[152, 22], [176, 16]],
+    ],
+  },
+};
+
+// `sequenceKey` picks the dataset, `variantIndex` (that card's own current
+// step) picks which tail — the shared history stays identical either way.
+// Re-keyed by `animKey` (the card's current value) so it remounts, and
+// its CSS draw-in animation (see HeroKpiGrid.css) replays, exactly when
+// the number changes.
+const HeroSparkline = ({ sequenceKey, variantIndex, animKey }) => {
+  const { history, tails } = SPARKLINE_DATA[sequenceKey];
+  const tail = tails[variantIndex % tails.length];
+  const d = smoothPath([...history, ...tail]);
+  const [endX, endY] = tail[tail.length - 1];
+
   return (
-    <svg className="hero-kpi-sparkline" key={animKey} viewBox="0 0 64 24" aria-hidden="true" focusable="false">
-      <path className="hero-kpi-sparkline-line" d={path} fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <circle className="hero-kpi-sparkline-glow" cx={endX} cy={endY} r="5" />
-      <circle className="hero-kpi-sparkline-dot" cx={endX} cy={endY} r="2.2" />
+    <svg className="hero-kpi-sparkline" key={animKey} viewBox="0 0 180 56" aria-hidden="true" focusable="false">
+      <path
+        className="hero-kpi-sparkline-line"
+        d={d}
+        fill="none"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle className="hero-kpi-sparkline-glow" cx={endX} cy={endY} r="9" />
+      <circle className="hero-kpi-sparkline-dot" cx={endX} cy={endY} r="3.2" />
     </svg>
   );
 };
 
 // `isActive` briefly shows a small pulsing indicator dot on the icon —
-// driven by the shared tick (see CARD_ORDER/activeCard in the main
-// component below), so only one card's icon ever reacts at a time, in a
-// slow round-robin, never all six together and never a separate timer.
-const HeroMetricCard = ({ accent, icon: Icon, label, value, visual, variantIndex, progress, trend, isActive }) => (
+// driven by the shared tick (see CARD_ORDER/activeCard below), so only
+// one card's icon ever reacts at a time, in a slow round-robin, never a
+// separate timer.
+const HeroMetricCard = ({ accent, icon: Icon, label, value, visual, sequenceKey, variantIndex, progress, trend, isActive }) => (
   <div className={`hero-kpi-card hero-kpi-card-${accent}`}>
     <span className={`hero-kpi-icon${isActive ? " hero-kpi-icon-active" : ""}`} aria-hidden="true">
       <Icon />
@@ -133,7 +232,7 @@ const HeroMetricCard = ({ accent, icon: Icon, label, value, visual, variantIndex
       <span className="hero-kpi-value" key={value}>
         {value}
       </span>
-      {visual === "sparkline" && <HeroSparkline variantIndex={variantIndex} animKey={value} />}
+      {visual === "sparkline" && <HeroSparkline sequenceKey={sequenceKey} variantIndex={variantIndex} animKey={value} />}
     </div>
     {visual === "progress" && (
       <div className="hero-kpi-progress-track">
@@ -175,109 +274,77 @@ const HeroAppointmentCard = ({ label, month, day, time, sessionType, patientTag,
 );
 
 /**
- * The Hero's product-preview KPI area — six compact cards replacing the
- * previous ~25-widget scattered/floating composition (corners, rails,
- * bottom band, mobile carousel — see git history). One responsive CSS
- * grid, one data-driven render pass, one shared demo-data lifecycle
- * (useKpiTicker above). Reduced motion freezes every card at its first
- * value — still fully readable as static content, nothing hidden.
+ * The Hero's product-preview KPI area. Desktop shows all six cards (3x2);
+ * tablet shows exactly two (Rehabilitation Progress + Upcoming
+ * Appointment); mobile shows exactly one (Rehabilitation Progress,
+ * permanently — never rotates). The active mode (useHeroResponsiveMode)
+ * determines which card *keys* get rendered at all — a key missing from
+ * the current mode's list is never looked up, never has its demo value
+ * computed, never mounts a DOM node; it is not merely hidden with CSS.
+ * One HeroMetricCard implementation, different selected data — no
+ * per-card duplication.
  */
 const HeroKpiGrid = () => {
   const { t } = useTranslation();
+  const mode = useHeroResponsiveMode();
   const { ref, tick, isVisible } = useKpiTicker();
 
-  const exercisesStep = stepIndex(tick, "exercises", SEQUENCES.exercises.length);
-  const patientsStep = stepIndex(tick, "patients", SEQUENCES.patients.length);
-  const exercisesValue = SEQUENCES.exercises[exercisesStep];
-  const patientsValue = SEQUENCES.patients[patientsStep];
-  const progressValue = SEQUENCES.progress[stepIndex(tick, "progress", SEQUENCES.progress.length)];
-  const completionValue = SEQUENCES.completion[stepIndex(tick, "completion", SEQUENCES.completion.length)];
-  const adherenceValue = SEQUENCES.adherence[stepIndex(tick, "adherence", SEQUENCES.adherence.length)];
-  const appointmentState =
-    APPOINTMENT_STATES[stepIndex(tick, "appointment", APPOINTMENT_STATES.length)];
-
-  // Exactly one card "reacts" per tick, in CARD_ORDER, looping — the same
-  // shared tick already driving the demo values, no separate schedule.
+  // Which single card "reacts" this tick — see CARD_ORDER's own comment
+  // for why this stays a fixed 6-slot rotation regardless of mode.
   const activeCard = CARD_ORDER[tick % CARD_ORDER.length];
+  const visibleKeys = CARD_KEYS_BY_MODE[mode];
+
+  const renderCard = (key, index) => {
+    const slotClass = `hero-kpi-card-slot hero-kpi-slot-${index + 1}`;
+
+    if (key === "appointment") {
+      const appointmentState = APPOINTMENT_STATES[stepIndex(tick, "appointment", APPOINTMENT_STATES.length)];
+      return (
+        <div key={key} className={slotClass}>
+          <HeroAppointmentCard
+            label={t("publicHero.kpi.appointment.label")}
+            month={t("publicHero.kpi.appointment.month")}
+            day={appointmentState.day}
+            time={appointmentState.time}
+            sessionType={t("publicHero.kpi.appointment.sessionType")}
+            patientTag={t("publicHero.kpi.appointment.patientTag")}
+            viewDetailsLabel={t("publicHero.kpi.appointment.viewDetails")}
+            isActive={activeCard === "appointment"}
+          />
+        </div>
+      );
+    }
+
+    const def = CARD_DEFINITIONS[key];
+    const step = stepIndex(tick, key, SEQUENCES[key].length);
+    const rawValue = SEQUENCES[key][step];
+    const value = def.isPercent ? `${rawValue}%` : rawValue;
+
+    return (
+      <div key={key} className={slotClass}>
+        <HeroMetricCard
+          accent={def.accent}
+          icon={def.icon}
+          label={t(def.labelKey)}
+          value={value}
+          visual={def.visual}
+          sequenceKey={key}
+          variantIndex={step}
+          progress={def.isPercent ? rawValue : undefined}
+          trend={t(def.trendKey)}
+          isActive={activeCard === key}
+        />
+      </div>
+    );
+  };
 
   return (
     <div
       ref={ref}
-      className={`hero-kpi-grid${isVisible ? " hero-kpi-grid-visible" : ""}`}
+      className={`hero-kpi-grid hero-kpi-grid-${mode}${isVisible ? " hero-kpi-grid-visible" : ""}`}
       aria-label={t("publicHero.kpi.ariaLabel")}
     >
-      <div className="hero-kpi-card-slot hero-kpi-slot-1">
-        <HeroMetricCard
-          accent="info"
-          icon={FaListCheck}
-          label={t("publicHero.kpi.exercisesAssigned.label")}
-          value={exercisesValue}
-          visual="sparkline"
-          variantIndex={exercisesStep}
-          trend={t("publicHero.kpi.exercisesAssigned.trend")}
-          isActive={activeCard === "exercises"}
-        />
-      </div>
-      <div className="hero-kpi-card-slot hero-kpi-slot-2">
-        <HeroMetricCard
-          accent="success"
-          icon={FaUsers}
-          label={t("publicHero.kpi.activePatients.label")}
-          value={patientsValue}
-          visual="sparkline"
-          variantIndex={patientsStep}
-          trend={t("publicHero.kpi.activePatients.trend")}
-          isActive={activeCard === "patients"}
-        />
-      </div>
-      <div className="hero-kpi-card-slot hero-kpi-slot-3">
-        <HeroMetricCard
-          accent="info"
-          icon={FaHeartPulse}
-          label={t("publicHero.kpi.rehabProgress.label")}
-          value={`${progressValue}%`}
-          visual="progress"
-          progress={progressValue}
-          trend={t("publicHero.kpi.rehabProgress.trend")}
-          isActive={activeCard === "progress"}
-        />
-      </div>
-      <div className="hero-kpi-card-slot hero-kpi-slot-4">
-        <HeroMetricCard
-          accent="success"
-          icon={FaClipboardCheck}
-          label={t("publicHero.kpi.sessionCompletion.label")}
-          value={`${completionValue}%`}
-          visual="progress"
-          progress={completionValue}
-          trend={t("publicHero.kpi.sessionCompletion.trend")}
-          isActive={activeCard === "completion"}
-        />
-      </div>
-      <div className="hero-kpi-card-slot hero-kpi-slot-5">
-        <HeroAppointmentCard
-          label={t("publicHero.kpi.appointment.label")}
-          month={t("publicHero.kpi.appointment.month")}
-          day={appointmentState.day}
-          time={appointmentState.time}
-          sessionType={t("publicHero.kpi.appointment.sessionType")}
-          patientTag={t("publicHero.kpi.appointment.patientTag")}
-          viewDetailsLabel={t("publicHero.kpi.appointment.viewDetails")}
-          isActive={activeCard === "appointment"}
-        />
-      </div>
-      <div className="hero-kpi-card-slot hero-kpi-slot-6">
-        <HeroMetricCard
-          accent="info"
-          icon={FaDroplet}
-          label={t("publicHero.kpi.weeklyAdherence.label")}
-          value={`${adherenceValue}%`}
-          visual="progress"
-          progress={adherenceValue}
-          isActive={activeCard === "adherence"}
-          trend={t("publicHero.kpi.weeklyAdherence.trend")}
-        />
-      </div>
+      {visibleKeys.map((key, index) => renderCard(key, index))}
     </div>
   );
 };
