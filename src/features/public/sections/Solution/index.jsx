@@ -696,7 +696,7 @@ const Solution = () => {
               transition={{ duration: HUB_REVEAL_DURATION, ease: "easeOut" }}
             >
               <span className="platform-hub-mark">
-                <BrandLogo className="platform-hub-mark-icon" />
+                <BrandLogo className="platform-hub-mark-icon brand-logo-light" />
               </span>
             </motion.span>
             {/* Visible text label right below the mark already reads

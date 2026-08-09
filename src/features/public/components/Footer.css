@@ -48,9 +48,14 @@
   transition: color var(--transition-fast);
 }
 
+/* 30px (up from 26px) — the artwork carries internal padding within its
+   own square frame, so the nominal box read smaller/weaker than the
+   adjacent wordmark than its size implied. .footer-logo's own
+   `align-items: center` (above) keeps it vertically centered against the
+   text regardless of this size. */
 .footer-logo-mark {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
 }
 
 .footer-logo:hover,
