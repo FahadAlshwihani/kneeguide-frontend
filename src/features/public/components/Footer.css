@@ -33,13 +33,24 @@
   text-align: start;
 }
 
+/* Brand lockup: the real KneeGuideLogo.svg (icon-only artwork — see
+   BrandLogo.jsx) plus the existing "KneeGuide" text, same [icon] + text
+   pattern as Header.css's .header-logo. Previously this was text-only. */
 .footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   font-size: 1.15rem;
   color: var(--color-heading);
   text-decoration: none;
   width: fit-content;
   transition: color var(--transition-fast);
+}
+
+.footer-logo-mark {
+  width: 26px;
+  height: 26px;
 }
 
 .footer-logo:hover,
