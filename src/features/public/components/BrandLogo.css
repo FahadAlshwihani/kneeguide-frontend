@@ -27,14 +27,38 @@
    real output and assumed it rendered solid white; it doesn't). It does
    not use `currentColor` and the source file is never edited/duplicated
    per contexts, so producing a light/white reading of it is a CSS
-   concern, not an asset concern. `brightness(0) invert(1)` is the
-   standard, deterministic recipe for this: brightness(0) crushes every
-   RGB channel to black while leaving alpha untouched, invert(1) flips
-   that black to white — the result is a solid white silhouette of
-   exactly the artwork's own alpha shape, not a guessed/stacked filter
-   combination. Applied via className (`brand-logo-light`) at each call
-   site that needs it (Header/Footer/radar hub — all dark or
-   dark-surfaced contexts), never as runtime background detection. */
+   concern, not an asset concern.
+
+   Previously implemented as `filter: brightness(0) invert(1)` on the
+   colored background-image. Replaced with CSS masking instead: the
+   background-image is turned off, a plain white background-color takes
+   its place, and the SAME unmodified SVG is used as a `mask-image` —
+   its alpha shape becomes a stencil that reveals the white fill through
+   exactly the artwork's own silhouette, with no color-transform step on
+   rendered pixels at all. This is the more likely fix for the reported
+   softness on iPad/mobile: CSS `filter` on an element commonly forces
+   the browser to rasterize that element into an intermediate offscreen
+   buffer *before* applying the filter, and that intermediate buffer is
+   not guaranteed to be produced at the display's true device-pixel
+   resolution in every engine — a well-documented class of issue for
+   filtered content specifically, and one that would selectively affect
+   high-DPR devices (the iPads/phones/Retina laptops actually reported as
+   blurry) while leaving standard-DPR desktop monitors (reported sharp)
+   unaffected, exactly matching what was seen. `mask-image` doesn't
+   require that same per-pixel filter pass — it's a stencil/compositing
+   operation, not a color transform — so it doesn't carry the same risk.
+   `-webkit-` prefixes included alongside the unprefixed properties,
+   matching this project's existing convention for `backdrop-filter`
+   (Header.css). */
 .brand-logo-light {
-  filter: brightness(0) invert(1);
+  background-image: none;
+  background-color: #ffffff;
+  -webkit-mask-image: url("../../../assets/images/logo/KneeGuideLogo.svg");
+  mask-image: url("../../../assets/images/logo/KneeGuideLogo.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }

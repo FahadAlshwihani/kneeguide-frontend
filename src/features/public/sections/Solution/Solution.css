@@ -440,12 +440,19 @@
   background: var(--color-bg-elevated);
 }
 
-/* ~61% of .platform-hub-mark's 46px (up from 26px, ~57%) — within the
-   "~50-60% of the usable inner circle" target, giving the mark visible
-   breathing room against the navy disc without crowding its edge. */
+/* 40px within the 46px disc (up from 28px, ~61%) — ~87% occupancy, a
+   flat 3px gap on every side (46-40=6, halved evenly by `place-items:
+   center` with no fractional remainder — see the two responsive
+   overrides below for the same even-difference reasoning at their own
+   disc sizes). The artwork itself was measured directly (extracting and
+   analyzing the SVG's actual embedded raster + its own transform/
+   viewBox clip, not eyeballed) to already fill ~97% of its own square
+   canvas — see BrandLogo.css / this project's audit notes — so a CSS
+   box this close to the disc's own size reads as the mark visually
+   filling the hub, per the 80-90% target, without touching its edge. */
 .platform-hub-mark-icon {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
 }
 
 .platform-hub-label {
@@ -499,10 +506,11 @@
     height: 40px;
   }
 
-  /* Same ~60% ratio as the base rule's 46px/28px pairing. */
+  /* Same even-difference reasoning as the base rule: 40-34=6px, halved
+     evenly, no fractional centering offset. 34/40 = 85%. */
   .platform-hub-mark-icon {
-    width: 24px;
-    height: 24px;
+    width: 34px;
+    height: 34px;
   }
 }
 
@@ -534,9 +542,10 @@
     height: 36px;
   }
 
-  /* Same ~60% ratio as the base rule's 46px/28px pairing. */
+  /* Same even-difference reasoning as the base rule: 36-30=6px, halved
+     evenly, no fractional centering offset. 30/36 = 83%. */
   .platform-hub-mark-icon {
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
   }
 }
