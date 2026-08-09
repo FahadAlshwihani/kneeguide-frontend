@@ -101,14 +101,25 @@
    shared HeroProblemScene wrapper — see HeroProblemScene.css. .hero-root
    itself stays transparent so that shared background shows through. */
 
-@media (max-width: 640px) {
+/* Matches useHeroResponsiveMode.js's own tablet range exactly, so the
+   copy-to-cards spacing collapses in step with the KPI grid dropping to
+   two cards, rather than at an unrelated width chosen independently. */
+@media (max-width: 1199px) {
+  .hero-container {
+    gap: clamp(20px, 3.6svh, 32px);
+  }
+}
+
+/* Matches useHeroResponsiveMode.js's own mobile threshold — the KPI grid
+   drops to its single permanent card at the same width. */
+@media (max-width: 767px) {
   .hero-root {
     padding: clamp(20px, 4svh, 32px) 0;
   }
 
   .hero-container {
     padding: 0 16px;
-    gap: clamp(18px, 3svh, 28px);
+    gap: clamp(16px, 2.6svh, 24px);
   }
 
   .hero-description {
