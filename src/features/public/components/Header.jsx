@@ -8,6 +8,7 @@ import { PUBLIC_NAVIGATION } from "../navigation/publicNavigation";
 import { useSectionNavigation } from "../navigation/useSectionNavigation";
 import SecondaryButton from "../../../components/ui/SecondaryButton";
 import ButtonArrow from "../../../components/ui/ButtonArrow";
+import BrandLogo from "./BrandLogo";
 import "./Header.css";
 
 // KneeGuide is a single-scroll landing page, not a multi-page corporate
@@ -260,7 +261,7 @@ const Header = () => {
                 goHome();
               }}
             >
-              <span className="header-logo-mark">KG</span>
+              <BrandLogo className="header-logo-mark" />
               KneeGuide
             </Link>
 
