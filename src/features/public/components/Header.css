@@ -134,17 +134,14 @@
   color: var(--color-heading);
 }
 
+/* Same 30px footprint the old generated "KG" mark used — only the mark
+   itself changed (real KneeGuideLogo.svg via BrandLogo, see Header.jsx),
+   not the space it occupies. The old mark's own background/border-radius/
+   centered-text styling doesn't apply to an <img> and is dropped rather
+   than carried over unused. */
 .header-logo-mark {
   width: 30px;
   height: 30px;
-  border-radius: 9px;
-  background: var(--gradient-brand);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.78rem;
-  font-weight: 700;
 }
 
 .header-actions {
