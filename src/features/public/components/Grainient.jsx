@@ -408,6 +408,7 @@ const Grainient = ({
 
     return () => {
       stopLoop();
+      clearTimeout(resizeTimeout);
       ro.disconnect();
       boundaryRo?.disconnect();
       reducedMotionQuery?.removeEventListener?.("change", onReducedMotionChange);
