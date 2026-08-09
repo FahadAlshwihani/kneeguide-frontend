@@ -413,6 +413,12 @@
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.16);
 }
 
+/* Kept as a colored circular backdrop (unchanged from when it held the
+   placeholder "KG" text) specifically because KneeGuideLogo.svg's artwork
+   renders solid white (see BrandLogo.jsx) — sitting directly on
+   .platform-hub-circle's own white background would be invisible.
+   .platform-hub-mark-icon below is the actual logo, sized smaller than
+   this circle so it doesn't touch the edges. */
 .platform-hub-mark {
   width: 46px;
   height: 46px;
@@ -421,10 +427,11 @@
   align-items: center;
   justify-content: center;
   background: var(--gradient-brand);
-  color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+}
+
+.platform-hub-mark-icon {
+  width: 26px;
+  height: 26px;
 }
 
 .platform-hub-label {
@@ -476,7 +483,11 @@
   .platform-hub-mark {
     width: 40px;
     height: 40px;
-    font-size: 0.85rem;
+  }
+
+  .platform-hub-mark-icon {
+    width: 22px;
+    height: 22px;
   }
 }
 
@@ -506,6 +517,10 @@
   .platform-hub-mark {
     width: 36px;
     height: 36px;
-    font-size: 0.78rem;
+  }
+
+  .platform-hub-mark-icon {
+    width: 20px;
+    height: 20px;
   }
 }
