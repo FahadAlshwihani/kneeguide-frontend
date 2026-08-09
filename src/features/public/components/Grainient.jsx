@@ -200,70 +200,88 @@ const Grainient = ({
     ro.observe(container);
     setSize();
 
-    let raf = 0;
-    // This container is sized via `inset: 0` against `.public-root`, which
-    // spans the *entire* page (Header through Footer) — so its own
-    // IntersectionObserver is intersecting at almost every scroll
-    // position; it alone can't tell "offscreen" from "onscreen". The real
-    // occlusion signal is `isBeamsCovering`: whether Beams' opaque canvas
-    // (a separate WebGL scene, mounted only across Hero/Problem/Solution)
-    // currently covers the viewport instead. See backgroundRegion.js.
-    let isVisible = true;
-    let isPageVisible = !document.hidden;
-    let isBeamsCovering = isBeamsRegionActive();
+    // ONE authoritative decision (shouldRun), fed by three independent
+    // signals that each only ever update their own flag and then ask for
+    // a re-sync — no signal source starts/stops the loop directly, so two
+    // sources can never race each other into disagreeing about whether a
+    // frame should be scheduled. This container is sized via `inset: 0`
+    // against `.public-root`, which spans the *entire* page (Header
+    // through Footer) — so its own IntersectionObserver is intersecting
+    // at almost every scroll position; it alone can't tell "offscreen"
+    // from "onscreen". `beamsCovering` is the real occlusion signal:
+    // whether Beams' opaque canvas (a separate WebGL scene, mounted only
+    // across Hero/Problem/Solution) currently covers the viewport
+    // instead — see backgroundRegion.js for why it defaults to `false`.
+    let rafId = null;
+    let sectionVisible = true;
+    let pageVisible = !document.hidden;
+    let beamsCovering = isBeamsRegionActive();
     const t0 = performance.now();
 
-    const loop = (t) => {
-      program.uniforms.iTime.value = (t - t0) * 0.001;
-      renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(loop);
+    const shouldRun = () => sectionVisible && pageVisible && !beamsCovering;
+
+    const setDevActive = (value) => {
+      if (process.env.NODE_ENV === "production" || typeof window === "undefined") return;
+      window.__KG_PERF__ = window.__KG_PERF__ || {};
+      window.__KG_PERF__.grainientActive = value;
     };
 
-    const tryStart = () => {
-      if (isVisible && isPageVisible && !isBeamsCovering && raf === 0) {
-        raf = requestAnimationFrame(loop);
-        if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
-          window.__KG_PERF__ = window.__KG_PERF__ || {};
-          window.__KG_PERF__.grainientActive = true;
-        }
+    // Re-checks shouldRun() on every frame, not just at the moment a frame
+    // was scheduled — so even if some future signal source ever forgot to
+    // call syncLoopState(), the loop still self-terminates within one
+    // frame instead of running forever unseen.
+    const renderFrame = (t) => {
+      if (!shouldRun()) {
+        rafId = null;
+        setDevActive(false);
+        return;
       }
+      program.uniforms.iTime.value = (t - t0) * 0.001;
+      renderer.render({ scene: mesh });
+      rafId = requestAnimationFrame(renderFrame);
     };
-    const tryStop = () => {
-      if (raf !== 0) {
-        cancelAnimationFrame(raf);
-        raf = 0;
-      }
-      if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
-        window.__KG_PERF__ = window.__KG_PERF__ || {};
-        window.__KG_PERF__.grainientActive = false;
-      }
+
+    const startLoop = () => {
+      if (rafId !== null) return; // already scheduled — never a second loop
+      rafId = requestAnimationFrame(renderFrame);
+      setDevActive(true);
     };
+
+    const stopLoop = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      setDevActive(false);
+    };
+
+    const syncLoopState = () => (shouldRun() ? startLoop() : stopLoop());
 
     // rootMargin gives a buffer either side of the exact edge — starts
     // shortly before this (nearly page-spanning) container would first
     // intersect, stops shortly after, avoiding a visible startup pop at
-    // the precise pixel boundary. In practice `isBeamsCovering` above is
+    // the precise pixel boundary. In practice `beamsCovering` above is
     // what actually gates most of the page; this remains a correct,
     // self-contained fallback for any future page where Grainient isn't
     // full-page (or simply scrolled fully out, top or bottom).
     const io = new IntersectionObserver(
       ([entry]) => {
-        isVisible = entry.isIntersecting;
-        isVisible ? tryStart() : tryStop();
+        sectionVisible = entry.isIntersecting;
+        syncLoopState();
       },
       { threshold: 0, rootMargin: "20% 0px 20% 0px" }
     );
     io.observe(container);
 
     const onVisibility = () => {
-      isPageVisible = !document.hidden;
-      isPageVisible ? tryStart() : tryStop();
+      pageVisible = !document.hidden;
+      syncLoopState();
     };
     document.addEventListener("visibilitychange", onVisibility);
 
     const unsubscribeRegion = subscribeBeamsRegion((beamsActive) => {
-      isBeamsCovering = beamsActive;
-      isBeamsCovering ? tryStop() : tryStart();
+      beamsCovering = beamsActive;
+      syncLoopState();
     });
 
     // Downgrade-only, at most once per session (see performanceTier.js) —
@@ -274,10 +292,10 @@ const Grainient = ({
       setSize();
     });
 
-    tryStart();
+    syncLoopState();
 
     return () => {
-      tryStop();
+      stopLoop();
       ro.disconnect();
       io.disconnect();
       unsubscribeRegion();

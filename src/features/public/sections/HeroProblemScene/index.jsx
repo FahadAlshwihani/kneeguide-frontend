@@ -108,8 +108,10 @@ const HeroProblemScene = () => {
       observer?.disconnect();
       document.removeEventListener("visibilitychange", recompute);
       // Defensive: if this scene ever unmounts while something is still
-      // subscribed, don't leave Grainient permanently gated off.
-      setBeamsRegionActive(true);
+      // subscribed, don't leave Grainient permanently gated off — `false`
+      // (not covering) is the same fail-open default backgroundRegion.js
+      // itself starts with, for the same reason.
+      setBeamsRegionActive(false);
     };
   }, []);
 
