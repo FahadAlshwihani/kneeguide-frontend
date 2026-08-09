@@ -2,22 +2,23 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
-import { LuLanguages, LuLayoutDashboard, LuCompass } from "react-icons/lu";
+import { LuLanguages, LuLayoutDashboard, LuCompass, LuUserRound } from "react-icons/lu";
 import { ROUTES } from "../../../utils/routes";
-import { PUBLIC_NAVIGATION } from "../navigation/publicNavigation";
+import { PUBLIC_NAVIGATION, PUBLIC_ACCOUNT_LINKS } from "../navigation/publicNavigation";
 import { useSectionNavigation } from "../navigation/useSectionNavigation";
-import PrimaryButton from "../../../components/ui/PrimaryButton";
 import SecondaryButton from "../../../components/ui/SecondaryButton";
 import ButtonArrow from "../../../components/ui/ButtonArrow";
 import BrandLogo from "./BrandLogo";
 import "./Header.css";
 
 // KneeGuide is a single-scroll landing page, not a multi-page corporate
-// site — every mega-menu link targets a homepage section anchor from the
-// canonical PUBLIC_NAVIGATION model (shared with Footer.jsx), never a
-// standalone routed page. Icons are a Header-presentation-only concern,
-// so they're mapped locally by group key instead of living in the shared
-// nav config.
+// site — every Product/Explore mega-menu link targets a homepage section
+// anchor from the canonical PUBLIC_NAVIGATION model (shared with
+// Footer.jsx), never a standalone routed page. The third card, Account,
+// is rendered separately below (not via this map) since its links are
+// real routes — see PUBLIC_ACCOUNT_LINKS in publicNavigation.js. Icons
+// are a Header-presentation-only concern, so they're mapped locally by
+// group key instead of living in the shared nav config.
 const GROUP_ICONS = {
   product: LuLayoutDashboard,
   explore: LuCompass,
@@ -279,21 +280,13 @@ const Header = () => {
                 {langToggleText}
               </button>
 
+              {/* The single top-level auth CTA. Create Account is
+                  deliberately not duplicated here — it lives inside the
+                  Account mega-menu card below, alongside Patient Login/
+                  Clinician Login, so the top bar stays to one action. */}
               <SecondaryButton to={ROUTES.LOGIN} size="sm" className="header-cta">
                 {t("publicHeader.login")}
               </SecondaryButton>
-
-              {/* Desktop/tablet only (hidden on mobile via CSS) — Login
-                  alone stays in the mobile top bar so it doesn't overcrowd
-                  it; Create Account moves into the menu panel instead, see
-                  .header-menu-actions below. Stronger CTA than Login (a
-                  PrimaryButton, not Secondary), mirroring the same
-                  Register-is-primary/Login-is-secondary pairing the
-                  homepage's own closing CTA already uses (CTA/index.jsx) —
-                  so Header never contradicts it. */}
-              <PrimaryButton to={ROUTES.REGISTER} size="sm" className="header-cta header-cta-create">
-                {t("publicHeader.createAccount")}
-              </PrimaryButton>
             </div>
           </div>
 
@@ -331,24 +324,38 @@ const Header = () => {
                   </div>
                 );
               })}
-            </div>
 
-            {/* Makes both auth paths discoverable from inside the expanded
-                menu itself, not just the (easy-to-miss on a small top bar)
-                actions above — same Create-Account-is-primary/Login-is-
-                secondary pairing as .header-actions and the homepage's own
-                CTA section. Real routes, not homepage sections, so these
-                navigate via Link `to`, not goToSection; `closeMenu` still
-                runs on click so the panel doesn't stay visibly open for a
-                frame during the route transition, matching every nav card
-                link above. */}
-            <div className="header-menu-actions">
-              <SecondaryButton to={ROUTES.LOGIN} size="sm" onClick={closeMenu} className="header-menu-action">
-                {t("publicHeader.login")}
-              </SecondaryButton>
-              <PrimaryButton to={ROUTES.REGISTER} size="sm" onClick={closeMenu} className="header-menu-action">
-                {t("publicHeader.createAccount")}
-              </PrimaryButton>
+              {/* Third sibling card, same visual system as Product/
+                  Explore above (same header-menu-card* classes — nothing
+                  redesigned) — not part of the PUBLIC_NAVIGATION map
+                  since its links are real routes (PUBLIC_ACCOUNT_LINKS),
+                  not homepage-section anchors, so they render as plain
+                  Links to `to`, never through goToSection. `closeMenu` on
+                  click matches every other card link, so the panel
+                  doesn't stay visibly open for a frame during the route
+                  transition to /login or /register. */}
+              <div
+                ref={setCardRef(PUBLIC_NAVIGATION.length)}
+                className="header-menu-card header-menu-card--account"
+              >
+                <div className="header-menu-card-title">
+                  <LuUserRound className="header-menu-card-icon" aria-hidden="true" strokeWidth={2} />
+                  <span className="header-menu-card-label">{t("publicNavigation.groups.account")}</span>
+                </div>
+                <div className="header-menu-card-links">
+                  {PUBLIC_ACCOUNT_LINKS.map((link) => (
+                    <Link
+                      key={link.key}
+                      to={link.to}
+                      className="header-menu-card-link"
+                      onClick={closeMenu}
+                    >
+                      <ButtonArrow />
+                      {t(link.labelKey)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Mobile only (hidden on desktop via CSS, where the top-bar
