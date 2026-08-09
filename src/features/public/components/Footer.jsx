@@ -52,22 +52,23 @@ const Footer = () => {
               </div>
             ))}
 
-            {/* Not from PUBLIC_NAVIGATION — Login/Create Account are real
-                app routes, not homepage sections, so they're plain Links
-                here rather than going through goToSection. Mirrors
-                Header's own Login-is-secondary/Create-Account-is-primary
-                framing only in link order, not styling — this column
-                intentionally reuses the exact same .footer-links look as
-                Product/Explore rather than introducing button styling. */}
+            {/* Same PUBLIC_ACCOUNT_LINKS the Header's Account mega-menu
+                card renders (Patient Login / Clinician Login / Create
+                Account — the first two are discovery labels only, both
+                landing on the one real Login route). Not from
+                PUBLIC_NAVIGATION since these are real app routes, not
+                homepage sections, so they're plain Links rather than
+                going through goToSection. Reuses the exact same
+                .footer-links look as Product/Explore — no button styling
+                introduced. */}
             <div className="footer-links-col">
-              <span className="footer-links-title">{t("publicFooter.accountGroupTitle")}</span>
+              <span className="footer-links-title">{t("publicNavigation.groups.account")}</span>
               <ul className="footer-links">
-                <li>
-                  <Link to={ROUTES.LOGIN}>{t("publicHeader.login")}</Link>
-                </li>
-                <li>
-                  <Link to={ROUTES.REGISTER}>{t("publicHeader.createAccount")}</Link>
-                </li>
+                {PUBLIC_ACCOUNT_LINKS.map((link) => (
+                  <li key={link.key}>
+                    <Link to={link.to}>{t(link.labelKey)}</Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
