@@ -728,62 +728,35 @@
     "description": "A connected platform that brings patients and clinicians together, turning movement data into clear progress tracking and real-time rehabilitation feedback.",
     "ctaPrimary": "Get Started",
     "ctaSecondary": "Login",
-    "preview": {
-      "doctorBadge": "Doctor view",
-      "patientBadge": "Patient view",
-      "activePatientsLabel": "Active Patients",
-      "upcomingAppointmentTitle": "Upcoming appointment",
-      "withPatientPrefix": "Patient",
-      "withDoctorPrefix": "Dr.",
-      "progressLabel": "Rehabilitation progress",
-      "progressSub": "Ahmed Ali — Week 4",
-      "alertLabel": "Flare-up flagged for review",
-      "alertSub": "2 hours ago",
-      "exerciseName": "Heel Slides",
-      "exerciseReps": "3 × 15",
-      "exerciseLastDone": "Yesterday",
-      "romLabel": "Range of motion",
-      "romSub": "Extension range",
-      "adherenceLabel": "Weekly adherence",
-      "adherenceSub": "5-day streak",
-      "appointmentType": "Follow-up",
-      "reschedule": "Reschedule",
-      "viewAll": "View all",
-      "start": "Start",
-      "lastDoneLabel": "Last done",
-      "romValue": "82°",
-      "adherenceValue": "76%",
-      "appointmentDateDay": "25",
-      "appointmentDateMonth": "Nov",
-      "appointmentTime": "3:30 PM",
-      "todayAppointmentsLabel": "Today's Appointments",
-      "newReportsLabel": "New Reports",
-      "exercisesAssignedLabel": "Exercises Assigned Today",
-      "messagesLabel": "Messages",
-      "messagesSub": "Unread messages",
-      "notesLabel": "Notes",
-      "notesSub": "Recent notes",
-      "sessionCompletionLabel": "Session completion",
-      "sessionCompletionSub": "This week",
-      "avgExerciseTimeLabel": "Avg. exercise time",
-      "avgExerciseTimeSub": "This week",
-      "romImprovementLabel": "ROM improvement",
-      "romImprovementSub": "This month",
-      "todaySessionsLabel": "Today's Sessions",
-      "weeklyProgressLabel": "Weekly Progress",
-      "weeklyProgressSub": "vs. last week",
-      "recoveryScoreLabel": "Recovery Score",
-      "painLevelLabel": "Pain Level",
-      "painLevelTrend": "Down from 4",
-      "dailyGoalLabel": "Daily Goal",
-      "dailyGoalSub": "3 of 4 exercises",
-      "exerciseCompletionLabel": "Exercise Completion",
-      "aiRecommendationLabel": "AI Recommendation",
-      "aiRecommendationSub": "Increase ROM drills by 10%",
-      "streakLabel": "Streak",
-      "streakTrend": "day streak",
-      "complianceLabel": "Compliance",
-      "notificationsLabel": "Notifications"
+    "kpi": {
+      "ariaLabel": "Live rehabilitation dashboard preview",
+      "exercisesAssigned": {
+        "label": "Exercises Assigned Today",
+        "trend": "+20% vs yesterday"
+      },
+      "activePatients": {
+        "label": "Active Patients",
+        "trend": "+12% vs last week"
+      },
+      "rehabProgress": {
+        "label": "Rehabilitation Progress",
+        "trend": "+8% vs last week"
+      },
+      "sessionCompletion": {
+        "label": "Session Completion",
+        "trend": "+10% vs last week"
+      },
+      "weeklyAdherence": {
+        "label": "Weekly Adherence",
+        "trend": "+6% vs last week"
+      },
+      "appointment": {
+        "label": "Upcoming Appointment",
+        "month": "May",
+        "sessionType": "Follow-up Session",
+        "patientTag": "Patient",
+        "viewDetails": "View Details"
+      }
     }
   },
   "publicProblem": {
