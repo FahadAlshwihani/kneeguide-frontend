@@ -56,14 +56,25 @@
   border-radius: 999px;
 }
 
-.solution-title {
+/* `.public-root` prefix (matching Problem.css's own `.public-root
+   .problem-title`/`.public-root .problem-description`) is not decorative
+   — it's what makes these selectors ((0,2,0), two classes) outrank
+   index.css's global `.public-root h2`/`.public-root p { color: var(
+   --color-heading) }` ((0,1,1), one class + one element), which otherwise
+   wins the cascade against a bare `.solution-title`/`.solution-description`
+   ((0,1,0), one class) and silently repaints this section's heading/
+   paragraph back to the site's white dark-theme heading color — invisible
+   on this section's light background. `.solution-badge` below needs no
+   such prefix: it's a <span>, which that global rule never targets, so
+   its own single-class rule already wins outright. */
+.public-root .solution-title {
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 600;
   color: var(--solution-heading);
   text-wrap: balance;
 }
 
-.solution-description {
+.public-root .solution-description {
   font-size: 1.05rem;
   line-height: 1.65;
   color: var(--solution-text);
