@@ -6,6 +6,7 @@ import { LuLanguages, LuLayoutDashboard, LuCompass } from "react-icons/lu";
 import { ROUTES } from "../../../utils/routes";
 import { PUBLIC_NAVIGATION } from "../navigation/publicNavigation";
 import { useSectionNavigation } from "../navigation/useSectionNavigation";
+import PrimaryButton from "../../../components/ui/PrimaryButton";
 import SecondaryButton from "../../../components/ui/SecondaryButton";
 import ButtonArrow from "../../../components/ui/ButtonArrow";
 import BrandLogo from "./BrandLogo";
@@ -281,6 +282,18 @@ const Header = () => {
               <SecondaryButton to={ROUTES.LOGIN} size="sm" className="header-cta">
                 {t("publicHeader.login")}
               </SecondaryButton>
+
+              {/* Desktop/tablet only (hidden on mobile via CSS) — Login
+                  alone stays in the mobile top bar so it doesn't overcrowd
+                  it; Create Account moves into the menu panel instead, see
+                  .header-menu-actions below. Stronger CTA than Login (a
+                  PrimaryButton, not Secondary), mirroring the same
+                  Register-is-primary/Login-is-secondary pairing the
+                  homepage's own closing CTA already uses (CTA/index.jsx) —
+                  so Header never contradicts it. */}
+              <PrimaryButton to={ROUTES.REGISTER} size="sm" className="header-cta header-cta-create">
+                {t("publicHeader.createAccount")}
+              </PrimaryButton>
             </div>
           </div>
 
@@ -318,6 +331,24 @@ const Header = () => {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Makes both auth paths discoverable from inside the expanded
+                menu itself, not just the (easy-to-miss on a small top bar)
+                actions above — same Create-Account-is-primary/Login-is-
+                secondary pairing as .header-actions and the homepage's own
+                CTA section. Real routes, not homepage sections, so these
+                navigate via Link `to`, not goToSection; `closeMenu` still
+                runs on click so the panel doesn't stay visibly open for a
+                frame during the route transition, matching every nav card
+                link above. */}
+            <div className="header-menu-actions">
+              <SecondaryButton to={ROUTES.LOGIN} size="sm" onClick={closeMenu} className="header-menu-action">
+                {t("publicHeader.login")}
+              </SecondaryButton>
+              <PrimaryButton to={ROUTES.REGISTER} size="sm" onClick={closeMenu} className="header-menu-action">
+                {t("publicHeader.createAccount")}
+              </PrimaryButton>
             </div>
 
             {/* Mobile only (hidden on desktop via CSS, where the top-bar

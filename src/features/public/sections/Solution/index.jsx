@@ -465,7 +465,7 @@ const Solution = () => {
   }, [isMapInView, tier.id]);
 
   return (
-    <section className="solution-root">
+    <section className="solution-root" id="approach">
       <div className="solution-container">
         <Reveal className="solution-header">
           <span className="solution-badge">{t("publicSolution.badge")}</span>

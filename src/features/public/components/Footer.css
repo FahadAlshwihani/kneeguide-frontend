@@ -18,9 +18,13 @@
   padding-inline: 24px;
 }
 
+/* Fourth column added for the compact Account group (Login/Create
+   Account) — brand keeps the most room, the three link columns
+   (Product/Explore/Account) share the rest evenly; Account itself only
+   ever holds two short links, so it doesn't need its own wider share. */
 .footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 40px;
   padding-block-end: 40px;
 }

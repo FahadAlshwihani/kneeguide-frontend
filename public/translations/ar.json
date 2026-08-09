@@ -1019,7 +1019,8 @@
   "publicFooter": {
     "brand": "KneeGuide",
     "description": "تأهيل ركبة موجّه بالذكاء الاصطناعي، يربط بين المريض وطبيبه بين كل زيارة وأخرى.",
-    "copyright": "© {{year}} KneeGuide. جميع الحقوق محفوظة."
+    "copyright": "© {{year}} KneeGuide. جميع الحقوق محفوظة.",
+    "accountGroupTitle": "الحساب"
   },
   "publicNavigation": {
     "groups": {
@@ -1027,7 +1028,9 @@
       "explore": "استكشف"
     },
     "items": {
-      "overview": "نظرة عامة",
+      "challenge": "التحدي",
+      "approach": "نهج KneeGuide",
+      "platform": "المنصّة",
       "technology": "التقنية",
       "howItWorks": "كيف يعمل",
       "ai": "المساعد الذكي",
@@ -1039,6 +1042,7 @@
     "menuToggleOpen": "فتح القائمة",
     "menuToggleClose": "إغلاق القائمة",
     "login": "تسجيل الدخول",
+    "createAccount": "إنشاء حساب",
     "languageSwitchLabel": "تغيير اللغة",
     "languageSwitchTo": "EN"
   }

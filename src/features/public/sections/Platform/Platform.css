@@ -1,8 +1,10 @@
 /* Uses global design tokens from src/index.css */
 
+/* scroll-margin-top for hash navigation lives centrally in index.css
+   (the `--nav-scroll-offset` rule, keyed off id, not class) — not
+   repeated per-section here. */
 .platform-root {
   padding: var(--section-padding) 0;
-  scroll-margin-top: 80px;
   min-height: 100svh;
   display: flex;
   flex-direction: column;

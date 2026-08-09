@@ -103,7 +103,7 @@ const Problem = () => {
   }, [audienceWords.join("|")]);
 
   return (
-    <section className="problem-root">
+    <section className="problem-root" id="challenge">
       <div className="problem-container">
         {/* 1. Projected impact statistics — first element, before the badge/title/description. */}
         <Reveal className="problem-stats">

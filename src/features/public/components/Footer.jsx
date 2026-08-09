@@ -5,6 +5,7 @@ import RevealSection from "./RevealSection";
 import BrandLogo from "./BrandLogo";
 import { PUBLIC_NAVIGATION } from "../navigation/publicNavigation";
 import { useSectionNavigation } from "../navigation/useSectionNavigation";
+import { ROUTES } from "../../../utils/routes";
 import "./Footer.css";
 
 const Footer = () => {
@@ -51,6 +52,25 @@ const Footer = () => {
                 </ul>
               </div>
             ))}
+
+            {/* Not from PUBLIC_NAVIGATION — Login/Create Account are real
+                app routes, not homepage sections, so they're plain Links
+                here rather than going through goToSection. Mirrors
+                Header's own Login-is-secondary/Create-Account-is-primary
+                framing only in link order, not styling — this column
+                intentionally reuses the exact same .footer-links look as
+                Product/Explore rather than introducing button styling. */}
+            <div className="footer-links-col">
+              <span className="footer-links-title">{t("publicFooter.accountGroupTitle")}</span>
+              <ul className="footer-links">
+                <li>
+                  <Link to={ROUTES.LOGIN}>{t("publicHeader.login")}</Link>
+                </li>
+                <li>
+                  <Link to={ROUTES.REGISTER}>{t("publicHeader.createAccount")}</Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <div className="footer-bottom">

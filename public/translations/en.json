@@ -1019,7 +1019,8 @@
   "publicFooter": {
     "brand": "KneeGuide",
     "description": "AI-guided knee rehabilitation, connecting patients and clinicians between every appointment.",
-    "copyright": "© {{year}} KneeGuide. All rights reserved."
+    "copyright": "© {{year}} KneeGuide. All rights reserved.",
+    "accountGroupTitle": "Account"
   },
   "publicNavigation": {
     "groups": {
@@ -1027,7 +1028,9 @@
       "explore": "Explore"
     },
     "items": {
-      "overview": "Overview",
+      "challenge": "The Challenge",
+      "approach": "KneeGuide Approach",
+      "platform": "The Platform",
       "technology": "Technology",
       "howItWorks": "How It Works",
       "ai": "AI Assistant",
@@ -1039,6 +1042,7 @@
     "menuToggleOpen": "Open menu",
     "menuToggleClose": "Close menu",
     "login": "Login",
+    "createAccount": "Create Account",
     "languageSwitchLabel": "Switch language",
     "languageSwitchTo": "AR"
   }

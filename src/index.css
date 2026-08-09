@@ -384,6 +384,8 @@ body.ltr .form-group label {
    src/features/public/navigation/publicNavigation.js for the canonical
    list these ids must match. Centralized here instead of scattering a
    scroll-offset calculation through Header/Footer navigation code. */
+#challenge,
+#approach,
 #platform,
 #technology,
 #how-it-works,

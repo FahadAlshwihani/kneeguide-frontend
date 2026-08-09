@@ -188,7 +188,28 @@
   display: none;
 }
 
-/* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css). */
+/* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css)
+   or, for .header-cta-create, a PrimaryButton (PrimaryButton.css). */
+
+/* Auth actions inside the expanded panel (mega-menu on desktop/tablet,
+   hamburger menu on mobile — one shared markup, see Header.jsx) — makes
+   Login/Create Account discoverable even when the top bar's own compact
+   actions go unnoticed, without duplicating any role logic (both are
+   plain routes into the existing Login/Register pages). Side-by-side at
+   their natural width by default; stacked full-width on mobile instead
+   (below) for easy touch targets rather than two cramped pills. */
+.header-menu-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header-menu-action {
+  flex: 0 0 auto;
+}
 
 /* The expanding content: always in the DOM (never conditionally mounted)
    so its height is measurable and GSAP can animate it — hidden via
@@ -366,8 +387,29 @@
     font-size: 0.78rem;
   }
 
+  /* Top bar keeps only Login (Hamburger | Logo | Login) so it stays
+     clean and uncrowded — Create Account moves into the opened menu's
+     own .header-menu-actions instead, where it's still easy to reach,
+     just not squeezed into the same 64px bar as everything else. */
+  .header-cta-create {
+    display: none;
+  }
+
   .header-lang-toggle--topbar {
     display: none;
+  }
+
+  /* Stacked, full-width — easier touch targets than two side-by-side
+     pills at mobile widths, and guarantees no horizontal overflow
+     regardless of translated label length (English vs Arabic). */
+  .header-menu-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-menu-action {
+    width: 100%;
+    justify-content: center;
   }
 
   /* Last item in the panel, not first — styled as a quiet footer action
