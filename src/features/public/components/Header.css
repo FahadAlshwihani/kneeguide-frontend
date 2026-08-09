@@ -202,7 +202,33 @@
   display: none;
 }
 
-/* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css). */
+/* .header-cta itself is a SecondaryButton (components/ui/SecondaryButton.css)
+   — border/hover/focus-visible/color/radius all come from there unchanged.
+   Icon-only now (user icon + arrow, no text — see Header.jsx), so the
+   shared `sm` variant's text-oriented padding (8px/20px) is overridden
+   here to a tighter, more compact-horizontal box instead of one sized for
+   a word — this is the same per-context override pattern every other
+   `.header-cta` rule in this file already uses, not a change to the
+   shared button component itself. Identical in EN/AR by construction:
+   nothing here is sized by translated text anymore. */
+.header-cta {
+  padding: 10px 16px;
+}
+
+/* The user icon now lives in SecondaryButton's "label" slot (normally
+   text) — that slot has never held an icon before, so nothing in
+   SecondaryButton.css sizes an svg placed there (only `.ui-secondary-
+   btn-icon svg`, the arrow's own slot, has a size rule). Matched to the
+   arrow's existing `sm` size (20px) so both icons read as the same
+   visual weight. This selector is deliberately narrower than `.ui-
+   secondary-btn-icon svg` — the RTL mirror rule in SecondaryButton.css
+   only ever targets that other slot, never this one, so the user icon
+   can never be mirrored no matter the direction. */
+.header-cta .ui-secondary-btn-label svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
 
 /* The expanding content: always in the DOM (never conditionally mounted)
    so its height is measurable and GSAP can animate it — hidden via
@@ -394,12 +420,13 @@
     justify-self: end;
   }
 
-  /* Smaller than the shared SecondaryButton `sm` size, mobile only — the
-     component itself is untouched, this just overrides its footprint
-     here via the passed-through `.header-cta` class. */
+  /* Icon-only button, no text to size — `font-size` override dropped
+     (nothing left for it to affect; both icons are sized in fixed px).
+     Padding instead tuned for a real touch target: 20px icon + 12px
+     vertical padding each side + 2px border = 44px tall, meeting the
+     ~44x44px minimum recommended touch-target size. */
   .header-actions .header-cta {
-    padding: 6px 14px;
-    font-size: 0.78rem;
+    padding: 12px 14px;
   }
 
   .header-lang-toggle--topbar {
