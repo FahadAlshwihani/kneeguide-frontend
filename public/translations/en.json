@@ -641,22 +641,23 @@
   "verifyOtp": {
     "title": "Verify Your Email",
     "subtitle": "Enter the 6-digit code sent to your email address.",
-    "loader": "Verifying your code...",
+    "digitLabel": "Digit {{position}} of 6",
     "errors": {
       "codeRequired": "Please enter the full 6-digit code.",
       "invalid": "Invalid or expired OTP.",
       "failedResend": "Failed to resend OTP."
     },
     "success": {
-      "verified": "Verified successfully! Redirecting...",
+      "verified": "Email verified",
       "resent": "A new OTP has been sent."
     },
     "buttons": {
       "verify": "Verify"
     },
     "resend": {
-      "in": "Resend available in",
-      "button": "Resend Code"
+      "in": "Resend available in {{count}}s",
+      "button": "Resend code",
+      "sending": "Sending..."
     },
     "backToLogin": "Back to Login"
   },

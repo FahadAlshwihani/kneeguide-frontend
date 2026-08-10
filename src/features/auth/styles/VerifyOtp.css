@@ -1,125 +1,221 @@
-/* ================================
-   PAGE CONTAINER
-================================ */
-.otp-page {
-  min-height: 100vh;
+/* OTP-specific content only — the card shell (AuthCard.css), the shared
+   field/label/input/alert language (AuthForm.css), and the page chrome
+   (AuthLayout.css) all live elsewhere now that AuthLayout hosts AuthCard
+   once for Login, Register, AND VerifyOtp. This file only owns what's
+   unique to the OTP screen itself: the header, the 6-box input group and
+   its three states, the resend row, and the back-to-login link.
+
+   Same `gap`-driven rhythm as Login.css/Register.css — .verify-otp-form's
+   own --auth-space-lg (24px) gap between every top-level block, so the
+   conditionally-rendered error/success slot and resend feedback slot in
+   with correct spacing automatically. */
+.verify-otp-form {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #0f0f0f;
-  padding: 20px;
-  color: #e5e5e5;
+  flex-direction: column;
+  gap: var(--auth-space-lg);
 }
 
-/* ================================
-   OTP BOX
-================================ */
-.otp-box {
-  width: 100%;
-  max-width: 420px;
-  background: #161616;
-  padding: 32px;
-  border-radius: 16px;
-  border: 1px solid #2a2a2a;
+/* ============================
+   HEADER
+============================ */
+.otp-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-2xs);
   text-align: center;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
-.otp-box h2 {
-  font-size: 28px;
+.otp-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
   font-weight: 700;
-  color: #fff;
+  line-height: 1.3;
+  color: var(--color-heading);
 }
 
 .otp-subtitle {
-  margin-top: 8px;
-  font-size: 15px;
-  color: #cfcfcf;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--color-muted);
 }
 
+/* Highlighted but from the approved design system — same primary-blue
+   token .auth-switch-link already uses, not the old standalone page's
+   purple. Forced LTR (also set as `dir="ltr"` in JSX, redundant on
+   purpose — belt and suspenders against inherited direction) since an
+   email address is Latin-character content regardless of page direction.
+   overflow-wrap prevents a long address from pushing the card wider than
+   AuthCard's own max-width. */
 .otp-email {
-  margin-top: 6px;
-  color: #8d6bff;
-  font-size: 16px;
+  margin: 0;
+  font-size: 0.95rem;
   font-weight: 600;
+  color: var(--color-primary-hover);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-/* ================================
-   MESSAGE BOX
-================================ */
-.otp-message {
-  margin-top: 16px;
-  padding: 12px;
-  background: rgba(125, 91, 255, 0.15);
-  border: 1px solid rgba(125, 91, 255, 0.35);
-  color: #d8c8ff;
-  border-radius: 10px;
-  font-size: 14px;
-  text-align: center;
-}
-
-/* ================================
-   OTP INPUTS
-================================ */
-.otp-input-group {
+/* ============================
+   OTP INPUT GROUP
+============================ */
+.otp-group-wrap {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 25px 0;
+  flex-direction: column;
+  gap: var(--auth-space-xs);
+}
+
+/* Centered, capped width so 6 boxes never stretch edge-to-edge inside the
+   card — `repeat(6, minmax(0, 1fr))` is what keeps every box shrinking
+   together on narrow viewports instead of overflowing (see section 16 of
+   the task: no horizontal scroll, ever). Direction is forced LTR here
+   (also on the JSX element itself) so the code always reads left-to-right
+   even inside the Arabic layout — never reversed by the surrounding
+   document's own RTL flow. */
+.otp-input-group {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(6px, 2vw, 10px);
+  width: 100%;
+  max-width: 320px;
+  margin-inline: auto;
 }
 
 .otp-input {
-  width: 48px;
-  height: 55px;
-  font-size: 26px;
+  width: 100%;
+  aspect-ratio: 0.82;
+  min-width: 0;
+  font-size: clamp(1.05rem, 4vw, 1.3rem);
   font-weight: 600;
-  color: #fff;
   text-align: center;
-  border-radius: 10px;
-  border: 1px solid #3a3a3a;
-  background: #0f0f0f;
+  color: var(--color-heading);
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
   outline: none;
-  transition: 0.2s;
+  transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .otp-input:focus {
-  border-color: #7d5bff;
-  box-shadow: 0 0 8px rgba(125, 91, 255, 0.6);
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
-/* ================================
-   RESEND BOX
-================================ */
-.otp-resend {
-  margin-top: 12px;
-  font-size: 14px;
-  color: #bbbbbb;
+.otp-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.resend-btn {
-  background: none;
-  border: none;
-  color: #8d6bff;
+/* Invalid/success read primarily through the icon+text row below the
+   group (LuCircleCheck / AuthAlert's own triangle) — color here is a
+   secondary, restrained reinforcement, never the only signal. Light
+   tints, not the full-saturation tokens, so 6 boxes together don't read
+   as an aggressive wall of color. */
+.otp-input-group--invalid .otp-input {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: var(--color-danger-soft);
+}
+
+.otp-input-group--success .otp-input {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.otp-success-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--auth-space-3xs);
+  margin: 0;
+  font-size: 0.85rem;
   font-weight: 600;
-  cursor: pointer;
+  line-height: 1.4;
+  color: var(--color-success);
+  text-align: center;
 }
 
-.resend-btn:hover {
-  opacity: 0.7;
+.otp-success-indicator svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+/* ============================
+   RESEND
+============================ */
+.otp-resend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--auth-space-3xs);
+  text-align: center;
+}
+
+.otp-resend-countdown {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+/* Same restrained link language as .auth-switch-link (AuthForm.css), not
+   a separate button identity — a real <button>, keyboard-reachable. */
+.otp-resend-button {
+  padding: 4px 2px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary-hover);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.otp-resend-button:hover:not(:disabled) {
   text-decoration: underline;
 }
 
-/* ================================
-   BACK TO LOGIN
-================================ */
-.otp-back-login {
-  margin-top: 25px;
-  cursor: pointer;
-  color: #bbbbbb;
-  font-size: 14px;
-  transition: 0.2s;
+.otp-resend-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-.otp-back-login:hover {
-  color: #8d6bff;
+.otp-resend-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.otp-resend-feedback {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.otp-resend-feedback--success {
+  color: var(--color-success);
+}
+
+.otp-resend-feedback--error {
+  color: #f87171;
+}
+
+/* ============================
+   BACK TO LOGIN
+============================ */
+.otp-back-login {
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+@media (max-width: 380px) {
+  .otp-input-group {
+    max-width: 100%;
+  }
 }
