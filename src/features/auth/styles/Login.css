@@ -1,103 +1,186 @@
-/* ================================
-   PAGE BACKGROUND
-================================ */
+/* Login page content — the surrounding chrome (background, Header,
+   centering, footer) is AuthLayout's job; this file only styles what's
+   inside the card. Built entirely on the public design tokens already
+   defined in index.css's "NEW DESIGN SYSTEM" block (--color-heading,
+   --color-text, --color-muted, --color-primary, --radius-*,
+   --transition-fast, etc.) — the same tokens Header/Footer/PrimaryButton
+   already use — rather than the old page's own hardcoded hex palette
+   (#0f0f0f/#161616/#7d5bff), so this reads as the same product instead of
+   a visually separate login screen bolted on afterward.
+
+   No RTL-specific rules anywhere in this file: every directional property
+   below is logical (padding-inline-end, inset-inline-end) or relies on
+   the ambient `.public-root` direction already being correct — the one
+   exception, the email input's forced `dir="ltr"`, lives in Login.jsx as
+   an HTML attribute, not CSS. */
+
 .login-page {
-  min-height: 100vh;
-  background: #0f0f0f;
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
 }
 
-/* ================================
-   LOGIN BOX
-================================ */
-.login-box {
-  width: 420px;
-  padding: 32px;
-  border-radius: 14px;
-  background: #161616;
-  border: 1px solid #2a2a2a;
-  box-shadow: 0 0 25px rgba(82, 39, 255, 0.08);
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-title {
+  margin: 0 0 6px;
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+  font-weight: 700;
+  color: var(--color-heading);
   text-align: center;
-  color: #e5e5e5;
 }
 
-.login-box h2 {
-  margin-bottom: 6px;
-  font-size: 28px;
-  color: #fff;
+.login-subtitle {
+  margin: 0 0 28px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+  text-align: center;
 }
 
-.subtitle {
-  color: #999;
-  margin-bottom: 28px;
-  font-size: 15px;
-}
-
-/* ================================
-   INPUTS
-================================ */
-.form-group {
-  text-align: left;
-  margin-bottom: 18px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  color: #cfcfcf;
-  font-size: 14px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #0d0d0d;
-  color: #e5e5e5;
-  transition: 0.2s;
-}
-
-.form-group input:focus {
-  border-color: #7d5bff;
-  box-shadow: 0 0 0 2px rgba(125, 91, 255, 0.3);
-}
-
-/* ================================
-   ERROR BOX
-================================ */
+/* Concise, non-enumerating text only (see Login.jsx) — never the raw
+   backend exception. A light red for contrast against the dark card,
+   not the full-saturation --color-danger token (#ef4444 reads slightly
+   harsh as body text at this size). */
 .login-error {
-  background: rgba(255, 80, 80, 0.15);
-  color: #ff6b6b;
-  padding: 13px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 80, 80, 0.4);
-  margin-bottom: 18px;
-  font-size: 14px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: var(--color-danger-soft);
+  color: #f87171;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
-/* ================================
-   EXTRA LINKS
-================================ */
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.login-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-heading);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.login-input::placeholder {
+  color: var(--color-muted);
+}
+
+/* Restrained focus treatment: a border-color shift toward the KneeGuide
+   blue plus a soft, low-opacity ring — no large neon glow. */
+.login-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.login-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-password-wrap {
+  position: relative;
+}
+
+.login-password-wrap .login-input {
+  padding-inline-end: 44px;
+}
+
+/* 40x40 — a deliberate, real <button type="button">, not a clickable
+   span, so it's keyboard-reachable and doesn't submit the form. Sized as
+   a compact inline form control rather than the ~44px top-level touch
+   target Header's own controls use (see AUTH CARD note in the final
+   report) — still comfortably tappable alongside a 12px-padded input. */
+.login-password-toggle {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 4px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.login-password-toggle:hover:not(:disabled) {
+  color: var(--color-heading);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.login-password-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.login-password-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-password-toggle svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.login-submit-row {
+  margin-top: 8px;
+}
+
+/* PrimaryButton itself (components/ui/PrimaryButton.css) is intentionally
+   untouched — same sharp-rectangle button already used across the public
+   site (CTA, Header). Reused here as-is rather than restyled, so Login
+   doesn't introduce a second, slightly-different button identity. */
+
 .login-extra {
   margin-top: 20px;
   text-align: center;
-  color: #aaa;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
 }
 
-.signup-link {
-  color: #8d6bff;
+.login-signup-link {
+  color: var(--color-primary-hover);
   font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-.signup-link:hover {
+.login-signup-link:hover,
+.login-signup-link:focus-visible {
   text-decoration: underline;
-  opacity: 0.9;
 }
 
+.login-signup-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

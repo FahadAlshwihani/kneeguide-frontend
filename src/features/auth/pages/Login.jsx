@@ -124,6 +124,13 @@ const Login = () => {
               type="email"
               name="email"
               className="login-input"
+              // Forced LTR regardless of page direction — an email address
+              // is Latin-character content by construction, and should
+              // read naturally (user@example.com, not bidi-reordered) even
+              // inside an RTL form. Only the input's own text runs this
+              // way; the <label> above it still follows Arabic's natural
+              // RTL flow untouched.
+              dir="ltr"
               autoComplete="email"
               placeholder={t("login.email_placeholder")}
               value={form.email}
