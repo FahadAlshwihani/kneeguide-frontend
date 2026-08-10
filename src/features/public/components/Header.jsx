@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
 import { LuLanguages, LuLayoutDashboard, LuCompass, LuUserRound } from "react-icons/lu";
@@ -29,15 +29,16 @@ const PANEL_BOTTOM_GAP = 16;
 const MENU_EASE = "power3.out";
 const HIDE_SCROLL_THRESHOLD = 96;
 
-const Header = () => {
+// Header is rendered exactly twice in this app: once by PublicLayout (real
+// public pages — Home/About/etc.) and once by AuthLayout (Login/Register/
+// VerifyOtp, which all share that one layout). `hideAuthAction` is set by
+// AuthLayout alone, so the whole Auth flow hides the button together
+// without Header having to know or check individual auth routes/pathnames
+// — PublicLayout never passes it, so public pages are unaffected by
+// construction, not by an explicit opt-in per page.
+const Header = ({ hideAuthAction = false }) => {
   const { t, i18n } = useTranslation();
   const { goToSection, goHome } = useSectionNavigation();
-  const { pathname } = useLocation();
-  // Showing this on /login itself would just be a self-link back to the
-  // page the user is already on — hidden there rather than shown disabled,
-  // per the auth-layout pass. Every other route (including Register/OTP,
-  // not yet on this shared layout) is unaffected.
-  const isOnLoginRoute = pathname === ROUTES.LOGIN;
 
   // Two states, not one: `hamburgerOpen` flips the icon-to-X instantly.
   // `panelExpanded` is what actually gates the panel's visibility/
@@ -309,10 +310,11 @@ const Header = () => {
                   mirrored, without a single new RTL rule. aria-label
                   reuses the existing "Login" key as the button's
                   accessible name now that there's no visible text to
-                  supply one. Hidden entirely on /login itself — see
-                  isOnLoginRoute above — rather than shown as a disabled
-                  self-link back to the page already on screen. */}
-              {!isOnLoginRoute && (
+                  supply one. Hidden across the entire Auth flow (Login/
+                  Register/OTP — see `hideAuthAction` above) rather than
+                  shown as a disabled self-link back to a page already on
+                  screen or mid-flow. */}
+              {!hideAuthAction && (
                 <SecondaryButton
                   to={ROUTES.LOGIN}
                   size="sm"
