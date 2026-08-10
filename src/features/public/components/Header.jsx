@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { gsap } from "gsap";
 import { LuLanguages, LuLayoutDashboard, LuCompass, LuUserRound } from "react-icons/lu";
@@ -32,6 +32,12 @@ const HIDE_SCROLL_THRESHOLD = 96;
 const Header = () => {
   const { t, i18n } = useTranslation();
   const { goToSection, goHome } = useSectionNavigation();
+  const { pathname } = useLocation();
+  // Showing this on /login itself would just be a self-link back to the
+  // page the user is already on — hidden there rather than shown disabled,
+  // per the auth-layout pass. Every other route (including Register/OTP,
+  // not yet on this shared layout) is unaffected.
+  const isOnLoginRoute = pathname === ROUTES.LOGIN;
 
   // Two states, not one: `hamburgerOpen` flips the icon-to-X instantly.
   // `panelExpanded` is what actually gates the panel's visibility/
