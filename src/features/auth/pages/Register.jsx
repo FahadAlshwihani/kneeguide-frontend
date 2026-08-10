@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { LuUserRound } from "react-icons/lu";
@@ -33,6 +33,8 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState(null);
   const [emailExists, setEmailExists] = useState(false);
+  const [emailCheckStatus, setEmailCheckStatus] = useState("idle");
+  const emailCheckRef = useRef(null);
 
   const [form, setForm] = useState({
     first_name: "",
@@ -51,6 +53,7 @@ const Register = () => {
 
     if (e.target.name === "email") {
       setEmailExists(false);
+      setEmailCheckStatus("idle");
     }
   };
 
@@ -81,14 +84,36 @@ const Register = () => {
           return false;
         }
 
+        setEmailCheckStatus("checking");
+
         try {
-          const emailCheck = await checkEmail(form.email);
+          const normalizedEmail = form.email.trim().toLowerCase();
+          let pendingCheck = emailCheckRef.current;
+
+          if (!pendingCheck || pendingCheck.email !== normalizedEmail) {
+            pendingCheck = {
+              email: normalizedEmail,
+              promise: checkEmail(normalizedEmail),
+            };
+            emailCheckRef.current = pendingCheck;
+          }
+
+          const emailCheck = await pendingCheck.promise;
           if (emailCheck.exists) {
             setEmailExists(true);
+            setEmailCheckStatus("exists");
             setError(t("register.errors.emailExists"));
             return false;
           }
-        } catch (e) {}
+
+          setEmailCheckStatus("available");
+        } catch (e) {
+          setEmailCheckStatus("error");
+          setError(t("register.errors.emailCheckFailed"));
+          return false;
+        } finally {
+          emailCheckRef.current = null;
+        }
 
         return true;
 
@@ -125,7 +150,15 @@ const Register = () => {
     setError("");
     setLoading(true);
 
-    const payload = { ...form, role };
+    const payload = {
+      first_name: form.first_name,
+      last_name: form.last_name,
+      email: form.email.trim().toLowerCase(),
+      phone: form.phone,
+      dob: form.dob,
+      password: form.password,
+      role,
+    };
 
     try {
       const res = await registerUser(payload);
@@ -174,6 +207,7 @@ const Register = () => {
           validateStep={validateStep}
           onFinalStepCompleted={handleFinalSubmit}
           submitting={loading}
+          validating={emailCheckStatus === "checking"}
         >
           {/* STEP 1 — role */}
           <Step>

@@ -1,18 +1,32 @@
 import axios from "axios";
 
-// const api = axios.create({
-//   baseURL: "http://127.0.0.1:8000/api/",
-// });
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://kneeguide-backend.onrender.com/api/";
 
 const api = axios.create({
-  baseURL: "https://kneeguide-backend.onrender.com/api/",
+  baseURL: API_BASE_URL,
+  timeout: 15000,
 });
 
 // إضافة التوكين تلقائيًا
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
-  if (token) {
+  const publicAuthPaths = [
+    "users/login/",
+    "users/register/",
+    "users/check-email/",
+    "users/verify-otp/",
+    "users/resend-otp/",
+  ];
+  const isPublicAuthRequest = publicAuthPaths.some((path) =>
+    (config.url || "").startsWith(path)
+  );
+
+  if (token && !isPublicAuthRequest) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else if (config.headers?.Authorization) {
+    delete config.headers.Authorization;
   }
   return config;
 });

@@ -18,6 +18,7 @@ export default function Stepper({
   // there's no separate full-page loader for this and no way to
   // double-submit or navigate away mid-request.
   submitting = false,
+  validating = false,
 }) {
   const { t } = useTranslation();
 
@@ -106,7 +107,7 @@ export default function Stepper({
                   type="button"
                   size="sm"
                   showArrow={false}
-                  disabled={submitting}
+                  disabled={submitting || validating}
                   onClick={handleBack}
                   className="stepper-back-button"
                 >
@@ -118,8 +119,8 @@ export default function Stepper({
                 type="button"
                 size="sm"
                 showArrow={false}
-                loading={isLastStep && submitting}
-                disabled={isLastStep && submitting}
+                loading={(isLastStep && submitting) || validating}
+                disabled={(isLastStep && submitting) || validating}
                 onClick={isLastStep ? handleComplete : handleNext}
                 className="stepper-next-button"
               >
