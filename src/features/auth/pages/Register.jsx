@@ -10,6 +10,8 @@ import { ROUTES } from "../../../utils/routes";
 import { AuthCardItem } from "../components/AuthCard";
 import PasswordField from "../components/PasswordField";
 import AuthAlert from "../components/AuthAlert";
+import PasswordChecklist, { PasswordMatchStatus } from "../components/PasswordChecklist";
+import { isPasswordStrong } from "../utils/passwordRequirements";
 import "../styles/Register.css";
 
 const prefersReducedMotion = () =>
@@ -158,10 +160,7 @@ const Register = () => {
           return false;
         }
 
-        const strongPassword =
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
-
-        if (!strongPassword.test(form.password)) {
+        if (!isPasswordStrong(form.password)) {
           setError(t("register.errors.passwordWeak"));
           return false;
         }
@@ -388,32 +387,29 @@ const Register = () => {
               {t("register.step4Title")}
             </h3>
 
-            <PasswordField
-              id="register-password"
-              name="password"
-              label={t("register.labels.password")}
-              value={form.password}
-              onChange={handleChange}
-              autoComplete="new-password"
-            />
+            <div className="password-field-group">
+              <PasswordField
+                id="register-password"
+                name="password"
+                label={t("register.labels.password")}
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="new-password"
+              />
+              <PasswordChecklist password={form.password} />
+            </div>
 
-            <p className="password-hint">
-              {t("register.passwordHintTitle")}
-              <br />• {t("register.passwordHintUpper")}
-              <br />• {t("register.passwordHintLower")}
-              <br />• {t("register.passwordHintNumber")}
-              <br />• {t("register.passwordHintSymbol")}
-              <br />• {t("register.passwordHintLength")}
-            </p>
-
-            <PasswordField
-              id="register-confirm-password"
-              name="confirmPassword"
-              label={t("register.labels.confirmPassword")}
-              value={form.confirmPassword}
-              onChange={handleChange}
-              autoComplete="new-password"
-            />
+            <div className="password-field-group">
+              <PasswordField
+                id="register-confirm-password"
+                name="confirmPassword"
+                label={t("register.labels.confirmPassword")}
+                value={form.confirmPassword}
+                onChange={handleChange}
+                autoComplete="new-password"
+              />
+              <PasswordMatchStatus password={form.password} confirmPassword={form.confirmPassword} />
+            </div>
           </Step>
 
           {/* STEP 5 — review */}

@@ -43,12 +43,17 @@
     },
     "emailExists": "This email is already registered.",
     "goToLogin": "Go to login",
-    "passwordHintTitle": "Password must contain:",
-    "passwordHintUpper": "Uppercase letter",
-    "passwordHintLower": "Lowercase letter",
-    "passwordHintNumber": "Number",
-    "passwordHintSymbol": "Special symbol",
-    "passwordHintLength": "Minimum 8 characters",
+    "passwordChecklist": {
+      "minLength": "8+ characters",
+      "uppercase": "Uppercase",
+      "lowercase": "Lowercase",
+      "number": "Number",
+      "special": "Special character",
+      "metStatus": "Met",
+      "unmetStatus": "Not met yet",
+      "match": "Passwords match",
+      "mismatch": "Passwords do not match"
+    },
     "review": {
       "role": "Role",
       "name": "Name",

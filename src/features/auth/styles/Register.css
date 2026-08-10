@@ -137,13 +137,90 @@
 }
 
 /* ============================
-   PASSWORD HINT (step 4)
+   PASSWORD CHECKLIST (step 4)
 ============================ */
-.password-hint {
+
+/* Ties each PasswordField to its own feedback (the live checklist, the
+   match status) with a tighter internal gap than the step's own rhythm
+   between unrelated blocks (.step-default's 20px) — same "small group,
+   tight internal gap" pattern Login.css's .login-header already
+   established for title+subtitle. */
+.password-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-2xs);
+}
+
+.password-checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px var(--auth-space-sm);
   margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 420px) {
+  .password-checklist {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Visually secondary to the actual form fields — small type, muted by
+   default, no per-item box/background/glow. Color is the only thing that
+   changes state (met/unmet), backed by the icon swap (RequirementIcon in
+   PasswordChecklist.jsx) so state is never color-only. */
+.password-requirement {
+  display: flex;
+  align-items: center;
+  gap: var(--auth-space-3xs);
   font-size: 0.78rem;
-  line-height: 1.6;
+  line-height: 1.3;
   color: var(--color-muted);
+  transition: color 150ms ease;
+}
+
+.password-requirement--met {
+  color: var(--color-success);
+}
+
+/* Same light red AuthAlert uses (AuthForm.css) — not the full-saturation
+   --color-danger token, which reads too aggressive at this size/weight
+   for a live-typing hint rather than a blocking error. */
+.password-requirement--unmet {
+  color: #f87171;
+}
+
+.password-requirement-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.password-requirement-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.password-match-status {
+  display: flex;
+  align-items: center;
+  gap: var(--auth-space-3xs);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--color-muted);
+}
+
+.password-match-status--met {
+  color: var(--color-success);
+}
+
+.password-match-status--unmet {
+  color: #f87171;
 }
 
 /* ============================
