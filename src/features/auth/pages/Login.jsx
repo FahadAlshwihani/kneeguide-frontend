@@ -193,7 +193,7 @@ const Login = () => {
           </Link>
         </p>
       </AuthCardItem>
-    </form>
+    </motion.form>
   );
 };
 
