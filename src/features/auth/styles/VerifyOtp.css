@@ -85,9 +85,9 @@
   width: 100%;
   aspect-ratio: 0.82;
   min-width: 0;
+  padding: 0;
   font-size: clamp(1.05rem, 4vw, 1.3rem);
   font-weight: 600;
-  text-align: center;
   color: var(--color-heading);
   font-family: inherit;
   border-radius: var(--radius-sm);
@@ -95,6 +95,23 @@
   background: rgba(255, 255, 255, 0.03);
   outline: none;
   transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+/* Digits are a numeric code, not directional text — their centering must
+   be identical regardless of page language. Two unrelated GLOBAL rules
+   otherwise reach every raw <input> in the app and skew these specifically:
+   body.rtl/body.ltr's own `direction` (styles/direction.css) is an
+   inherited property, so it reaches this input and lets the browser's
+   bidi algorithm nudge a digit run (Unicode strong-LTR characters) toward
+   the RTL end of the box; and `body.rtl input`/`body.ltr input` in that
+   same file force `text-align: right/left !important`, which silently
+   beat this file's own (non-important) text-align regardless of
+   selector specificity. Both are neutralized here, scoped to `.otp-input`
+   only via a selector specific enough to outrank them — Login/Register's
+   real text fields keep relying on that same global system, untouched. */
+.otp-input-group .otp-input {
+  direction: ltr !important;
+  text-align: center !important;
 }
 
 .otp-input:focus {
