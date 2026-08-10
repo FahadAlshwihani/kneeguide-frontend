@@ -1,0 +1,26 @@
+/* Visual chrome only — entrance/stagger motion lives in AuthCard.jsx.
+   Same glass language Header.css already uses for its own nav shell
+   (--glass-bg/--glass-blur), so the card reads as part of the same
+   surface system rather than a competing new one. A quiet top-left blue
+   radial (12% opacity, same technique/opacity the dashboard's own `.card`
+   rule in index.css already uses) is the "restrained highlight" — not a
+   glow, not a gradient border, just enough to feel like KneeGuide blue
+   without competing with the Grainient behind it. */
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 36px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at 15% 0%, rgba(37, 99, 235, 0.12), transparent 55%), var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 32px 24px;
+  }
+}
