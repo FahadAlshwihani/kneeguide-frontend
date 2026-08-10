@@ -61,8 +61,21 @@ export default function Stepper({
     const valid = await validateStep(currentStep);
     if (!valid) return;
 
-    setDirection(1);
-    updateStep(totalSteps + 1);
+    // Deliberately does NOT advance currentStep past totalSteps anymore.
+    // It used to call updateStep(totalSteps + 1) here, which flips
+    // isCompleted synchronously — before the real submit (Register.jsx's
+    // onFinalStepCompleted, an async network request) even starts —
+    // collapsing the review step to height:0 and hiding the footer
+    // (including the Complete button and its own loading spinner) while
+    // the request was still in flight. That's what made a real network
+    // delay look like a frozen/dead click, and left a failed submission on
+    // a collapsed, buttonless step with no visible way to retry. Staying
+    // on the last step keeps the button (and its `submitting`-driven
+    // loading state, already wired via Register.jsx's `loading`) visible
+    // for the entire request lifecycle; the caller now owns 100% of what
+    // happens after a real success (Register.jsx's own fade + navigate to
+    // OTP), so Stepper no longer needs a separate "completed" visual here.
+    onFinalStepCompleted();
   };
 
   return (

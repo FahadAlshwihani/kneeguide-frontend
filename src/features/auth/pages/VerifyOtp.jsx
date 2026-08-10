@@ -14,12 +14,14 @@ import "../styles/VerifyOtp.css";
 const OTP_LENGTH = 6;
 const RESEND_COOLDOWN_SECONDS = 30;
 
-// How long the green/check-circle success state holds before handing off
-// to the real post-verification navigation — long enough to actually
-// perceive (see Login.jsx's identical SUCCESS_TRANSITION_MS reasoning),
-// short enough not to feel like a stall.
-const SUCCESS_HOLD_MS = 500;
-const SUCCESS_HOLD_REDUCED_MS = 250;
+// How long the green success state + "Email verified" confirmation holds
+// before handing off to the real post-verification navigation —
+// deliberately long (~5s, not a quick flash like Login.jsx's own 450ms
+// SUCCESS_TRANSITION_MS) so the user has real time to register that
+// verification succeeded. Applies identically under reduced motion — see
+// handleSubmit below, only the fade-out choreography that follows the
+// hold is skipped there, never the hold itself.
+const SUCCESS_HOLD_MS = 5000;
 const EXIT_MS = 180;
 
 const prefersReducedMotion = () =>
@@ -157,15 +159,19 @@ const VerifyOtp = () => {
       setLoading(false);
       setStatus("success");
 
-      const reducedMotion = prefersReducedMotion();
+      // The 5s hold itself is unconditional — reduced motion only skips
+      // the fade-out choreography that follows it (motion, not whether the
+      // user gets meaningful success feedback; the green state + "Email
+      // verified" text render instantly either way via `status`/CSS, no
+      // animation gates their visibility).
       successTimeoutRef.current = setTimeout(() => {
-        if (reducedMotion) {
+        if (prefersReducedMotion()) {
           navigate(ROUTES.LOGIN);
           return;
         }
         setLeaving(true);
         exitTimeoutRef.current = setTimeout(() => navigate(ROUTES.LOGIN), EXIT_MS);
-      }, reducedMotion ? SUCCESS_HOLD_REDUCED_MS : SUCCESS_HOLD_MS);
+      }, SUCCESS_HOLD_MS);
     } catch {
       setLoading(false);
       setStatus("invalid");
