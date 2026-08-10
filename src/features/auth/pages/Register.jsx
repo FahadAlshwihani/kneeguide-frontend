@@ -180,7 +180,15 @@ const Register = () => {
   const showGeneralError = !!error && !emailExists;
 
   return (
-    <div className="register-content">
+    // Self-contained entrance — see Login.jsx's identical comment for why
+    // this never depends on AuthCard's own inherited variants, and why
+    // there's deliberately no exit animation here either.
+    <motion.div
+      className="register-content"
+      initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+    >
       <AuthCardItem as="h1" className="register-title">
         {t("register.title")}
       </AuthCardItem>
