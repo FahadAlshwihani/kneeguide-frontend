@@ -16,7 +16,7 @@ const prefersReducedMotion = () =>
 // above the fold) — so an immediate mount animation like this one has to
 // check reduced-motion itself. Swapping to no-op variants (rather than
 // fighting motion's own per-frame inline styles with a CSS override) keeps
-- * this reliable regardless of how framer/motion applies its transforms.
+// this reliable regardless of how framer/motion applies its transforms.
 const cardVariants = {
   hidden: { opacity: 0, y: 16, scale: 0.985 },
   visible: {
