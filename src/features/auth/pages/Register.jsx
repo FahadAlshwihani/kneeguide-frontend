@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { LuUserRound } from "react-icons/lu";
@@ -19,6 +19,13 @@ const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// Register content's own exit, before handing off to OTP — see
+// handleFinalSubmit. Short on purpose (well under the card's own resize
+// transition in AuthCard.jsx) so the sequence reads as "content leaves,
+// then the card settles into OTP's shorter height, then OTP arrives"
+// rather than three simultaneous changes.
+const REGISTER_EXIT_MS = 180;
 
 /**
  * Just this page's own content now — AuthLayout.jsx renders the shared
@@ -53,6 +60,12 @@ const Register = () => {
   });
 
   const [error, setError] = useState("");
+  const [leaving, setLeaving] = useState(false);
+  const exitTimeoutRef = useRef(null);
+
+  useEffect(() => () => {
+    if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

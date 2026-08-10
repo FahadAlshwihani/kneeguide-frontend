@@ -29,17 +29,17 @@ const PublicRoutes = (
       <Route path="/contact" element={<ContactPage />} />
     </Route>
 
-    {/* Login and Register share one persistent AuthLayout (Header/
-        Grainient/AuthCard/AuthFooter) while React Router renders each
-        matched page through the layout's single normal Outlet. VerifyOtp is
-        intentionally NOT moved here yet — it keeps rendering standalone
-        exactly as before, to preserve its existing look until it gets
-        the same treatment separately. */}
+    {/* Login, Register, and VerifyOtp all share one persistent AuthLayout
+        (Header/Grainient/AuthCard/AuthFooter) while React Router renders
+        each matched page through the layout's single normal Outlet — the
+        same architecture Codex's routing fix established. VerifyOtp joining
+        this group is exactly what makes Register -> OTP feel like another
+        state of the same AuthCard instead of a page navigation. */}
     <Route element={<AuthLayout />}>
       <Route path={ROUTES.LOGIN} element={<Login />} />
       <Route path={ROUTES.REGISTER} element={<Register />} />
+      <Route path={ROUTES.VERIFY_OTP} element={<VerifyOtp />} />
     </Route>
-    <Route path={ROUTES.VERIFY_OTP} element={<VerifyOtp />} />
   </>
 );
 
