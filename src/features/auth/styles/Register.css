@@ -12,15 +12,18 @@
 }
 
 .register-title {
-  margin: 0 0 6px;
+  margin: 0 0 24px;
   font-size: clamp(1.5rem, 3vw, 1.85rem);
   font-weight: 700;
   color: var(--color-heading);
   text-align: center;
 }
 
+/* Now sits after the Stepper (Register.jsx) — the third, separate
+   navigation concept (leave Register for the real /login route), not the
+   Stepper's own Back button. */
 .register-switch {
-  margin: 0 0 24px;
+  margin: 20px 0 0;
   font-size: 0.875rem;
   color: var(--color-muted);
   text-align: center;

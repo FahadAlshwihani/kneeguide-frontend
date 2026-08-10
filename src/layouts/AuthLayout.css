@@ -28,24 +28,25 @@
 
 /* AuthCard itself (AuthCard.css) owns the glass shell/padding and stays
    mounted across /login <-> /register — see AuthLayout.jsx. This is the
-   inner area AuthContentTransition actually animates. `position:
-   relative` is what lets the exiting slide (popped into `position:
-   absolute` by AnimatePresence's `mode="popLayout"`) sit correctly over
-   the incoming one instead of against the viewport.
+   inner area AuthContentTransition's crossfade actually happens in.
 
-   380px min-height is a deliberate floor, not a target — Login's own
-   natural content height, so Login and Register's first couple of steps
-   don't look tiny/jumpy against later, taller steps (review, etc.),
-   without ever compressing anything shorter to force an exact match (see
-   AuthLayout.jsx's own JS height animation for the actual, real
-   per-content height — this is only the minimum it's allowed to shrink
-   to). Removed entirely on short/mobile viewports below, where a fixed
-   floor risks fighting the real content for space on a short phone. */
+   Deliberately NOT `overflow: hidden` and NOT a JS-measured `height` —
+   an earlier version animated this element's height via a runtime
+   measurement, which both produced the "empty card" bug on route changes
+   (see AuthLayout.jsx) and could clip real content (including the
+   Stepper's own Next/Back buttons) whenever that measurement landed below
+   the content's true height. Content now determines its own height
+   naturally; nothing here can ever cut it off.
+
+   380px min-height is a floor, not a target — Login's own natural content
+   height, so Login and Register's first couple of steps don't look
+   tiny/jumpy against later, taller ones (review, etc.), without ever
+   compressing anything shorter to force an exact match. Removed entirely
+   on short/mobile viewports below, where a fixed floor risks fighting the
+   real content for space on a short phone. */
 .auth-content-frame {
-  position: relative;
   width: 100%;
   min-height: 380px;
-  overflow: hidden;
 }
 
 .auth-content-slide {

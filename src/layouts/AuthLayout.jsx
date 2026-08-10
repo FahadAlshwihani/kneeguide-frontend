@@ -1,5 +1,5 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useLocation, useOutlet } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import Header from "../features/public/components/Header";
 import Grainient from "../features/public/components/Grainient";
@@ -20,68 +20,54 @@ const prefersReducedMotion = () =>
 
 /**
  * Owns the crossfade between whatever the current auth route renders
- * (Login or Register), keyed by `location.pathname`. Same height-
- * measurement technique Stepper.jsx already uses for its own step-to-step
- * transitions (measure the incoming content, animate the wrapper's height
- * to match) — reused rather than reinvented, so the card's footprint
- * animates smoothly between differently-sized content instead of the
- * "old disappears -> card collapses -> new appears -> card grows" jump a
- * naive AnimatePresence swap would produce. `mode="popLayout"` removes
- * the exiting content from flow the instant it starts exiting, so it
- * never fights the incoming content for space while both are briefly
- * mounted. A CSS min-height floor (AuthLayout.css) is the safety net
- * underneath all of this for the shortest content (Login, Register's
- * first step) — belt and suspenders, not either/or.
+ * (Login or Register), keyed by `location.pathname`.
  *
- * Every motion.div in this file animates via plain target OBJECTS
- * (`animate={{opacity: 1}}`), never a string variant label. That's
- * deliberate, not stylistic: a string `animate="someLabel"` makes that
- * component the new nearest orchestrator for ITS OWN descendants'
- * variant lookups, which would shadow AuthCard's own "hidden"/"visible"
- * orchestration (AuthCard.jsx) for any <AuthCardItem> nested inside
- * Login/Register's actual content — silently breaking the field stagger
- * the approved Login already relies on. Plain objects animate the
- * element itself without creating that context, so AuthCard's own
- * top-level orchestration still reaches straight through every wrapper
- * here to whatever's actually inside <Outlet/>.
+ * Uses `useOutlet()`, NOT `<Outlet/>`, inside the animated/keyed element —
+ * this is the actual fix for a real bug (previously: a live `<Outlet/>`
+ * was nested inside the AnimatePresence-held exiting element; `<Outlet/>`
+ * itself subscribes to the router and keeps re-rendering to match
+ * whatever the CURRENT route is, so while AnimatePresence held the old
+ * element mounted to play its exit animation, that element's own
+ * `<Outlet/>` child re-resolved to the NEW route out from under it —
+ * producing an inconsistent render that only a full remount recovered
+ * from, exactly matching the reported "blank until refresh" symptom).
+ * `useOutlet()` instead returns the already-resolved element for the
+ * current match as an inert value — what gets animated/held is that frozen
+ * element, which never changes out from under AnimatePresence.
+ *
+ * `mode="wait"` (sequential exit-then-enter), not `popLayout` or manual
+ * height measurement: with two DIFFERENTLY-SIZED pages ever needing to be
+ * "briefly both present" for an overlapping crossfade, the previous
+ * combination of `popLayout` + a JS-measured, animated wrapper height +
+ * `overflow: hidden` was also the likely reason the Stepper's footer
+ * (Next/Back) could end up clipped — if the measured height ever landed
+ * below the real content's height, everything past that point was simply
+ * cut off. Removing that measurement entirely and letting the frame size
+ * itself naturally (CSS min-height as a floor only, no JS-driven height,
+ * no overflow clipping) makes that failure mode structurally impossible:
+ * content can never render taller than a hard limit that doesn't exist.
  */
 const AuthContentTransition = () => {
   const location = useLocation();
-  const [height, setHeight] = useState(null);
+  const outlet = useOutlet();
   const reducedMotion = prefersReducedMotion();
 
   return (
-    <motion.div
-      className="auth-content-frame"
-      animate={{ height: height ?? "auto" }}
-      transition={{ duration: reducedMotion ? 0 : 0.3, ease: [0.22, 0.61, 0.36, 1] }}
-    >
-      <AnimatePresence initial={false} mode="popLayout">
-        <AuthContentSlide key={location.pathname} onHeightReady={setHeight} reducedMotion={reducedMotion}>
-          <Outlet />
-        </AuthContentSlide>
+    <div className="auth-content-frame">
+      <AnimatePresence mode="wait" initial={false}>
+        {outlet && (
+          <motion.div
+            key={location.pathname}
+            className="auth-content-slide"
+            initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: reducedMotion ? 0 : 0.3, ease: [0.22, 0.61, 0.36, 1] } }}
+            exit={reducedMotion ? undefined : { opacity: 0, y: -8, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+          >
+            {outlet}
+          </motion.div>
+        )}
       </AnimatePresence>
-    </motion.div>
-  );
-};
-
-const AuthContentSlide = ({ children, onHeightReady, reducedMotion }) => {
-  const ref = useRef(null);
-
-  useLayoutEffect(() => {
-    if (ref.current) onHeightReady(ref.current.offsetHeight);
-  }, [children, onHeightReady]);
-
-  return (
-    <motion.div
-      ref={ref}
-      className="auth-content-slide"
-      initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0, transition: { duration: reducedMotion ? 0 : 0.3, ease: [0.22, 0.61, 0.36, 1] } }}
-      exit={reducedMotion ? undefined : { opacity: 0, y: -8, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
-    >
-      {children}
-    </motion.div>
+    </div>
   );
 };
 
@@ -89,13 +75,13 @@ const AuthContentSlide = ({ children, onHeightReady, reducedMotion }) => {
  * Shared chrome for the auth experience — Login and Register now behave
  * as one surface: AuthLayout (this component), Header, Grainient, and
  * AuthFooter all stay mounted across /login <-> /register navigation
- * (React Router only swaps the matched leaf under <Outlet/>, not this
- * parent route element), and AuthCard itself is rendered exactly once
- * here rather than by each page — so its mount entrance/stagger
- * (AuthCard.jsx) plays once, on first landing on either route, and never
- * replays on a login<->register switch. Only AuthContentTransition's
- * content actually changes. Real routes throughout (see PublicRoutes.jsx)
- * — this is presentation only, not a `setMode()` local-state hack.
+ * (React Router only swaps the matched leaf, not this parent route
+ * element), and AuthCard itself is rendered exactly once here rather than
+ * by each page — so its mount entrance/stagger (AuthCard.jsx) plays once,
+ * on first landing on either route, and never replays on a
+ * login<->register switch. Only AuthContentTransition's content actually
+ * changes. Real routes throughout (see PublicRoutes.jsx) — this is
+ * presentation only, not a `setMode()` local-state hack.
  */
 const AuthLayout = () => {
   useEffect(() => {

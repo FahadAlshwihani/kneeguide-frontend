@@ -152,13 +152,6 @@ const Register = () => {
         {t("register.title")}
       </AuthCardItem>
 
-      <AuthCardItem as="p" className="register-switch">
-        {t("register.haveAccount")}{" "}
-        <Link to={ROUTES.LOGIN} className="auth-switch-link">
-          {t("register.loginLink")}
-        </Link>
-      </AuthCardItem>
-
       <AnimatePresence>
         {showGeneralError && (
           <motion.div
@@ -384,6 +377,17 @@ const Register = () => {
             </div>
           </Step>
         </Stepper>
+      </AuthCardItem>
+
+      {/* Separate from the Stepper's own Back button (previous step) and
+          from Next/Complete (validate + advance/submit) — this is the
+          third, distinct navigation concept: leaving Register entirely
+          for the real /login route. Always visible, regardless of step. */}
+      <AuthCardItem as="p" className="register-switch">
+        {t("register.haveAccount")}{" "}
+        <Link to={ROUTES.LOGIN} className="auth-switch-link">
+          {t("register.loginLink")}
+        </Link>
       </AuthCardItem>
     </div>
   );
