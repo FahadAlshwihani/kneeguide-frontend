@@ -29,10 +29,9 @@ const PublicRoutes = (
       <Route path="/contact" element={<ContactPage />} />
     </Route>
 
-    {/* Login and Register now share one persistent AuthLayout (Header/
-        Grainient/AuthCard/AuthFooter) — real, separate routes still (see
-        that file's own AuthContentTransition for how they cross-fade
-        without remounting any of that shared chrome). VerifyOtp is
+    {/* Login and Register share one persistent AuthLayout (Header/
+        Grainient/AuthCard/AuthFooter) while React Router renders each
+        matched page through the layout's single normal Outlet. VerifyOtp is
         intentionally NOT moved here yet — it keeps rendering standalone
         exactly as before, to preserve its existing look until it gets
         the same treatment separately. */}

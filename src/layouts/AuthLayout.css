@@ -27,8 +27,8 @@
 }
 
 /* AuthCard itself (AuthCard.css) owns the glass shell/padding and stays
-   mounted across /login <-> /register — see AuthLayout.jsx. This is the
-   inner area AuthContentTransition's crossfade actually happens in.
+   mounted across /login <-> /register — see AuthLayout.jsx. React Router
+   renders the active route directly in this natural-height frame.
 
    Deliberately NOT `overflow: hidden` and NOT a JS-measured `height` —
    an earlier version animated this element's height via a runtime
@@ -47,10 +47,6 @@
 .auth-content-frame {
   width: 100%;
   min-height: 380px;
-}
-
-.auth-content-slide {
-  width: 100%;
 }
 
 @media (max-width: 480px) {

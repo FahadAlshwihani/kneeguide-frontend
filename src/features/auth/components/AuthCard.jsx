@@ -27,11 +27,6 @@ const cardVariants = {
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
-};
-
 const noopVariants = { hidden: {}, visible: {} };
 
 /**
@@ -40,8 +35,9 @@ const noopVariants = { hidden: {}, visible: {} };
  * unchanged later). Visual chrome (background/border/blur/radius/shadow)
  * lives in AuthCard.css; this file owns only the motion.
  *
- * Children that should participate in the stagger use <AuthCardItem> —
- * plain children (icons, non-animated wrappers) are unaffected.
+ * AuthCardItem is intentionally presentation-only. Auth route children
+ * must never rely on this persistent parent's one-time variant lifecycle
+ * to become visible after client-side navigation.
  */
 const AuthCard = ({ className = "", children, ...rest }) => (
   <motion.div
@@ -56,12 +52,8 @@ const AuthCard = ({ className = "", children, ...rest }) => (
 );
 
 export const AuthCardItem = ({ as = "div", className, children, ...rest }) => {
-  const MotionTag = motion[as] || motion.div;
-  return (
-    <MotionTag className={className} variants={prefersReducedMotion() ? noopVariants : itemVariants} {...rest}>
-      {children}
-    </MotionTag>
-  );
+  const Tag = as;
+  return <Tag className={className} {...rest}>{children}</Tag>;
 };
 
 export default AuthCard;
