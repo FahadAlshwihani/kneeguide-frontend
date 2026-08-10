@@ -38,15 +38,18 @@
    the content's true height. Content now determines its own height
    naturally; nothing here can ever cut it off.
 
-   380px min-height is a floor, not a target — Login's own natural content
-   height, so Login and Register's first couple of steps don't look
-   tiny/jumpy against later, taller ones (review, etc.), without ever
-   compressing anything shorter to force an exact match. Removed entirely
-   on short/mobile viewports below, where a fixed floor risks fighting the
-   real content for space on a short phone. */
+   320px min-height is a floor, not a target — comfortably below Login's
+   own natural content height (even after this pass's tighter rhythm,
+   Login's real height lands well above this), so it only ever catches a
+   genuinely degenerate short state without ever padding out real content
+   with visible dead space. Not tuned to match Register's own height at
+   any step — that would be exactly the "preserve dead space to keep
+   Login/Register identical" anti-pattern this pass was asked to remove.
+   Removed entirely on short/mobile viewports below, where a fixed floor
+   risks fighting the real content for space on a short phone. */
 .auth-content-frame {
   width: 100%;
-  min-height: 380px;
+  min-height: 320px;
 }
 
 @media (max-width: 480px) {

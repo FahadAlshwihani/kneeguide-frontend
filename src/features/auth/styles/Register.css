@@ -1,30 +1,41 @@
 /* Register-specific content only — the card shell (AuthCard.css), the
-   shared field/label/input/error styles (AuthForm.css), the Stepper's own
+   shared field/label/input/alert styles (AuthForm.css), the Stepper's own
    chrome (styles/Stepper.css), and the page chrome (AuthLayout.css) all
    live elsewhere now that AuthLayout hosts AuthCard once for both Login
    and Register. This file only owns what's unique to Register's own
    content: the role picker, the two-column name row, the password hint,
-   and the final review box. */
+   and the final review box.
 
+   One rhythm, `gap`-driven: .register-content's own `--auth-space-lg`
+   (24px) gap is the single source of spacing between every top-level
+   block (title, alert, the Stepper, the auth-switch link) — the same
+   scale/mechanism Login.css uses, so both pages read as one coherent
+   card language rather than two independently-tuned layouts. That's also
+   what makes the conditionally-rendered AuthAlert (the general banner)
+   slot in with correct spacing on both sides whether it's showing or
+   not, with no manual bookkeeping. */
 .register-content {
   display: flex;
   flex-direction: column;
+  gap: var(--auth-space-lg);
 }
 
 .register-title {
-  margin: 0 0 24px;
+  margin: 0;
   font-size: clamp(1.5rem, 3vw, 1.85rem);
   font-weight: 700;
+  line-height: 1.3;
   color: var(--color-heading);
   text-align: center;
 }
 
-/* Now sits after the Stepper (Register.jsx) — the third, separate
-   navigation concept (leave Register for the real /login route), not the
-   Stepper's own Back button. */
+/* The final, secondary action of the card — same rhythm as everything
+   above it (register-content's own gap), not a separate margin tuned to
+   sit "close to the buttons" or "far below" by accident. */
 .register-switch {
-  margin: 20px 0 0;
+  margin: 0;
   font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--color-muted);
   text-align: center;
 }
@@ -34,9 +45,10 @@
 }
 
 .step-title {
-  margin: 0 0 20px;
+  margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
+  line-height: 1.4;
   color: var(--color-heading);
   text-align: center;
 }
@@ -53,7 +65,7 @@
 ============================ */
 .role-picker {
   display: flex;
-  gap: 12px;
+  gap: var(--auth-space-xs);
 }
 
 /* Real <button>s (Register.jsx), not clickable divs — keyboard-reachable,
@@ -64,7 +76,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: var(--auth-space-2xs);
   padding: 20px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
@@ -101,12 +113,14 @@
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
+  line-height: 1.3;
   color: var(--color-heading);
 }
 
 .role-card p {
   margin: 0;
   font-size: 0.78rem;
+  line-height: 1.4;
   color: var(--color-muted);
 }
 
@@ -115,7 +129,7 @@
 ============================ */
 .form-two-column {
   display: flex;
-  gap: 12px;
+  gap: var(--auth-space-xs);
 }
 
 .form-two-column .auth-field {
@@ -123,17 +137,10 @@
 }
 
 /* ============================
-   EMAIL-EXISTS WARNING (step 3)
-============================ */
-.register-email-warning {
-  text-align: center;
-}
-
-/* ============================
    PASSWORD HINT (step 4)
 ============================ */
 .password-hint {
-  margin: -8px 0 18px;
+  margin: 0;
   font-size: 0.78rem;
   line-height: 1.6;
   color: var(--color-muted);
@@ -143,16 +150,20 @@
    REVIEW (step 5)
 ============================ */
 .review-box {
-  padding: 16px 18px;
+  padding: var(--auth-space-sm) 18px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   background: rgba(255, 255, 255, 0.03);
   color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-2xs);
 }
 
 .review-box p {
-  margin: 8px 0;
+  margin: 0;
   font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .review-box strong {

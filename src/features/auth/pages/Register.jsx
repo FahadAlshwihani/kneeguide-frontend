@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { LuUserRound } from "react-icons/lu";
 import { FaUserDoctor } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,7 @@ import { registerUser, checkEmail } from "../../../api/auth";
 import { ROUTES } from "../../../utils/routes";
 import { AuthCardItem } from "../components/AuthCard";
 import PasswordField from "../components/PasswordField";
+import AuthAlert from "../components/AuthAlert";
 import "../styles/Register.css";
 
 const prefersReducedMotion = () =>
@@ -226,21 +227,7 @@ const Register = () => {
         {t("register.title")}
       </AuthCardItem>
 
-      <AnimatePresence>
-        {showGeneralError && (
-          <motion.div
-            key="register-error"
-            className="auth-error"
-            role="alert"
-            initial={reducedMotion ? false : { opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0.15 : 0.25, ease: "easeOut" }}
-          >
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AuthAlert>{showGeneralError ? error : ""}</AuthAlert>
 
       <AuthCardItem as="div" className="register-stepper-box">
         <Stepper
@@ -348,15 +335,18 @@ const Register = () => {
               />
             </div>
 
-            {emailExists && (
-              <div className="auth-error register-email-warning">
-                {t("register.emailExists")}
-                <br />
-                <Link to={ROUTES.LOGIN} className="auth-switch-link">
-                  {t("register.goToLogin")}
-                </Link>
-              </div>
-            )}
+            <AuthAlert>
+              {emailExists ? (
+                <>
+                  {t("register.emailExists")}{" "}
+                  <Link to={ROUTES.LOGIN} className="auth-switch-link">
+                    {t("register.goToLogin")}
+                  </Link>
+                </>
+              ) : (
+                ""
+              )}
+            </AuthAlert>
 
             <div className="auth-field">
               <label htmlFor="register-phone" className="auth-label">

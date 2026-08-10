@@ -4,8 +4,19 @@
    AuthCard. Colors driven by Stepper.jsx's own inline motion values
    (CSS-variable references, not literal hex) are NOT duplicated here —
    see that file for why a stylesheet rule targeting the same properties
-   would just be dead weight, always losing to the inline style. */
+   would just be dead weight, always losing to the inline style.
 
+   `.step-circle-container` is `display:flex; flex-direction:column; gap`
+   — ONE spacing source between the indicator row, the step content, and
+   the footer controls, instead of each of those three carrying its own
+   independently-tuned margin. That consolidation is also the fix for the
+   double-margin stacking that made the gap before the footer buttons
+   read as an oversized empty area: previously the LAST field inside a
+   step contributed its own trailing margin AND `.footer-container`
+   contributed a separate leading margin, so the two summed to noticeably
+   more space than either value alone suggested. Neither exists anymore —
+   `.auth-field` (AuthForm.css) carries no margin of its own now, and this
+   file's own gap is the only source of space around the footer. */
 .outer-container {
   width: 100%;
   display: flex;
@@ -14,6 +25,9 @@
 
 .step-circle-container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-lg);
 }
 
 /* ============================
@@ -23,8 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 28px;
+  gap: var(--auth-space-2xs);
 }
 
 .step-indicator {
@@ -77,17 +90,26 @@
   position: relative;
 }
 
+/* The Step wrapper Stepper.jsx renders around every step's own content
+   (role picker, fields, review box, etc. — see Register.jsx). One rhythm
+   here too: the step heading and whatever follows it (fields, a role
+   picker, a review box) share the same gap, so a step introduces its
+   content with clear, consistent separation regardless of what that
+   content actually is. */
+.step-default {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-md);
+}
+
 /* ============================
    FOOTER BUTTONS
 ============================ */
-.footer-container {
-  margin-top: 24px;
-}
-
 .footer-nav {
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: var(--auth-space-xs);
 }
 
 /* Continue/Complete always sits at the trailing edge, whether or not Back
