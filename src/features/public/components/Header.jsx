@@ -309,16 +309,20 @@ const Header = () => {
                   mirrored, without a single new RTL rule. aria-label
                   reuses the existing "Login" key as the button's
                   accessible name now that there's no visible text to
-                  supply one. */}
-              <SecondaryButton
-                to={ROUTES.LOGIN}
-                size="sm"
-                className="header-cta"
-                icon={<ButtonArrow />}
-                aria-label={t("publicHeader.login")}
-              >
-                <LuUserRound aria-hidden="true" />
-              </SecondaryButton>
+                  supply one. Hidden entirely on /login itself — see
+                  isOnLoginRoute above — rather than shown as a disabled
+                  self-link back to the page already on screen. */}
+              {!isOnLoginRoute && (
+                <SecondaryButton
+                  to={ROUTES.LOGIN}
+                  size="sm"
+                  className="header-cta"
+                  icon={<ButtonArrow />}
+                  aria-label={t("publicHeader.login")}
+                >
+                  <LuUserRound aria-hidden="true" />
+                </SecondaryButton>
+              )}
             </div>
           </div>
 
