@@ -15,7 +15,12 @@ const GRAINIENT_COLOR_3 = "#1D4ED8";
 
 /**
  * Shared visual chrome for the auth routes. React Router exclusively owns
- * the matched Login/Register child lifecycle through this single Outlet.
+ * the matched Login/Register/VerifyOtp child lifecycle through this single
+ * Outlet. `hideAuthAction` tells Header to hide its own top-level "Login"
+ * CTA — correct everywhere under this layout, since every route mounted
+ * here already IS the Auth flow (a login-style action here would either
+ * link back to the page already on screen or interrupt an in-progress
+ * Register/OTP step).
  */
 const AuthLayout = () => {
   useEffect(() => {
@@ -30,7 +35,7 @@ const AuthLayout = () => {
         color2={GRAINIENT_COLOR_2}
         color3={GRAINIENT_COLOR_3}
       />
-      <Header />
+      <Header hideAuthAction />
       <main className="auth-layout-main">
         <AuthCard>
           <div className="auth-content-frame">
