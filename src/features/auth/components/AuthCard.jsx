@@ -38,18 +38,38 @@ const noopVariants = { hidden: {}, visible: {} };
  * AuthCardItem is intentionally presentation-only. Auth route children
  * must never rely on this persistent parent's one-time variant lifecycle
  * to become visible after client-side navigation.
+ *
+ * `layout="size"` is what makes the card's own height smoothly animate
+ * between Login/Register's differently-sized content, and between
+ * Register's own Stepper steps — WITHOUT any manual height measurement,
+ * ref, or overflow clipping (the exact architecture that caused the
+ * earlier blank-card regression). Motion's layout engine snapshots this
+ * element's own rendered box before/after each render and interpolates
+ * the delta itself; React Router keeps exclusively owning WHEN content
+ * mounts/unmounts through the plain <Outlet/> in AuthLayout.jsx — this
+ * only ever reacts to the SIZE that content naturally produces, never
+ * decides what renders. `"size"` (not the default full `layout`, which
+ * also tracks position) is deliberate: this card is always horizontally
+ * centered by its parent flex container and never itself moves — only
+ * its height genuinely changes.
  */
-const AuthCard = ({ className = "", children, ...rest }) => (
-  <motion.div
-    className={`auth-card${className ? ` ${className}` : ""}`}
-    initial="hidden"
-    animate="visible"
-    variants={prefersReducedMotion() ? noopVariants : cardVariants}
-    {...rest}
-  >
-    {children}
-  </motion.div>
-);
+const AuthCard = ({ className = "", children, ...rest }) => {
+  const reducedMotion = prefersReducedMotion();
+
+  return (
+    <motion.div
+      layout="size"
+      className={`auth-card${className ? ` ${className}` : ""}`}
+      initial="hidden"
+      animate="visible"
+      variants={reducedMotion ? noopVariants : cardVariants}
+      transition={{ layout: { duration: reducedMotion ? 0 : 0.36, ease: [0.22, 1, 0.36, 1] } }}
+      {...rest}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 export const AuthCardItem = ({ as = "div", className, children, ...rest }) => {
   const Tag = as;
