@@ -1,0 +1,14 @@
+/* Quiet on purpose — a single copyright line, not a navigation surface.
+   Transparent background so the shared Grainient canvas (AuthLayout.jsx)
+   shows through, exactly like the real Footer sits over it on the public
+   homepage. */
+.auth-footer {
+  padding-block: 20px 24px;
+  text-align: center;
+}
+
+.auth-footer-copyright {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
