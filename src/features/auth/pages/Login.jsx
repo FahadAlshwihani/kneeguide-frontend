@@ -89,7 +89,23 @@ const Login = () => {
   const isBusy = loading || success;
 
   return (
-    <form className="login-form" onSubmit={handleSubmit} noValidate>
+    // Self-contained entrance — initial/animate live on THIS element only,
+    // never inherited from AuthCard's own one-time mount variants (see
+    // AuthCard.jsx). React Router mounts Login fresh every time the route
+    // becomes active, so this plays every time, reliably, independent of
+    // whatever AuthCard's own persistent lifecycle is doing. No exit
+    // animation: that would require holding this element mounted past its
+    // real unmount (AnimatePresence wrapping the route), which is exactly
+    // the architecture that caused the earlier blank-card bug — skipped
+    // deliberately, not an oversight.
+    <motion.form
+      className="login-form"
+      onSubmit={handleSubmit}
+      noValidate
+      initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+    >
       <AuthCardItem as="h1" className="login-title">
         {t("login.title")}
       </AuthCardItem>
