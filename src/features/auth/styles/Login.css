@@ -1,32 +1,45 @@
 /* Login-specific content only — the card shell (AuthCard.css), the
-   shared field/label/input/error styles (AuthForm.css), and the page
+   shared field/label/input/alert styles (AuthForm.css), and the page
    chrome (AuthLayout.css) all live elsewhere now that AuthLayout hosts
    AuthCard once for both Login and Register. This file only owns what's
-   unique to Login's own copy/layout inside that shared card. */
+   unique to Login's own copy/layout inside that shared card.
 
+   One rhythm, `gap`-driven: .login-form's own `--auth-space-lg` (24px)
+   gap is the single source of spacing between every top-level block
+   (header, alert, each field, submit row, switch link) — not a chain of
+   individually-tuned margins. That's also what makes the conditionally-
+   rendered AuthAlert slot in with correct spacing on both sides whether
+   it's showing or not, with no manual bookkeeping. */
 .login-form {
   display: flex;
   flex-direction: column;
+  gap: var(--auth-space-lg);
+}
+
+/* Title + subtitle read as one header unit — a tighter internal gap than
+   the rhythm between top-level blocks, since these two lines belong
+   together. */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-2xs);
 }
 
 .login-title {
-  margin: 0 0 6px;
+  margin: 0;
   font-size: clamp(1.5rem, 3vw, 1.85rem);
   font-weight: 700;
+  line-height: 1.3;
   color: var(--color-heading);
   text-align: center;
 }
 
 .login-subtitle {
-  margin: 0 0 28px;
+  margin: 0;
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--color-muted);
   text-align: center;
-}
-
-.login-submit-row {
-  margin-top: 8px;
 }
 
 /* PrimaryButton itself (components/ui/PrimaryButton.css) is intentionally
@@ -35,8 +48,8 @@
    doesn't introduce a second, slightly-different button identity. */
 
 .login-extra {
-  margin-top: 20px;
   text-align: center;
   font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--color-muted);
 }

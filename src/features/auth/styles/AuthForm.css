@@ -1,8 +1,8 @@
-/* Shared field/label/input/error visual language for every auth page
-   (Login now; Register reuses this exact stylesheet — see PasswordField
-   and Register.jsx — rather than maintaining a second, near-identical set
-   of form styles). Imported once, by AuthLayout.jsx, so neither Login nor
-   Register has to remember to import it themselves.
+/* Shared field/label/input/alert visual language for every auth page
+   (Login, Register — see PasswordField.jsx and AuthAlert.jsx) rather than
+   maintaining separate near-identical styles per page. Imported once, by
+   AuthLayout.jsx, so neither Login nor Register has to remember to import
+   it themselves.
 
    Built entirely on the public design tokens already defined in
    index.css's "NEW DESIGN SYSTEM" block (--color-heading, --color-text,
@@ -13,16 +13,39 @@
    is logical (padding-inline-end, inset-inline-end) or relies on the
    ambient `.public-root` direction already being correct. */
 
+/* One small spacing scale, reused across Login, Register (all 5 steps),
+   and Stepper — instead of independently-tuned margins per element. Kept
+   local to Auth (not promoted into the shared public/dashboard tokens):
+   this rhythm is deliberately tighter than the public site's own spacing
+   scale (--section-padding etc.), suited to a compact card, not a
+   full-width page. Consumers reach for these instead of introducing a
+   new arbitrary value. */
+:root {
+  --auth-space-3xs: 4px;
+  --auth-space-2xs: 8px;
+  --auth-space-xs: 12px;
+  --auth-space-sm: 16px;
+  --auth-space-md: 20px;
+  --auth-space-lg: 24px;
+  --auth-space-xl: 32px;
+}
+
+/* No own margin — spacing between fields comes from the parent's own
+   `gap` (Login.css's .login-form, Register.css's .step-default, etc.),
+   not a margin chain here. That's what lets a conditionally-rendered
+   sibling (an AuthAlert, an inline warning) sit correctly spaced on
+   either side of it automatically, with no manual "collapse the margin
+   when X isn't rendered" bookkeeping anywhere. */
 .auth-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 18px;
+  gap: var(--auth-space-2xs);
 }
 
 .auth-label {
   font-size: 0.8rem;
   font-weight: 600;
+  line-height: 1.4;
   color: var(--color-text);
 }
 
@@ -35,6 +58,7 @@
   color: var(--color-heading);
   font-family: inherit;
   font-size: 0.95rem;
+  line-height: 1.4;
   transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
@@ -105,19 +129,49 @@
   height: 18px;
 }
 
-/* Concise, non-enumerating error text only — never a raw backend
-   exception (see Login.jsx/Register.jsx). A light red for contrast
-   against the dark card, not the full-saturation --color-danger token
-   (#ef4444 reads slightly harsh as body text at this size). */
-.auth-error {
-  margin: 0 0 18px;
-  padding: 12px 14px;
+/* The one auth alert treatment (AuthAlert.jsx) — a restrained inline
+   [icon][message] row, never a giant colored block. Icon + message are
+   separate flex items (gap, not absolute positioning), so a wrapped
+   second line of message text aligns with the first line of the text
+   itself, never underneath the icon. `align-items: flex-start` (not
+   center) is what makes that true once the message wraps; the icon's own
+   1px top nudge is a small optical correction against the message's cap-
+   height, not a layout hack. Concise, non-enumerating error text only —
+   never a raw backend exception (see Login.jsx/Register.jsx). A light
+   red for contrast against the dark card, not the full-saturation
+   --color-danger token (#ef4444 reads slightly harsh as body text at
+   this size). Border-radius matches the auth inputs/role-cards
+   (--radius-sm) rather than AuthCard's own larger --radius-lg — the
+   correct nesting relationship (inner elements read a size down from
+   their outer container), not a mismatch. */
+.auth-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--auth-space-2xs);
+  padding: 12px var(--auth-space-md);
   border-radius: var(--radius-sm);
   border: 1px solid rgba(239, 68, 68, 0.35);
   background: var(--color-danger-soft);
   color: #f87171;
+}
+
+.auth-alert-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+.auth-alert-message {
+  flex: 1;
   font-size: 0.85rem;
-  line-height: 1.4;
+  line-height: 1.5;
+}
+
+.auth-alert-message a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
 /* A quiet, secondary link back to the other auth mode (Login's "Create

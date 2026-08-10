@@ -15,6 +15,8 @@ const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
 /**
  * Just this page's own content now — AuthLayout.jsx renders the shared
  * chrome (Grainient/Header/AuthCard/AuthFooter) and the Login<->Register
@@ -35,6 +37,7 @@ const Register = () => {
   const [emailExists, setEmailExists] = useState(false);
   const [emailCheckStatus, setEmailCheckStatus] = useState("idle");
   const emailCheckRef = useRef(null);
+  const latestEmailRef = useRef("");
 
   const [form, setForm] = useState({
     first_name: "",
@@ -49,11 +52,19 @@ const Register = () => {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((previous) => ({ ...previous, [name]: value }));
 
-    if (e.target.name === "email") {
+    if (name === "email") {
+      latestEmailRef.current = value;
       setEmailExists(false);
       setEmailCheckStatus("idle");
+
+      const pendingCheck = emailCheckRef.current;
+      if (pendingCheck && pendingCheck.email !== value.trim().toLowerCase()) {
+        pendingCheck.controller.abort();
+        emailCheckRef.current = null;
+      }
     }
   };
 
@@ -84,21 +95,33 @@ const Register = () => {
           return false;
         }
 
+        const normalizedEmail = form.email.trim().toLowerCase();
+        if (!isValidEmail(normalizedEmail)) {
+          setError(t("register.errors.emailInvalid"));
+          return false;
+        }
+
         setEmailCheckStatus("checking");
 
         try {
-          const normalizedEmail = form.email.trim().toLowerCase();
           let pendingCheck = emailCheckRef.current;
 
           if (!pendingCheck || pendingCheck.email !== normalizedEmail) {
+            const controller = new AbortController();
             pendingCheck = {
               email: normalizedEmail,
-              promise: checkEmail(normalizedEmail),
+              controller,
+              promise: checkEmail(normalizedEmail, { signal: controller.signal }),
             };
             emailCheckRef.current = pendingCheck;
           }
 
           const emailCheck = await pendingCheck.promise;
+          if (latestEmailRef.current.trim().toLowerCase() !== normalizedEmail) {
+            setEmailCheckStatus("idle");
+            return false;
+          }
+
           if (emailCheck.exists) {
             setEmailExists(true);
             setEmailCheckStatus("exists");
@@ -108,11 +131,17 @@ const Register = () => {
 
           setEmailCheckStatus("available");
         } catch (e) {
+          if (e.code === "ERR_CANCELED") {
+            setEmailCheckStatus("idle");
+            return false;
+          }
           setEmailCheckStatus("error");
           setError(t("register.errors.emailCheckFailed"));
           return false;
         } finally {
-          emailCheckRef.current = null;
+          if (emailCheckRef.current?.email === normalizedEmail) {
+            emailCheckRef.current = null;
+          }
         }
 
         return true;
@@ -147,6 +176,7 @@ const Register = () => {
   // FINAL SUBMIT
   // ==========================================
   const handleFinalSubmit = async () => {
+    if (loading) return;
     setError("");
     setLoading(true);
 
@@ -164,8 +194,11 @@ const Register = () => {
       const res = await registerUser(payload);
 
       if (res?.message === "OTP sent to email") {
-        navigate(`/auth/verify-otp?email=${form.email}`);
+        const query = new URLSearchParams({ email: payload.email });
+        navigate(`${ROUTES.VERIFY_OTP}?${query.toString()}`);
+        return;
       }
+      setLoading(false);
     } catch (err) {
       setLoading(false);
       setError(t("register.errors.genericFail"));

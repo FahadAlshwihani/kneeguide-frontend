@@ -61,6 +61,7 @@
       "fullName": "Please enter your full name.",
       "contactRequired": "Please fill all contact information.",
       "emailExists": "This email is already registered.",
+      "emailInvalid": "Enter a valid email address.",
       "emailCheckFailed": "We couldn't verify this email right now. Please try again.",
       "passwordRequired": "Please enter your password and confirm it.",
       "passwordMismatch": "Passwords do not match.",

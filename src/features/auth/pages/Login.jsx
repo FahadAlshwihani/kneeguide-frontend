@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { LuCheck } from "react-icons/lu";
 import { useAuth } from "../../../context/AuthContext";
 import { ROUTES } from "../../../utils/routes";
 import PrimaryButton from "../../../components/ui/PrimaryButton";
 import { AuthCardItem } from "../components/AuthCard";
 import PasswordField from "../components/PasswordField";
+import AuthAlert from "../components/AuthAlert";
 import "../styles/Login.css";
 
 const prefersReducedMotion = () =>
@@ -106,29 +107,12 @@ const Login = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.22, 0.61, 0.36, 1] }}
     >
-      <AuthCardItem as="h1" className="login-title">
-        {t("login.title")}
-      </AuthCardItem>
-      <AuthCardItem as="p" className="login-subtitle">
-        {t("login.subtitle")}
+      <AuthCardItem as="div" className="login-header">
+        <h1 className="login-title">{t("login.title")}</h1>
+        <p className="login-subtitle">{t("login.subtitle")}</p>
       </AuthCardItem>
 
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            key="login-error"
-            id="login-error-message"
-            className="auth-error"
-            role="alert"
-            initial={reducedMotion ? false : { opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0.15 : 0.25, ease: "easeOut" }}
-          >
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AuthAlert id="login-error-message">{error}</AuthAlert>
 
       <AuthCardItem as="div" className="auth-field">
         <label htmlFor="login-email" className="auth-label">

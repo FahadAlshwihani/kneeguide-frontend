@@ -1,11 +1,13 @@
 // src/api/axiosClient.js
 import axios from "axios";
 
-// const axiosClient = axios.create({
-//   baseURL: "http://127.0.0.1:8000/api",
-// });
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://kneeguide-backend.onrender.com/api/";
+
 const axiosClient = axios.create({
-  baseURL: "https://kneeguide-backend.onrender.com/api/",
+  baseURL: API_BASE_URL,
+  timeout: 15000,
 });
 
 // إضافة التوكين أوتوماتيكياً لكل طلب (مع استثناءات)
@@ -18,14 +20,14 @@ axiosClient.interceptors.request.use((config) => {
       : null;
 
   // مسارات عامة لا تحتاج توكين (register / login / otp / check-email)
-  const url = config.url || "";
+  const url = (config.url || "").replace(/^\//, "");
 
   const isPublicAuthEndpoint =
-    url.startsWith("/users/register/") ||
-    url.startsWith("/users/login/") ||
-    url.startsWith("/users/verify-otp/") ||
-    url.startsWith("/users/resend-otp/") ||
-    url.startsWith("/users/check-email/");
+    url.startsWith("users/register/") ||
+    url.startsWith("users/login/") ||
+    url.startsWith("users/verify-otp/") ||
+    url.startsWith("users/resend-otp/") ||
+    url.startsWith("users/check-email/");
 
   // لو المسار عام → لا نضيف Authorization نهائياً
   if (isPublicAuthEndpoint) {

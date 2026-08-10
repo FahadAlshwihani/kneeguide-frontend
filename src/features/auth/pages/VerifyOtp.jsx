@@ -12,7 +12,8 @@ const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email = new URLSearchParams(location.search).get("email");
+  const emailParam = new URLSearchParams(location.search).get("email");
+  const email = emailParam?.trim().toLowerCase() || "";
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
@@ -20,6 +21,18 @@ const VerifyOtp = () => {
   const [message, setMessage] = useState("");
   const [counter, setCounter] = useState(30);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const redirectTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (!email) navigate("/login", { replace: true });
+  }, [email, navigate]);
+
+  useEffect(() => () => {
+    if (redirectTimeoutRef.current) {
+      clearTimeout(redirectTimeoutRef.current);
+    }
+  }, []);
 
   // Auto countdown
   useEffect(() => {
@@ -52,6 +65,7 @@ const VerifyOtp = () => {
   // Submit OTP
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading || !email) return;
 
     const code = otp.join("");
     if (code.length !== 6) {
@@ -66,7 +80,7 @@ const VerifyOtp = () => {
 
       if (res.message === "OTP verified") {
         setMessage(t("verifyOtp.success.verified"));
-        setTimeout(() => navigate("/login"), 1500);
+        redirectTimeoutRef.current = setTimeout(() => navigate("/login"), 1500);
       }
     } catch {
       setMessage(t("verifyOtp.errors.invalid"));
@@ -77,7 +91,9 @@ const VerifyOtp = () => {
 
   // Resend OTP
   const handleResend = async () => {
-    if (counter > 0) return;
+    if (counter > 0 || resending || !email) return;
+
+    setResending(true);
 
     try {
       const res = await resendOtp(email);
@@ -88,6 +104,8 @@ const VerifyOtp = () => {
       }
     } catch {
       setMessage(t("verifyOtp.errors.failedResend"));
+    } finally {
+      setResending(false);
     }
   };
 
@@ -108,6 +126,8 @@ const VerifyOtp = () => {
               <input
                 key={i}
                 type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 maxLength="1"
                 value={digit}
                 ref={(el) => (inputRefs.current[i] = el)}
@@ -118,7 +138,7 @@ const VerifyOtp = () => {
             ))}
           </div>
 
-          <AppPrimaryButton className="btn-full" type="submit">
+          <AppPrimaryButton className="btn-full" type="submit" disabled={loading || !email}>
             {t("verifyOtp.buttons.verify")}
           </AppPrimaryButton>
         </form>
@@ -129,7 +149,7 @@ const VerifyOtp = () => {
               {t("verifyOtp.resend.in")} <strong>{counter}s</strong>
             </p>
           ) : (
-            <button className="resend-btn" onClick={handleResend}>
+            <button className="resend-btn" onClick={handleResend} disabled={resending || !email}>
               {t("verifyOtp.resend.button")}
             </button>
           )}
