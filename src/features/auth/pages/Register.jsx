@@ -239,13 +239,23 @@ const Register = () => {
 
   return (
     // Self-contained entrance — see Login.jsx's identical comment for why
-    // this never depends on AuthCard's own inherited variants, and why
-    // there's deliberately no exit animation here either.
+    // this never depends on AuthCard's own inherited variants. The one exit
+    // this component ever plays is its OWN registration-success hand-off to
+    // OTP (`leaving`, driven by handleFinalSubmit above) — Register is still
+    // fully mounted while it plays, then unmounts via a real route change
+    // once the timeout fires. This is deliberately NOT an AnimatePresence
+    // exit wrapping the router's Outlet (see AuthLayout.jsx / AuthCard.jsx
+    // for why that pattern caused the earlier blank-card bug) — nothing
+    // here ever gates whether route content is visible, it only animates
+    // content that is, at every moment, genuinely still mounted.
     <motion.div
       className="register-content"
       initial={reducedMotion ? false : { opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+      animate={leaving ? { opacity: 0, y: -8 } : { opacity: 1, y: 0 }}
+      transition={{
+        duration: reducedMotion ? 0 : leaving ? REGISTER_EXIT_MS / 1000 : 0.28,
+        ease: leaving ? [0.4, 0, 1, 1] : [0.22, 0.61, 0.36, 1],
+      }}
     >
       <AuthCardItem as="h1" className="register-title">
         {t("register.title")}
