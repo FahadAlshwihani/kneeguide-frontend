@@ -1,121 +1,198 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
-
-import "../styles/Login.css";
-import AppPrimaryButton from "../../../components/ui/AppPrimaryButton";
-import Loader from "../../../components/common/Loader";
-
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { AnimatePresence, motion } from "motion/react";
+import { LuEye, LuEyeOff, LuCheck } from "react-icons/lu";
+import { useAuth } from "../../../context/AuthContext";
+import { ROUTES } from "../../../utils/routes";
+import PrimaryButton from "../../../components/ui/PrimaryButton";
+import AuthCard, { AuthCardItem } from "../components/AuthCard";
+import "../styles/Login.css";
 
-// Global Language Dropdown
-import LanguageDropdown from "../../../components/common/LanguageDropdown";
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// How long the brief success checkmark shows before the existing redirect
+// fires — short on purpose. Safe to delay: `login()` below has already
+// fully persisted the token and updated auth state, synchronously, by the
+// time this timer even starts (see handleSubmit) — this only ever defers
+// the *navigate* call, never authentication correctness itself.
+const SUCCESS_TRANSITION_MS = 450;
+
+/**
+ * Real authentication, unchanged contract: still calls the same
+ * AuthContext#login(email, password) -> POST users/login/ -> {access, user}
+ * -> saveAuthData/setToken/setUser -> role-based redirect. Everything in
+ * this file is presentation/UX around that exact same call.
+ */
 const Login = () => {
-    const { t } = useTranslation();
-    const { login } = useAuth();
-    const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-    });
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+  const successTimeoutRef = useRef(null);
 
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
     };
+  }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-        if (!form.email || !form.password) {
-            return setError(t("login.error_required"));
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (loading) return; // double-click / double-Enter guard — one attempt while pending
+    setError("");
 
-        try {
-            setLoading(true);
-            const user = await login(form.email, form.password);
+    if (!form.email || !form.password) {
+      setError(t("login.error_required"));
+      return;
+    }
 
-            if (user.role === "doctor") {
-                navigate("/doctor/dashboard");
-            } else {
-                navigate("/patient/dashboard");
-            }
+    setLoading(true);
 
-        } catch (err) {
-            setLoading(false);
-            setError(t("login.error_invalid"));
-        }
-    };
+    try {
+      const user = await login(form.email, form.password);
+      const redirectTo = user.role === "doctor" ? ROUTES.DOCTOR_DASHBOARD : ROUTES.PATIENT_DASHBOARD;
 
-    return (
-        <div className="login-page">
+      if (prefersReducedMotion()) {
+        navigate(redirectTo);
+        return;
+      }
 
-            {/* 🌍 Global Language Dropdown */}
-            <LanguageDropdown />
+      setLoading(false);
+      setSuccess(true);
+      successTimeoutRef.current = setTimeout(() => navigate(redirectTo), SUCCESS_TRANSITION_MS);
+    } catch (err) {
+      // Same generic, non-enumerating message regardless of what the
+      // backend actually rejected (bad password vs unknown email) —
+      // preserved exactly as the existing behavior already had it. Entered
+      // email/password are deliberately left in `form`, not cleared.
+      setLoading(false);
+      setError(t("login.error_invalid"));
+    }
+  };
 
-            {loading && <Loader message={t("login.loading")} />}
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+  const reducedMotion = prefersReducedMotion();
+  const isBusy = loading || success;
 
-            <form className="login-box" onSubmit={handleSubmit}>
+  return (
+    <div className="login-page">
+      <AuthCard className="login-card">
+        <form className="login-form" onSubmit={handleSubmit} noValidate>
+          <AuthCardItem as="h1" className="login-title">
+            {t("login.title")}
+          </AuthCardItem>
+          <AuthCardItem as="p" className="login-subtitle">
+            {t("login.subtitle")}
+          </AuthCardItem>
 
-                {/* ALWAYS CENTERED */}
-                <h2 className="text-center-permanent">{t("login.title")}</h2>
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                key="login-error"
+                id="login-error-message"
+                className="login-error"
+                role="alert"
+                initial={reducedMotion ? false : { opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: reducedMotion ? 0.15 : 0.25, ease: "easeOut" }}
+              >
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-                <p className="subtitle text-center-permanent">
-                    {t("login.subtitle")}
-                </p>
+          <AuthCardItem as="div" className="login-field">
+            <label htmlFor="login-email" className="login-label">
+              {t("login.email")}
+            </label>
+            <input
+              id="login-email"
+              type="email"
+              name="email"
+              className="login-input"
+              autoComplete="email"
+              placeholder={t("login.email_placeholder")}
+              value={form.email}
+              onChange={handleChange}
+              disabled={isBusy}
+              aria-invalid={!!error}
+              aria-describedby={error ? "login-error-message" : undefined}
+              required
+            />
+          </AuthCardItem>
 
-                {error && <div className="login-error">{error}</div>}
+          <AuthCardItem as="div" className="login-field">
+            <label htmlFor="login-password" className="login-label">
+              {t("login.password")}
+            </label>
+            <div className="login-password-wrap">
+              <input
+                id="login-password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="login-input"
+                autoComplete="current-password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={handleChange}
+                disabled={isBusy}
+                aria-invalid={!!error}
+                aria-describedby={error ? "login-error-message" : undefined}
+                required
+              />
+              <button
+                type="button"
+                className="login-password-toggle"
+                onClick={togglePasswordVisibility}
+                disabled={isBusy}
+                aria-label={t(showPassword ? "login.hidePassword" : "login.showPassword")}
+              >
+                {showPassword ? <LuEyeOff aria-hidden="true" /> : <LuEye aria-hidden="true" />}
+              </button>
+            </div>
+          </AuthCardItem>
 
-                {/* Email */}
-                <div className="form-group">
-                    <label>{t("login.email")}</label>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder={t("login.email_placeholder")}
-                        value={form.email}
-                        onChange={handleChange}
-                    />
-                </div>
+          <AuthCardItem as="div" className="login-submit-row">
+            <PrimaryButton
+              type="submit"
+              size="lg"
+              fullWidth
+              loading={loading}
+              disabled={isBusy}
+              showArrow={false}
+              icon={success ? <LuCheck aria-hidden="true" /> : null}
+              className="login-submit"
+            >
+              {t("login.button")}
+            </PrimaryButton>
+          </AuthCardItem>
 
-                {/* Password */}
-                <div className="form-group">
-                    <label>{t("login.password")}</label>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="••••••••"
-                        value={form.password}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                {/* Button */}
-                <AppPrimaryButton type="submit" disabled={loading} className="btn-full">
-                    {t("login.button")}
-                </AppPrimaryButton>
-
-                {/* ALWAYS CENTERED */}
-                <div className="login-extra text-center-permanent">
-                    <p>
-                        {t("login.no_account")}{" "}
-                        <span className="signup-link" onClick={() => navigate("/register")}>
-                            {t("login.signup")}
-                        </span>
-                    </p>
-                </div>
-
-            </form>
-        </div>
-    );
+          <AuthCardItem as="div" className="login-extra">
+            <p>
+              {t("login.no_account")}{" "}
+              <Link to={ROUTES.REGISTER} className="login-signup-link">
+                {t("login.signup")}
+              </Link>
+            </p>
+          </AuthCardItem>
+        </form>
+      </AuthCard>
+    </div>
+  );
 };
 
 export default Login;
