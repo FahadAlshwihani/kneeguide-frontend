@@ -2,13 +2,20 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 
 /**
- * Pass-through layout for dashboard routes.
- * Dashboard pages already manage their own internal layout
- * (DoctorLayout, PatientBottomNav, etc.), so this stays a no-op
- * wrapper for now to keep existing dashboard rendering untouched.
+ * Pass-through layout for dashboard routes. Dashboard pages already
+ * manage their own internal layout (DoctorLayout, PatientBottomNav,
+ * etc.) — this stays a no-op wrapper for everything except one thing:
+ * `.dashboard-root` is the typography-boundary hook index.css's product
+ * typography rule targets (see the "Product typography boundary" comment
+ * there), so the authenticated product UI consistently gets Tajawal. No
+ * other layout/spacing/behavior is introduced by this wrapper.
  */
 const DashboardLayout = () => {
-  return <Outlet />;
+  return (
+    <div className="dashboard-root">
+      <Outlet />
+    </div>
+  );
 };
 
 export default DashboardLayout;

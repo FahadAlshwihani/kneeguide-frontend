@@ -1,24 +1,8 @@
-/* Login page content — the surrounding chrome (background, Header,
-   centering, footer) is AuthLayout's job; this file only styles what's
-   inside the card. Built entirely on the public design tokens already
-   defined in index.css's "NEW DESIGN SYSTEM" block (--color-heading,
-   --color-text, --color-muted, --color-primary, --radius-*,
-   --transition-fast, etc.) — the same tokens Header/Footer/PrimaryButton
-   already use — rather than the old page's own hardcoded hex palette
-   (#0f0f0f/#161616/#7d5bff), so this reads as the same product instead of
-   a visually separate login screen bolted on afterward.
-
-   No RTL-specific rules anywhere in this file: every directional property
-   below is logical (padding-inline-end, inset-inline-end) or relies on
-   the ambient `.public-root` direction already being correct — the one
-   exception, the email input's forced `dir="ltr"`, lives in Login.jsx as
-   an HTML attribute, not CSS. */
-
-.login-page {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
+/* Login-specific content only — the card shell (AuthCard.css), the
+   shared field/label/input/error styles (AuthForm.css), and the page
+   chrome (AuthLayout.css) all live elsewhere now that AuthLayout hosts
+   AuthCard once for both Login and Register. This file only owns what's
+   unique to Login's own copy/layout inside that shared card. */
 
 .login-form {
   display: flex;
@@ -41,116 +25,6 @@
   text-align: center;
 }
 
-/* Concise, non-enumerating text only (see Login.jsx) — never the raw
-   backend exception. A light red for contrast against the dark card,
-   not the full-saturation --color-danger token (#ef4444 reads slightly
-   harsh as body text at this size). */
-.login-error {
-  margin: 0 0 18px;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  background: var(--color-danger-soft);
-  color: #f87171;
-  font-size: 0.85rem;
-  line-height: 1.4;
-}
-
-.login-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 18px;
-}
-
-.login-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.login-input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--color-heading);
-  font-family: inherit;
-  font-size: 0.95rem;
-  transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.login-input::placeholder {
-  color: var(--color-muted);
-}
-
-/* Restrained focus treatment: a border-color shift toward the KneeGuide
-   blue plus a soft, low-opacity ring — no large neon glow. */
-.login-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
-}
-
-.login-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.login-password-wrap {
-  position: relative;
-}
-
-.login-password-wrap .login-input {
-  padding-inline-end: 44px;
-}
-
-/* 40x40 — a deliberate, real <button type="button">, not a clickable
-   span, so it's keyboard-reachable and doesn't submit the form. Sized as
-   a compact inline form control rather than the ~44px top-level touch
-   target Header's own controls use (see AUTH CARD note in the final
-   report) — still comfortably tappable alongside a 12px-padded input. */
-.login-password-toggle {
-  position: absolute;
-  top: 50%;
-  inset-inline-end: 4px;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: none;
-  color: var(--color-muted);
-  cursor: pointer;
-  transition: color var(--transition-fast), background var(--transition-fast);
-}
-
-.login-password-toggle:hover:not(:disabled) {
-  color: var(--color-heading);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.login-password-toggle:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-.login-password-toggle:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.login-password-toggle svg {
-  display: block;
-  width: 18px;
-  height: 18px;
-}
-
 .login-submit-row {
   margin-top: 8px;
 }
@@ -165,22 +39,4 @@
   text-align: center;
   font-size: 0.875rem;
   color: var(--color-muted);
-}
-
-.login-signup-link {
-  color: var(--color-primary-hover);
-  font-weight: 600;
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.login-signup-link:hover,
-.login-signup-link:focus-visible {
-  text-decoration: underline;
-}
-
-.login-signup-link:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
 }

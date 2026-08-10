@@ -1,0 +1,141 @@
+/* Shared field/label/input/error visual language for every auth page
+   (Login now; Register reuses this exact stylesheet — see PasswordField
+   and Register.jsx — rather than maintaining a second, near-identical set
+   of form styles). Imported once, by AuthLayout.jsx, so neither Login nor
+   Register has to remember to import it themselves.
+
+   Built entirely on the public design tokens already defined in
+   index.css's "NEW DESIGN SYSTEM" block (--color-heading, --color-text,
+   --color-muted, --color-primary, --radius-*, --transition-fast, etc.) —
+   the same tokens Header/Footer/PrimaryButton already use.
+
+   No RTL-specific rules anywhere in this file: every directional property
+   is logical (padding-inline-end, inset-inline-end) or relies on the
+   ambient `.public-root` direction already being correct. */
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.auth-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-heading);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.auth-input::placeholder {
+  color: var(--color-muted);
+}
+
+/* Restrained focus treatment: a border-color shift toward the KneeGuide
+   blue plus a soft, low-opacity ring — no large neon glow. */
+.auth-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.auth-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-password-wrap {
+  position: relative;
+}
+
+.auth-password-wrap .auth-input {
+  padding-inline-end: 44px;
+}
+
+/* 40x40 — a real <button type="button">, not a clickable span, so it's
+   keyboard-reachable and never submits the form (see PasswordField.jsx). */
+.auth-password-toggle {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 4px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.auth-password-toggle:hover:not(:disabled) {
+  color: var(--color-heading);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.auth-password-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.auth-password-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-password-toggle svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+/* Concise, non-enumerating error text only — never a raw backend
+   exception (see Login.jsx/Register.jsx). A light red for contrast
+   against the dark card, not the full-saturation --color-danger token
+   (#ef4444 reads slightly harsh as body text at this size). */
+.auth-error {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: var(--color-danger-soft);
+  color: #f87171;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* A quiet, secondary link back to the other auth mode (Login's "Create
+   one" / Register's "Login") — shared so both read identically. */
+.auth-switch-link {
+  color: var(--color-primary-hover);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.auth-switch-link:hover,
+.auth-switch-link:focus-visible {
+  text-decoration: underline;
+}
+
+.auth-switch-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

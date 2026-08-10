@@ -15,7 +15,8 @@
   },
   "register": {
     "title": "Create Your Account",
-    "loader": "Creating your account...",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Login",
     "step1Title": "Choose Your Role",
     "step2Title": "Basic Information",
     "step3Title": "Contact Details",

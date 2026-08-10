@@ -1,232 +1,164 @@
-/* ================================
-   PAGE LAYOUT
-================================ */
-.register-page {
-  min-height: 100vh;
+/* Register-specific content only — the card shell (AuthCard.css), the
+   shared field/label/input/error styles (AuthForm.css), the Stepper's own
+   chrome (styles/Stepper.css), and the page chrome (AuthLayout.css) all
+   live elsewhere now that AuthLayout hosts AuthCard once for both Login
+   and Register. This file only owns what's unique to Register's own
+   content: the role picker, the two-column name row, the password hint,
+   and the final review box. */
+
+.register-content {
   display: flex;
   flex-direction: column;
-  justify-content: center;  /* عمودي */
-  align-items: center;      /* أفقي */
-  padding: 20px;
-  background: #0f0f0f; /* خلفية داكنة */
-  color: #e5e5e5;
 }
 
-/* ================================
-   PAGE TITLE
-================================ */
 .register-title {
-  font-size: 32px;
+  margin: 0 0 6px;
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
   font-weight: 700;
-  margin-bottom: 20px;
-  margin-top: -30px; /* رفع العنوان فوق قليلاً */
-  color: #ffffff;
-}
-
-/* ================================
-   GLOBAL ERROR BOX
-================================ */
-.register-error {
-  background: rgba(255, 87, 87, 0.15);
-  color: #ff6b6b;
-  padding: 14px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  width: 420px;
+  color: var(--color-heading);
   text-align: center;
-  margin-bottom: 20px;
-  border: 1px solid rgba(255, 80, 80, 0.4);
 }
 
-/* ================================
-   STEPPER BOX WRAPPER
-================================ */
+.register-switch {
+  margin: 0 0 24px;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
 .register-stepper-box {
   width: 100%;
-  max-width: 420px; /* حجم صندوق الستبر */
 }
 
-/* ================================
-   STEP TITLES
-================================ */
 .step-title {
-  text-align: center;
-  font-size: 22px;
-  margin-bottom: 20px;
+  margin: 0 0 20px;
+  font-size: 1.05rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--color-heading);
+  text-align: center;
 }
 
-/* ================================
-   ROLE PICKER
-================================ */
+/* Focus target for step-transition focus management (Stepper.jsx) —
+   outline suppressed since it's only ever focused programmatically, never
+   by a visible keyboard Tab landing directly on a heading. */
+.step-title:focus-visible {
+  outline: none;
+}
+
+/* ============================
+   ROLE PICKER (step 1)
+============================ */
 .role-picker {
   display: flex;
-  justify-content: center;
-  gap: 18px;
+  gap: 12px;
 }
 
+/* Real <button>s (Register.jsx), not clickable divs — keyboard-reachable,
+   `aria-pressed` exposes the selected state. Same glass/border language
+   as the auth inputs, not a separate card style. */
 .role-card {
-  width: 145px;
-  padding: 18px;
-  border-radius: 12px;
-  background: #1a1a1a;
-  border: 2px solid #2a2a2a;
-  transition: 0.25s ease-in-out;
-  cursor: pointer;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text);
   text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
 }
 
 .role-card:hover {
-  border-color: #6c47ff;
-  background: #26223a;
-  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.role-card.selected {
-  border-color: #7d5bff;
-  background: #1f1635;
+.role-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
-.role-card .emoji {
-  font-size: 34px;
-  margin-bottom: 8px;
+.role-card-selected,
+.role-card-selected:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.role-card-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--color-primary-hover);
 }
 
 .role-card h4 {
-  margin: 8px 0 4px;
-  font-size: 17px;
-  color: #fff;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-heading);
 }
 
 .role-card p {
-  font-size: 14px;
-  color: #999;
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-muted);
 }
 
-/* ================================
-   FORM INPUTS
-================================ */
+/* ============================
+   NAME ROW (step 2)
+============================ */
 .form-two-column {
   display: flex;
   gap: 12px;
 }
 
-.form-group {
-  margin-bottom: 16px;
-  width: 100%;
+.form-two-column .auth-field {
+  flex: 1;
 }
 
-.form-group label {
-  font-size: 14px;
-  color: #cfcfcf;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 11px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #161616;
-  color: #e5e5e5;
-  transition: 0.2s;
-}
-
-.form-group input:focus {
-  border-color: #7d5bff;
-  outline: none;
-}
-
-/* ================================
-   EMAIL ALREADY EXISTS BOX
-================================ */
-.email-warning {
-  background: rgba(255, 80, 80, 0.15);
-  border: 1px solid rgba(255, 80, 80, 0.4);
-  padding: 10px;
-  border-radius: 8px;
-  color: #ff6b6b;
-  margin-bottom: 15px;
+/* ============================
+   EMAIL-EXISTS WARNING (step 3)
+============================ */
+.register-email-warning {
   text-align: center;
-  font-size: 14px;
 }
 
-.go-login {
-  color: #8d6bff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+/* ============================
+   PASSWORD HINT (step 4)
+============================ */
+.password-hint {
+  margin: -8px 0 18px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--color-muted);
 }
 
-.go-login:hover {
-  text-decoration: underline;
-  opacity: 0.8;
-}
-
-/* ================================
-   REVIEW BOX
-================================ */
+/* ============================
+   REVIEW (step 5)
+============================ */
 .review-box {
-  background: #161616;
-  border: 1px solid #333;
-  padding: 18px;
-  border-radius: 10px;
-  color: #ddd;
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text);
 }
 
 .review-box p {
   margin: 8px 0;
+  font-size: 0.9rem;
 }
 
-/* ================================
-   OVERRIDES FOR STEPPER BUTTONS
-================================ */
-.back-button {
-  border: 1px solid #8a8a8a;
-  background: transparent;
-  padding: 8px 16px;
-  border-radius: 12px;
-  color: #cfcfcf;
-  cursor: pointer;
-  transition: 0.2s;
+.review-box strong {
+  color: var(--color-heading);
 }
 
-.back-button:hover {
-  background: #292929;
-  border-color: #b3b3b3;
+@media (max-width: 480px) {
+  .role-picker,
+  .form-two-column {
+    flex-direction: column;
+  }
 }
-
-.next-button {
-  background: #7d5bff;
-  border-radius: 12px !important;
-  padding: 10px 20px;
-  border: none;
-  transition: 0.2s;
-}
-
-.next-button:hover {
-  background: #6b49f9;
-}
-
-.password-hint {
-  margin-top: -5px;
-  font-size: 12px;
-  color: #888;
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
-
-.password-warning {
-  background: rgba(255, 150, 50, 0.15);
-  border: 1px solid rgba(255, 150, 50, 0.35);
-  padding: 10px;
-  border-radius: 8px;
-  color: #ffb67a;
-  margin-bottom: 12px;
-  text-align: center;
-  font-size: 14px;
-}
-

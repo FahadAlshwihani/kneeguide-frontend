@@ -1,15 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Stepper, { Step } from "../../../components/ui/Stepper";
-import "../styles/Register.css";
-import { registerUser, checkEmail } from "../../../api/auth";
-import Loader from "../../../components/common/Loader";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { LuUserRound } from "react-icons/lu";
+import { FaUserDoctor } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
-import i18n from "../../../i18n";
+import Stepper, { Step } from "../../../components/ui/Stepper";
+import { registerUser, checkEmail } from "../../../api/auth";
+import { ROUTES } from "../../../utils/routes";
+import { AuthCardItem } from "../components/AuthCard";
+import PasswordField from "../components/PasswordField";
+import "../styles/Register.css";
 
-// Language Dropdown
-import LanguageDropdown from "../../../components/common/LanguageDropdown";
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/**
+ * Just this page's own content now — AuthLayout.jsx renders the shared
+ * chrome (Grainient/Header/AuthCard/AuthFooter) and the Login<->Register
+ * crossfade around whatever this returns (see that file). Real
+ * registration, unchanged contract: still POSTs to users/register/ with
+ * the exact same payload shape, still routes to /auth/verify-otp on the
+ * same backend response, still uses the same per-step validation rules
+ * (validateStep below) — nothing about that logic changed, only its
+ * presentation and the fact that it now lives inside the shared card
+ * instead of its own standalone page.
+ */
 const Register = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -123,228 +139,252 @@ const Register = () => {
     }
   };
 
-  // ==========================================
-  // RTL / LTR handling
-  // ==========================================
-  useEffect(() => {
-    document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
-    document.body.classList.remove("rtl", "ltr");
-    document.body.classList.add(i18n.language === "ar" ? "rtl" : "ltr");
-  }, [i18n.language]);
+  const reducedMotion = prefersReducedMotion();
+  // The email-exists case already gets its own more actionable inline box
+  // (with a link straight to Login) right where it's relevant, in step 3
+  // — showing the generic top banner too would just say the same thing
+  // twice in two different boxes.
+  const showGeneralError = !!error && !emailExists;
 
   return (
-    <div
-      className="register-page"
-      dir={i18n.language === "ar" ? "rtl" : "ltr"}
-    >
-      {/* GLOBAL LANGUAGE DROPDOWN */}
-      <LanguageDropdown />
+    <div className="register-content">
+      <AuthCardItem as="h1" className="register-title">
+        {t("register.title")}
+      </AuthCardItem>
 
-      {loading && <Loader message={t("register.loader")} />}
+      <AuthCardItem as="p" className="register-switch">
+        {t("register.haveAccount")}{" "}
+        <Link to={ROUTES.LOGIN} className="auth-switch-link">
+          {t("register.loginLink")}
+        </Link>
+      </AuthCardItem>
 
-      <div className="register-wrapper">
-
-        {/* ALWAYS CENTERED */}
-        <h2 className="register-title text-center-permanent">
-          {t("register.title")}
-        </h2>
-
-        {error && (
-          <div className="register-error text-center-permanent">{error}</div>
-        )}
-
-        <div className="register-stepper-box">
-          <Stepper
-            initialStep={1}
-            validateStep={validateStep}
-            onFinalStepCompleted={handleFinalSubmit}
+      <AnimatePresence>
+        {showGeneralError && (
+          <motion.div
+            key="register-error"
+            className="auth-error"
+            role="alert"
+            initial={reducedMotion ? false : { opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0.15 : 0.25, ease: "easeOut" }}
           >
-            {/* STEP 1 */}
-            <Step>
-              <h3 className="step-title text-center-permanent">
-                {t("register.step1Title")}
-              </h3>
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-              <div className="role-picker">
-                <div
-                  className={`role-card ${
-                    role === "patient" ? "selected" : ""
-                  }`}
-                  onClick={() => setRole("patient")}
-                >
-                  <span className="emoji">🧑</span>
-                  <h4>{t("register.rolePatient")}</h4>
-                  <p>{t("register.rolePatientDesc")}</p>
-                </div>
+      <AuthCardItem as="div" className="register-stepper-box">
+        <Stepper
+          initialStep={1}
+          validateStep={validateStep}
+          onFinalStepCompleted={handleFinalSubmit}
+          submitting={loading}
+        >
+          {/* STEP 1 — role */}
+          <Step>
+            <h3 data-step-heading tabIndex={-1} className="step-title">
+              {t("register.step1Title")}
+            </h3>
 
-                <div
-                  className={`role-card ${
-                    role === "doctor" ? "selected" : ""
-                  }`}
-                  onClick={() => setRole("doctor")}
-                >
-                  <span className="emoji">🩺</span>
-                  <h4>{t("register.roleDoctor")}</h4>
-                  <p>{t("register.roleDoctorDesc")}</p>
-                </div>
-              </div>
-            </Step>
+            <div className="role-picker">
+              <button
+                type="button"
+                className={`role-card${role === "patient" ? " role-card-selected" : ""}`}
+                onClick={() => setRole("patient")}
+                aria-pressed={role === "patient"}
+              >
+                <LuUserRound className="role-card-icon" aria-hidden="true" />
+                <h4>{t("register.rolePatient")}</h4>
+                <p>{t("register.rolePatientDesc")}</p>
+              </button>
 
-            {/* STEP 2 */}
-            <Step>
-              <h3 className="step-title text-center-permanent">
-                {t("register.step2Title")}
-              </h3>
+              <button
+                type="button"
+                className={`role-card${role === "doctor" ? " role-card-selected" : ""}`}
+                onClick={() => setRole("doctor")}
+                aria-pressed={role === "doctor"}
+              >
+                <FaUserDoctor className="role-card-icon" aria-hidden="true" />
+                <h4>{t("register.roleDoctor")}</h4>
+                <p>{t("register.roleDoctorDesc")}</p>
+              </button>
+            </div>
+          </Step>
 
-              <div className="form-two-column">
-                <div className="form-group">
-                  <label>{t("register.labels.firstName")}</label>
-                  <input
-                    type="text"
-                    name="first_name"
-                    value={form.first_name}
-                    onChange={handleChange}
-                    placeholder={t("register.placeholders.firstName")}
-                  />
-                </div>
+          {/* STEP 2 — name */}
+          <Step>
+            <h3 data-step-heading tabIndex={-1} className="step-title">
+              {t("register.step2Title")}
+            </h3>
 
-                <div className="form-group">
-                  <label>{t("register.labels.lastName")}</label>
-                  <input
-                    type="text"
-                    name="last_name"
-                    value={form.last_name}
-                    onChange={handleChange}
-                    placeholder={t("register.placeholders.lastName")}
-                  />
-                </div>
-              </div>
-            </Step>
-
-            {/* STEP 3 */}
-            <Step>
-              <h3 className="step-title text-center-permanent">
-                {t("register.step3Title")}
-              </h3>
-
-              <div className="form-group">
-                <label>{t("register.labels.email")}</label>
+            <div className="form-two-column">
+              <div className="auth-field">
+                <label htmlFor="register-first-name" className="auth-label">
+                  {t("register.labels.firstName")}
+                </label>
                 <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder={t("register.placeholders.email")}
-                />
-              </div>
-
-              {emailExists && (
-                <div className="email-warning text-center-permanent">
-                  {t("register.emailExists")}
-                  <br />
-                  <span
-                    className="go-login"
-                    onClick={() => navigate("/login")}
-                  >
-                    {t("register.goToLogin")}
-                  </span>
-                </div>
-              )}
-
-              <div className="form-group">
-                <label>{t("register.labels.phone")}</label>
-                <input
+                  id="register-first-name"
                   type="text"
-                  name="phone"
-                  value={form.phone}
+                  name="first_name"
+                  className="auth-input"
+                  value={form.first_name}
                   onChange={handleChange}
-                  placeholder={t("register.placeholders.phone")}
+                  placeholder={t("register.placeholders.firstName")}
+                  autoComplete="given-name"
+                  required
                 />
               </div>
 
-              <div className="form-group">
-                <label>{t("register.labels.dob")}</label>
+              <div className="auth-field">
+                <label htmlFor="register-last-name" className="auth-label">
+                  {t("register.labels.lastName")}
+                </label>
                 <input
-                  type="date"
-                  name="dob"
-                  value={form.dob}
+                  id="register-last-name"
+                  type="text"
+                  name="last_name"
+                  className="auth-input"
+                  value={form.last_name}
                   onChange={handleChange}
+                  placeholder={t("register.placeholders.lastName")}
+                  autoComplete="family-name"
+                  required
                 />
               </div>
-            </Step>
+            </div>
+          </Step>
 
-            {/* STEP 4 */}
-            <Step>
-              <h3 className="step-title text-center-permanent">
-                {t("register.step4Title")}
-              </h3>
+          {/* STEP 3 — contact */}
+          <Step>
+            <h3 data-step-heading tabIndex={-1} className="step-title">
+              {t("register.step3Title")}
+            </h3>
 
-              <div className="form-group">
-                <label>{t("register.labels.password")}</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                />
+            <div className="auth-field">
+              <label htmlFor="register-email" className="auth-label">
+                {t("register.labels.email")}
+              </label>
+              <input
+                id="register-email"
+                type="email"
+                name="email"
+                className="auth-input"
+                dir="ltr"
+                value={form.email}
+                onChange={handleChange}
+                placeholder={t("register.placeholders.email")}
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            {emailExists && (
+              <div className="auth-error register-email-warning">
+                {t("register.emailExists")}
+                <br />
+                <Link to={ROUTES.LOGIN} className="auth-switch-link">
+                  {t("register.goToLogin")}
+                </Link>
               </div>
+            )}
 
-              <p className="password-hint">
-                {t("register.passwordHintTitle")}
-                <br />• {t("register.passwordHintUpper")}
-                <br />• {t("register.passwordHintLower")}
-                <br />• {t("register.passwordHintNumber")}
-                <br />• {t("register.passwordHintSymbol")}
-                <br />• {t("register.passwordHintLength")}
+            <div className="auth-field">
+              <label htmlFor="register-phone" className="auth-label">
+                {t("register.labels.phone")}
+              </label>
+              <input
+                id="register-phone"
+                type="tel"
+                name="phone"
+                className="auth-input"
+                dir="ltr"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder={t("register.placeholders.phone")}
+                autoComplete="tel"
+                required
+              />
+            </div>
+
+            <div className="auth-field">
+              <label htmlFor="register-dob" className="auth-label">
+                {t("register.labels.dob")}
+              </label>
+              <input
+                id="register-dob"
+                type="date"
+                name="dob"
+                className="auth-input"
+                value={form.dob}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </Step>
+
+          {/* STEP 4 — password */}
+          <Step>
+            <h3 data-step-heading tabIndex={-1} className="step-title">
+              {t("register.step4Title")}
+            </h3>
+
+            <PasswordField
+              id="register-password"
+              name="password"
+              label={t("register.labels.password")}
+              value={form.password}
+              onChange={handleChange}
+              autoComplete="new-password"
+            />
+
+            <p className="password-hint">
+              {t("register.passwordHintTitle")}
+              <br />• {t("register.passwordHintUpper")}
+              <br />• {t("register.passwordHintLower")}
+              <br />• {t("register.passwordHintNumber")}
+              <br />• {t("register.passwordHintSymbol")}
+              <br />• {t("register.passwordHintLength")}
+            </p>
+
+            <PasswordField
+              id="register-confirm-password"
+              name="confirmPassword"
+              label={t("register.labels.confirmPassword")}
+              value={form.confirmPassword}
+              onChange={handleChange}
+              autoComplete="new-password"
+            />
+          </Step>
+
+          {/* STEP 5 — review */}
+          <Step>
+            <h3 data-step-heading tabIndex={-1} className="step-title">
+              {t("register.step5Title")}
+            </h3>
+
+            <div className="review-box">
+              <p>
+                <strong>{t("register.review.role")}:</strong> {role}
               </p>
-
-              {error && error.toLowerCase().includes("password") && (
-                <div className="password-warning text-center-permanent">
-                  {error}
-                </div>
-              )}
-
-              <div className="form-group">
-                <label>{t("register.labels.confirmPassword")}</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                />
-              </div>
-            </Step>
-
-            {/* STEP 5 */}
-            <Step>
-              <h3 className="step-title text-center-permanent">
-                {t("register.step5Title")}
-              </h3>
-
-              <div className="review-box">
-                <p>
-                  <strong>{t("register.review.role")}:</strong> {role}
-                </p>
-                <p>
-                  <strong>{t("register.review.name")}:</strong>{" "}
-                  {form.first_name} {form.last_name}
-                </p>
-                <p>
-                  <strong>{t("register.review.email")}:</strong> {form.email}
-                </p>
-                <p>
-                  <strong>{t("register.review.phone")}:</strong> {form.phone}
-                </p>
-                <p>
-                  <strong>{t("register.review.dob")}:</strong> {form.dob}
-                </p>
-              </div>
-            </Step>
-          </Stepper>
-        </div>
-      </div>
+              <p>
+                <strong>{t("register.review.name")}:</strong>{" "}
+                {form.first_name} {form.last_name}
+              </p>
+              <p>
+                <strong>{t("register.review.email")}:</strong> {form.email}
+              </p>
+              <p>
+                <strong>{t("register.review.phone")}:</strong> {form.phone}
+              </p>
+              <p>
+                <strong>{t("register.review.dob")}:</strong> {form.dob}
+              </p>
+            </div>
+          </Step>
+        </Stepper>
+      </AuthCardItem>
     </div>
   );
 };

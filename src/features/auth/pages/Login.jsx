@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "motion/react";
-import { LuEye, LuEyeOff, LuCheck } from "react-icons/lu";
+import { LuCheck } from "react-icons/lu";
 import { useAuth } from "../../../context/AuthContext";
 import { ROUTES } from "../../../utils/routes";
 import PrimaryButton from "../../../components/ui/PrimaryButton";
-import AuthCard, { AuthCardItem } from "../components/AuthCard";
+import { AuthCardItem } from "../components/AuthCard";
+import PasswordField from "../components/PasswordField";
 import "../styles/Login.css";
 
 const prefersReducedMotion = () =>
@@ -21,10 +22,12 @@ const prefersReducedMotion = () =>
 const SUCCESS_TRANSITION_MS = 450;
 
 /**
- * Real authentication, unchanged contract: still calls the same
+ * Just this page's own content now — AuthLayout.jsx renders the shared
+ * chrome (Grainient/Header/AuthCard/AuthFooter) and the Login<->Register
+ * crossfade around whatever this returns; see that file for why. Real
+ * authentication, unchanged contract: still calls the same
  * AuthContext#login(email, password) -> POST users/login/ -> {access, user}
- * -> saveAuthData/setToken/setUser -> role-based redirect. Everything in
- * this file is presentation/UX around that exact same call.
+ * -> saveAuthData/setToken/setUser -> role-based redirect.
  */
 const Login = () => {
   const { t } = useTranslation();
@@ -32,7 +35,6 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({ email: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -83,122 +85,99 @@ const Login = () => {
     }
   };
 
-  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
   const reducedMotion = prefersReducedMotion();
   const isBusy = loading || success;
 
   return (
-    <div className="login-page">
-      <AuthCard className="login-card">
-        <form className="login-form" onSubmit={handleSubmit} noValidate>
-          <AuthCardItem as="h1" className="login-title">
-            {t("login.title")}
-          </AuthCardItem>
-          <AuthCardItem as="p" className="login-subtitle">
-            {t("login.subtitle")}
-          </AuthCardItem>
+    <form className="login-form" onSubmit={handleSubmit} noValidate>
+      <AuthCardItem as="h1" className="login-title">
+        {t("login.title")}
+      </AuthCardItem>
+      <AuthCardItem as="p" className="login-subtitle">
+        {t("login.subtitle")}
+      </AuthCardItem>
 
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                key="login-error"
-                id="login-error-message"
-                className="login-error"
-                role="alert"
-                initial={reducedMotion ? false : { opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reducedMotion ? 0.15 : 0.25, ease: "easeOut" }}
-              >
-                {error}
-              </motion.div>
-            )}
-          </AnimatePresence>
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            key="login-error"
+            id="login-error-message"
+            className="auth-error"
+            role="alert"
+            initial={reducedMotion ? false : { opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0.15 : 0.25, ease: "easeOut" }}
+          >
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <AuthCardItem as="div" className="login-field">
-            <label htmlFor="login-email" className="login-label">
-              {t("login.email")}
-            </label>
-            <input
-              id="login-email"
-              type="email"
-              name="email"
-              className="login-input"
-              // Forced LTR regardless of page direction — an email address
-              // is Latin-character content by construction, and should
-              // read naturally (user@example.com, not bidi-reordered) even
-              // inside an RTL form. Only the input's own text runs this
-              // way; the <label> above it still follows Arabic's natural
-              // RTL flow untouched.
-              dir="ltr"
-              autoComplete="email"
-              placeholder={t("login.email_placeholder")}
-              value={form.email}
-              onChange={handleChange}
-              disabled={isBusy}
-              aria-invalid={!!error}
-              aria-describedby={error ? "login-error-message" : undefined}
-              required
-            />
-          </AuthCardItem>
+      <AuthCardItem as="div" className="auth-field">
+        <label htmlFor="login-email" className="auth-label">
+          {t("login.email")}
+        </label>
+        <input
+          id="login-email"
+          type="email"
+          name="email"
+          className="auth-input"
+          // Forced LTR regardless of page direction — an email address is
+          // Latin-character content by construction, and should read
+          // naturally (user@example.com, not bidi-reordered) even inside
+          // an RTL form. Only the input's own text runs this way; the
+          // <label> above it still follows Arabic's natural RTL flow.
+          dir="ltr"
+          autoComplete="email"
+          placeholder={t("login.email_placeholder")}
+          value={form.email}
+          onChange={handleChange}
+          disabled={isBusy}
+          aria-invalid={!!error}
+          aria-describedby={error ? "login-error-message" : undefined}
+          required
+        />
+      </AuthCardItem>
 
-          <AuthCardItem as="div" className="login-field">
-            <label htmlFor="login-password" className="login-label">
-              {t("login.password")}
-            </label>
-            <div className="login-password-wrap">
-              <input
-                id="login-password"
-                type={showPassword ? "text" : "password"}
-                name="password"
-                className="login-input"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                disabled={isBusy}
-                aria-invalid={!!error}
-                aria-describedby={error ? "login-error-message" : undefined}
-                required
-              />
-              <button
-                type="button"
-                className="login-password-toggle"
-                onClick={togglePasswordVisibility}
-                disabled={isBusy}
-                aria-label={t(showPassword ? "login.hidePassword" : "login.showPassword")}
-              >
-                {showPassword ? <LuEyeOff aria-hidden="true" /> : <LuEye aria-hidden="true" />}
-              </button>
-            </div>
-          </AuthCardItem>
+      <AuthCardItem as="div">
+        <PasswordField
+          id="login-password"
+          name="password"
+          label={t("login.password")}
+          value={form.password}
+          onChange={handleChange}
+          autoComplete="current-password"
+          disabled={isBusy}
+          error={!!error}
+          errorId="login-error-message"
+        />
+      </AuthCardItem>
 
-          <AuthCardItem as="div" className="login-submit-row">
-            <PrimaryButton
-              type="submit"
-              size="lg"
-              fullWidth
-              loading={loading}
-              disabled={isBusy}
-              showArrow={false}
-              icon={success ? <LuCheck aria-hidden="true" /> : null}
-              className="login-submit"
-            >
-              {t("login.button")}
-            </PrimaryButton>
-          </AuthCardItem>
+      <AuthCardItem as="div" className="login-submit-row">
+        <PrimaryButton
+          type="submit"
+          size="lg"
+          fullWidth
+          loading={loading}
+          disabled={isBusy}
+          showArrow={false}
+          icon={success ? <LuCheck aria-hidden="true" /> : null}
+          className="login-submit"
+        >
+          {t("login.button")}
+        </PrimaryButton>
+      </AuthCardItem>
 
-          <AuthCardItem as="div" className="login-extra">
-            <p>
-              {t("login.no_account")}{" "}
-              <Link to={ROUTES.REGISTER} className="login-signup-link">
-                {t("login.signup")}
-              </Link>
-            </p>
-          </AuthCardItem>
-        </form>
-      </AuthCard>
-    </div>
+      <AuthCardItem as="div" className="login-extra">
+        <p>
+          {t("login.no_account")}{" "}
+          <Link to={ROUTES.REGISTER} className="auth-switch-link">
+            {t("login.signup")}
+          </Link>
+        </p>
+      </AuthCardItem>
+    </form>
   );
 };
 

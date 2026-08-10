@@ -25,3 +25,35 @@
   justify-content: center;
   padding: 32px 20px;
 }
+
+/* AuthCard itself (AuthCard.css) owns the glass shell/padding and stays
+   mounted across /login <-> /register — see AuthLayout.jsx. This is the
+   inner area AuthContentTransition actually animates. `position:
+   relative` is what lets the exiting slide (popped into `position:
+   absolute` by AnimatePresence's `mode="popLayout"`) sit correctly over
+   the incoming one instead of against the viewport.
+
+   380px min-height is a deliberate floor, not a target — Login's own
+   natural content height, so Login and Register's first couple of steps
+   don't look tiny/jumpy against later, taller steps (review, etc.),
+   without ever compressing anything shorter to force an exact match (see
+   AuthLayout.jsx's own JS height animation for the actual, real
+   per-content height — this is only the minimum it's allowed to shrink
+   to). Removed entirely on short/mobile viewports below, where a fixed
+   floor risks fighting the real content for space on a short phone. */
+.auth-content-frame {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  overflow: hidden;
+}
+
+.auth-content-slide {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .auth-content-frame {
+    min-height: 0;
+  }
+}

@@ -4,7 +4,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 @import "./styles/direction.css";
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+/* The product (Auth/Dashboard) typeface — see --font-product below. 400
+   weight was already loaded but 600 wasn't (every product CSS file that
+   sets font-weight uses only 400/500/600/700; 300 was loaded but never
+   actually used anywhere in Auth/Dashboard, so it's dropped here). */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700&display=swap');
 
 :root {
   /* Typography */
@@ -304,6 +308,16 @@ body.ltr .form-group label {
   --font-en: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-ar: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
+  /* The authenticated PRODUCT surface (Auth: Login/Register/future Forgot
+     Password/Reset/OTP, plus the Dashboard) intentionally has its own
+     typographic identity, separate from the public marketing site's EN/AR
+     split above — one consistent face for both languages, since this is
+     app UI, not localized marketing copy. Tajawal itself covers Arabic
+     and Latin script, so no separate --font-product-ar is needed. Applied
+     narrowly below (.auth-layout-root / .dashboard-root) — never globally
+     — so it can never leak into .public-root's own typography. */
+  --font-product: 'Tajawal', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
   /* Colors — premium monochrome identity (Vercel/Linear/Notion-inspired):
      near-black surfaces, white headings, neutral gray body/muted text.
      Blue (--color-primary, already defined above) is kept strictly as an
@@ -401,6 +415,26 @@ body.rtl .public-root {
 
 body.ltr .public-root {
   font-family: var(--font-en);
+}
+
+/* Product typography boundary. AuthLayout.jsx reuses `.public-root` for
+   its reset/tokens/Grainient-stacking-context (see that file) but not for
+   its font-family — these two rules override the two immediately above
+   for that one subtree. The compound `.public-root.auth-layout-root`
+   selector is deliberately MORE specific than `body.rtl/.ltr .public-root`
+   above (an extra class on the same element), so this wins outright on
+   specificity — not on !important, and not on accidentally being later
+   in the bundle. `.dashboard-root` needs no such fight: the dashboard was
+   never inside `.public-root` to begin with, so a single class already
+   beats the old global `body { font-family: var(--font-main) }` rule
+   (see the very first block of this file). */
+body.rtl .public-root.auth-layout-root,
+body.ltr .public-root.auth-layout-root {
+  font-family: var(--font-product);
+}
+
+.dashboard-root {
+  font-family: var(--font-product);
 }
 
 .public-root {

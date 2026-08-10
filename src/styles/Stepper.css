@@ -1,28 +1,19 @@
-/* ============================
-   STEPPER MAIN WRAPPER
-============================ */
+/* Restyled to sit directly on AuthCard's own glass surface (AuthCard.css)
+   rather than as a second nested box — the old #141414 boxed container
+   read as a "card inside a card" once Register moved into the shared
+   AuthCard. Colors driven by Stepper.jsx's own inline motion values
+   (CSS-variable references, not literal hex) are NOT duplicated here —
+   see that file for why a stylesheet rule targeting the same properties
+   would just be dead weight, always losing to the inline style. */
+
 .outer-container {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-top: 10px;
 }
 
-/* ============================
-   STEPPER BOX (Fixed width)
-============================ */
 .step-circle-container {
   width: 100%;
-  max-width: 450px; /* ⬅ أعرض قليلاً لاستيعاب رسائل الخطأ */
-  background: #141414;
-  border-radius: 16px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  border: 1px solid #222;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
-
-  /* منع تحرك العناصر مع الخطأ */
-  box-sizing: border-box;
 }
 
 /* ============================
@@ -30,48 +21,35 @@
 ============================ */
 .step-indicator-row {
   display: flex;
-  align-items: center;       /* ⬅ يخلي الخط والنقاط بنفس المحاذاة */
+  align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 10px 25px 25px;
+  gap: 8px;
+  margin-bottom: 28px;
 }
 
-/* Indicator dot */
 .step-indicator {
   display: flex;
-  align-items: center;       /* ⬅ محاذاة كاملة */
+  align-items: center;
   justify-content: center;
 }
 
-/* Circle style */
+/* 28px — compact, not the "giant numbered circle" the previous 32px
+   version was already trending toward. */
 .step-indicator-inner {
-  height: 32px;
-  width: 32px;
+  height: 28px;
+  width: 28px;
   border-radius: 50%;
+  font-size: 0.8rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
-/* Inactive */
-.step-indicator[animate="inactive"] .step-indicator-inner {
-  background: #222;
-  color: #888;
-}
-
-/* Active */
-.step-indicator[animate="active"] .step-indicator-inner {
-  background: #7d5bff;
-  color: #fff;
-  transform: scale(1.05);
-}
-
-/* Complete */
-.step-indicator[animate="complete"] .step-indicator-inner {
-  background: #7d5bff;
-  color: #fff;
+.step-indicator-inner svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* ============================
@@ -79,18 +57,16 @@
 ============================ */
 .step-connector {
   flex: 1;
-  height: 4px;                 /* ⬅ خط سميك قليلاً لرؤية أوضح */
-  background: #333;
+  max-width: 40px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   overflow: hidden;
-  margin: 0 5px;               /* ⬅ محاذاة أدق */
 }
 
 .step-connector-inner {
   height: 100%;
-  background: #7d5bff;
   width: 0;
-  transition: width 0.3s ease;
 }
 
 /* ============================
@@ -98,56 +74,31 @@
 ============================ */
 .step-content-default {
   overflow: hidden;
-  padding: 0 25px;
+  position: relative;
 }
 
 /* ============================
    FOOTER BUTTONS
 ============================ */
 .footer-container {
-  padding: 0 25px;
-  margin-top: 15px;
+  margin-top: 24px;
 }
 
 .footer-nav {
   display: flex;
-  justify-content: flex-end !important; /* ⬅ ALWAYS align to right */
-  margin-top: 18px;
-}
-.footer-nav {
-  gap: 140px; /* يفصل الزرين */
+  align-items: center;
+  gap: 12px;
 }
 
-
-/* Back */
-.back-button {
-  border: 1px solid #7b7b7b;
-  background: transparent;
-  padding: 8px 18px;
-  border-radius: 10px;
-  color: #d0d0d0;
-  cursor: pointer;
-  transition: 0.25s ease;
-  margin-right: auto; /* ⬅ يجبره يكون يسار ويترك continue يمين */
+/* Continue/Complete always sits at the trailing edge, whether or not Back
+   is present (step 1 has no Back at all — Stepper.jsx doesn't render it,
+   rather than hiding it) — an auto inline-start margin on the button
+   itself achieves that in both cases without a `:has()` selector or any
+   knowledge of whether Back exists. Logical property, correct in RTL. */
+.stepper-next-button {
+  margin-inline-start: auto;
 }
 
-.back-button:hover {
-  background: #262626;
-  border-color: #b3b3b3;
-}
-
-/* Next / Continue / Complete */
-.next-button {
-  background: #7d5bff;
-  padding: 10px 22px;
-  border-radius: 10px !important;
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.next-button:hover {
-  background: #6b49f9;
-}
+/* .stepper-back-button / .stepper-next-button are otherwise SecondaryButton/
+   PrimaryButton (components/ui/*.css) — same border/background/hover/
+   focus-visible/radius as every other auth button, unmodified. */

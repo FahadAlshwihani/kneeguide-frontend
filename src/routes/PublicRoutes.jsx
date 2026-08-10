@@ -29,16 +29,17 @@ const PublicRoutes = (
       <Route path="/contact" element={<ContactPage />} />
     </Route>
 
-    {/* Login now shares the public Header/Grainient via AuthLayout (see
-        that file). Register/VerifyOtp are intentionally NOT moved here
-        yet — this pass only establishes the layout through Login; they
-        keep rendering standalone (no header/footer) exactly as before,
-        to preserve their existing look until they're polished the same
-        way. */}
+    {/* Login and Register now share one persistent AuthLayout (Header/
+        Grainient/AuthCard/AuthFooter) — real, separate routes still (see
+        that file's own AuthContentTransition for how they cross-fade
+        without remounting any of that shared chrome). VerifyOtp is
+        intentionally NOT moved here yet — it keeps rendering standalone
+        exactly as before, to preserve its existing look until it gets
+        the same treatment separately. */}
     <Route element={<AuthLayout />}>
       <Route path={ROUTES.LOGIN} element={<Login />} />
+      <Route path={ROUTES.REGISTER} element={<Register />} />
     </Route>
-    <Route path={ROUTES.REGISTER} element={<Register />} />
     <Route path={ROUTES.VERIFY_OTP} element={<VerifyOtp />} />
   </>
 );

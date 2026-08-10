@@ -1,39 +1,101 @@
-import React, { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "motion/react";
 import Header from "../features/public/components/Header";
 import Grainient from "../features/public/components/Grainient";
 import AuthFooter from "../features/auth/components/AuthFooter";
+import AuthCard from "../features/auth/components/AuthCard";
 import { initPerformanceTier } from "../features/public/performance/performanceTier";
+import "../features/auth/styles/AuthForm.css";
 import "./SiteBackground.css";
 import "./AuthLayout.css";
 
-// Same steady-state palette Grainient uses from ScrollStackFeature down
-// through Footer on the public homepage (PublicLayout.jsx's own
-// GRAINIENT_COLOR_1/2/3) — reused verbatim, not a new palette. No
-// heroColor*/regionBoundarySelector: those exist only to ease from a
-// "hero" tone into this one across a scroll boundary, and this page has
-// no hero moment to ease from — Grainient defaults heroColor* to
-// color1/2/3 themselves when omitted, so the canvas renders this one
-// palette uniformly, exactly what a steady auth background needs.
 const GRAINIENT_COLOR_1 = "#2563EB";
 const GRAINIENT_COLOR_2 = "#050505";
 const GRAINIENT_COLOR_3 = "#1D4ED8";
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 /**
- * Shared chrome for auth pages (Login now; Register/Forgot Password/OTP
- * can move under this same layout later without restructuring — see
- * PublicRoutes.jsx). Deliberately not PublicLayout itself: that always
- * renders the full public Footer, which is too heavy for a focused auth
- * flow (see AuthFooter), and only mounts Grainient for the home route.
+ * Owns the crossfade between whatever the current auth route renders
+ * (Login or Register), keyed by `location.pathname`. Same height-
+ * measurement technique Stepper.jsx already uses for its own step-to-step
+ * transitions (measure the incoming content, animate the wrapper's height
+ * to match) — reused rather than reinvented, so the card's footprint
+ * animates smoothly between differently-sized content instead of the
+ * "old disappears -> card collapses -> new appears -> card grows" jump a
+ * naive AnimatePresence swap would produce. `mode="popLayout"` removes
+ * the exiting content from flow the instant it starts exiting, so it
+ * never fights the incoming content for space while both are briefly
+ * mounted. A CSS min-height floor (AuthLayout.css) is the safety net
+ * underneath all of this for the shortest content (Login, Register's
+ * first step) — belt and suspenders, not either/or.
  *
- * Reuses the exact same building blocks PublicLayout does — the real
- * <Header/>, the real <Grainient/>, and the `.public-root` class itself
- * (its reset/typography/token contract lives in index.css and doesn't
- * depend on PublicLayout specifically) — rather than re-implementing any
- * of them. This is a second *mount* of Grainient, not a second
- * simultaneous instance: exactly like navigating between `/` and `/about`
- * already tears down and remounts PublicLayout's own instance today, only
- * one Grainient/WebGL context ever exists at a time.
+ * Every motion.div in this file animates via plain target OBJECTS
+ * (`animate={{opacity: 1}}`), never a string variant label. That's
+ * deliberate, not stylistic: a string `animate="someLabel"` makes that
+ * component the new nearest orchestrator for ITS OWN descendants'
+ * variant lookups, which would shadow AuthCard's own "hidden"/"visible"
+ * orchestration (AuthCard.jsx) for any <AuthCardItem> nested inside
+ * Login/Register's actual content — silently breaking the field stagger
+ * the approved Login already relies on. Plain objects animate the
+ * element itself without creating that context, so AuthCard's own
+ * top-level orchestration still reaches straight through every wrapper
+ * here to whatever's actually inside <Outlet/>.
+ */
+const AuthContentTransition = () => {
+  const location = useLocation();
+  const [height, setHeight] = useState(null);
+  const reducedMotion = prefersReducedMotion();
+
+  return (
+    <motion.div
+      className="auth-content-frame"
+      animate={{ height: height ?? "auto" }}
+      transition={{ duration: reducedMotion ? 0 : 0.3, ease: [0.22, 0.61, 0.36, 1] }}
+    >
+      <AnimatePresence initial={false} mode="popLayout">
+        <AuthContentSlide key={location.pathname} onHeightReady={setHeight} reducedMotion={reducedMotion}>
+          <Outlet />
+        </AuthContentSlide>
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
+const AuthContentSlide = ({ children, onHeightReady, reducedMotion }) => {
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    if (ref.current) onHeightReady(ref.current.offsetHeight);
+  }, [children, onHeightReady]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="auth-content-slide"
+      initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0, transition: { duration: reducedMotion ? 0 : 0.3, ease: [0.22, 0.61, 0.36, 1] } }}
+      exit={reducedMotion ? undefined : { opacity: 0, y: -8, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+/**
+ * Shared chrome for the auth experience — Login and Register now behave
+ * as one surface: AuthLayout (this component), Header, Grainient, and
+ * AuthFooter all stay mounted across /login <-> /register navigation
+ * (React Router only swaps the matched leaf under <Outlet/>, not this
+ * parent route element), and AuthCard itself is rendered exactly once
+ * here rather than by each page — so its mount entrance/stagger
+ * (AuthCard.jsx) plays once, on first landing on either route, and never
+ * replays on a login<->register switch. Only AuthContentTransition's
+ * content actually changes. Real routes throughout (see PublicRoutes.jsx)
+ * — this is presentation only, not a `setMode()` local-state hack.
  */
 const AuthLayout = () => {
   useEffect(() => {
@@ -50,7 +112,9 @@ const AuthLayout = () => {
       />
       <Header />
       <main className="auth-layout-main">
-        <Outlet />
+        <AuthCard>
+          <AuthContentTransition />
+        </AuthCard>
       </main>
       <AuthFooter />
     </div>
