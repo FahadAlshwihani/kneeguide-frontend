@@ -1,0 +1,27 @@
+/* Classic sticky-footer flex column: Header (its own sticky positioning,
+   natural height) -> main (flex: 1, fills whatever's left and centers the
+   card both axes) -> AuthFooter (natural height, pinned to the bottom
+   when content is short). If the card ever needs more height than the
+   viewport has (small laptop + tall content, or heavy zoom), the column
+   simply grows past `min-height` and the page scrolls normally — nothing
+   here caps height, only floors it, so there's no clipping in either
+   direction.
+
+   `100svh` (small viewport height), not the `.public-root` rule's own
+   plain `100vh` this overrides — matching Hero.css's own established
+   reasoning elsewhere in this app: svh is the one reference that doesn't
+   shift as mobile browser chrome shows/hides mid-session, so the floor
+   never causes a layout jump while scrolling. */
+.auth-layout-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.auth-layout-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+}
