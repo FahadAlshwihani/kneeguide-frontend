@@ -1,14 +1,15 @@
 {
   "login": {
-    "title": "مرحباً بعودتك",
-    "subtitle": "سجّل الدخول للمتابعة",
+    "title": "مرحبًا بعودتك",
+    "subtitle": "سجّل دخولك للمتابعة في KneeGuide.",
     "email": "البريد الإلكتروني",
     "email_placeholder": "example@mail.com",
     "password": "كلمة المرور",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور",
     "button": "تسجيل الدخول",
     "no_account": "ليس لديك حساب؟",
     "signup": "أنشئ حساباً",
-    "loading": "جاري تسجيل الدخول...",
     "error_required": "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
     "error_invalid": "بيانات الدخول غير صحيحة."
   },

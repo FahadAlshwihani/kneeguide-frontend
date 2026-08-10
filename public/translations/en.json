@@ -1,14 +1,15 @@
 {
   "login": {
-    "title": "Welcome Back",
-    "subtitle": "Login to continue",
+    "title": "Welcome back",
+    "subtitle": "Sign in to continue to KneeGuide.",
     "email": "Email",
     "email_placeholder": "example@mail.com",
     "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "button": "Login",
     "no_account": "Don't have an account?",
     "signup": "Create one",
-    "loading": "Logging you in...",
     "error_required": "Please enter your email and password.",
     "error_invalid": "Invalid email or password."
   },
