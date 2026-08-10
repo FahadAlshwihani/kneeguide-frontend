@@ -431,7 +431,7 @@ const Register = () => {
           {t("register.loginLink")}
         </Link>
       </AuthCardItem>
-    </div>
+    </motion.div>
   );
 };
 
