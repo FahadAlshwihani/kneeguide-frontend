@@ -208,7 +208,19 @@ const Register = () => {
 
       if (res?.message === "OTP sent to email") {
         const query = new URLSearchParams({ email: payload.email });
-        navigate(`${ROUTES.VERIFY_OTP}?${query.toString()}`);
+        const destination = `${ROUTES.VERIFY_OTP}?${query.toString()}`;
+
+        // loading stays true (button keeps its loading state) all the way
+        // through this hand-off — never reset to false on the success path,
+        // so there's no flash of an interactive "Complete" button between
+        // the request finishing and OTP taking over.
+        if (prefersReducedMotion()) {
+          navigate(destination);
+          return;
+        }
+
+        setLeaving(true);
+        exitTimeoutRef.current = setTimeout(() => navigate(destination), REGISTER_EXIT_MS);
         return;
       }
       setLoading(false);
