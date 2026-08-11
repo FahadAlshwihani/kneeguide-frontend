@@ -8,11 +8,54 @@
    PatientHomeAssistant.jsx for why `mode` is derived, never separate
    state. */
 
+/* ---------- Workspace: history rail/drawer + active conversation ---------- */
+/* The permanent desktop rail (PatientConversationHistory.jsx,
+   variant="rail") sits beside `.patient-assistant` as a flex sibling —
+   below the rail breakpoint it hides itself entirely (see that
+   component's own CSS) and the Drawer variant takes over instead, so this
+   container's own rules stay the same at every width; only the rail's
+   own display toggles. */
+.patient-home-workspace {
+  display: flex;
+  align-items: stretch;
+  gap: var(--patient-space-lg);
+  width: 100%;
+  min-height: 0;
+}
+
+/* Hidden by default — shown only below the same rail breakpoint used in
+   PatientConversationHistory.css, so History/New Chat stay reachable the
+   moment the permanent rail disappears. Always mounted (both Welcome and
+   Conversation mode) rather than conditionally rendered, since it's pure
+   CSS visibility, not extra runtime cost worth guarding against. */
+.patient-mobile-toolbar {
+  display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media (max-width: 1023.98px) {
+  .patient-mobile-toolbar {
+    display: flex;
+  }
+}
+
 .patient-assistant {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--patient-assistant-gap);
+  /* flex:1 lets this column claim whatever width remains after the
+     history rail (min-width:0 is required for a flex child to be
+     allowed to shrink below its content's natural width at all) — the
+     conversation's own reading column still caps at
+     --patient-assistant-max-width and stays centered via margin-inline:
+     auto, so widening the overall workspace (Section 42's own
+     requirement) never stretches message bubbles wider than before. */
+  flex: 1;
+  min-width: 0;
   width: 100%;
   max-width: var(--patient-assistant-max-width);
   margin-inline: auto;

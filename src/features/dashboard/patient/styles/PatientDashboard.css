@@ -48,6 +48,21 @@
   min-height: 0;
 }
 
+/* `.pd-inner` is a flex COLUMN with one child now
+   (.patient-home-workspace, PatientHomeAssistant.jsx) — a flex-column
+   child doesn't stretch along the main (vertical) axis by default, so
+   without this it would only take its own content height instead of the
+   full bounded height `.pd-page--conversation` already established,
+   leaving the history rail and the chat shell both shorter than the
+   actual available space. Welcome Mode is untouched (`.pd-inner` alone
+   keeps its normal, unbounded flow), same as everywhere else in this
+   file. */
+.pd-page--conversation .patient-home-workspace {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
 @media (max-width: 480px) {
   .pd-page {
     padding-block: var(--patient-space-lg) var(--patient-space-md);

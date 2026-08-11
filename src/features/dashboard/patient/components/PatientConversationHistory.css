@@ -30,6 +30,19 @@
   width: var(--patient-history-rail-collapsed-width);
 }
 
+/* Below this width, a permanent rail crowds the conversation column too
+   much (sidebar + gap + the assistant's own comfortable reading width no
+   longer fit without cramping either) — the mobile Drawer takes over
+   instead (see PatientHomeAssistant.css's own matching breakpoint for the
+   toolbar that opens it). This is a tablet-appropriate cutoff derived
+   from the rail/gap/conversation widths actually in use, not the site's
+   usual small-phone breakpoint. */
+@media (max-width: 1023.98px) {
+  .patient-history-rail {
+    display: none;
+  }
+}
+
 .patient-history-rail-top {
   flex: 0 0 auto;
   display: flex;
