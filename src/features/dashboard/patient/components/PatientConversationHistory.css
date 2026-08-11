@@ -1,0 +1,279 @@
+/* Conversation history — a narrow, dark, understated AI-conversation
+   rail/drawer, never a traditional dashboard sidebar. Reads exclusively
+   from patientTokens.css (--patient-*), same as every other Patient
+   primitive. Logical properties throughout (inset-inline-*, margin-
+   inline, padding-inline) so this never needs a separate RTL tree. */
+
+:root {
+  --patient-history-rail-width: 248px;
+  --patient-history-rail-collapsed-width: 56px;
+}
+
+/* ---------- Desktop rail ---------- */
+.patient-history-rail {
+  flex: 0 0 var(--patient-history-rail-width);
+  width: var(--patient-history-rail-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-2xs);
+  border-inline-end: 1px solid var(--patient-divider);
+  padding-inline-end: var(--patient-space-sm);
+  /* Never taller than the same viewport bound the fixed chat shell
+     already uses (--patient-dock-clearance) — its own list scrolls
+     internally instead of ever growing the document. */
+  max-height: calc(100dvh - var(--patient-dock-clearance) - env(safe-area-inset-bottom, 0px) - var(--patient-space-xl));
+  transition: flex-basis var(--patient-transition-normal), width var(--patient-transition-normal);
+}
+
+.patient-history-rail--collapsed {
+  flex-basis: var(--patient-history-rail-collapsed-width);
+  width: var(--patient-history-rail-collapsed-width);
+}
+
+.patient-history-rail-top {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+}
+
+.patient-history-rail--collapsed .patient-history-rail-top {
+  flex-direction: column;
+}
+
+.patient-history-rail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--patient-border) transparent;
+}
+
+.patient-history-rail-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.patient-history-rail-body::-webkit-scrollbar-thumb {
+  background: var(--patient-border);
+  border-radius: var(--patient-radius-button);
+}
+
+/* ---------- New chat + collapse controls ---------- */
+.patient-history-new-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-2xs);
+  flex: 1;
+  min-width: 0;
+  padding: 8px var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-card);
+  color: var(--patient-color-text);
+  font: var(--patient-text-button);
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.patient-history-new-chat:hover {
+  background: var(--patient-surface-hover);
+  border-color: var(--patient-color-primary-soft);
+}
+
+.patient-history-new-chat:focus-visible,
+.patient-history-collapse-toggle:focus-visible,
+.patient-history-icon-button:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.patient-history-new-chat span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patient-history-rail--collapsed .patient-history-new-chat {
+  flex: 0 0 auto;
+  padding: 8px;
+  justify-content: center;
+}
+
+.patient-history-new-chat svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--patient-color-primary);
+}
+
+.patient-history-collapse-toggle,
+.patient-history-icon-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--patient-radius-control);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--patient-color-muted);
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), color var(--patient-transition-normal);
+}
+
+.patient-history-collapse-toggle:hover,
+.patient-history-icon-button:hover {
+  background: var(--patient-surface-hover);
+  color: var(--patient-color-text);
+}
+
+.patient-history-collapse-toggle svg,
+.patient-history-icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Conversation groups/rows ---------- */
+.patient-history-group + .patient-history-group {
+  margin-top: var(--patient-space-sm);
+}
+
+.patient-history-group-label {
+  margin: 0 0 var(--patient-space-3xs);
+  padding-inline: var(--patient-space-2xs);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.patient-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.patient-history-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: var(--patient-space-2xs);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.patient-history-row:hover {
+  background: var(--patient-surface-hover);
+}
+
+.patient-history-row:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+/* Active conversation — a restrained KneeGuide-blue treatment (tinted
+   surface + a small inline-start accent border), never text color alone
+   and never a large glow. */
+.patient-history-row--active {
+  background: var(--patient-surface-selected);
+  border-inline-start: 2px solid var(--patient-color-primary);
+}
+
+.patient-history-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  width: 100%;
+}
+
+.patient-history-row-title {
+  font: var(--patient-text-supporting);
+  font-weight: 600;
+  color: var(--patient-color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patient-history-row--active .patient-history-row-title {
+  color: var(--patient-color-heading);
+}
+
+.patient-history-row-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.patient-history-row-badge {
+  padding: 1px 6px;
+  border-radius: var(--patient-radius-badge);
+  background: var(--patient-assistant-suggestion-bg);
+  border: 1px solid var(--patient-assistant-suggestion-border);
+  color: var(--patient-color-muted);
+  font-weight: 600;
+}
+
+.patient-history-empty {
+  margin: var(--patient-space-sm) var(--patient-space-2xs);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Mobile drawer ---------- */
+.patient-history-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: var(--z-modal, 60);
+}
+
+.patient-history-drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: min(300px, 84vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-sm);
+  padding: var(--patient-space-md);
+  background: var(--patient-surface-page);
+  border-inline-end: 1px solid var(--patient-border);
+  box-shadow: var(--patient-shadow-elevated);
+  z-index: calc(var(--z-modal, 60) + 1);
+}
+
+.patient-history-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.patient-history-drawer-title {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.patient-history-new-chat--drawer {
+  width: 100%;
+}
+
+.patient-history-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
