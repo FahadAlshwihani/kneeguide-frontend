@@ -14,7 +14,8 @@ const prefersReducedMotion = () =>
 // PainWheel already used (its conic-gradient breakpoints at 120deg/220deg
 // out of 360 ~= value 3.3/6.1) rounded to clean integer boundaries — not a
 // new medical interpretation, just a faithful, simpler restatement of what
-// was already there. UI/mock semantics only; never a diagnosis.
+// was already there. UI/mock semantics only; never a diagnosis. Untouched
+// this round — this is a presentation-only refinement.
 export const getPainSeverity = (value) => {
   if (value <= 3) return "low";
   if (value <= 6) return "moderate";
@@ -25,6 +26,21 @@ const SEVERITY_COLOR_VAR = {
   low: "--patient-color-success",
   moderate: "--patient-color-warning",
   high: "--patient-color-danger",
+};
+
+// The dedicated `PainEmoji.jsx` component was audited before adding this
+// — it's unused/disconnected anywhere in the app (a leftover from before
+// the conversational redesign), uses a 5-tier scale, and hardcodes
+// English labels outside i18n, so it isn't a reusable "existing
+// architecture" for this. This mapping instead faithfully derives from
+// the OLD PainWheel's own emoji choices (🙂/😐/😣/😭 across its 4 tiers),
+// collapsed onto the SAME 3-tier low/moderate/high grouping already
+// established above — not new/invented emoji, just the closest existing
+// ones for each of the 3 tiers this app already uses.
+const SEVERITY_EMOJI = {
+  low: "🙂",
+  moderate: "😐",
+  high: "😣",
 };
 
 /**
@@ -49,6 +65,7 @@ const PatientPainLogger = ({ value, onChange, disabled = false, resolved = false
   const severity = getPainSeverity(value);
   const offset = CIRCUMFERENCE * (1 - value / 10);
   const severityLabel = t(`painWheel.${severity}`);
+  const emoji = SEVERITY_EMOJI[severity];
 
   // Once submitted, this turn's widget becomes a small, subordinate,
   // read-only summary instead of leaving an active editable control
@@ -89,13 +106,30 @@ const PatientPainLogger = ({ value, onChange, disabled = false, resolved = false
             }}
           />
         </svg>
+        {/* One centered instrument-reading hierarchy — value/10, a
+            restrained divider, then emoji+severity — instead of the
+            value sitting alone with the severity label stranded outside
+            the ring. `dir="ltr"` isolates just the two numeric lines
+            (harmless either language; guards against any locale-specific
+            digit-shaping quirk) — the emoji/severity lines below stay in
+            the ambient document direction, since Arabic severity text
+            must keep reading naturally RTL. Whole thing stays
+            `aria-hidden` (inherited from .patient-pain-ring above) — the
+            range input's own aria-valuetext below is the ONE accessible
+            reading of "value out of 10, severity", so this never produces
+            a second, differently-worded announcement. */}
         <div className="patient-pain-ring-center">
-          <span className="patient-pain-value">{value}</span>
-          <span className="patient-pain-max">/10</span>
+          <div className="patient-pain-value-group" dir="ltr">
+            <span className="patient-pain-value">{value}</span>
+            <span className="patient-pain-max">/ 10</span>
+          </div>
+          <div className="patient-pain-divider" />
+          <div className="patient-pain-status-group">
+            <span className="patient-pain-emoji">{emoji}</span>
+            <span className="patient-pain-severity">{severityLabel}</span>
+          </div>
         </div>
       </div>
-
-      <p className="patient-pain-severity">{severityLabel}</p>
 
       <div className="patient-pain-control">
         <label htmlFor="patient-pain-range" className="patient-visually-hidden">
@@ -111,7 +145,10 @@ const PatientPainLogger = ({ value, onChange, disabled = false, resolved = false
           disabled={disabled}
           onChange={(event) => onChange(Number(event.target.value))}
           className="patient-pain-range"
-          aria-valuetext={`${value} — ${severityLabel}`}
+          aria-valuetext={t("patientDashboard.assistant.painLogger.valueText", {
+            value,
+            severity: severityLabel,
+          })}
         />
         <div className="patient-pain-scale-caps" aria-hidden="true">
           <span>0</span>

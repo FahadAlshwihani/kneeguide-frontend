@@ -313,6 +313,30 @@
   flex-shrink: 0;
 }
 
+/* Conversation Mode's follow-up rail never wraps, at any width — a single
+   horizontally-scrollable row, per the task's own explicit "never wrap,
+   scroll instead" requirement. Welcome Mode's starting suggestions keep
+   their existing centered-wrap behavior (unchanged) since it isn't a
+   fixed footer competing for vertical space there. Scrollbar hidden
+   (same established pattern the old mobile-only rule already used) —
+   scrolling/keyboard access both still work without it. */
+.patient-assistant--conversation .patient-assistant-suggestions {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  justify-content: flex-start;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.patient-assistant--conversation .patient-assistant-suggestions::-webkit-scrollbar {
+  display: none;
+}
+
+.patient-assistant--conversation .patient-assistant-chip {
+  flex: 0 0 auto;
+}
+
 @media (max-width: 480px) {
   .patient-assistant-message {
     max-width: 32ch;

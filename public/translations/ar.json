@@ -463,6 +463,7 @@
       "youLabel": "أنت",
       "painLogger": {
         "rangeLabel": "مستوى الألم، من 0 إلى 10",
+        "valueText": "{{value}} من 10، {{severity}}",
         "submit": "إرسال مستوى الألم",
         "logged": "تم التسجيل"
       },

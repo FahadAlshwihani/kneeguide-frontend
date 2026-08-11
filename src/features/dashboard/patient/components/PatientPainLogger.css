@@ -46,33 +46,78 @@
   stroke-linecap: round;
 }
 
+/* One geometrically-centered stack (flex column + centered children,
+   never a top offset/margin-top guess) — value/10, a restrained divider,
+   then emoji+severity, all inside the inner circle as ONE cohesive
+   pain-status instrument instead of the number floating alone with the
+   severity label stranded below the ring. `inset: 15%` (vs the previous
+   18%) gives the now-taller content group a little more room inside the
+   also-enlarged ring (--patient-pain-ring-size). */
 .patient-pain-ring-center {
   position: absolute;
-  inset: 18%;
+  inset: 15%;
   border-radius: 50%;
   background: var(--patient-surface-elevated);
   border: 1px solid var(--patient-divider);
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--patient-space-3xs);
+  padding: var(--patient-space-2xs);
 }
 
+.patient-pain-value-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+/* The dominant reading — substantially larger than "/ 10" below it, one
+   step up the existing type scale (patientTokens.css's own
+   --patient-text-display) rather than an arbitrary new size. */
 .patient-pain-value {
-  font: var(--patient-text-page-heading);
+  font: var(--patient-text-display);
   color: var(--patient-color-heading);
+  line-height: 1;
 }
 
 .patient-pain-max {
+  margin-top: 2px;
   font: var(--patient-text-caption);
   color: var(--patient-color-muted);
 }
 
+/* Restrained internal divider — dashed, low-contrast, an existing
+   semantic token (not a bright/solid line), comfortably narrower than
+   the inner circle itself. */
+.patient-pain-divider {
+  width: 55%;
+  border-top: 1px dashed var(--patient-divider);
+}
+
+.patient-pain-status-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.patient-pain-emoji {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
 .patient-pain-severity {
   margin: 0;
-  font: var(--patient-text-label);
-  /* Severity is never color-only — this is real, readable text; the ring
-     color is a restrained reinforcement, not the only signal. */
+  font: var(--patient-text-caption);
+  font-weight: 700;
+  /* Severity is never color-only — this is real, readable text; the ring's
+     own colored arc (SEVERITY_COLOR_VAR, PatientPainLogger.jsx) is a
+     restrained reinforcement, not the only signal, and stays the
+     dominant color carrier — this label stays neutral rather than
+     competing with it. */
   color: var(--patient-color-text);
 }
 
