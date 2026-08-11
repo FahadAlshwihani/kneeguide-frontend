@@ -1,7 +1,12 @@
 /* The primary Patient Home experience — deliberately restrained per the
    task's own direction: no glass cards, no glowing borders, no gradient
    noise. The Orb is the one expressive element; everything else here is
-   quiet typography and a couple of flat, low-contrast surfaces. */
+   quiet typography and a couple of flat, low-contrast surfaces.
+
+   Two presentation modes over the same markup family
+   (.patient-assistant--welcome / --conversation) — see
+   PatientHomeAssistant.jsx for why `mode` is derived, never separate
+   state. */
 
 .patient-assistant {
   display: flex;
@@ -14,8 +19,15 @@
   text-align: center;
 }
 
-.patient-assistant-orb {
-  margin-block: var(--patient-space-2xs);
+/* ---------- Welcome: Orb + greeting ---------- */
+.patient-assistant-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Tighter than the top-level rhythm on purpose — title + message read
+     as one connected unit, not two independently spaced blocks. */
+  gap: var(--patient-space-2xs);
+  width: 100%;
 }
 
 .patient-assistant-greeting {
@@ -29,6 +41,74 @@
   font: var(--patient-text-body);
   color: var(--patient-color-muted);
   max-width: 46ch;
+}
+
+/* ---------- Conversation: compact identity header ---------- */
+.patient-assistant-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+}
+
+.patient-assistant-identity-label {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+/* ---------- Conversation history ---------- */
+.patient-chat-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-md);
+  width: 100%;
+  text-align: start;
+}
+
+.patient-chat-turn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-3xs);
+  max-width: 88%;
+}
+
+/* Aligns toward the logical end of the column's cross axis — this
+   already resolves correctly under RTL (flex alignment on a column
+   container follows the inline axis/writing direction natively), so no
+   `[dir="rtl"]` override or hardcoded left/right is needed here. */
+.patient-chat-turn--user {
+  align-self: flex-end;
+}
+
+.patient-chat-bubble {
+  margin: 0;
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-surface-elevated);
+  color: var(--patient-color-heading);
+  font: var(--patient-text-body);
+}
+
+.patient-chat-turn--assistant {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.patient-chat-turn-label {
+  font: var(--patient-text-caption);
+  font-weight: 700;
+  color: var(--patient-color-primary);
+}
+
+.patient-chat-text {
+  margin: 0;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+}
+
+.patient-chat-widget {
+  margin-top: var(--patient-space-2xs);
 }
 
 /* ---------- Input ---------- */
@@ -108,6 +188,7 @@
   margin: var(--patient-space-2xs) 0 0;
   font: var(--patient-text-caption);
   color: var(--patient-color-muted);
+  text-align: center;
 }
 
 /* ---------- Suggestions ---------- */
@@ -131,6 +212,7 @@
   font: var(--patient-text-caption);
   cursor: pointer;
   transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+  white-space: nowrap;
 }
 
 .patient-assistant-chip:hover {
@@ -149,46 +231,13 @@
   flex-shrink: 0;
 }
 
-/* ---------- Response surface ---------- */
-.patient-assistant-response {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--patient-space-2xs);
-  width: 100%;
-  padding: var(--patient-space-sm);
-  border-radius: var(--patient-radius-card);
-  background: var(--patient-assistant-response-bg);
-  border: 1px solid var(--patient-assistant-response-border);
-  animation: patient-assistant-response-in var(--patient-transition-normal) ease;
-}
-
-.patient-assistant-response p {
-  margin: 0;
-  font: var(--patient-text-body);
-  color: var(--patient-color-text);
-}
-
-@keyframes patient-assistant-response-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .patient-assistant-response {
-    animation: none;
-  }
-}
-
 @media (max-width: 480px) {
   .patient-assistant-message {
     max-width: 32ch;
+  }
+
+  .patient-chat-turn {
+    max-width: 94%;
   }
 
   .patient-assistant-suggestions {
