@@ -529,10 +529,6 @@
     },
     "logout": "Logout",
     "mock": {
-      "nextAppointment": {
-        "type": "Follow-up session",
-        "location": "KneeGuide Clinic - Room 4"
-      },
       "lastReport": {
         "statusLabel": "Reviewed"
       }
@@ -1028,6 +1024,7 @@
     "navLabel": "Patient navigation",
     "home": "Home",
     "exercises": "Exercises",
+    "appointments": "Appointments",
     "reports": "Reports",
     "profile": "Profile"
   },
