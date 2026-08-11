@@ -3,7 +3,10 @@
   min-height: 100vh;
   background: #050509;
   color: #e5e7eb;
-  padding: 24px 16px 96px;
+  /* Bottom nav clearance is now owned by PatientLayout's own content
+     wrapper (--patient-dock-clearance), not this page — plain symmetric
+     padding here. */
+  padding: 24px 16px;
   display: flex;
   justify-content: center;
 }
