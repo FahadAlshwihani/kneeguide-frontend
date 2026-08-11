@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import "../styles/Reports.css";
-import PatientBottomNav from "../components/PatientBottomNav";
 import { useTranslation } from "react-i18next";
 
 const Reports = () => {
