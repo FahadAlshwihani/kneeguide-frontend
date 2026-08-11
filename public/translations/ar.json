@@ -444,101 +444,57 @@
     "mockNote": "* هذه الصفحة تعتمد على بيانات تجريبية فقط، وسيتم ربطها بالنظام الفعلي لاحقاً."
   },
   "patientDashboard": {
-    "header": {
-      "greeting": "مرحباً، {{name}}",
-      "subtitle": "إليك نظرة تفصيلية على وضع تأهيل الركبة اليوم.",
-      "role": "مريض",
-      "logout": "تسجيل الخروج",
+    "greeting": {
+      "morning": "صباح الخير، {{name}}.",
+      "afternoon": "مساء الخير، {{name}}.",
+      "evening": "مساء الخير، {{name}}.",
       "fallbackName": "صديقي"
     },
-    "common": {
-      "withDoctorPrefix": "مع"
-    },
-    "topCards": {
-      "nextAppointment": {
-        "label": "الموعد القادم"
+    "assistant": {
+      "regionLabel": "مساعد KneeGuide",
+      "orbLabel": "مساعد KneeGuide",
+      "intro": "كيف يمكنني مساعدتك في رحلة تعافيك اليوم؟",
+      "inputLabel": "اسأل KneeGuide عن رحلة تعافيك",
+      "inputPlaceholder": "اسأل KneeGuide عن رحلة تعافيك...",
+      "inputHint": "جرّب إحدى الاقتراحات أدناه — الأسئلة الحرة غير مفعّلة بعد.",
+      "sendLabel": "إرسال",
+      "suggestionsLabel": "اقتراحات سريعة",
+      "actions": {
+        "showExercises": "عرض تمارين اليوم",
+        "nextAppointment": "متى موعدي القادم؟",
+        "latestReport": "عرض آخر تقرير لي",
+        "logPain": "تسجيل ألم اليوم",
+        "rehabProgress": "كيف يسير تقدّم برنامجي العلاجي؟"
       },
-      "lastReportStatus": {
-        "label": "حالة آخر تقرير",
-        "submittedOn": "تم إرساله بتاريخ"
-      },
-      "currentPain": {
-        "label": "مستوى الألم الحالي (آخر تقرير)",
-        "footer": "استناداً إلى آخر تقرير سريري لك."
+      "responses": {
+        "noAppointment": "ليس لديك موعد قادم مجدول حالياً.",
+        "nextAppointment": "موعدك القادم في {{date}} الساعة {{time}} مع {{doctor}}.",
+        "noReport": "لا توجد تقارير سريرية لك بعد.",
+        "latestReport": "آخر تقرير لك بتاريخ {{date}} مُصنَّف بحالة {{status}}، بمستوى ألم مسجَّل {{pain}}.",
+        "noProgress": "لا تتوفر بيانات التزام حتى الآن.",
+        "rehabProgress": "أنت في سلسلة التزام مدتها {{days}} يوم، مع إنجاز {{percent}}% من تمارين هذا الأسبوع.",
+        "viewReports": "عرض التقارير"
       }
     },
-    "painSection": {
-      "title": "ألم اليوم",
-      "lastReportPainLabel": "مستوى الألم في آخر تقرير",
-      "trendLabel": "الاتجاه العام",
-      "trendImproving": "في تحسّن",
-      "trendHigher": "أعلى قليلاً",
-      "noteLabel": "ملاحظة اختيارية لطبيبك حول ألم اليوم",
-      "notePlaceholder": "مثال: يزداد الألم عند نزول الدرج، ويخف مع الراحة...",
-      "noteHint": "هذه البيانات تجريبية فقط — لاحقاً يمكن إرسالها مع التقرير اليومي."
+    "context": {
+      "regionLabel": "نظرة سريعة",
+      "nextAppointment": "الموعد القادم",
+      "todayExercises": "تمارين اليوم",
+      "exercisesProgress": "تم إنجاز {{done}} من {{total}}",
+      "noExercises": "لا توجد تمارين مقررة اليوم",
+      "latestPain": "آخر مستوى ألم"
     },
-    "todaySummary": {
-      "title": "ملخص اليوم",
-      "exercisesLabel": "التمارين المقررة لليوم",
-      "exercisesSub": "بناءً على برنامج التأهيل الحالي",
-      "nextAppointmentLabel": "الموعد القادم",
-      "nextAppointmentSub": "بعد {{days}} يوم",
-      "adherenceLabel": "الالتزام بالبرنامج العلاجي",
-      "adherenceSub": "حافظ على استمرارية التزامك"
+    "pain": {
+      "title": "تسجيل ألم اليوم"
     },
-    "lastReport": {
-      "title": "آخر تقرير سريري",
-      "tagPrefix": "#",
-      "dateLabel": "التاريخ",
-      "painLabel": "مستوى الألم",
-      "statusLabel": "الحالة",
-      "viewButton": "عرض التقرير الكامل"
-    },
-    "appointment": {
-      "title": "الموعد القادم",
-      "reschedule": "إعادة جدولة",
-      "viewAll": "عرض جميع المواعيد"
-    },
-    "exercises": {
-      "title": "تمارين اليوم",
-      "assignedCount": "عدد التمارين المقررة: {{count}}",
-      "openProgram": "فتح برنامج التمارين",
-      "status": {
-        "completed": "مكتمل",
-        "inProgress": "قيد التنفيذ",
-        "pending": "لم يبدأ بعد"
-      }
-    },
-    "recentReports": {
-      "title": "التقارير الأخيرة",
-      "table": {
-        "date": "التاريخ",
-        "status": "الحالة",
-        "summary": "الملخص"
-      },
-      "viewAll": "عرض جميع التقارير",
-      "statusReviewed": "تمت المراجعة",
-      "scoreStable": "مستقر",
-      "scoreImproving": "في تحسّن"
-    },
-    "adherence": {
-      "title": "مدى الالتزام ببرنامج التأهيل",
-      "currentStreakLabel": "سلسلة الالتزام الحالية",
-      "currentStreakSub": "عدد الأيام المتتالية التي سجّلت فيها التمارين",
-      "currentStreakValue": "{{days}} يوم",
-      "weeklyRateLabel": "معدل الإنجاز الأسبوعي",
-      "weeklyRateSub": "نسبة التمارين المنجزة خلال هذا الأسبوع",
-      "missedLabel": "الحصص الفائتة",
-      "missedSub": "حاول أن تجعل هذا الرقم أقل ما يمكن"
-    },
+    "logout": "تسجيل الخروج",
     "mock": {
       "nextAppointment": {
         "type": "جلسة متابعة",
         "location": "عيادة KneeGuide - الغرفة 4"
       },
       "lastReport": {
-        "status": "تمت المراجعة",
-        "notes": "تحسّن جيد في مدى الحركة. استمر على الخطة الحالية."
+        "statusLabel": "تمت المراجعة"
       }
     }
   },

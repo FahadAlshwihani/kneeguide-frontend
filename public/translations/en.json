@@ -444,101 +444,57 @@
     "mockNote": "* This page currently uses mock data only. Later it will be bound to real API endpoints."
   },
   "patientDashboard": {
-    "header": {
-      "greeting": "Hi, {{name}}",
-      "subtitle": "Here’s a detailed overview of your knee rehab today.",
-      "role": "Patient",
-      "logout": "Logout",
+    "greeting": {
+      "morning": "Good morning, {{name}}.",
+      "afternoon": "Good afternoon, {{name}}.",
+      "evening": "Good evening, {{name}}.",
       "fallbackName": "there"
     },
-    "common": {
-      "withDoctorPrefix": "With"
-    },
-    "topCards": {
-      "nextAppointment": {
-        "label": "Next appointment"
+    "assistant": {
+      "regionLabel": "KneeGuide Assistant",
+      "orbLabel": "KneeGuide Assistant",
+      "intro": "How can I help you with your recovery today?",
+      "inputLabel": "Ask KneeGuide about your recovery",
+      "inputPlaceholder": "Ask KneeGuide about your recovery...",
+      "inputHint": "Try one of the suggestions below — free-form questions aren't connected yet.",
+      "sendLabel": "Send",
+      "suggestionsLabel": "Suggested actions",
+      "actions": {
+        "showExercises": "Show today's exercises",
+        "nextAppointment": "When is my next appointment?",
+        "latestReport": "Show my latest report",
+        "logPain": "Log today's pain",
+        "rehabProgress": "How is my rehab progress?"
       },
-      "lastReportStatus": {
-        "label": "Last report status",
-        "submittedOn": "Submitted on"
-      },
-      "currentPain": {
-        "label": "Current pain level (last report)",
-        "footer": "Based on your last clinical report"
+      "responses": {
+        "noAppointment": "You don't have an upcoming appointment scheduled.",
+        "nextAppointment": "Your next appointment is {{date}} at {{time}} with {{doctor}}.",
+        "noReport": "You don't have any clinical reports yet.",
+        "latestReport": "Your latest report from {{date}} is marked {{status}}, with a recorded pain level of {{pain}}.",
+        "noProgress": "No adherence data is available yet.",
+        "rehabProgress": "You're on a {{days}}-day streak, with {{percent}}% of this week's exercises completed.",
+        "viewReports": "View reports"
       }
     },
-    "painSection": {
-      "title": "Today's pain",
-      "lastReportPainLabel": "Last report pain",
-      "trendLabel": "Trend",
-      "trendImproving": "Improving",
-      "trendHigher": "Slightly higher",
-      "noteLabel": "Optional note for your doctor about today's pain",
-      "notePlaceholder": "E.g. Pain increases when going downstairs, better when resting...",
-      "noteHint": "This is mock only — later it can be sent with your daily report."
+    "context": {
+      "regionLabel": "Quick overview",
+      "nextAppointment": "Next appointment",
+      "todayExercises": "Today's exercises",
+      "exercisesProgress": "{{done}} of {{total}} done",
+      "noExercises": "None assigned today",
+      "latestPain": "Latest pain"
     },
-    "todaySummary": {
-      "title": "Today’s summary",
-      "exercisesLabel": "Exercises assigned today",
-      "exercisesSub": "Based on your current rehab program",
-      "nextAppointmentLabel": "Next appointment",
-      "nextAppointmentSub": "In {{days}} days",
-      "adherenceLabel": "Program adherence",
-      "adherenceSub": "Keep your streak going"
+    "pain": {
+      "title": "Log today's pain"
     },
-    "lastReport": {
-      "title": "Last clinical report",
-      "tagPrefix": "#",
-      "dateLabel": "Date",
-      "painLabel": "Pain level",
-      "statusLabel": "Status",
-      "viewButton": "View full report"
-    },
-    "appointment": {
-      "title": "Next appointment",
-      "reschedule": "Reschedule",
-      "viewAll": "View all appointments"
-    },
-    "exercises": {
-      "title": "Today's exercises",
-      "assignedCount": "{{count}} assigned",
-      "openProgram": "Open exercise program",
-      "status": {
-        "completed": "Completed",
-        "inProgress": "In progress",
-        "pending": "Pending"
-      }
-    },
-    "recentReports": {
-      "title": "Recent reports",
-      "table": {
-        "date": "Date",
-        "status": "Status",
-        "summary": "Summary"
-      },
-      "viewAll": "View all reports",
-      "statusReviewed": "Reviewed",
-      "scoreStable": "Stable",
-      "scoreImproving": "Improving"
-    },
-    "adherence": {
-      "title": "Rehab adherence",
-      "currentStreakLabel": "Current streak",
-      "currentStreakSub": "Days you’ve logged exercises in a row",
-      "currentStreakValue": "{{days}} days",
-      "weeklyRateLabel": "Weekly completion rate",
-      "weeklyRateSub": "Percentage of done exercises this week",
-      "missedLabel": "Missed sessions",
-      "missedSub": "Try to keep this as low as possible"
-    },
+    "logout": "Logout",
     "mock": {
       "nextAppointment": {
         "type": "Follow-up session",
         "location": "KneeGuide Clinic - Room 4"
       },
       "lastReport": {
-        "status": "Reviewed",
-        "notes": "Good improvement in range of motion. Continue current plan."
+        "statusLabel": "Reviewed"
       }
     }
   },
