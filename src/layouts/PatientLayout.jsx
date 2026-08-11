@@ -26,12 +26,33 @@ import "./PatientLayout.css";
  * env(safe-area-inset-bottom) — structurally, once, here — instead of
  * each page guessing its own bottom padding for a nav it doesn't render
  * itself anymore.
+ *
+ * Logout also lives here now, next to the language toggle — audited
+ * before moving it: the old PatientDashboard header's logout button was
+ * the ONLY working logout control anywhere in the Patient Dashboard
+ * (Profile's own "Logout" button under its Security tab has never had a
+ * click handler wired to it). Removing Home's header without placing a
+ * working logout somewhere would have silently broken real functionality,
+ * which the task this implements explicitly forbids — this is the
+ * smallest change that keeps it working and available from every patient
+ * page, consistent with how the language toggle already works.
  */
 const PatientLayout = () => {
+  const { t } = useTranslation();
+  const { logout } = useAuth();
+
   return (
     <div className="patient-shell">
-      <div className="patient-shell-lang">
+      <div className="patient-shell-account">
         <SidebarLanguageSwitcher />
+        <button
+          type="button"
+          className="patient-shell-logout"
+          onClick={logout}
+          aria-label={t("patientDashboard.logout")}
+        >
+          <LuLogOut aria-hidden="true" />
+        </button>
       </div>
 
       <div className="patient-shell-content">

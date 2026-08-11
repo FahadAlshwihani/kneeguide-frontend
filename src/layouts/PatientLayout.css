@@ -16,14 +16,48 @@
 }
 
 /* Reachable from anywhere in the Patient Dashboard without scrolling back
-   up, same as the Dock itself — this replaces the language toggle that
+   up, same as the Dock itself — the language toggle replaces the one that
    used to live embedded inside the old PatientBottomNav (removed
-   entirely, see that component's deletion), not a new feature. The
-   SidebarLanguageSwitcher component itself is untouched (also used by
-   DoctorSidebar) — only where it's rendered changed for Patient. */
-.patient-shell-lang {
+   entirely, see that component's deletion); logout replaces the one that
+   used to live in PatientDashboard's own header (see PatientLayout.jsx's
+   own comment for why it moved here). SidebarLanguageSwitcher itself is
+   untouched (also used by DoctorSidebar) — only where it's rendered
+   changed for Patient. */
+.patient-shell-account {
   position: fixed;
   top: 16px;
   inset-inline-end: 16px;
   z-index: var(--z-sticky, 300);
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-2xs, 8px);
+}
+
+.patient-shell-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--patient-border, rgba(255, 255, 255, 0.08));
+  background: var(--patient-surface-card, #0b0e17);
+  color: var(--patient-color-muted, #9ca3af);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.patient-shell-logout:hover {
+  color: var(--patient-color-danger, #ef4444);
+  border-color: var(--patient-color-danger, #ef4444);
+}
+
+.patient-shell-logout:focus-visible {
+  outline: 2px solid var(--patient-color-focus, var(--patient-color-primary, #2563eb));
+  outline-offset: 2px;
+}
+
+.patient-shell-logout svg {
+  width: 16px;
+  height: 16px;
 }
