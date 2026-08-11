@@ -111,18 +111,21 @@ export function sessionReducer(state, action) {
       const exercises = state.exercises.map((item, index) =>
         index === state.currentExerciseIndex ? { ...item, status: EXERCISE_STATUS.COMPLETED, completedAt } : item
       );
-      const isLast = state.currentExerciseIndex >= state.exercises.length - 1;
-      return {
-        ...state,
-        exercises,
-        status: isLast ? SESSION_STATUS.PAIN_CHECK : SESSION_STATUS.BETWEEN_EXERCISES,
-      };
+      // Every exercise — including the last — passes through
+      // BETWEEN_EXERCISES so its KneeGuide Insight is shown; the LAST
+      // exercise's "Continue" button reads "Finish session" and its
+      // CONTINUE_TO_NEXT_EXERCISE dispatch (below) is what actually
+      // transitions to PAIN_CHECK.
+      return { ...state, exercises, status: SESSION_STATUS.BETWEEN_EXERCISES };
     }
 
     case "CONTINUE_TO_NEXT_EXERCISE": {
       if (state.status !== SESSION_STATUS.BETWEEN_EXERCISES) return state;
       const nextIndex = state.currentExerciseIndex + 1;
-      if (nextIndex >= state.exercises.length) return state;
+
+      if (nextIndex >= state.exercises.length) {
+        return { ...state, status: SESSION_STATUS.PAIN_CHECK };
+      }
 
       const startedAt = nowIso();
       const exercises = state.exercises.map((item, index) =>
