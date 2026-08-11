@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { LuCheck } from "react-icons/lu";
 import "./PatientPainLogger.css";
 
 const RADIUS = 42;
@@ -42,12 +43,33 @@ const SEVERITY_COLOR_VAR = {
  * retired rather than kept as an unused generic primitive; see this
  * round's report for that confirmation.
  */
-const PatientPainLogger = ({ value, onChange, disabled = false }) => {
+const PatientPainLogger = ({ value, onChange, disabled = false, resolved = false }) => {
   const { t } = useTranslation();
   const reducedMotion = prefersReducedMotion();
   const severity = getPainSeverity(value);
   const offset = CIRCUMFERENCE * (1 - value / 10);
   const severityLabel = t(`painWheel.${severity}`);
+
+  // Once submitted, this turn's widget becomes a small, subordinate,
+  // read-only summary instead of leaving an active editable control
+  // sitting in old transcript history — see PatientHomeAssistant.jsx's
+  // handlePainSubmit, which flips `widget.state` to "resolved". To
+  // change the value again, the user re-invokes "Log today's pain",
+  // which the recent-log confirmation flow (patientAssistantActions.js)
+  // handles.
+  if (resolved) {
+    return (
+      <div className={`patient-pain-logger patient-pain-logger--resolved patient-pain-logger--${severity}`}>
+        <div className="patient-pain-resolved-label">
+          <span className="patient-pain-resolved-value">{value}/10</span>
+          <span className="patient-pain-resolved-caption">
+            <LuCheck aria-hidden="true" />
+            {t("patientDashboard.assistant.painLogger.logged")}
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`patient-pain-logger patient-pain-logger--${severity}`}>

@@ -1,5 +1,6 @@
 import { LuDumbbell, LuFileText, LuCalendarClock, LuHeartPulse, LuChartLine } from "react-icons/lu";
 import { ROUTES } from "../../../../utils/routes";
+import { getRecentPainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorage";
 
 /**
  * The Patient Assistant action registry — one source of truth mapping
@@ -24,15 +25,21 @@ import { ROUTES } from "../../../../utils/routes";
  *             from real, already-loaded data — PatientHomeAssistant.jsx
  *             renders it as a conversation turn through structured React,
  *             never dangerouslySetInnerHTML. `widget` is an optional
- *             semantic identifier (a string, e.g. "painWheel") naming an
- *             existing interactive component to render alongside the
- *             message — the registry names WHICH real capability, the
- *             chat renderer owns the actual widget-to-component mapping,
- *             so no JSX/UI concern leaks into this file.
+ *             serializable descriptor (e.g. `{ type: "painLogger", value }`)
+ *             naming an existing interactive component to render alongside
+ *             the message — the registry names WHICH real capability and
+ *             WHAT state it starts in, the chat renderer owns the actual
+ *             widget-to-component mapping, so no JSX/UI concern leaks into
+ *             this file. `actions` is an optional array of serializable
+ *             contextual-button descriptors (`{ id, labelKey }`, no
+ *             functions — see PatientHomeAssistant.jsx's
+ *             handleContextualAction for how ids map to behavior) scoped
+ *             to that ONE message, distinct from the global suggestion
+ *             chips below the composer.
  *
  * `execute(context)` receives `{ navigate, t, data }` and returns either
  * `undefined` (NAVIGATE — the side effect already happened) or a response
- * descriptor `{ message, secondaryAction?, widget? }` (DISPLAY).
+ * descriptor `{ message, secondaryAction?, widget?, actions? }` (DISPLAY).
  */
 
 export const ASSISTANT_ACTION_TYPES = {
@@ -105,17 +112,35 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     labelKey: "patientDashboard.assistant.actions.logPain",
     icon: LuHeartPulse,
     type: ASSISTANT_ACTION_TYPES.DISPLAY,
-    // Surfaces the real, existing Pain Wheel interaction inline as this
-    // turn's response (widget: "painWheel" — see PatientHomeAssistant.jsx
-    // for the actual <PainWheel/> it maps to). There is no backend
-    // persistence for this reading today (it's local component state,
-    // same as before this redesign) — the message asks a question rather
-    // than claiming anything was "logged" to a server, so the response
-    // stays honest about what this actually does.
-    execute: ({ t }) => ({
-      message: t("patientDashboard.assistant.responses.logPainPrompt"),
-      widget: "painWheel",
-    }),
+    // Reads the real (mock, local-only) pain log before deciding how to
+    // respond — this is exactly the "deterministic data access" this
+    // registry already does for appointments/reports/adherence, just
+    // sourced from localStorage instead of the in-memory mock objects.
+    // No backend/API call, no medical interpretation: if a record exists
+    // AND is within the last 24h, ask before overwriting it rather than
+    // silently reopening a fresh logger; the actual Yes/No/Submit flow
+    // transitions live in PatientHomeAssistant.jsx (see its
+    // handleChangePain/handleKeepPain/handlePainSubmit), since they're
+    // conversation-flow orchestration, not registry-level capability.
+    execute: ({ t }) => {
+      const recent = getRecentPainLog();
+
+      if (recent) {
+        return {
+          message: t("patientDashboard.assistant.responses.painRecentExists", { value: recent.value }),
+          widget: { type: "painExistingConfirmation", value: recent.value },
+          actions: [
+            { id: "change-pain", labelKey: "patientDashboard.assistant.actions.changePain" },
+            { id: "keep-pain", labelKey: "patientDashboard.assistant.actions.keepPain" },
+          ],
+        };
+      }
+
+      return {
+        message: t("patientDashboard.assistant.responses.logPainPrompt"),
+        widget: { type: "painLogger", value: DEFAULT_PAIN_VALUE, mode: "log" },
+      };
+    },
   },
   {
     id: "REHAB_PROGRESS",
