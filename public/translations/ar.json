@@ -576,6 +576,96 @@
         "lastDone": "قبل أسبوع",
         "description": "يقوّي عضلات أسفل الساق لتحسين التوازن والثبات."
       }
+    },
+    "session": {
+      "weekNav": "أسبوع البرنامج العلاجي",
+      "weekLabel": "الأسبوع {{number}}",
+      "todaysSessionTab": "جلسة اليوم",
+      "exerciseLibrary": "مكتبة التمارين",
+      "dayStatus": {
+        "completed": "مكتملة",
+        "today": "اليوم",
+        "upcoming": "قادمة"
+      },
+      "todaysRehab": "برنامج تأهيل اليوم",
+      "sessionNumber": "الجلسة {{number}}",
+      "exercisesCount": "{{count}} تمارين",
+      "setsCount": "{{count}} مجموعات إجمالاً",
+      "estimatedDuration": "المدة المتوقعة: {{minutes}} دقيقة",
+      "exercisesProgress": "{{completed}} / {{total}} تمارين",
+      "setsProgress": "{{completed}} / {{total}} مجموعات",
+      "startSession": "ابدأ جلسة اليوم",
+      "sessionTime": "وقت الجلسة",
+      "elapsed": "مرّ {{time}}",
+      "setsReps": "{{sets}} مجموعات × {{reps}} تكرار",
+      "target": "الهدف",
+      "estimated": "المدة المتوقعة: {{minutes}} دقيقة",
+      "previousSession": "الجلسة السابقة",
+      "previousRom": "مدى الحركة {{value}}°",
+      "setLabel": "المجموعة {{current}} من {{total}}",
+      "repsLabel": "{{count}} تكرار",
+      "exerciseTime": "وقت التمرين",
+      "movementQuality": "جودة الحركة",
+      "range": "مدى الحركة",
+      "completeSet": "إنهاء المجموعة",
+      "sensorNotConnected": "الحساس غير متصل — المتابعة مستمرة يدويًا.",
+      "setStatus": {
+        "done": "منتهية",
+        "active": "الحالية",
+        "pending": "—"
+      },
+      "quality": {
+        "fair": "مقبولة",
+        "good": "جيدة",
+        "excellent": "ممتازة"
+      },
+      "insightTitle": "تحليل KneeGuide",
+      "continueTo": "المتابعة إلى {{name}}",
+      "finishSession": "إنهاء الجلسة",
+      "completedIn": "اكتمل خلال {{time}}",
+      "painCheckPrompt": "كيف تحس ركبتك بعد جلسة اليوم؟",
+      "skipPainCheck": "تخطي",
+      "sessionCompleteTitle": "اكتملت الجلسة",
+      "greatWork": "أحسنت، {{name}}.",
+      "todaysRehabDuration": "مدة تأهيل اليوم",
+      "exercisesSummary": "التمارين",
+      "setsSummary": "المجموعات",
+      "avgQuality": "متوسط جودة الحركة",
+      "painChange": "الألم",
+      "romTrend": "اتجاه مدى الحركة",
+      "recoveryInsightTitle": "تحليل KneeGuide للتعافي",
+      "recommendationTitle": "الخطوة التالية",
+      "recommendations": {
+        "followPlan": "اتّبع خطة التعافي الموصى بها من طبيبك.",
+        "lightActivity": "الألم زاد شوي اليوم — خفف من نشاطك لبقية اليوم.",
+        "monitor": "استمر بمتابعة مستوى الألم والحركة.",
+        "contactClinician": "إذا ساءت الأعراض، تواصل مع طبيبك."
+      },
+      "viewReport": "عرض تقرير الجلسة الكامل",
+      "reportReady": "تقرير الجلسة جاهز",
+      "reportFutureNote": "في نسخة KneeGuide المتصلة، يمكن مشاركة تقارير الجلسات المكتملة مع فريقك الطبي.",
+      "reportTitle": "تقرير الجلسة",
+      "reportDuration": "المدة",
+      "reportExercise": "التمرين",
+      "reportSets": "المجموعات",
+      "close": "إغلاق",
+      "upcomingHeading": "يوم تأهيل قادم",
+      "upcomingSub": "{{count}} تمارين مخططة · حوالي {{minutes}} دقيقة",
+      "dayLockedReason": "هذه الجلسة غير متاحة بعد — تُفتح في يومها المحدد.",
+      "insights": {
+        "exerciseImproved": "مدى حركتك كان أعلى بـ {{delta}}° مقارنة بجلستك السابقة — تقدّم ثابت وجيد.",
+        "exerciseReduced": "مدى حركتك كان أقل شوي من جلستك السابقة. هذا وارد أحيانًا — حافظ على حركة متحكم بها بدل ما تكابر عليها.",
+        "exerciseMaintained": "حركتك كانت ثابتة مقارنة بجلستك السابقة — الثبات نفسه تقدّم.",
+        "sessionPainIncreased": "حركتك كانت ثابتة طوال الجلسة. الألم زاد شوي، فخفف من نشاطك لبقية اليوم واتّبع خطة التعافي الموصى بها.",
+        "sessionPainDecreased": "الألم خف مقارنة بقبل الجلسة، وحركتك كانت ثابتة طوالها. استمر باتّباع خطة التعافي الموصى بها.",
+        "sessionConsistent": "حركتك كانت ثابتة طوال جلسة اليوم. استمر باتّباع خطة التعافي الموصى بها."
+      },
+      "targets": {
+        "quadSets": "التحكم في بسط الركبة",
+        "legRaises": "التحكم في الورك والفخذ",
+        "heelSlides": "مدى ثني الركبة"
+      },
+      "devReset": "إعادة تعيين الجلسة التجريبية (للتطوير فقط)"
     }
   },
   "patientReports": {

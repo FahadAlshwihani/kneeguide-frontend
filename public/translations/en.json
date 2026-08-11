@@ -576,6 +576,96 @@
         "lastDone": "1 week ago",
         "description": "Strengthens lower leg muscles for stability."
       }
+    },
+    "session": {
+      "weekNav": "Rehab week",
+      "weekLabel": "Week {{number}}",
+      "todaysSessionTab": "Today's Session",
+      "exerciseLibrary": "Exercise Library",
+      "dayStatus": {
+        "completed": "Completed",
+        "today": "Today",
+        "upcoming": "Upcoming"
+      },
+      "todaysRehab": "Today's Rehab",
+      "sessionNumber": "Session {{number}}",
+      "exercisesCount": "{{count}} exercises",
+      "setsCount": "{{count}} total sets",
+      "estimatedDuration": "Estimated duration: {{minutes}} min",
+      "exercisesProgress": "{{completed}} / {{total}} exercises",
+      "setsProgress": "{{completed}} / {{total}} sets",
+      "startSession": "Start today's session",
+      "sessionTime": "Session time",
+      "elapsed": "{{time}} elapsed",
+      "setsReps": "{{sets}} sets × {{reps}} reps",
+      "target": "Target",
+      "estimated": "Estimated: {{minutes}} min",
+      "previousSession": "Previous session",
+      "previousRom": "ROM {{value}}°",
+      "setLabel": "Set {{current}} of {{total}}",
+      "repsLabel": "{{count}} reps",
+      "exerciseTime": "Exercise time",
+      "movementQuality": "Movement quality",
+      "range": "Range",
+      "completeSet": "Complete set",
+      "sensorNotConnected": "Sensor not connected — tracking continues manually.",
+      "setStatus": {
+        "done": "Done",
+        "active": "Active",
+        "pending": "—"
+      },
+      "quality": {
+        "fair": "Fair",
+        "good": "Good",
+        "excellent": "Excellent"
+      },
+      "insightTitle": "KneeGuide Insight",
+      "continueTo": "Continue to {{name}}",
+      "finishSession": "Finish session",
+      "completedIn": "Completed in {{time}}",
+      "painCheckPrompt": "How does your knee feel after today's session?",
+      "skipPainCheck": "Skip",
+      "sessionCompleteTitle": "Session complete",
+      "greatWork": "Great work, {{name}}.",
+      "todaysRehabDuration": "Today's rehabilitation",
+      "exercisesSummary": "Exercises",
+      "setsSummary": "Sets",
+      "avgQuality": "Average movement quality",
+      "painChange": "Pain",
+      "romTrend": "Range trend",
+      "recoveryInsightTitle": "KneeGuide Recovery Insight",
+      "recommendationTitle": "What's next",
+      "recommendations": {
+        "followPlan": "Follow your prescribed recovery plan.",
+        "lightActivity": "Pain increased slightly today — keep the rest of today's activity light.",
+        "monitor": "Keep monitoring your pain and mobility.",
+        "contactClinician": "If symptoms become concerning, contact your clinician."
+      },
+      "viewReport": "View full session report",
+      "reportReady": "Session report ready",
+      "reportFutureNote": "In the connected version of KneeGuide, completed session reports can be shared with your care team.",
+      "reportTitle": "Session Report",
+      "reportDuration": "Duration",
+      "reportExercise": "Exercise",
+      "reportSets": "Sets",
+      "close": "Close",
+      "upcomingHeading": "Upcoming rehab day",
+      "upcomingSub": "{{count}} exercises planned · about {{minutes}} min",
+      "dayLockedReason": "This session isn't available yet — it unlocks on its scheduled day.",
+      "insights": {
+        "exerciseImproved": "Your range of motion was {{delta}}° higher than your previous session — nice, consistent progress.",
+        "exerciseReduced": "Your range was a little lower than your previous session. That can happen — keep the movement controlled rather than forcing it.",
+        "exerciseMaintained": "Your movement stayed consistent with your previous session — steady progress is still progress.",
+        "sessionPainIncreased": "Your movement stayed consistent through the session. Your pain increased slightly, so keep the rest of today's activity light and follow your existing recovery plan.",
+        "sessionPainDecreased": "Your pain eased compared to before the session, and your movement stayed consistent throughout. Keep following your existing recovery plan.",
+        "sessionConsistent": "Your movement was consistent throughout today's session. Keep following your existing recovery plan."
+      },
+      "targets": {
+        "quadSets": "Knee extension control",
+        "legRaises": "Hip and thigh control",
+        "heelSlides": "Knee flexion range"
+      },
+      "devReset": "Reset demo session (dev only)"
     }
   },
   "patientReports": {
