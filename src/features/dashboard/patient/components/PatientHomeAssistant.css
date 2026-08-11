@@ -185,6 +185,21 @@
   margin-top: var(--patient-space-2xs);
 }
 
+/* ---------- Conversation footer (composer + follow-up suggestions) ---------- */
+/* Never scrolls with the transcript (see the JSX — this is a sibling of
+   .patient-chat-history, not a descendant). Kept visually light per the
+   task's own direction — no card, no heavy border; a hairline top divider
+   is enough to read as a distinct control region against the dark page. */
+.patient-assistant-footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-sm);
+  width: 100%;
+  padding-top: var(--patient-space-sm);
+  border-top: 1px solid var(--patient-divider);
+}
+
 /* ---------- Input ---------- */
 .patient-assistant-form {
   width: 100%;
