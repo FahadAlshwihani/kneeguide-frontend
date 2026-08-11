@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { LuSendHorizontal } from "react-icons/lu";
 import { useAuth } from "../../../../context/AuthContext";
 import { PATIENT_ASSISTANT_ACTIONS } from "../assistant/patientAssistantActions";
+import { getLatestPainLog, savePainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorage";
 import KneeGuideAssistantOrb from "./KneeGuideAssistantOrb";
 import TypewriterText from "./TypewriterText";
 import PatientButton from "./PatientButton";
-import PainWheel from "./PainWheel";
+import PatientPainLogger from "./PatientPainLogger";
 import "./PatientHomeAssistant.css";
 
 const SUCCESS_PULSE_MS = 700;
@@ -19,14 +20,21 @@ const prefersReducedMotion = () =>
 
 /**
  * One conversation turn. Deliberately presentation-only — it never calls
- * into the action registry itself, only renders whatever
- * PatientHomeAssistant already resolved (see runAction there). `widget`
- * is the one place a real interactive component (PainWheel) gets mounted
- * inline in a turn; the registry only ever names it as a string
- * ("painWheel"), never imports/renders it itself (see
- * assistant/patientAssistantActions.js).
+ * into the action registry or the pain-storage utility itself, only
+ * renders whatever PatientHomeAssistant already resolved and forwards
+ * clicks back up via callbacks. `widget`/`actions` are serializable
+ * descriptors (see patientAssistantActions.js) — this is the one place
+ * they get mapped onto real components (PatientPainLogger) and buttons.
  */
-const ConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComplete, painValue, onPainChange }) => {
+const ConversationTurn = ({
+  message,
+  scrollRef,
+  reducedMotion,
+  onTypedComplete,
+  onPainValueChange,
+  onPainSubmit,
+  onContextualAction,
+}) => {
   const { t } = useTranslation();
 
   if (message.role === "user") {
@@ -44,6 +52,9 @@ const ConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComplete, 
     );
   }
 
+  const isPainLogger = message.widget?.type === "painLogger";
+  const isResolvedPainLogger = isPainLogger && message.widget.state === "resolved";
+
   return (
     <motion.div
       initial={reducedMotion ? false : { opacity: 0, y: 8 }}
@@ -59,9 +70,41 @@ const ConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComplete, 
         <p className="patient-chat-text">{message.content}</p>
       )}
 
-      {message.widget === "painWheel" && (
+      {isPainLogger && (
         <div className="patient-chat-widget">
-          <PainWheel value={painValue} onChange={onPainChange} />
+          <PatientPainLogger
+            value={message.widget.value}
+            onChange={(value) => onPainValueChange(message.id, value)}
+            disabled={isResolvedPainLogger}
+            resolved={isResolvedPainLogger}
+          />
+          {!isResolvedPainLogger && (
+            <PatientButton
+              type="button"
+              variant="primary"
+              size="sm"
+              className="patient-pain-submit"
+              onClick={() => onPainSubmit(message.id)}
+            >
+              {t("patientDashboard.assistant.painLogger.submit")}
+            </PatientButton>
+          )}
+        </div>
+      )}
+
+      {message.actions && message.actions.length > 0 && !message.resolved && (
+        <div className="patient-chat-actions">
+          {message.actions.map((action) => (
+            <PatientButton
+              key={action.id}
+              type="button"
+              variant={action.id === "change-pain" ? "outline" : "ghost"}
+              size="sm"
+              onClick={() => onContextualAction(message.id, action.id)}
+            >
+              {t(action.labelKey)}
+            </PatientButton>
+          ))}
         </div>
       )}
 
@@ -83,13 +126,23 @@ const ConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComplete, 
  * - CONVERSATION (messages.length > 0): compact Orb + "KneeGuide" identity,
  *   accumulated conversation history, composer, follow-up suggestions.
  *
- * `mode` is DERIVED from `messages.length`, not tracked as separate state
- * — there is no way for it to desync from the conversation itself.
+ * `mode` is DERIVED from `messages.length`, not tracked as separate state.
+ *
+ * ONE conversation-turn pipeline (appendUserMessage/appendAssistantMessage)
+ * is the sole place user/assistant messages get created — suggestion
+ * clicks, matched free-form queries, and unsupported free-form queries all
+ * funnel through it exactly once each, so there is no path that can append
+ * a duplicate user turn. Contextual pain actions (Yes/No/Submit) are
+ * explicit, separate handlers — they never go through the global
+ * NLP-style label matcher (see handleSubmit), since their behavior is
+ * already known from context, not inferred from text.
  *
  * Still NOT AN LLM: submitting free text matches against the registry's
  * own translated labels (a small, fixed, real list) — never a general
- * NLP/intent engine. See patientAssistantActions.js for the capability
- * boundary this stays behind.
+ * NLP/intent engine. Anything that doesn't unambiguously match becomes a
+ * normal, calm Assistant conversation turn (never an external warning) —
+ * see patientAssistantActions.js for the capability boundary this stays
+ * behind.
  */
 const PatientHomeAssistant = ({ data }) => {
   const { t } = useTranslation();
@@ -99,10 +152,8 @@ const PatientHomeAssistant = ({ data }) => {
 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [inputNote, setInputNote] = useState("");
   const [orbState, setOrbState] = useState("idle");
   const [lastActionId, setLastActionId] = useState(null);
-  const [painToday, setPainToday] = useState(4);
 
   const mode = messages.length === 0 ? "welcome" : "conversation";
 
@@ -114,6 +165,7 @@ const PatientHomeAssistant = ({ data }) => {
 
   const successTimeoutRef = useRef(null);
   const latestUserMessageRef = useRef(null);
+  const processingRef = useRef(new Set());
 
   useEffect(
     () => () => {
@@ -166,8 +218,19 @@ const PatientHomeAssistant = ({ data }) => {
     setMessages((prev) => prev.map((message) => (message.id === id ? { ...message, pending: false } : message)));
   };
 
+  // ---------- The one turn-creation pipeline ----------
+  const appendUserMessage = (content) => {
+    setMessages((prev) => [...prev, { id: nextId(), role: "user", content }]);
+  };
+
+  const appendAssistantMessage = ({ content, secondaryAction, widget, actions }) => {
+    setMessages((prev) => [
+      ...prev,
+      { id: nextId(), role: "assistant", content, secondaryAction, widget, actions, pending: true },
+    ]);
+  };
+
   const runAction = (action, sourceText) => {
-    setInputNote("");
     const result = action.execute({ navigate, t, data });
 
     // NAVIGATE actions return nothing — the destination page IS the
@@ -175,17 +238,13 @@ const PatientHomeAssistant = ({ data }) => {
     // about to unmount via the route change anyway).
     if (!result) return;
 
-    const userMessage = { id: nextId(), role: "user", content: sourceText || t(action.labelKey) };
-    const assistantMessage = {
-      id: nextId(),
-      role: "assistant",
+    appendUserMessage(sourceText || t(action.labelKey));
+    appendAssistantMessage({
       content: result.message,
       secondaryAction: result.secondaryAction,
       widget: result.widget,
-      pending: true,
-    };
-
-    setMessages((prev) => [...prev, userMessage, assistantMessage]);
+      actions: result.actions,
+    });
     setLastActionId(action.id);
     pulseSuccess();
   };
@@ -195,6 +254,8 @@ const PatientHomeAssistant = ({ data }) => {
     const query = inputValue.trim();
     if (!query) return;
 
+    setInputValue("");
+
     const lowered = query.toLowerCase();
     const matches = PATIENT_ASSISTANT_ACTIONS.filter((action) =>
       t(action.labelKey).toLowerCase().includes(lowered)
@@ -202,13 +263,83 @@ const PatientHomeAssistant = ({ data }) => {
 
     if (matches.length === 1) {
       runAction(matches[0], query);
-      setInputValue("");
-    } else {
-      // Honest, restrained — never a fabricated answer, never a fake
-      // "thinking" delay. Free-form input isn't connected to a real AI
-      // backend in this iteration.
-      setInputNote(t("patientDashboard.assistant.inputHint"));
+      return;
     }
+
+    // Zero or multiple matches — both treated the same: a normal,
+    // honest Assistant conversation turn, never an external warning, and
+    // never a guess at which of several possible actions was meant.
+    appendUserMessage(query);
+    appendAssistantMessage({ content: t("patientDashboard.assistant.responses.unsupported") });
+    pulseSuccess();
+  };
+
+  // ---------- Contextual pain actions (never go through the matcher) ----------
+  const handleContextualAction = (messageId, actionId) => {
+    if (processingRef.current.has(messageId)) return;
+    const message = messages.find((m) => m.id === messageId);
+    if (!message || message.resolved) return;
+    processingRef.current.add(messageId);
+
+    setMessages((prev) => prev.map((m) => (m.id === messageId ? { ...m, resolved: true } : m)));
+
+    if (actionId === "change-pain") {
+      const recent = getLatestPainLog();
+      appendUserMessage(t("patientDashboard.assistant.actions.changePain"));
+      appendAssistantMessage({
+        content: t("patientDashboard.assistant.responses.painChangePrompt"),
+        widget: { type: "painLogger", value: recent ? recent.value : DEFAULT_PAIN_VALUE, mode: "change" },
+      });
+      pulseSuccess();
+    } else if (actionId === "keep-pain") {
+      const recent = getLatestPainLog();
+      appendUserMessage(t("patientDashboard.assistant.actions.keepPain"));
+      appendAssistantMessage({
+        content: t("patientDashboard.assistant.responses.painKept", {
+          value: recent ? recent.value : DEFAULT_PAIN_VALUE,
+        }),
+      });
+      pulseSuccess();
+    }
+  };
+
+  const handlePainValueChange = (messageId, value) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, widget: { ...m.widget, value } } : m))
+    );
+  };
+
+  const submittingPainRef = useRef(false);
+
+  // Never a user chat bubble ("Submit pain level") — this is a UI action,
+  // not conversation content. Only KneeGuide's own confirmation turn is
+  // appended; the logger itself becomes a small resolved/read-only
+  // summary in place (see PatientPainLogger's `resolved` prop).
+  const handlePainSubmit = (messageId) => {
+    if (submittingPainRef.current) return;
+    const message = messages.find((m) => m.id === messageId);
+    if (!message || !message.widget || message.widget.state === "resolved") return;
+
+    submittingPainRef.current = true;
+    const { value, mode: painMode } = message.widget;
+
+    savePainLog(value);
+
+    setMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, widget: { ...m.widget, state: "resolved" } } : m))
+    );
+
+    appendAssistantMessage({
+      content: t(
+        painMode === "change"
+          ? "patientDashboard.assistant.responses.painUpdated"
+          : "patientDashboard.assistant.responses.painLogged",
+        { value }
+      ),
+    });
+
+    pulseSuccess();
+    submittingPainRef.current = false;
   };
 
   const composerNode = (
@@ -222,10 +353,7 @@ const PatientHomeAssistant = ({ data }) => {
           type="text"
           className="patient-assistant-input"
           value={inputValue}
-          onChange={(event) => {
-            setInputValue(event.target.value);
-            if (inputNote) setInputNote("");
-          }}
+          onChange={(event) => setInputValue(event.target.value)}
           onFocus={() => setOrbState("engaged")}
           onBlur={() => setOrbState("idle")}
           placeholder={t("patientDashboard.assistant.inputPlaceholder")}
@@ -239,12 +367,6 @@ const PatientHomeAssistant = ({ data }) => {
           <LuSendHorizontal aria-hidden="true" />
         </button>
       </div>
-
-      {inputNote && (
-        <p className="patient-assistant-input-note" aria-live="polite">
-          {inputNote}
-        </p>
-      )}
     </form>
   );
 
@@ -329,8 +451,9 @@ const PatientHomeAssistant = ({ data }) => {
               reducedMotion={reducedMotion}
               scrollRef={message.id === lastUserMessageId ? latestUserMessageRef : null}
               onTypedComplete={() => markTyped(message.id)}
-              painValue={painToday}
-              onPainChange={setPainToday}
+              onPainValueChange={handlePainValueChange}
+              onPainSubmit={handlePainSubmit}
+              onContextualAction={handleContextualAction}
             />
           ))}
         </div>

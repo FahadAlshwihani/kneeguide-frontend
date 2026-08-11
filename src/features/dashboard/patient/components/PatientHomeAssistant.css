@@ -108,6 +108,25 @@
 }
 
 .patient-chat-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--patient-space-2xs);
+  margin-top: var(--patient-space-2xs);
+}
+
+.patient-pain-submit {
+  align-self: stretch;
+  max-width: 280px;
+}
+
+/* Contextual actions (Yes/No, etc.) belong to THIS specific Assistant
+   message — visually distinct from the global suggestion chips below the
+   composer (.patient-assistant-suggestions), never mixed with them. */
+.patient-chat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--patient-space-2xs);
   margin-top: var(--patient-space-2xs);
 }
 
@@ -182,13 +201,6 @@
    itself never moves, only the icon it contains). */
 [dir="rtl"] .patient-assistant-send svg {
   transform: scaleX(-1);
-}
-
-.patient-assistant-input-note {
-  margin: var(--patient-space-2xs) 0 0;
-  font: var(--patient-text-caption);
-  color: var(--patient-color-muted);
-  text-align: center;
 }
 
 /* ---------- Suggestions ---------- */
