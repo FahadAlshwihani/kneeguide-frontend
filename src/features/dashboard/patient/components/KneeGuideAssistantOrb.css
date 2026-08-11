@@ -1,0 +1,22 @@
+/* Sized deliberately restrained — the Orb is the assistant's presence,
+   not a hero illustration. Bounded on both ends so it never gets tiny on
+   a narrow phone nor oversized on a wide desktop; on mobile this keeps it
+   from ever eating a meaningful share of viewport height (see
+   PatientHomeAssistant.css's own mobile rules for the rest of that
+   guarantee). Clipped to a circle explicitly — the shader's own alpha
+   falloff already fades the corners, but a hard clip guarantees a clean
+   circular presence regardless of that falloff's exact precision. */
+.kneeguide-assistant-orb {
+  width: clamp(120px, 16vw, 180px);
+  height: clamp(120px, 16vw, 180px);
+  margin-inline: auto;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .kneeguide-assistant-orb {
+    width: 128px;
+    height: 128px;
+  }
+}
