@@ -380,6 +380,7 @@ export default function Orb({
         gl.canvas.removeEventListener("webglcontextlost", contextLostHandler);
         if (gl.canvas.parentNode === container) container.removeChild(gl.canvas);
         gl.getExtension("WEBGL_lose_context")?.loseContext();
+        glHandle.current = { renderer: null, program: null, mesh: null, reducedMotion: false };
       };
     } catch {
       // WebGL unavailable/failed to initialize — render the fallback
@@ -387,8 +388,11 @@ export default function Orb({
       setHasError(true);
       return undefined;
     }
+    // Deliberately mount-once — see the file-level comment and `liveProps`/
+    // `glHandle` above for how prop changes reach the renderer WITHOUT
+    // tearing it down and recreating it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor]);
+  }, []);
 
   if (hasError) {
     // No inline `background` here on purpose — it's a shorthand, and would
