@@ -45,3 +45,36 @@ export const getAverageRom = (setMetrics) => {
   if (values.length === 0) return 0;
   return Math.round(values.reduce((sum, v) => sum + v, 0) / values.length);
 };
+
+const QUALITY_RANK = { [MOVEMENT_QUALITY.FAIR]: 0, [MOVEMENT_QUALITY.GOOD]: 1, [MOVEMENT_QUALITY.EXCELLENT]: 2 };
+const QUALITY_BY_RANK = [MOVEMENT_QUALITY.FAIR, MOVEMENT_QUALITY.GOOD, MOVEMENT_QUALITY.EXCELLENT];
+
+/** Session-wide average movement-quality label across every recorded set. */
+export const getSessionAverageQuality = (exercises) => {
+  const ranks = exercises
+    .flatMap((exercise) => exercise.setMetrics)
+    .filter(Boolean)
+    .map((metric) => QUALITY_RANK[metric.qualityKey] ?? 1);
+  if (ranks.length === 0) return MOVEMENT_QUALITY.GOOD;
+  const avgRank = Math.round(ranks.reduce((sum, r) => sum + r, 0) / ranks.length);
+  return QUALITY_BY_RANK[Math.min(2, Math.max(0, avgRank))];
+};
+
+/**
+ * Overall session ROM trend vs. each exercise's own previous-session
+ * value — averaged across exercises that recorded at least one set, so
+ * one exercise's dip doesn't hide another's gain, and rounded to a whole
+ * degree for a clean "+4°"-style headline number.
+ */
+export const getSessionRomTrend = (exercises, plan) => {
+  const deltas = exercises
+    .map((exercise) => {
+      if (exercise.setMetrics.length === 0) return null;
+      const planEntry = plan.find((item) => item.exerciseId === exercise.id);
+      if (!planEntry) return null;
+      return getAverageRom(exercise.setMetrics) - planEntry.previous.rom;
+    })
+    .filter((value) => value !== null);
+  if (deltas.length === 0) return 0;
+  return Math.round(deltas.reduce((sum, v) => sum + v, 0) / deltas.length);
+};
