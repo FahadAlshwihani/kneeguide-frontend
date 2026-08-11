@@ -14,9 +14,10 @@
  * ranges below, so they never skew the count either way.
  */
 
-// Arabic + Arabic Supplement + Arabic Extended-A + Arabic Presentation
-// Forms A/B — covers standard Arabic script text without pulling in a
-// heavyweight NLP/language-id package.
+// Arabic (؀-ۿ) + Arabic Supplement (ݐ-ݿ) + Arabic
+// Extended-A (ࢠ-ࣿ) + Arabic Presentation Forms A/B
+// (ﭐ-﷿, ﹰ-﻿) — covers standard Arabic script text
+// without pulling in a heavyweight NLP/language-id package.
 const ARABIC_SCRIPT_PATTERN = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g;
 const LATIN_SCRIPT_PATTERN = /[A-Za-z]/g;
 
