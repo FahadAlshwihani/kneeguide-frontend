@@ -1,0 +1,39 @@
+/* Uses the same --patient-* token system as the rest of the redesigned
+   Patient product (Section 56) — dark surfaces, KneeGuide blue, no new
+   visual language. Section 55: Appointments sits between the wide
+   analytical Reports layout and the narrow focused Exercise Session
+   layout — 1000px, not the shared 1120px page token, not a single-column
+   640px either. */
+
+.pa-page {
+  min-height: 100vh;
+  background: var(--patient-surface-page);
+  padding: var(--patient-space-xl) var(--patient-space-sm);
+  display: flex;
+  justify-content: center;
+  color: var(--patient-color-text);
+}
+
+.pa-inner {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-md);
+}
+
+.pa-header h1 {
+  margin: 0;
+  font: var(--patient-text-page-heading);
+  color: var(--patient-color-heading);
+}
+
+.pa-header p {
+  margin: 6px 0 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}
+
+.pa-request-cta {
+  display: flex;
+}

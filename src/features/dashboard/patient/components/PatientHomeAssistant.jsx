@@ -18,6 +18,7 @@ import TypewriterText from "./TypewriterText";
 import PatientButton from "./PatientButton";
 import PatientPainLogger from "./PatientPainLogger";
 import PatientConversationHistory, { PatientHistoryTrigger } from "./PatientConversationHistory";
+import AppointmentRequestFlow from "./appointments/AppointmentRequestFlow";
 import "./PatientHomeAssistant.css";
 
 const SUCCESS_PULSE_MS = 700;
@@ -539,7 +540,7 @@ const PatientHomeAssistant = ({ data, onModeChange }) => {
   const runAction = (action, sourceText, explicitLanguage) => {
     const text = sourceText || t(action.labelKey);
     const language = explicitLanguage || deriveTurnLanguage(text);
-    const result = action.execute({ navigate, t, data, language });
+    const result = action.execute({ navigate, t, data, language, openAppointmentFlow });
 
     // NAVIGATE actions return nothing — the destination page IS the
     // response, so no conversation turn is created (the component is
@@ -661,6 +662,33 @@ const PatientHomeAssistant = ({ data, onModeChange }) => {
 
     pulseSuccess();
     submittingPainRef.current = false;
+  };
+
+  // ---------- Appointment request (shared capability, Section 37) ----------
+  // The Assistant mounts the EXACT same AppointmentRequestFlow component
+  // the Appointments page uses (components/appointments/
+  // AppointmentRequestFlow.jsx) — it reads/writes the same
+  // appointments/patientAppointmentService.js localStorage-backed state,
+  // so a request submitted from either surface is immediately visible on
+  // the other. This is UI state only (which modal is open), never a
+  // second booking implementation.
+  const [appointmentFlowOpen, setAppointmentFlowOpen] = useState(false);
+  const openAppointmentFlow = () => setAppointmentFlowOpen(true);
+
+  // Appends KneeGuide's own confirmation turn once the shared flow
+  // actually creates a request — same honesty as the page's own
+  // "Submitted" step: REQUESTED, never "confirmed" (Section 20/38).
+  const handleAppointmentRequestSubmitted = (appointment) => {
+    const language = activeConversation?.language || i18n.language || "en";
+    appendAssistantMessage({
+      content: t("patientDashboard.assistant.responses.appointmentRequestSubmitted", {
+        lng: language,
+        date: appointment.startAt.toLocaleDateString(language, { weekday: "long", month: "long", day: "numeric" }),
+        time: appointment.startAt.toLocaleTimeString(language, { hour: "2-digit", minute: "2-digit" }),
+        status: t("patientAppointments.status.REQUESTED", { lng: language }),
+      }),
+    });
+    pulseSuccess();
   };
 
   // ---------- Conversation history: New Chat / switching ----------
@@ -886,6 +914,13 @@ const PatientHomeAssistant = ({ data, onModeChange }) => {
         onNewChat={handleNewChat}
         isOpen={historyDrawerOpen}
         onClose={closeHistoryDrawer}
+      />
+
+      <AppointmentRequestFlow
+        isOpen={appointmentFlowOpen}
+        onClose={() => setAppointmentFlowOpen(false)}
+        mode="new"
+        onSubmitted={handleAppointmentRequestSubmitted}
       />
     </div>
   );

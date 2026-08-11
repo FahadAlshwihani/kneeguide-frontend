@@ -1,7 +1,9 @@
-import { LuDumbbell, LuFileText, LuCalendarClock, LuHeartPulse, LuChartLine, LuBluetooth } from "react-icons/lu";
+import { LuDumbbell, LuFileText, LuCalendarClock, LuHeartPulse, LuChartLine, LuBluetooth, LuCalendarPlus } from "react-icons/lu";
 import { ROUTES } from "../../../../utils/routes";
 import { getRecentPainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorage";
 import { TODAY_EXERCISES } from "../data/patientExercisesData";
+import { getNextConfirmedAppointment } from "../appointments/patientAppointmentService";
+import { DEFAULT_CLINICIAN } from "../data/patientClinicianData";
 
 /**
  * The Patient Assistant action registry — one source of truth mapping
@@ -108,23 +110,34 @@ export const PATIENT_ASSISTANT_ACTIONS = [
       en: ["next appointment", "when is my appointment", "when is my next appointment", "my appointment"],
       ar: ["متى موعدي", "موعدي القادم", "متى موعدي القادم", "متى موعدي الجاي", "الموعد الجاي", "موعدي الجاي"],
     },
-    // No dedicated Patient appointments route exists anywhere in this app
-    // today (only Doctor has one) — confirmed by auditing
-    // routes/DashboardRoutes.jsx before writing this. This response is
-    // therefore display-only, with no secondary "view appointments"
-    // action, rather than inventing a destination that doesn't exist.
-    execute: ({ t, data, language }) => {
-      const { nextAppointment } = data;
+    // A real (mock) Patient appointments capability now exists —
+    // appointments/patientAppointmentService.js is the SAME source
+    // pages/PatientAppointments.jsx itself reads (Section 40: one source
+    // of truth, no separate Home/Assistant appointment data). "View
+    // appointments" is now a real, honest secondary action since the
+    // route/page genuinely exist.
+    execute: ({ t, navigate, language }) => {
+      const nextAppointment = getNextConfirmedAppointment();
       if (!nextAppointment) {
-        return { message: t("patientDashboard.assistant.responses.noAppointment", { lng: language }) };
+        return {
+          message: t("patientDashboard.assistant.responses.noAppointment", { lng: language }),
+          secondaryAction: {
+            labelKey: "patientDashboard.assistant.responses.openAppointments",
+            onClick: () => navigate(ROUTES.PATIENT_APPOINTMENTS),
+          },
+        };
       }
       return {
         message: t("patientDashboard.assistant.responses.nextAppointment", {
           lng: language,
-          date: nextAppointment.date,
-          time: nextAppointment.time,
-          doctor: nextAppointment.doctor,
+          date: nextAppointment.startAt.toLocaleDateString(language, { weekday: "long", month: "long", day: "numeric" }),
+          time: nextAppointment.startAt.toLocaleTimeString(language, { hour: "2-digit", minute: "2-digit" }),
+          doctor: nextAppointment.clinician.name,
         }),
+        secondaryAction: {
+          labelKey: "patientDashboard.assistant.responses.openAppointments",
+          onClick: () => navigate(ROUTES.PATIENT_APPOINTMENTS),
+        },
       };
     },
   },
@@ -265,6 +278,55 @@ export const PATIENT_ASSISTANT_ACTIONS = [
       },
     }),
   },
+  {
+    id: "REQUEST_APPOINTMENT",
+    labelKey: "patientDashboard.assistant.actions.requestAppointment",
+    icon: LuCalendarPlus,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: [
+        "request an appointment",
+        "request appointment",
+        "book an appointment",
+        "book me an appointment",
+        "book appointment",
+        "schedule an appointment",
+        "i want an appointment",
+        "i need an appointment",
+      ],
+      ar: [
+        "أبي أحجز موعد",
+        "ابي احجز موعد",
+        "أبي موعد",
+        "ابي موعد",
+        "أبغى أحجز موعد",
+        "اطلب موعد",
+        "أحتاج موعد",
+        "احتاج موعد",
+      ],
+    },
+    // Same rule as CONNECT_DEVICE: no booking logic lives here.
+    // `openAppointmentFlow` (passed through the action-execution context
+    // by PatientHomeAssistant.jsx) opens the EXACT SAME
+    // AppointmentRequestFlow modal component pages/PatientAppointments.jsx
+    // uses, which itself only ever calls
+    // appointments/patientAppointmentService.js — the one shared
+    // scheduling/request source of truth (Section 37). This action
+    // answers first (Section 35) and never claims a booking happened;
+    // the flow's own "Submitted" step and the confirmation turn
+    // PatientHomeAssistant.jsx appends afterward both say "Requested",
+    // never "Confirmed" (Section 20/38).
+    execute: ({ t, language, openAppointmentFlow }) => ({
+      message: t("patientDashboard.assistant.responses.requestAppointmentIntro", {
+        lng: language,
+        doctorName: DEFAULT_CLINICIAN.name,
+      }),
+      secondaryAction: {
+        labelKey: "patientDashboard.assistant.actions.chooseAppointmentTime",
+        onClick: () => openAppointmentFlow(),
+      },
+    }),
+  },
 ];
 
 const normalize = (value) => (typeof value === "string" ? value.toLowerCase().trim() : "");
@@ -342,20 +404,11 @@ export const CAPABILITY_FALLBACK_THEMES = [
       ar: ["حلل تماريني", "حلل تمريني", "حلل أدائي", "تحليل تماريني", "تحليل الأداء"],
     },
   },
-  {
-    id: "booking",
-    responseKey: "patientDashboard.assistant.responses.capabilityBooking",
-    patterns: {
-      en: [
-        "book an appointment",
-        "book me an appointment",
-        "book appointment",
-        "schedule an appointment",
-        "reserve an appointment",
-      ],
-      ar: ["احجز لي موعد", "احجز موعد", "حجز موعد", "ابغى احجز", "ابي احجز موعد"],
-    },
-  },
+  // The "booking" theme that used to live here was removed: a real (mock)
+  // appointment-request capability now exists (REQUEST_APPOINTMENT
+  // above), so telling the patient booking "isn't connected yet" would
+  // now be dishonest in the other direction. Booking-flavored phrases
+  // resolve to REQUEST_APPOINTMENT's own patterns instead.
 ];
 
 export const matchCapabilityTheme = (query, language) => {

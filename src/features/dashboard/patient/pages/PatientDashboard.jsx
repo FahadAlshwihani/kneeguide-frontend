@@ -33,14 +33,12 @@ const PatientDashboard = () => {
   // =======================
   // MOCK DATA — unchanged from the previous dashboard
   // =======================
-  const nextAppointment = {
-    date: "2025-11-25",
-    time: "03:30 PM",
-    doctor: "Dr. Sarah Ahmed",
-    type: t("patientDashboard.mock.nextAppointment.type"),
-    location: t("patientDashboard.mock.nextAppointment.location"),
-  };
-
+  // `nextAppointment` used to be a small inline mock object here — it's
+  // gone. The Assistant's NEXT_APPOINTMENT action now reads directly from
+  // appointments/patientAppointmentService.js (the same source
+  // pages/PatientAppointments.jsx itself uses), so there is exactly one
+  // appointment data source instead of this page and that action each
+  // owning a disagreeing copy (Section 40).
   const lastReport = {
     date: "2025-11-17",
     painLevel: "3/10",
@@ -53,7 +51,7 @@ const PatientDashboard = () => {
     missedThisWeek: 1,
   };
 
-  const assistantData = { nextAppointment, lastReport, adherence };
+  const assistantData = { lastReport, adherence };
 
   return (
     <div className={`pd-page pd-page--${homeMode}`}>
