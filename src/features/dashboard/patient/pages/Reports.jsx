@@ -254,8 +254,6 @@ const Reports = () => {
           </div>
         </div>
       </div>
-
-      <PatientBottomNav active="reports" />
     </>
   );
 };
