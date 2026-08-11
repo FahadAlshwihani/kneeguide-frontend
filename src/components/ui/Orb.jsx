@@ -53,6 +53,14 @@ export default function Orb({
   const ctnDom = useRef(null);
   const [hasError, setHasError] = useState(false);
 
+  // Read inside the RAF loop instead of closing over the props directly —
+  // see the file-level comment above for why. Kept current by the plain
+  // (non-WebGL) effect right below the main setup effect.
+  const liveProps = useRef({ hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor });
+  useLayoutEffect(() => {
+    liveProps.current = { hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor };
+  }, [hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor]);
+
   const vert = /* glsl */ `
     precision highp float;
     attribute vec2 position;
