@@ -324,17 +324,21 @@ export default function Orb({
 
       const update = (t) => {
         rafId = requestAnimationFrame(update);
+        const { hue: liveHue, hoverIntensity: liveHoverIntensity, rotateOnHover: liveRotateOnHover, forceHoverState: liveForceHoverState, backgroundColor: liveBackgroundColor } =
+          liveProps.current;
+
+        const dt = (t - lastTime) * 0.001 || 0;
         lastTime = t;
         program.uniforms.iTime.value = t * 0.001;
-        program.uniforms.hue.value = hue;
-        program.uniforms.hoverIntensity.value = hoverIntensity;
-        program.uniforms.backgroundColor.value = hexToVec3(backgroundColor);
+        program.uniforms.hue.value = liveHue;
+        program.uniforms.hoverIntensity.value = liveHoverIntensity;
+        program.uniforms.backgroundColor.value = hexToVec3(liveBackgroundColor);
 
-        const effectiveHover = forceHoverState ? 1 : targetHover;
+        const effectiveHover = liveForceHoverState ? 1 : targetHover;
         program.uniforms.hover.value += (effectiveHover - program.uniforms.hover.value) * 0.1;
 
-        if (rotateOnHover && effectiveHover > 0.5) {
-          currentRot += ((t - lastTime) * 0.001 || 0) * rotationSpeed;
+        if (liveRotateOnHover && effectiveHover > 0.5) {
+          currentRot += dt * rotationSpeed;
         }
         program.uniforms.rot.value = currentRot;
 
@@ -343,7 +347,7 @@ export default function Orb({
 
       if (reducedMotion) {
         // One static frame — no RAF loop at all, per prefers-reduced-motion.
-        program.uniforms.hover.value = forceHoverState ? 1 : 0;
+        program.uniforms.hover.value = liveProps.current.forceHoverState ? 1 : 0;
         renderer.render({ scene: mesh });
       } else {
         rafId = requestAnimationFrame(update);
