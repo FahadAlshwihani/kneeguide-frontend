@@ -1,0 +1,131 @@
+/* Backdrop/base panel/close button live in PatientDialog.css. */
+.exercise-details-panel {
+  max-width: 720px;
+}
+
+.exercise-details-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--patient-space-sm);
+  margin-bottom: var(--patient-space-sm);
+}
+
+.exercise-details-eyebrow {
+  margin: 0 0 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.exercise-details-title {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.exercise-details-target {
+  margin: 2px 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Media ---------- */
+/* Clean 16:9 instructional frame — not a catalog thumbnail. object-fit
+   ensures neither the video nor a fallback image is ever stretched. */
+.exercise-details-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--patient-radius-control);
+  overflow: hidden;
+  background: #000;
+  margin-bottom: var(--patient-space-sm);
+}
+
+.exercise-details-media iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.exercise-details-media--image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.exercise-details-media--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--patient-surface-card);
+  border: 1px dashed var(--patient-border);
+}
+
+.exercise-details-media--empty p {
+  margin: 0;
+  padding: var(--patient-space-sm);
+  text-align: center;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Content sections ---------- */
+.exercise-details-section {
+  margin-bottom: var(--patient-space-sm);
+}
+
+.exercise-details-section h3 {
+  margin: 0 0 var(--patient-space-3xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.exercise-details-section > p {
+  margin: 0;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+}
+
+.exercise-details-list {
+  margin: 0;
+  padding-inline-start: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+}
+
+.exercise-details-list--numbered {
+  list-style: decimal;
+}
+
+.exercise-details-list:not(.exercise-details-list--numbered) {
+  list-style: disc;
+}
+
+/* ---------- KneeGuide tip ---------- */
+.exercise-details-tip {
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-assistant-response-bg);
+  border: 1px solid var(--patient-assistant-response-border);
+  border-inline-start: 3px solid var(--patient-color-primary);
+}
+
+.exercise-details-tip-title {
+  margin: 0 0 2px;
+  font: var(--patient-text-label);
+  color: var(--patient-color-primary);
+}
+
+.exercise-details-tip p:last-child {
+  margin: 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-text);
+}

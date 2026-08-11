@@ -2,15 +2,23 @@ import { TODAY_EXERCISES } from "./patientExercisesData";
 
 /**
  * The REHAB ASSIGNMENT layer — sits between the exercise CATALOG
- * (patientExercisesData.js, unchanged/untouched by this module — it's
- * also read directly by the Exercise Library tab and the KneeGuide
- * Assistant's SHOW_EXERCISES action) and SESSION EXECUTION state
+ * (patientExercisesData.js, read directly by the Exercise Library, the
+ * KneeGuide Assistant's SHOW_EXERCISES action, and the Exercise Details
+ * modal — untouched by this module) and SESSION EXECUTION state
  * (session/patientSessionEngine.js):
  *
- *   catalog (what an exercise IS)
- *     -> plan (what's PRESCRIBED today: sets/reps/target/duration)
+ *   catalog (what an exercise IS: name, description, instructions, cues
+ *            — intrinsic, doesn't change per day)
+ *     -> plan (what's PRESCRIBED today: sets/reps/target ROM/duration)
  *       -> session execution (what actually HAPPENED: completed sets,
  *          timestamps, metrics — see patientSessionEngine.js)
+ *
+ * Note the qualitative "target/focus" of an exercise (e.g. "Knee
+ * extension control") now lives on the CATALOG entry itself
+ * (`targetKey` in patientExercisesData.js) — it's a property of the
+ * exercise, not of today's prescription. This layer only owns the
+ * NUMERIC target ROM range (`targetRomMin`/`targetRomMax`), which
+ * genuinely is session-specific.
  *
  * This separation is what lets a real "GET today's rehab day" endpoint
  * replace `getTodaySessionPlan`/`getRehabWeek` later without the session

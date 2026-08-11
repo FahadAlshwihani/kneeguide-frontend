@@ -4,6 +4,7 @@ import { LuCheck } from "react-icons/lu";
 import PatientButton from "../PatientButton";
 import PatientPainLogger from "../PatientPainLogger";
 import KneeGuideInsightCard from "./KneeGuideInsightCard";
+import ExerciseInfoButton from "./ExerciseInfoButton";
 import {
   SESSION_STATUS,
   EXERCISE_STATUS,
@@ -183,7 +184,17 @@ const PainCheck = ({ painValue, onPainValueChange, onSubmitPain, onSkipPain, t }
  * else stays a compact row, per Section 8's "don't expand everything at
  * once" requirement.
  */
-const SessionExerciseSequence = ({ plan, sessionState, now, dispatch, painValue, onPainValueChange, onSubmitPain, onSkipPain }) => {
+const SessionExerciseSequence = ({
+  plan,
+  sessionState,
+  now,
+  dispatch,
+  painValue,
+  onPainValueChange,
+  onSubmitPain,
+  onSkipPain,
+  onViewDetails,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -209,7 +220,10 @@ const SessionExerciseSequence = ({ plan, sessionState, now, dispatch, painValue,
               <div className="session-exercise-step-header">
                 <span className="session-exercise-step-index">{String(index + 1).padStart(2, "0")}</span>
                 <div className="session-exercise-step-title">
-                  <h3>{name}</h3>
+                  <div className="session-exercise-step-name-row">
+                    <h3 dir="auto">{name}</h3>
+                    <ExerciseInfoButton exerciseName={name} onClick={() => onViewDetails(planItem)} />
+                  </div>
                   <p>{t("patientExercises.session.setsReps", { sets: planItem.sets, reps: planItem.repsPerSet })}</p>
                 </div>
                 <span className="session-exercise-step-badge">
@@ -224,7 +238,7 @@ const SessionExerciseSequence = ({ plan, sessionState, now, dispatch, painValue,
 
               {!isActive && !isCompleted && (
                 <p className="session-exercise-step-preview">
-                  {t("patientExercises.session.target")}: {t(planItem.targetKey)} ·{" "}
+                  {t("patientExercises.session.target")}: {planItem.catalog ? t(planItem.catalog.targetKey) : ""} ·{" "}
                   {t("patientExercises.session.estimated", { minutes: planItem.estimatedMinutes })}
                   {planItem.previous && (
                     <>

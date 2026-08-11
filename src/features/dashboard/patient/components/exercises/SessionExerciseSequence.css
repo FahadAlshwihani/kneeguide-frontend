@@ -48,8 +48,18 @@
   min-width: 0;
 }
 
+.session-exercise-step-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-2xs);
+}
+
 .session-exercise-step-title h3 {
   margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font: var(--patient-text-card-heading);
   color: var(--patient-color-heading);
 }

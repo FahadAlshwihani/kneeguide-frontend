@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "../styles/PatientExercises.css";
-import ExerciseCard from "../../shared/components/ExerciseCard";
 import { useAuth } from "../../../../context/AuthContext";
 import { ALL_EXERCISES } from "../data/patientExercisesData";
 import { getRehabWeek, getTodaySessionPlan, getSessionTotals, getCompletedDaySummary, getWeekLabel, REHAB_DAY_STATUS } from "../data/patientRehabPlanData";
@@ -22,6 +21,8 @@ import RehabDayRail from "../components/exercises/RehabDayRail";
 import SessionHero from "../components/exercises/SessionHero";
 import SessionExerciseSequence from "../components/exercises/SessionExerciseSequence";
 import SessionReportModal from "../components/exercises/SessionReportModal";
+import ExerciseDetailsModal from "../components/exercises/ExerciseDetailsModal";
+import ExerciseInfoButton from "../components/exercises/ExerciseInfoButton";
 
 /**
  * Patient Exercises — a guided rehabilitation SESSION experience
@@ -45,19 +46,12 @@ import SessionReportModal from "../components/exercises/SessionReportModal";
  * lives directly in this component.
  *
  * The Exercise Library (previously "All Exercises") is preserved as a
- * secondary destination (Section 25) — same ExerciseCard/video-modal
- * behavior as before, just no longer the page's primary experience.
+ * secondary, reference-only destination (Section 25/31) — a compact list
+ * of name + target/category + an info control, not the old image-card
+ * grid. Selecting a Library row's info control opens the exact same
+ * ExerciseDetailsModal a session row does — there is only ever one
+ * exercise-instruction UI in this feature (Section 14/23).
  */
-
-const resolveExercise = (t, exercise) => ({
-  name: t(exercise.nameKey),
-  reps: exercise.reps,
-  lastDone: t(exercise.lastDoneKey),
-  progress: exercise.progress,
-  image: exercise.image,
-  video: exercise.video,
-  description: t(exercise.descriptionKey),
-});
 
 const TICKING_STATUSES = [SESSION_STATUS.ACTIVE, SESSION_STATUS.BETWEEN_EXERCISES, SESSION_STATUS.PAIN_CHECK];
 
