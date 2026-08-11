@@ -1,0 +1,102 @@
+/* Generic Dock primitive — structural/mechanical CSS only. Every visual
+   value (colors, borders, shadows) is a CSS custom property with a
+   sensible neutral-dark fallback, so a consumer can fully re-theme this
+   (see PatientDock.css, which sets --dock-* to KneeGuide's patient
+   tokens) without forking this file. This file has no opinion about
+   fixed/sticky positioning either — that's the consumer's job (see
+   PatientDock.css's own wrapper), since where a Dock sits on screen is a
+   product decision, not something generic to this primitive. */
+
+.dock-outer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+}
+
+.dock-panel {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--dock-gap, 12px);
+  width: fit-content;
+  max-width: 100%;
+  border-radius: var(--dock-radius, 20px);
+  background: var(--dock-bg, #121212);
+  border: 1px solid var(--dock-border, rgba(255, 255, 255, 0.08));
+  box-shadow: var(--dock-shadow, 0 12px 32px rgba(0, 0, 0, 0.45));
+  padding: 0 10px 10px;
+}
+
+.dock-item {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.dock-item-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--dock-item-radius, 14px);
+  background: var(--dock-item-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--dock-item-border, transparent);
+  color: var(--dock-item-color, #a1a1aa);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dock-transition, 160ms ease),
+    border-color var(--dock-transition, 160ms ease), color var(--dock-transition, 160ms ease);
+}
+
+.dock-item-link:hover {
+  background: var(--dock-item-bg-hover, rgba(255, 255, 255, 0.08));
+  color: var(--dock-item-color-hover, #e4e4e7);
+}
+
+.dock-item-link:focus-visible {
+  outline: 2px solid var(--dock-focus-ring, #ffffff);
+  outline-offset: 2px;
+}
+
+/* Persistent — never relies on hover alone. A restrained tinted surface +
+   slightly stronger icon color, not a glow. */
+.dock-item-link--active {
+  background: var(--dock-item-bg-active, rgba(255, 255, 255, 0.12));
+  border-color: var(--dock-item-border-active, transparent);
+  color: var(--dock-item-color-active, #ffffff);
+}
+
+.dock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  height: 60%;
+}
+
+.dock-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dock-label {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: fit-content;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 6px;
+  border: 1px solid var(--dock-label-border, rgba(255, 255, 255, 0.1));
+  background: var(--dock-label-bg, #1c1c1f);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--dock-label-color, #ffffff);
+  pointer-events: none;
+}
