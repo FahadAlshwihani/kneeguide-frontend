@@ -1,0 +1,61 @@
+/* KneeGuide theme + fixed positioning for the generic Dock primitive
+   (components/ui/Dock.css). All --dock-* custom properties are set here,
+   scoped to `.patient-dock` (the actual dock-panel element — see the
+   `className` passed to <Dock/> in PatientDock.jsx) — the generic Dock
+   component itself never hardcodes KneeGuide blue or any patient token. */
+
+.patient-dock-wrapper {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: var(--z-sticky, 300);
+  width: 100%;
+  max-width: 360px;
+  padding-inline: 16px;
+  display: flex;
+  justify-content: center;
+  font-family: var(--patient-font);
+  /* The wrapper's own box is only ever a loose bounding rectangle around
+     the actual dock — re-enabled below so nothing invisible blocks clicks
+     on dashboard content that happens to sit underneath it. */
+  pointer-events: none;
+}
+
+.patient-dock-wrapper .dock-outer,
+.patient-dock-wrapper .dock-panel {
+  pointer-events: auto;
+}
+
+.patient-dock {
+  --dock-gap: var(--patient-nav-gap);
+  --dock-radius: var(--patient-radius-dock);
+  --dock-bg: rgba(11, 14, 23, 0.88);
+  --dock-border: var(--patient-border);
+  --dock-shadow: var(--patient-shadow-elevated);
+  --dock-item-radius: var(--patient-radius-control);
+  --dock-item-bg: transparent;
+  --dock-item-bg-hover: var(--patient-surface-hover);
+  --dock-item-bg-active: var(--patient-surface-selected);
+  --dock-item-border-active: rgba(37, 99, 235, 0.35);
+  --dock-item-color: var(--patient-color-muted);
+  --dock-item-color-hover: var(--patient-color-text);
+  --dock-item-color-active: var(--patient-color-nav-active);
+  --dock-focus-ring: var(--patient-color-focus);
+  --dock-label-bg: var(--patient-surface-elevated);
+  --dock-label-border: var(--patient-border);
+  --dock-label-color: var(--patient-color-heading);
+  --dock-transition: var(--patient-transition-nav);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.patient-dock .dock-label {
+  font-family: var(--patient-font);
+}
+
+@media (max-width: 380px) {
+  .patient-dock-wrapper {
+    padding-inline: 10px;
+  }
+}
