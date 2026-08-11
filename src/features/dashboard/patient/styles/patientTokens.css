@@ -140,6 +140,12 @@
   --patient-assistant-response-bg: var(--patient-surface-elevated);
   --patient-assistant-response-border: var(--patient-color-primary-soft);
 
+  /* Pain Logger ring — same clamp()-based responsive-sizing approach as
+     KneeGuideAssistantOrb.css, one source instead of duplicated sizes
+     across files. Deliberately smaller than the Orb itself (this is a
+     conversational control, not the assistant's own presence). */
+  --patient-pain-ring-size: clamp(112px, 26vw, 148px);
+
   color: var(--patient-color-text);
   background: var(--patient-surface-page);
   font-family: var(--patient-font);

@@ -459,6 +459,9 @@
       "inputHint": "جرّب إحدى الاقتراحات أدناه — الأسئلة الحرة غير مفعّلة بعد.",
       "sendLabel": "إرسال",
       "suggestionsLabel": "اقتراحات سريعة",
+      "followUpLabel": "اقتراحات للمتابعة",
+      "historyLabel": "المحادثة",
+      "youLabel": "أنت",
       "actions": {
         "showExercises": "عرض تمارين اليوم",
         "nextAppointment": "متى موعدي القادم؟",
@@ -473,19 +476,9 @@
         "latestReport": "آخر تقرير لك بتاريخ {{date}} مُصنَّف بحالة {{status}}، بمستوى ألم مسجَّل {{pain}}.",
         "noProgress": "لا تتوفر بيانات التزام حتى الآن.",
         "rehabProgress": "أنت في سلسلة التزام مدتها {{days}} يوم، مع إنجاز {{percent}}% من تمارين هذا الأسبوع.",
-        "viewReports": "عرض التقارير"
+        "viewReports": "عرض التقارير",
+        "logPainPrompt": "كيف تقيّم مستوى ألمك اليوم؟"
       }
-    },
-    "context": {
-      "regionLabel": "نظرة سريعة",
-      "nextAppointment": "الموعد القادم",
-      "todayExercises": "تمارين اليوم",
-      "exercisesProgress": "تم إنجاز {{done}} من {{total}}",
-      "noExercises": "لا توجد تمارين مقررة اليوم",
-      "latestPain": "آخر مستوى ألم"
-    },
-    "pain": {
-      "title": "تسجيل ألم اليوم"
     },
     "logout": "تسجيل الخروج",
     "mock": {
