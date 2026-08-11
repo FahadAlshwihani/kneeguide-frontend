@@ -196,7 +196,7 @@ const PatientProfile = () => {
                 {!connectedDevice && (
                   <button
                     className="pdvc-btn-main"
-                    onClick={startScan}
+                    onClick={scanForDevices}
                     disabled={scanning}
                   >
                     {scanning ? "Scanning..." : "Scan for Devices"}

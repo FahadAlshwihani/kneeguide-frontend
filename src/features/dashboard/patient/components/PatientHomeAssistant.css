@@ -218,6 +218,119 @@
   max-width: 280px;
 }
 
+/* ---------- Inline exercise list (SHOW_EXERCISES) ---------- */
+/* Deliberately a restrained list, not ExerciseCard (image/video/progress
+   ring) — this is the Assistant answering inline, not reproducing the
+   Exercises page inside chat. See AssistantExerciseList in
+   PatientHomeAssistant.jsx. */
+.patient-exercise-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  max-width: 320px;
+  border-radius: var(--patient-radius-control);
+  overflow: hidden;
+  border: 1px solid var(--patient-assistant-suggestion-border);
+}
+
+.patient-exercise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--patient-space-sm);
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  background: var(--patient-assistant-suggestion-bg);
+}
+
+.patient-exercise-name {
+  font: var(--patient-text-supporting);
+  font-weight: 600;
+  color: var(--patient-color-text);
+}
+
+.patient-exercise-reps {
+  flex-shrink: 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+/* ---------- Inline device scanner (CONNECT_DEVICE) ---------- */
+/* Same "restrained chat content, not a dashboard card" treatment as the
+   exercise list above. Live state comes from useKneeGuideDevice() — see
+   AssistantDeviceScanner — this file only styles it. */
+.patient-device-scanner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--patient-space-2xs);
+  width: 100%;
+}
+
+.patient-device-status {
+  margin: 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}
+
+.patient-device-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-2xs);
+  width: 100%;
+  max-width: 320px;
+}
+
+.patient-device-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--patient-space-2xs);
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-assistant-suggestion-bg);
+  border: 1px solid var(--patient-assistant-suggestion-border);
+  flex-wrap: wrap;
+}
+
+.patient-device-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.patient-device-name {
+  font: var(--patient-text-supporting);
+  font-weight: 600;
+  color: var(--patient-color-text);
+  overflow-wrap: anywhere;
+}
+
+.patient-device-signal {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+/* Narrow phones: let the row wrap so name/signal stay on their own line
+   and Connect never gets squeezed off — same "stack, don't hide the
+   action" requirement as the rest of the transcript. */
+@media (max-width: 480px) {
+  .patient-device-row {
+    justify-content: flex-start;
+  }
+
+  .patient-device-row-info {
+    flex: 1 1 100%;
+  }
+}
+
 /* Contextual actions (Yes/No, etc.) belong to THIS specific Assistant
    message — visually distinct from the global suggestion chips below the
    composer (.patient-assistant-suggestions), never mixed with them. */

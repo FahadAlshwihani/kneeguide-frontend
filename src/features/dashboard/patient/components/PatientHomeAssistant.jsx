@@ -49,6 +49,113 @@ const prefersReducedMotion = () =>
  * required once a single conversation can legitimately mix Arabic and
  * English turns over time (see patientAssistantLanguage.js).
  */
+/**
+ * The compact, chat-native exercise list a SHOW_EXERCISES response
+ * renders inline — deliberately NOT a reproduction of the Exercises
+ * page's ExerciseCard (image/video/progress ring/"Start" modal). This is
+ * the Assistant answering a question, not embedding the Exercises page;
+ * "Open exercise program" (message.secondaryAction, rendered by the
+ * caller) is the route to that fuller experience. `items` were already
+ * resolved (name translated for the turn's language, reps as-is) by
+ * SHOW_EXERCISES' own `execute` — see patientAssistantActions.js.
+ */
+const AssistantExerciseList = ({ items }) => (
+  <ul className="patient-exercise-list">
+    {items.map((item) => (
+      <li key={item.id} className="patient-exercise-row">
+        <span className="patient-exercise-name" dir="auto">
+          {item.name}
+        </span>
+        <span className="patient-exercise-reps" dir="ltr">
+          {item.reps}
+        </span>
+      </li>
+    ))}
+  </ul>
+);
+
+/**
+ * The inline device-scanner widget for the CONNECT_DEVICE response.
+ * Reads live scan/connect state straight from `useKneeGuideDevice()` —
+ * the SAME context Patient Profile's Devices tab reads (see
+ * device/KneeGuideDeviceContext.jsx) — rather than from anything stored
+ * on the message itself, so there is exactly one source of truth for
+ * "is it scanning / what did it find / what's connecting / what's
+ * connected" and Profile can never show something the Assistant
+ * contradicts (or vice versa) within the same session.
+ *
+ * Compact/chat-native by design — a restrained list of rows, not the
+ * Profile page's full device card.
+ */
+const AssistantDeviceScanner = () => {
+  const { t } = useTranslation();
+  const { scanning, devices, connectingDeviceId, connectedDevice, scanForDevices, connectToDevice } =
+    useKneeGuideDevice();
+
+  if (connectedDevice) {
+    return (
+      <div className="patient-device-scanner">
+        <p className="patient-device-status" role="status" dir="auto">
+          {t("patientDashboard.assistant.responses.deviceConnected", { name: connectedDevice.name })}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="patient-device-scanner">
+      {!scanning && devices.length === 0 && (
+        <PatientButton type="button" variant="primary" size="sm" onClick={scanForDevices}>
+          {t("patientDashboard.assistant.responses.deviceScan")}
+        </PatientButton>
+      )}
+
+      {scanning && (
+        <p className="patient-device-status" role="status" dir="auto">
+          {t("patientDashboard.assistant.responses.deviceScanning")}
+        </p>
+      )}
+
+      {!scanning && devices.length > 0 && (
+        <>
+          <p className="patient-device-status" dir="auto">
+            {t("patientDashboard.assistant.responses.deviceFound", { count: devices.length })}
+          </p>
+          <ul className="patient-device-list">
+            {devices.map((device) => {
+              const isConnecting = connectingDeviceId === device.id;
+              return (
+                <li key={device.id} className="patient-device-row">
+                  <span className="patient-device-row-info">
+                    <span className="patient-device-name" dir="auto">
+                      {device.name}
+                    </span>
+                    <span className="patient-device-signal" dir="ltr">
+                      {t("patientDashboard.assistant.responses.deviceSignal", { value: device.signal })}
+                    </span>
+                  </span>
+                  <PatientButton
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isConnecting}
+                    onClick={() => connectToDevice(device)}
+                    aria-label={t("patientDashboard.assistant.responses.deviceConnectAriaLabel", { name: device.name })}
+                  >
+                    {isConnecting
+                      ? t("patientDashboard.assistant.responses.deviceConnecting")
+                      : t("patientDashboard.assistant.responses.deviceConnect")}
+                  </PatientButton>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+};
+
 const ConversationTurn = ({
   message,
   scrollRef,
@@ -116,6 +223,18 @@ const ConversationTurn = ({
               {t("patientDashboard.assistant.painLogger.submit")}
             </PatientButton>
           )}
+        </div>
+      )}
+
+      {message.widget?.type === "exerciseList" && (
+        <div className="patient-chat-widget">
+          <AssistantExerciseList items={message.widget.items} />
+        </div>
+      )}
+
+      {message.widget?.type === "deviceScanner" && (
+        <div className="patient-chat-widget">
+          <AssistantDeviceScanner />
         </div>
       )}
 
