@@ -503,7 +503,10 @@
         "painKept": "Okay, I'll keep your current pain log at {{value}}/10.",
         "painLogged": "Got it. I've logged your pain as {{value}}/10.",
         "painUpdated": "Done. I've updated your pain log to {{value}}/10.",
-        "unsupported": "I'm not able to answer open-ended questions yet. I can help you check your exercises, appointments, reports, pain log, or rehab progress."
+        "unsupported": "I'm not able to answer open-ended questions yet. I can help you check your exercises, appointments, reports, pain log, or rehab progress.",
+        "capabilityReportAnalysis": "I can show you your current report, but detailed analysis and smart comparisons between reports aren't connected yet.",
+        "capabilityExerciseAnalysis": "I can show your exercise list, but detailed performance analysis isn't connected yet.",
+        "capabilityBooking": "I'm not able to book appointments yet — I can show your next appointment, but booking isn't connected yet."
       }
     },
     "logout": "Logout",
