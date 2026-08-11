@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Mesh, Program, Renderer, Triangle, Vec3 } from "ogl";
 import "./Orb.css";
 
