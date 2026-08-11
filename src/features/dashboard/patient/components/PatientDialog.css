@@ -1,0 +1,73 @@
+.patient-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--patient-space-md);
+  z-index: var(--z-modal, 400);
+}
+
+/* Desktop: centered modal, sensible max width (never near-full-screen). */
+.patient-dialog-panel {
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: var(--patient-space-lg);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-elevated);
+  border: 1px solid var(--patient-border);
+  box-shadow: var(--patient-shadow-elevated);
+}
+
+/* Mobile: a tall bottom sheet instead of a centered card — anchored to
+   the bottom edge, safe-area aware, close control always reachable at
+   the top. `env(safe-area-inset-bottom)` keeps the sheet's own bottom
+   padding clear of device home-indicators; PatientLayout's own
+   --patient-dock-clearance isn't needed here since the backdrop already
+   covers the full viewport (including over the Dock) at this z-index. */
+@media (max-width: 640px) {
+  .patient-dialog-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .patient-dialog-panel {
+    max-width: 100%;
+    max-height: 88vh;
+    width: 100%;
+    border-radius: var(--patient-radius-card) var(--patient-radius-card) 0 0;
+    padding: var(--patient-space-md) var(--patient-space-sm) calc(var(--patient-space-md) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.patient-dialog-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--patient-border);
+  background: transparent;
+  color: var(--patient-color-muted);
+  cursor: pointer;
+}
+
+.patient-dialog-close:hover {
+  background: var(--patient-surface-hover);
+  color: var(--patient-color-text);
+}
+
+.patient-dialog-close:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.patient-dialog-close svg {
+  width: 16px;
+  height: 16px;
+}

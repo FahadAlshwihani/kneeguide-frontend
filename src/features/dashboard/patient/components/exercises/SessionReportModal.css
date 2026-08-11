@@ -1,24 +1,7 @@
-.session-report-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--patient-space-md);
-  z-index: var(--z-modal, 400);
-}
-
+/* Backdrop/base panel/close button all live in PatientDialog.css — this
+   file only overrides this dialog's own width and styles its content. */
 .session-report-panel {
-  width: 100%;
   max-width: 480px;
-  max-height: 85vh;
-  overflow-y: auto;
-  padding: var(--patient-space-lg);
-  border-radius: var(--patient-radius-card);
-  background: var(--patient-surface-elevated);
-  border: 1px solid var(--patient-border);
-  box-shadow: var(--patient-shadow-elevated);
 }
 
 .session-report-header {
@@ -46,35 +29,6 @@
   margin: 2px 0 0;
   font: var(--patient-text-caption);
   color: var(--patient-color-faint);
-}
-
-.session-report-close {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--patient-border);
-  background: transparent;
-  color: var(--patient-color-muted);
-  cursor: pointer;
-}
-
-.session-report-close:hover {
-  background: var(--patient-surface-hover);
-  color: var(--patient-color-text);
-}
-
-.session-report-close:focus-visible {
-  outline: 2px solid var(--patient-color-focus);
-  outline-offset: 2px;
-}
-
-.session-report-close svg {
-  width: 16px;
-  height: 16px;
 }
 
 .session-report-summary {
