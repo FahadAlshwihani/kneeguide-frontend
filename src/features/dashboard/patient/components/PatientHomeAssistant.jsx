@@ -13,6 +13,7 @@ import PatientPainLogger from "./PatientPainLogger";
 import "./PatientHomeAssistant.css";
 
 const SUCCESS_PULSE_MS = 700;
+const NEAR_BOTTOM_THRESHOLD_PX = 80;
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -143,8 +144,19 @@ const ConversationTurn = ({
  * normal, calm Assistant conversation turn (never an external warning) —
  * see patientAssistantActions.js for the capability boundary this stays
  * behind.
+ *
+ * LAYOUT: Conversation Mode renders as a bounded header/transcript/footer
+ * shell (PatientHomeAssistant.css's `.patient-assistant--conversation` +
+ * children) instead of normal document flow — the transcript
+ * (`.patient-chat-history`) is the ONLY scrolling element; the Orb header
+ * and composer/suggestions footer sit outside it. `onModeChange` reports
+ * the current mode up to PatientDashboard.jsx so its own page wrapper
+ * (`.pd-page`) can size itself to the viewport (via the existing
+ * --patient-dock-clearance token, no hardcoded pixel subtraction) only
+ * while Conversation Mode is active — Welcome Mode keeps the page's
+ * normal, unbounded document flow untouched.
  */
-const PatientHomeAssistant = ({ data }) => {
+const PatientHomeAssistant = ({ data, onModeChange }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -165,6 +177,14 @@ const PatientHomeAssistant = ({ data }) => {
 
   const successTimeoutRef = useRef(null);
   const latestUserMessageRef = useRef(null);
+  const transcriptRef = useRef(null);
+  // Reflects the scroll position as of the last actual scroll EVENT, not
+  // recomputed after content grows — this is what makes the "was the user
+  // near the bottom right before this new message arrived" check correct
+  // instead of being confused by the new message's own height change (see
+  // the messages.length effect below). Starts true: a fresh conversation
+  // has nothing to preserve a reading position against.
+  const wasNearBottomRef = useRef(true);
   const processingRef = useRef(new Set());
 
   useEffect(
@@ -173,6 +193,10 @@ const PatientHomeAssistant = ({ data }) => {
     },
     []
   );
+
+  useEffect(() => {
+    onModeChange?.(mode);
+  }, [mode, onModeChange]);
 
   const displayName = user?.first_name?.trim() || t("patientDashboard.greeting.fallbackName");
 
@@ -197,16 +221,31 @@ const PatientHomeAssistant = ({ data }) => {
   }, [lastActionId]);
 
   // Newest user turn scrolled into view once it (and its pair) mount —
-  // never a continuous/forced scroll while the user reads older turns,
-  // since this only re-runs when the message COUNT changes.
+  // scoped to the transcript container (scrollIntoView targets the
+  // nearest scrollable ancestor, which is `.patient-chat-history` now
+  // that the document itself no longer scrolls in Conversation Mode —
+  // see PatientHomeAssistant.css). Gated behind `wasNearBottomRef` so a
+  // user who scrolled up to reread older turns is never yanked back down
+  // — only fires when they were already at/near the bottom.
   useEffect(() => {
     if (messages.length === 0) return;
+    if (!wasNearBottomRef.current) return;
     latestUserMessageRef.current?.scrollIntoView({
       behavior: reducedMotion ? "auto" : "smooth",
       block: "start",
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length]);
+
+  // Plain ref, not React state — updated on real scroll events only
+  // (never on content growth alone), per the performance requirement of
+  // not setting state per scroll pixel and not attaching anything to
+  // `window`. Scoped entirely to the transcript element itself.
+  const handleTranscriptScroll = () => {
+    const el = transcriptRef.current;
+    if (!el) return;
+    wasNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < NEAR_BOTTOM_THRESHOLD_PX;
+  };
 
   const pulseSuccess = () => {
     if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
