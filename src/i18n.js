@@ -23,6 +23,15 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+
+    // Both bundles are always loaded regardless of the active UI language —
+    // this is what lets the Patient Assistant call t(key, { lng: 'ar'|'en' })
+    // for a conversation-language-specific response without ever touching
+    // the active UI language (i18n.changeLanguage is never called for this).
+    // Without this, a fixed-lng lookup for a language that hasn't been
+    // switched to yet would silently miss (i18next-http-backend only
+    // fetches a language's file when something actually asks for it).
+    preload: ["en", "ar"],
   });
 
 // 🔁 تغيير اتجاه الصفحة تلقائياً عند تغيير اللغة
