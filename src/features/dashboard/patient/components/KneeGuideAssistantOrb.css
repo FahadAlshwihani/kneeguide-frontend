@@ -1,22 +1,50 @@
-/* Sized deliberately restrained — the Orb is the assistant's presence,
-   not a hero illustration. Bounded on both ends so it never gets tiny on
-   a narrow phone nor oversized on a wide desktop; on mobile this keeps it
-   from ever eating a meaningful share of viewport height (see
-   PatientHomeAssistant.css's own mobile rules for the rest of that
-   guarantee). Clipped to a circle explicitly — the shader's own alpha
-   falloff already fades the corners, but a hard clip guarantees a clean
-   circular presence regardless of that falloff's exact precision. */
+/* Two responsive size tiers — Welcome (large, the assistant's dominant
+   initial presence) and Conversation (compact, its persistent identity
+   once a conversation exists). Each tier uses its OWN clamp() range
+   rather than one universal curve, since the same vw percentage produces
+   very different absolute sizes at phone vs desktop widths and the
+   target ranges genuinely differ by breakpoint, not just scale linearly.
+   Clipped to a circle explicitly — the shader's own alpha falloff already
+   fades the corners, but a hard clip guarantees a clean circular presence
+   regardless of that falloff's exact precision. Width/height here are
+   read by Motion's `layout` FLIP animation (KneeGuideAssistantOrb.jsx) —
+   never animated directly via a CSS transition, which would fight layout
+   every frame. */
 .kneeguide-assistant-orb {
-  width: clamp(120px, 16vw, 180px);
-  height: clamp(120px, 16vw, 180px);
   margin-inline: auto;
   border-radius: 50%;
   overflow: hidden;
 }
 
+.kneeguide-assistant-orb--large {
+  width: clamp(280px, 22vw, 360px);
+  height: clamp(280px, 22vw, 360px);
+}
+
+.kneeguide-assistant-orb--compact {
+  width: clamp(100px, 9vw, 140px);
+  height: clamp(100px, 9vw, 140px);
+}
+
 @media (max-width: 480px) {
-  .kneeguide-assistant-orb {
-    width: 128px;
-    height: 128px;
+  .kneeguide-assistant-orb--large {
+    width: clamp(180px, 46vw, 240px);
+    height: clamp(180px, 46vw, 240px);
+  }
+
+  .kneeguide-assistant-orb--compact {
+    width: clamp(72px, 22vw, 100px);
+    height: clamp(72px, 22vw, 100px);
+  }
+}
+
+/* Short phones (landscape-ish or small older devices) — the welcome Orb
+   would otherwise push the composer out of comfortable reach. Reduced
+   further here rather than left to fight the rest of the welcome stack
+   for vertical space. */
+@media (max-width: 480px) and (max-height: 700px) {
+  .kneeguide-assistant-orb--large {
+    width: clamp(140px, 34vh, 190px);
+    height: clamp(140px, 34vh, 190px);
   }
 }
