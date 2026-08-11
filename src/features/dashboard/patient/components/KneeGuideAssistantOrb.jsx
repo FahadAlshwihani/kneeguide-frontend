@@ -39,14 +39,28 @@ const STATE_CONFIG = {
  * "thinking" | "success" — instead of touching shader uniforms directly.
  * `backgroundColor` defaults to the patient page surface token so the Orb
  * blends seamlessly into Patient Home rather than showing a visible box.
+ *
+ * `size` ("large" | "compact") toggles a CSS modifier class that changes
+ * this wrapper's own width/height (KneeGuideAssistantOrb.css) — this is
+ * the Welcome-to-Conversation shrink. The wrapper is a `motion.div` with
+ * `layout` so that size (and any resulting position shift as surrounding
+ * content collapses) animates smoothly via Motion's FLIP technique
+ * instead of a raw width/height transition. Crucially, this NEVER touches
+ * the <Orb/> instance itself or any of its props tied to WebGL setup —
+ * the same canvas/renderer stays mounted throughout, only the box it
+ * fills changes size, which Orb's own ResizeObserver already reacts to
+ * (see Orb.jsx). One Orb instance, two visual sizes, zero re-inits.
  */
-const KneeGuideAssistantOrb = ({ state = "idle", className = "" }) => {
+const KneeGuideAssistantOrb = ({ state = "idle", size = "large", className = "" }) => {
   const { t } = useTranslation();
   const config = STATE_CONFIG[state] || STATE_CONFIG.idle;
+  const reducedMotion = prefersReducedMotion();
 
   return (
-    <div
-      className={`kneeguide-assistant-orb ${className}`.trim()}
+    <motion.div
+      layout
+      transition={{ duration: reducedMotion ? 0 : 0.4, ease: [0.22, 0.61, 0.36, 1] }}
+      className={`kneeguide-assistant-orb kneeguide-assistant-orb--${size} ${className}`.trim()}
       // Decorative presence, not an interactive control or an image with
       // meaningful content — role="img" + a short label lets a screen
       // reader announce it once as context without exposing raw canvas
@@ -61,7 +75,7 @@ const KneeGuideAssistantOrb = ({ state = "idle", className = "" }) => {
         forceHoverState={config.forceHoverState}
         backgroundColor="#050509"
       />
-    </div>
+    </motion.div>
   );
 };
 
