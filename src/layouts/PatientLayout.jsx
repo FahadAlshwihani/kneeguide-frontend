@@ -26,15 +26,19 @@ import "./PatientLayout.css";
  * each page guessing its own bottom padding for a nav it doesn't render
  * itself anymore.
  *
- * Logout also lives here now, next to the language toggle — audited
- * before moving it: the old PatientDashboard header's logout button was
- * the ONLY working logout control anywhere in the Patient Dashboard
- * (Profile's own "Logout" button under its Security tab has never had a
- * click handler wired to it). Removing Home's header without placing a
- * working logout somewhere would have silently broken real functionality,
- * which the task this implements explicitly forbids — this is the
- * smallest change that keeps it working and available from every patient
- * page, consistent with how the language toggle already works.
+ * Logout lives here — audited before ever moving it (in an earlier
+ * round): the old PatientDashboard header's logout button was the ONLY
+ * working logout control anywhere in the Patient Dashboard (Profile's own
+ * "Logout" button under its Security tab has never had a click handler
+ * wired to it). Kept here, now alone, after this round's own removal of
+ * the floating language switcher from Patient scope (see below) — Patient
+ * language selection is intentionally moving to Profile/Settings in a
+ * future task; this only removes the UI control, never i18n itself
+ * (SidebarLanguageSwitcher, the actual component, is untouched — still
+ * imported/rendered exactly as before by DoctorSidebar; only this file
+ * stopped rendering it). The app's current language keeps rendering
+ * everywhere via the same i18next instance regardless of this control's
+ * presence.
  */
 const PatientLayout = () => {
   const { t } = useTranslation();
@@ -42,17 +46,14 @@ const PatientLayout = () => {
 
   return (
     <div className="patient-shell">
-      <div className="patient-shell-account">
-        <SidebarLanguageSwitcher />
-        <button
-          type="button"
-          className="patient-shell-logout"
-          onClick={logout}
-          aria-label={t("patientDashboard.logout")}
-        >
-          <LuLogOut aria-hidden="true" />
-        </button>
-      </div>
+      <button
+        type="button"
+        className="patient-shell-logout"
+        onClick={logout}
+        aria-label={t("patientDashboard.logout")}
+      >
+        <LuLogOut aria-hidden="true" />
+      </button>
 
       <div className="patient-shell-content">
         <Outlet />
