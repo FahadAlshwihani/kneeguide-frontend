@@ -20,8 +20,40 @@
   align-items: center;
 }
 
+/* Conversation Mode only (PatientDashboard.jsx mirrors
+   PatientHomeAssistant's own mode via onModeChange) — the page becomes a
+   height-BOUNDED shell instead of normal, unbounded document flow, so the
+   document itself never needs to scroll; only the transcript inside
+   PatientHomeAssistant does (see PatientHomeAssistant.css). The
+   subtracted amount is --patient-dock-clearance, the same real,
+   already-established token PatientLayout.css already uses to reserve
+   room for the fixed Dock — not a guessed pixel value. `100dvh` (not
+   `100vh`) so this tracks the ACTUAL visible viewport as mobile browser
+   chrome shows/hides, keeping the bound accurate instead of occasionally
+   taller than what's really visible.
+
+   Welcome Mode is deliberately untouched — `.pd-page` alone (no
+   modifier) keeps its original `min-height: 100vh` + normal flow, exactly
+   as before this task, per "don't force Welcome into the same compact
+   layout". */
+.pd-page--conversation {
+  min-height: 0;
+  height: calc(100dvh - var(--patient-dock-clearance) - env(safe-area-inset-bottom, 0px));
+  padding-block: var(--patient-space-md) var(--patient-space-sm);
+  overflow: hidden;
+}
+
+.pd-page--conversation .pd-inner {
+  height: 100%;
+  min-height: 0;
+}
+
 @media (max-width: 480px) {
   .pd-page {
     padding-block: var(--patient-space-lg) var(--patient-space-md);
+  }
+
+  .pd-page--conversation {
+    padding-block: var(--patient-space-sm) var(--patient-space-xs);
   }
 }

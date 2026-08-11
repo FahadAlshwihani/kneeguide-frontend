@@ -1,5 +1,5 @@
 // src/pages/PatientDashboard.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import "../styles/PatientDashboard.css";
 import PatientHomeAssistant from "../components/PatientHomeAssistant";
@@ -18,9 +18,17 @@ import PatientHomeAssistant from "../components/PatientHomeAssistant";
  * (assistant/patientAssistantActions.js), including the Pain Wheel itself,
  * which now mounts inline inside a conversation turn instead of a
  * dashboard-style section (see PatientHomeAssistant.jsx's ConversationTurn).
+ *
+ * `homeMode` mirrors PatientHomeAssistant's own internal Welcome/
+ * Conversation mode (reported up via `onModeChange`, purely for layout —
+ * no assistant business logic lives here) so `.pd-page` can become the
+ * bounded, non-document-scrolling chat shell ONLY while a conversation is
+ * active (`.pd-page--conversation`, PatientDashboard.css) — Welcome Mode
+ * keeps this page's original, unbounded normal-flow behavior untouched.
  */
 const PatientDashboard = () => {
   const { t } = useTranslation();
+  const [homeMode, setHomeMode] = useState("welcome");
 
   // =======================
   // MOCK DATA — unchanged from the previous dashboard
@@ -48,9 +56,9 @@ const PatientDashboard = () => {
   const assistantData = { nextAppointment, lastReport, adherence };
 
   return (
-    <div className="pd-page">
+    <div className={`pd-page pd-page--${homeMode}`}>
       <div className="pd-inner">
-        <PatientHomeAssistant data={assistantData} />
+        <PatientHomeAssistant data={assistantData} onModeChange={setHomeMode} />
       </div>
     </div>
   );
