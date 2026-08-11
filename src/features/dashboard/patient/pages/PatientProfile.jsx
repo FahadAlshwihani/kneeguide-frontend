@@ -1,7 +1,6 @@
 // src/pages/PatientProfile.jsx
 import React, { useState } from "react";
 import "../styles/PatientProfile.css";
-import PatientBottomNav from "../components/PatientBottomNav";
 import LanguageDropdown from "../../../../components/common/LanguageDropdown"; // ← تمت إضافته
 
 const PatientProfile = () => {
@@ -236,9 +235,6 @@ const PatientProfile = () => {
 
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <PatientBottomNav active="profile" />
     </div>
   );
 };
