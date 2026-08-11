@@ -1,0 +1,191 @@
+/* The Patient Home conversational pain-selection control. Reads only
+   from patientTokens.css (--patient-*) — no raw hex/px scattered here
+   beyond the ring's own geometry constants, which are SVG viewBox units,
+   not arbitrary pixel sizes. */
+
+.patient-pain-logger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--patient-space-xs);
+  padding: var(--patient-space-md);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  width: 100%;
+  max-width: 280px;
+}
+
+/* ---------- Ring (visual only — the range input below is the real
+   interaction; see PatientPainLogger.jsx) ---------- */
+.patient-pain-ring {
+  position: relative;
+  width: var(--patient-pain-ring-size);
+  height: var(--patient-pain-ring-size);
+}
+
+.patient-pain-ring-svg {
+  width: 100%;
+  height: 100%;
+  /* Start the fill arc at 12 o'clock instead of SVG's default 3 o'clock,
+     and grow clockwise — matches the natural reading of "filling up". */
+  transform: rotate(-90deg);
+}
+
+.patient-pain-ring-track,
+.patient-pain-ring-fill {
+  fill: none;
+  stroke-width: 7;
+}
+
+.patient-pain-ring-track {
+  stroke: var(--patient-border);
+}
+
+.patient-pain-ring-fill {
+  stroke-linecap: round;
+}
+
+.patient-pain-ring-center {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: var(--patient-surface-elevated);
+  border: 1px solid var(--patient-divider);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+}
+
+.patient-pain-value {
+  font: var(--patient-text-page-heading);
+  color: var(--patient-color-heading);
+}
+
+.patient-pain-max {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+.patient-pain-severity {
+  margin: 0;
+  font: var(--patient-text-label);
+  /* Severity is never color-only — this is real, readable text; the ring
+     color is a restrained reinforcement, not the only signal. */
+  color: var(--patient-color-text);
+}
+
+/* ---------- Accessible range control ---------- */
+.patient-pain-control {
+  width: 100%;
+}
+
+.patient-pain-range {
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.patient-pain-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.patient-pain-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-border);
+}
+
+.patient-pain-range::-moz-range-track {
+  height: 4px;
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-border);
+}
+
+/* Generously sized touch target — the visible thumb is smaller, but the
+   full 28px box (see .patient-pain-range's own height) is what actually
+   receives pointer/touch input. */
+.patient-pain-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--patient-color-primary);
+  border: 3px solid var(--patient-surface-card);
+  box-shadow: 0 0 0 1px var(--patient-color-primary);
+}
+
+.patient-pain-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--patient-color-primary);
+  border: 3px solid var(--patient-surface-card);
+  box-shadow: 0 0 0 1px var(--patient-color-primary);
+}
+
+.patient-pain-range:focus-visible {
+  outline: none;
+}
+
+.patient-pain-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px var(--patient-color-primary), 0 0 0 4px var(--patient-color-primary-soft);
+}
+
+.patient-pain-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 1px var(--patient-color-primary), 0 0 0 4px var(--patient-color-primary-soft);
+}
+
+/* Native range mirroring under RTL (the browser flips fill direction on
+   its own for `dir="rtl"`) is left entirely alone here — no manual
+   direction override — so the semantic 0..10 mapping never changes, only
+   which physical side reads as the start. These two caption labels use
+   plain flex order, which follows that same native direction. */
+.patient-pain-scale-caps {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Resolved (read-only, post-submit) state ---------- */
+.patient-pain-logger--resolved {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 220px;
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  gap: var(--patient-space-2xs);
+}
+
+.patient-pain-resolved-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: start;
+}
+
+.patient-pain-resolved-value {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.patient-pain-resolved-caption {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-success);
+}
+
+.patient-pain-resolved-caption svg {
+  width: 13px;
+  height: 13px;
+}
