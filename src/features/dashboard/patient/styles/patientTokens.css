@@ -112,6 +112,16 @@
   --patient-radius-dock: 20px;
   --patient-radius-tooltip: 6px;
 
+  /* Single source of truth for PatientDock's icon size — see
+     PatientDock.css (maps this to Dock.css's generic --dock-icon-size)
+     and Dock.jsx's own comment on why this must stay decoupled from the
+     item's own spring-animated box size. Deliberately one size for both
+     idle and active — the active item already reads as distinct through
+     color/surface (--patient-color-nav-active, --patient-surface-selected
+     in PatientDock.css), so a second, size-based distinction on top of
+     that was judged unnecessary rather than an oversight. */
+  --patient-dock-icon-size: 18px;
+
   /* ---------- Transitions ---------- */
   --patient-transition-fast: 120ms ease;
   --patient-transition-normal: 200ms ease;

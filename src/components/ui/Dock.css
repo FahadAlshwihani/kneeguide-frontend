@@ -26,6 +26,11 @@
   border: 1px solid var(--dock-border, rgba(255, 255, 255, 0.08));
   box-shadow: var(--dock-shadow, 0 12px 32px rgba(0, 0, 0, 0.45));
   padding: 0 10px 10px;
+  /* Horizontal finger exploration across items is the intended gesture
+     here — without this, some browsers also interpret it as an attempt
+     to scroll the page, fighting the proximity interaction. Scoped to the
+     dock only; nothing about page scroll elsewhere is affected. */
+  touch-action: none;
 }
 
 .dock-item {
@@ -68,18 +73,26 @@
   color: var(--dock-item-color-active, #ffffff);
 }
 
+/* Purely a centering box, filling whatever size the item currently is
+   (the item's own box is what magnifies — see DockItem's `size` spring in
+   Dock.jsx). The icon itself is fixed-size (below) and never grows on top
+   of that: an item growing for magnification breathing room, with the
+   icon staying put and centered, is what actually reads as premium
+   instead of heavy — a growing icon on top of a growing box was the
+   previous "double magnification" bug. */
 .dock-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60%;
-  height: 60%;
+  width: 100%;
+  height: 100%;
 }
 
 .dock-icon svg {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: var(--dock-icon-size, 18px);
+  height: var(--dock-icon-size, 18px);
+  flex-shrink: 0;
 }
 
 .dock-label {

@@ -6,8 +6,6 @@ import Dock from "../../../../components/ui/Dock";
 import { ROUTES } from "../../../../utils/routes";
 import "./PatientDock.css";
 
-const ICON_SIZE = 20;
-
 // Route config lives here — the generic Dock (components/ui/Dock.jsx)
 // never sees a patient route/icon/label directly, so a future, separately
 // designed Doctor navigation can be built without touching or extending
@@ -49,7 +47,10 @@ const PatientDock = () => {
         to,
         label: t(labelKey),
         active: pathname === to || pathname.startsWith(`${to}/`),
-        icon: <Icon size={ICON_SIZE} />,
+        // No size prop — icon size is fully owned by --patient-dock-icon-size
+        // (patientTokens.css -> PatientDock.css -> Dock.css's --dock-icon-size),
+        // one centralized source instead of a per-item/JS value.
+        icon: <Icon />,
       })),
     [pathname, t]
   );
@@ -64,6 +65,8 @@ const PatientDock = () => {
         baseItemSize={48}
         magnification={64}
         distance={180}
+        touchMagnification={58}
+        touchDistance={100}
         dockHeight={128}
       />
     </div>
