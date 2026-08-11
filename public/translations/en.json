@@ -671,6 +671,7 @@
     "logout": "Logout"
   },
   "patientBottomNav": {
+    "navLabel": "Patient navigation",
     "home": "Home",
     "exercises": "Exercises",
     "reports": "Reports",

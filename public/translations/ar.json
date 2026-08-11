@@ -671,6 +671,7 @@
     "logout": "تسجيل الخروج"
   },
   "patientBottomNav": {
+    "navLabel": "التنقل بين صفحات المريض",
     "home": "الرئيسية",
     "exercises": "التمارين",
     "reports": "التقارير",
