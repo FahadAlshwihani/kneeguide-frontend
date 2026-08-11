@@ -1,0 +1,200 @@
+.session-hero {
+  width: 100%;
+  padding: var(--patient-space-lg);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-2xs);
+}
+
+.session-hero-heading {
+  margin: 0;
+  font: var(--patient-text-page-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-hero-sub,
+.session-hero-session-number {
+  margin: 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}
+
+.session-hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--patient-space-2xs);
+  margin: var(--patient-space-2xs) 0;
+}
+
+.session-hero-facts span {
+  padding: 4px var(--patient-space-xs);
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-assistant-suggestion-bg);
+  border: 1px solid var(--patient-assistant-suggestion-border);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-text);
+}
+
+.session-hero-progress-label {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}
+
+.session-hero > .patient-btn {
+  align-self: flex-start;
+}
+
+/* ---------- Live progress bar (ACTIVE / BETWEEN_EXERCISES / PAIN_CHECK) ---------- */
+.session-hero-progress-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-surface-elevated);
+  overflow: hidden;
+}
+
+.session-hero-progress-bar-fill {
+  height: 100%;
+  background: var(--patient-color-primary);
+  transition: width 300ms ease;
+}
+
+.session-hero-elapsed {
+  margin: 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Upcoming day ---------- */
+.session-hero-preview-list {
+  margin: 0;
+  padding-inline-start: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-text);
+}
+
+.session-hero-locked-reason {
+  margin: var(--patient-space-2xs) 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-warning);
+}
+
+/* ---------- Completed-day / completion summary ---------- */
+.session-hero-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  width: fit-content;
+  margin: 0;
+  padding: 3px var(--patient-space-xs);
+  border-radius: var(--patient-radius-badge);
+  background: var(--patient-color-success-soft);
+  color: var(--patient-color-success);
+  font: var(--patient-text-caption);
+  font-weight: 700;
+}
+
+.session-hero-status-pill svg {
+  width: 12px;
+  height: 12px;
+}
+
+.session-hero-complete-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  width: fit-content;
+  margin: 0 0 var(--patient-space-3xs);
+  padding: 3px var(--patient-space-xs);
+  border-radius: var(--patient-radius-badge);
+  background: var(--patient-color-success-soft);
+  color: var(--patient-color-success);
+  font: var(--patient-text-caption);
+  font-weight: 700;
+}
+
+.session-hero-complete-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.session-hero-summary-grid {
+  margin: var(--patient-space-xs) 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--patient-space-sm);
+}
+
+.session-hero-summary-grid dt {
+  margin: 0 0 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-hero-summary-grid dd {
+  margin: 0;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-hero-insight-slot {
+  margin: var(--patient-space-sm) 0;
+}
+
+.session-hero-recommendations {
+  margin-bottom: var(--patient-space-sm);
+}
+
+.session-hero-recommendations-title {
+  margin: 0 0 var(--patient-space-3xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-heading);
+}
+
+.session-hero-recommendations ul {
+  margin: 0;
+  padding-inline-start: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}
+
+.session-hero-complete-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--patient-space-3xs);
+}
+
+.session-hero-report-note {
+  margin: 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+  max-width: 52ch;
+}
+
+.session-hero-dev-reset {
+  margin-top: var(--patient-space-sm);
+  align-self: flex-start;
+  padding: 4px var(--patient-space-2xs);
+  border-radius: var(--patient-radius-control);
+  border: 1px dashed var(--patient-color-faint);
+  background: transparent;
+  color: var(--patient-color-faint);
+  font: var(--patient-text-caption);
+  cursor: pointer;
+}
+
+.session-hero-dev-reset:hover {
+  color: var(--patient-color-text);
+  border-color: var(--patient-color-text);
+}

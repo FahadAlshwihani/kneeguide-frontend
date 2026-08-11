@@ -1,0 +1,228 @@
+.session-exercise-sequence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-sm);
+  width: 100%;
+}
+
+.session-exercise-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-2xs);
+}
+
+.session-exercise-step {
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+}
+
+.session-exercise-step--active {
+  border-color: var(--patient-color-primary);
+  background: var(--patient-surface-elevated);
+}
+
+.session-exercise-step--completed {
+  opacity: 0.85;
+}
+
+.session-exercise-step-header {
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-xs);
+}
+
+.session-exercise-step-index {
+  flex-shrink: 0;
+  font: var(--patient-text-caption);
+  font-weight: 700;
+  color: var(--patient-color-faint);
+}
+
+.session-exercise-step-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-exercise-step-title h3 {
+  margin: 0;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-exercise-step-title p {
+  margin: 2px 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+.session-exercise-step-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px var(--patient-space-2xs);
+  border-radius: var(--patient-radius-badge);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+  border: 1px solid var(--patient-border);
+}
+
+.session-exercise-step--active .session-exercise-step-badge {
+  color: var(--patient-color-primary);
+  border-color: var(--patient-color-primary);
+}
+
+.session-exercise-step--completed .session-exercise-step-badge {
+  color: var(--patient-color-success);
+  border-color: var(--patient-color-success);
+}
+
+.session-exercise-step-badge svg {
+  width: 11px;
+  height: 11px;
+}
+
+.session-exercise-step-preview {
+  margin: var(--patient-space-2xs) 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-exercise-step-completed-duration {
+  margin: var(--patient-space-2xs) 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-success);
+}
+
+/* ---------- Active exercise expanded card ---------- */
+.session-active-exercise {
+  margin-top: var(--patient-space-sm);
+  padding-top: var(--patient-space-sm);
+  border-top: 1px solid var(--patient-divider);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--patient-space-2xs);
+}
+
+.session-set-track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: var(--patient-space-2xs);
+}
+
+.session-set-track-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.session-set-track-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--patient-border);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-set-track-index svg {
+  width: 13px;
+  height: 13px;
+}
+
+.session-set-track-item--active .session-set-track-index {
+  border-color: var(--patient-color-primary);
+  color: var(--patient-color-primary);
+}
+
+.session-set-track-item--done .session-set-track-index {
+  background: var(--patient-color-success-soft);
+  border-color: var(--patient-color-success);
+  color: var(--patient-color-success);
+}
+
+.session-set-track-label {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-active-exercise-set-label {
+  margin: 0;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-active-exercise-reps {
+  margin: 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}
+
+.session-active-exercise-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--patient-space-md);
+  width: 100%;
+  padding: var(--patient-space-2xs) 0;
+}
+
+.session-active-exercise-metric-label {
+  display: block;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-active-exercise-metric-value {
+  display: block;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-text);
+}
+
+.session-sensor-fallback {
+  margin: 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+  font-style: italic;
+}
+
+/* ---------- Pain check ---------- */
+.session-pain-check {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--patient-space-sm);
+  padding: var(--patient-space-lg);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  text-align: center;
+}
+
+.session-pain-check-title {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-pain-check-actions {
+  display: flex;
+  gap: var(--patient-space-2xs);
+}
+
+@media (max-width: 480px) {
+  .session-active-exercise-metrics {
+    gap: var(--patient-space-sm);
+  }
+}

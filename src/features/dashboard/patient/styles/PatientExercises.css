@@ -1,59 +1,79 @@
-/* PAGE */
+/* PAGE — retheme onto the same --patient-* token system the Assistant/
+   Dock/Pain Logger already use (this page previously used raw hex,
+   predating that design system — Section 27/43's own "should feel
+   connected to the KneeGuide Assistant experience" requirement). Bottom
+   Dock clearance is already owned by PatientLayout's content wrapper
+   (--patient-dock-clearance) — plain symmetric padding here. */
 .pe-page {
   min-height: 100vh;
-  background: radial-gradient(circle at top left, #020617 0, #020617 35%, #050509 100%);
-  /* Bottom nav clearance is now owned by PatientLayout's own content
-     wrapper (--patient-dock-clearance), not this page — plain symmetric
-     padding here. */
-  padding: 24px 16px;
+  background: var(--patient-surface-page);
+  padding: var(--patient-space-lg) var(--patient-space-sm);
   display: flex;
   justify-content: center;
-  color: #e5e7eb;
+  color: var(--patient-color-text);
 }
 
 .pe-inner {
   width: 100%;
-  max-width: 1120px;
+  max-width: var(--patient-page-max-width);
 }
 
 /* HEADER */
 .pe-header {
-  margin-bottom: 20px;
+  margin-bottom: var(--patient-space-md);
 }
 
 .pe-title {
-  font-size: 26px;
-  font-weight: 700;
+  margin: 0;
+  font: var(--patient-text-page-heading);
+  color: var(--patient-color-heading);
 }
 
 .pe-subtitle {
-  margin-top: 4px;
-  font-size: 14px;
-  color: #9ca3af;
+  margin: 4px 0 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
 }
 
 /* TABS */
 .pe-tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--patient-space-2xs);
+  margin-bottom: var(--patient-space-md);
 }
 
 .pe-tab {
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: #111827;
-  border: 1px solid #1f2937;
-  color: #9ca3af;
-  font-size: 13px;
+  padding: 8px var(--patient-space-sm);
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  color: var(--patient-color-muted);
+  font: var(--patient-text-caption);
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.pe-tab:hover {
+  background: var(--patient-surface-hover);
+}
+
+.pe-tab:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
 }
 
 .pe-tab.active {
-  background: rgba(99, 102, 241, 0.25);
-  border-color: #6366f1;
-  color: #e0e7ff;
+  background: var(--patient-surface-selected);
+  border-color: var(--patient-color-primary);
+  color: var(--patient-color-heading);
+}
+
+/* ---------- Session view layout ---------- */
+.pe-session-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-md);
+  max-width: 720px;
 }
 
 /* EXERCISE LIST */

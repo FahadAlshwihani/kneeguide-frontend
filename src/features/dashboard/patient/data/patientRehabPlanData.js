@@ -135,6 +135,20 @@ export const getRehabWeek = (referenceDate = new Date()) => {
   });
 };
 
+/**
+ * A plausible "Week N" label — there is no real enrollment-date/program-
+ * start field anywhere in this project (audited before writing this), so
+ * this derives a stable, deterministic number from the calendar's own
+ * ISO week-of-year rather than inventing a fake persisted program-start
+ * date. Purely flavor text (Section 4's own "Week 3" example) — nothing
+ * else in the UI depends on its exact value.
+ */
+export const getWeekLabel = (date = new Date()) => {
+  const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+  const weekNumber = Math.max(1, Math.ceil(dayOfYear / 7));
+  return weekNumber;
+};
+
 const COMPLETED_DAY_SUMMARY_POOL = [
   { durationMs: 16 * 60000 + 40000, painBefore: 4, painAfter: 3, qualityKey: "good" },
   { durationMs: 17 * 60000 + 12000, painBefore: 3, painAfter: 3, qualityKey: "good" },

@@ -1,0 +1,43 @@
+.kneeguide-insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--patient-space-xs);
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-assistant-response-bg);
+  border: 1px solid var(--patient-assistant-response-border);
+  border-inline-start: 3px solid var(--patient-color-primary);
+  text-align: start;
+}
+
+.kneeguide-insight-card--positive {
+  border-inline-start-color: var(--patient-color-success);
+}
+
+.kneeguide-insight-card--caution {
+  border-inline-start-color: var(--patient-color-warning);
+}
+
+.kneeguide-insight-card .kneeguide-assistant-orb {
+  flex-shrink: 0;
+}
+
+.kneeguide-insight-card-body {
+  min-width: 0;
+}
+
+.kneeguide-insight-card-title {
+  margin: 0 0 2px;
+  font: var(--patient-text-label);
+  color: var(--patient-color-primary);
+}
+
+.kneeguide-insight-card-message {
+  margin: 0;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+}
+
+.kneeguide-insight-card-actions {
+  margin-top: var(--patient-space-2xs);
+}

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
 import { LuCheck } from "react-icons/lu";
 import PatientButton from "../PatientButton";
-import KneeGuideAssistantOrb from "../KneeGuideAssistantOrb";
+import KneeGuideInsightCard from "./KneeGuideInsightCard";
 import {
   SESSION_STATUS,
   getSessionProgress,
@@ -201,12 +201,12 @@ const SessionHero = ({
             </div>
           </dl>
 
-          <div className="session-hero-insight">
-            <KneeGuideAssistantOrb state="success" size="compact" />
-            <div>
-              <p className="session-hero-insight-title">{t("patientExercises.session.recoveryInsightTitle")}</p>
-              <p className="session-hero-insight-text">{t(insight.messageKey, insight.values)}</p>
-            </div>
+          <div className="session-hero-insight-slot">
+            <KneeGuideInsightCard
+              title={t("patientExercises.session.recoveryInsightTitle")}
+              message={t(insight.messageKey, insight.values)}
+              tone={insight.severity}
+            />
           </div>
 
           <div className="session-hero-recommendations">

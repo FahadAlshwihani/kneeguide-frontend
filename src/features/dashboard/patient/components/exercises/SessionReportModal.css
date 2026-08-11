@@ -1,0 +1,140 @@
+.session-report-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--patient-space-md);
+  z-index: var(--z-modal, 400);
+}
+
+.session-report-panel {
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: var(--patient-space-lg);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-elevated);
+  border: 1px solid var(--patient-border);
+  box-shadow: var(--patient-shadow-elevated);
+}
+
+.session-report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--patient-space-sm);
+  margin-bottom: var(--patient-space-sm);
+}
+
+.session-report-eyebrow {
+  margin: 0 0 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-success);
+  font-weight: 700;
+}
+
+.session-report-title {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-report-date {
+  margin: 2px 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-report-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--patient-border);
+  background: transparent;
+  color: var(--patient-color-muted);
+  cursor: pointer;
+}
+
+.session-report-close:hover {
+  background: var(--patient-surface-hover);
+  color: var(--patient-color-text);
+}
+
+.session-report-close:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.session-report-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.session-report-summary {
+  margin: 0 0 var(--patient-space-sm);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: var(--patient-space-sm);
+}
+
+.session-report-summary dt {
+  margin: 0 0 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-report-summary dd {
+  margin: 0;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-report-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: var(--patient-space-sm);
+}
+
+.session-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--patient-text-caption);
+}
+
+.session-report-table th,
+.session-report-table td {
+  padding: var(--patient-space-3xs) var(--patient-space-2xs);
+  text-align: start;
+  border-bottom: 1px solid var(--patient-divider);
+}
+
+.session-report-table th {
+  color: var(--patient-color-faint);
+  font-weight: 600;
+}
+
+.session-report-table td {
+  color: var(--patient-color-text);
+}
+
+.session-report-insight {
+  margin: 0 0 var(--patient-space-sm);
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-assistant-response-bg);
+  border: 1px solid var(--patient-assistant-response-border);
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-text);
+}
+
+.session-report-future-note {
+  margin: 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
