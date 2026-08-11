@@ -1,0 +1,40 @@
+.typewriter-text {
+  /* Reserves room for a realistic 1-2 line assistant message so the
+     surrounding layout doesn't shift as more of it is revealed — the
+     message strings this renders are short, known, translated sentences,
+     not arbitrary long-form content. */
+  min-height: calc(var(--patient-text-body-line, 1.5em) * 2);
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-inline-start: 2px;
+  background: currentColor;
+  vertical-align: -0.15em;
+  opacity: 0.7;
+  animation: typewriter-blink 1.1s ease-in-out infinite;
+}
+
+/* Restrained — a slow, soft fade rather than a hard terminal blink. */
+@keyframes typewriter-blink {
+  0%,
+  45% {
+    opacity: 0.7;
+  }
+  50%,
+  95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typewriter-cursor {
+    animation: none;
+    opacity: 0;
+  }
+}
