@@ -878,6 +878,116 @@
       "sets": "sets"
     }
   },
+  "patientAppointments": {
+    "header": {
+      "title": "Appointments",
+      "subtitle": "Manage your rehabilitation follow-ups and request appointments with your care team."
+    },
+    "close": "Close",
+    "viewDetails": "View details",
+    "clinician": {
+      "label": "Clinician",
+      "name": "Dr. Sarah Ahmed",
+      "specialty": "Physiotherapy"
+    },
+    "location": {
+      "clinicName": "KneeGuide Clinic",
+      "room": "Room {{room}}"
+    },
+    "types": {
+      "followUp": "Physiotherapy follow-up",
+      "initial": "Initial assessment"
+    },
+    "hero": {
+      "title": "Next appointment",
+      "today": "Today",
+      "daysAway": "{{count}} days away",
+      "addToCalendar": "Add to calendar",
+      "emptyText": "You don't have an upcoming appointment scheduled. You can request one with your care team below."
+    },
+    "insight": {
+      "title": "KneeGuide Care Insight",
+      "clinicianFollowUp": "Dr. {{doctorName}} suggested continuing your current program before your next review. Suggested next review: {{followUp}}.",
+      "alternativeProposed": "{{doctorName}} suggested a new time for your appointment request — review it below.",
+      "upcomingSoon": "Your next appointment with {{doctorName}} is coming up in {{count}} days.",
+      "pendingRequest": "Your appointment request is awaiting your clinician's review.",
+      "noUpcoming": "You don't have a follow-up scheduled. If you'd like to check in with your care team, you can request an appointment.",
+      "neutral": "Your next appointment with {{doctorName}} is on the calendar. Let your clinician know if anything changes before then."
+    },
+    "sections": {
+      "requests": "Appointment requests",
+      "requestsEmpty": "You don't have any pending or recent requests.",
+      "upcoming": "Upcoming appointments",
+      "upcomingEmpty": "No upcoming appointments.",
+      "past": "Previous appointments",
+      "pastEmpty": "No previous appointments yet."
+    },
+    "status": {
+      "REQUESTED": "Requested",
+      "CONFIRMED": "Confirmed",
+      "ALTERNATIVE_PROPOSED": "New time suggested",
+      "DECLINED": "Declined",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "reasons": {
+      "painIncreased": "Pain increased",
+      "reviewProgress": "Review rehabilitation progress",
+      "romConcern": "Movement / ROM concern",
+      "exerciseDifficulty": "Exercise difficulty",
+      "deviceIssue": "Device / sensor issue",
+      "generalFollowUp": "General follow-up",
+      "other": "Other"
+    },
+    "request": {
+      "cta": "Request appointment",
+      "title": "Request an appointment",
+      "chooseAnotherTimeTitle": "Choose another time",
+      "reasonLabel": "Reason for appointment",
+      "noteLabel": "Anything you'd like your clinician to know?",
+      "notePlaceholder": "Optional note...",
+      "chooseDate": "Choose a date",
+      "chooseTime": "Choose a time",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "selected": "Selected",
+      "reviewTitle": "Review your request",
+      "back": "Back",
+      "next": "Next",
+      "submit": "Submit request",
+      "submittedTitle": "Appointment request submitted",
+      "submittedBody": "Your request for {{date}} at {{time}} has been sent to your care team.",
+      "slotNoLongerAvailable": "That time is no longer available — please choose another.",
+      "errorConflict": "You already have a confirmed appointment at this time.",
+      "errorDuplicate": "You already have a request for this time."
+    },
+    "details": {
+      "eyebrow": "Appointment",
+      "time": "Time",
+      "location": "Location",
+      "doctorResponse": "Doctor response",
+      "youRequested": "You requested:",
+      "doctorSuggested": "{{doctorName}} suggested:",
+      "acceptAlternative": "Accept new time",
+      "chooseAnotherTime": "Choose another time",
+      "suggestedNextReview": "Suggested next review",
+      "timeline": "Request timeline"
+    },
+    "timeline": {
+      "submitted": "Request submitted",
+      "reviewed": "Reviewed by {{doctorName}}",
+      "alternativeProposed": "Alternative time proposed",
+      "declined": "Request declined",
+      "confirmed": "Confirmed"
+    },
+    "followUp": {
+      "nextWeek": "Next week"
+    },
+    "doctorResponses": {
+      "alternative1": "I'd like you to continue your program one more day before the follow-up — could we move this to the next morning slot instead?",
+      "declined1": "Your recent reports show stable improvement. Continue the current program for another week, then let's review your progress."
+    }
+  },
   "verifyOtp": {
     "title": "Verify Your Email",
     "subtitle": "Enter the 6-digit code sent to your email address.",
