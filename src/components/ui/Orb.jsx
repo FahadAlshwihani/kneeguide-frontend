@@ -55,10 +55,27 @@ export default function Orb({
 
   // Read inside the RAF loop instead of closing over the props directly —
   // see the file-level comment above for why. Kept current by the plain
-  // (non-WebGL) effect right below the main setup effect.
+  // (non-WebGL) effect right below the main setup effect. `glHandle` holds
+  // the live renderer/program/mesh/reducedMotion so that same effect can
+  // also trigger a single fresh static render under reduced motion — that
+  // mode paints once and stops the RAF loop entirely, but a semantic state
+  // change (e.g. idle -> success) still needs to reach the screen somehow,
+  // so this repaints exactly one frame on prop change instead of resuming
+  // a continuous loop.
   const liveProps = useRef({ hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor });
+  const glHandle = useRef({ renderer: null, program: null, mesh: null, reducedMotion: false });
+
   useLayoutEffect(() => {
     liveProps.current = { hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor };
+
+    const { renderer, program, mesh, reducedMotion } = glHandle.current;
+    if (reducedMotion && renderer && program && mesh) {
+      program.uniforms.hue.value = hue;
+      program.uniforms.hoverIntensity.value = hoverIntensity;
+      program.uniforms.backgroundColor.value = hexToVec3(backgroundColor);
+      program.uniforms.hover.value = forceHoverState ? 1 : 0;
+      renderer.render({ scene: mesh });
+    }
   }, [hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor]);
 
   const vert = /* glsl */ `
@@ -273,6 +290,7 @@ export default function Orb({
       });
 
       mesh = new Mesh(gl, { geometry, program });
+      glHandle.current = { renderer, program, mesh, reducedMotion };
 
       const resize = () => {
         const dpr = window.devicePixelRatio || 1;
