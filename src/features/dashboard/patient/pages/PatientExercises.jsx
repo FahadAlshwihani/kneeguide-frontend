@@ -3,71 +3,31 @@ import React, { useState } from "react";
 import "../styles/PatientExercises.css";
 import ExerciseCard from "../../shared/components/ExerciseCard";
 import { useTranslation } from "react-i18next";
+import { TODAY_EXERCISES, ALL_EXERCISES } from "../data/patientExercisesData";
+
+// Resolves the shared (key-based, translation-agnostic) exercise data
+// module into the display-ready shape this page renders — the KneeGuide
+// Assistant resolves the exact same TODAY_EXERCISES entries the same way
+// (via its own fixed-language `t()` call) in patientAssistantActions.js,
+// so both surfaces show identical exercise names/reps, never two lists
+// that could drift apart.
+const resolveExercise = (t, exercise) => ({
+  name: t(exercise.nameKey),
+  reps: exercise.reps,
+  lastDone: t(exercise.lastDoneKey),
+  progress: exercise.progress,
+  image: exercise.image,
+  video: exercise.video,
+  description: t(exercise.descriptionKey),
+});
 
 const PatientExercises = () => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState("today");
   const [activeExercise, setActiveExercise] = useState(null);
 
-  // ================
-  // MOCK DATA
-  // ================
-  const todayExercises = [
-    {
-      name: t("patientExercises.mock.quadSets.name"),
-      reps: "3 × 12",
-      lastDone: t("patientExercises.mock.quadSets.lastDone"),
-      progress: 80,
-      image:
-        "https://twnlivestorage1.blob.core.windows.net/twn-media-public/KRM63451A/332192.jpg",
-      video: "https://www.youtube.com/watch?v=5TUK4uT2nnw",
-      description: t("patientExercises.mock.quadSets.description"),
-    },
-    {
-      name: t("patientExercises.mock.legRaises.name"),
-      reps: "3 × 10",
-      lastDone: t("patientExercises.mock.legRaises.lastDone"),
-      progress: 60,
-      image:
-        "https://twnlivestorage1.blob.core.windows.net/twn-media-public/KRM65842A/357653.jpg",
-      video: "https://www.youtube.com/watch?v=gobteD5GWkE",
-      description: t("patientExercises.mock.legRaises.description"),
-    },
-    {
-      name: t("patientExercises.mock.heelSlides.name"),
-      reps: "3 × 15",
-      lastDone: t("patientExercises.mock.heelSlides.lastDone"),
-      progress: 40,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWc8NT1BKuYOP8r-UvfTw92P1US480dT5gBw&s",
-      video: "https://www.youtube.com/watch?v=A7fcobCVppc",
-      description: t("patientExercises.mock.heelSlides.description"),
-    },
-  ];
-
-  const allExercises = [
-    ...todayExercises,
-    {
-      name: t("patientExercises.mock.hamstring.name"),
-      reps: "2 × 30 sec",
-      lastDone: t("patientExercises.mock.hamstring.lastDone"),
-      progress: 20,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_giL-IUoN0K8-EHtvcebyA7xRdNdSXtK-HQ&s",
-      video: "https://www.youtube.com/watch?v=me22JRV7pJc",
-      description: t("patientExercises.mock.hamstring.description"),
-    },
-    {
-      name: t("patientExercises.mock.calfRaises.name"),
-      reps: "3 × 15",
-      lastDone: t("patientExercises.mock.calfRaises.lastDone"),
-      progress: 10,
-      image:
-        "https://gymgeek.com/wp-content/uploads/2023/10/raised-step-calf-raises-1.png",
-      video: "https://www.youtube.com/watch?v=BxfKOyI8sUg",
-      description: t("patientExercises.mock.calfRaises.description"),
-    },
-  ];
+  const todayExercises = TODAY_EXERCISES.map((exercise) => resolveExercise(t, exercise));
+  const allExercises = ALL_EXERCISES.map((exercise) => resolveExercise(t, exercise));
 
   const list = filter === "today" ? todayExercises : allExercises;
 

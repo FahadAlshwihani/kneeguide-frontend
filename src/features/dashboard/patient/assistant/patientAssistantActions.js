@@ -1,6 +1,7 @@
-import { LuDumbbell, LuFileText, LuCalendarClock, LuHeartPulse, LuChartLine } from "react-icons/lu";
+import { LuDumbbell, LuFileText, LuCalendarClock, LuHeartPulse, LuChartLine, LuBluetooth } from "react-icons/lu";
 import { ROUTES } from "../../../../utils/routes";
 import { getRecentPainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorage";
+import { TODAY_EXERCISES } from "../data/patientExercisesData";
 
 /**
  * The Patient Assistant action registry — one source of truth mapping
@@ -61,16 +62,41 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     id: "SHOW_EXERCISES",
     labelKey: "patientDashboard.assistant.actions.showExercises",
     icon: LuDumbbell,
-    type: ASSISTANT_ACTION_TYPES.NAVIGATE,
+    // DISPLAY, not NAVIGATE — the Assistant should ANSWER the question
+    // ("what are today's exercises") inline first; the exercises route is
+    // now only a secondary "go deeper" action, not the entire response.
+    // `TODAY_EXERCISES` is imported from data/patientExercisesData.js —
+    // the exact same module PatientExercises.jsx itself now reads (see
+    // that file) — so the names/reps shown here can never drift from
+    // what the actual Exercises page shows for "Today".
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
     patterns: {
       en: ["show today's exercises", "show my exercises", "today's exercises", "my exercises", "exercises"],
-      ar: ["عرض تمارين اليوم", "تمارين اليوم", "اعرض تمارين", "تمارين"],
+      ar: ["عرض تمارين اليوم", "تمارين اليوم", "اعرض تمارين", "تمارين", "وش تماريني اليوم", "وش تماريني"],
     },
-    // /patient/exercises is a real, already-implemented route with a real
-    // page (PatientExercises.jsx) — its own exercise data is mock, but the
-    // route/page/interaction genuinely exists, so this is a real capability.
-    execute: ({ navigate }) => {
-      navigate(ROUTES.PATIENT_EXERCISES);
+    execute: ({ t, navigate, language }) => {
+      if (TODAY_EXERCISES.length === 0) {
+        return { message: t("patientDashboard.assistant.responses.noExercisesToday", { lng: language }) };
+      }
+
+      return {
+        message: t("patientDashboard.assistant.responses.exercisesIntro", {
+          lng: language,
+          count: TODAY_EXERCISES.length,
+        }),
+        widget: {
+          type: "exerciseList",
+          items: TODAY_EXERCISES.map((exercise) => ({
+            id: exercise.id,
+            name: t(exercise.nameKey, { lng: language }),
+            reps: exercise.reps,
+          })),
+        },
+        secondaryAction: {
+          labelKey: "patientDashboard.assistant.responses.openExerciseProgram",
+          onClick: () => navigate(ROUTES.PATIENT_EXERCISES),
+        },
+      };
     },
   },
   {

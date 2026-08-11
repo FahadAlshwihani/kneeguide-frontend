@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LuLogOut } from "react-icons/lu";
 import { useAuth } from "../context/AuthContext";
 import PatientDock from "../features/dashboard/patient/components/PatientDock";
+import { KneeGuideDeviceProvider } from "../features/dashboard/patient/device/KneeGuideDeviceContext";
 import "../features/dashboard/patient/styles/patientTokens.css";
 import "./PatientLayout.css";
 
@@ -39,6 +40,14 @@ import "./PatientLayout.css";
  * stopped rendering it). The app's current language keeps rendering
  * everywhere via the same i18next instance regardless of this control's
  * presence.
+ *
+ * `KneeGuideDeviceProvider` wraps the Outlet for the exact same reason
+ * PatientDock lives here instead of on each page: Patient Profile's
+ * Devices tab and the KneeGuide Assistant's device-connect capability
+ * must read the SAME scan/connect state, not two independent copies —
+ * mounting the provider once, above every Patient page, is what makes
+ * that guaranteed rather than coincidental (see
+ * device/KneeGuideDeviceContext.jsx).
  */
 const PatientLayout = () => {
   const { t } = useTranslation();
@@ -55,9 +64,11 @@ const PatientLayout = () => {
         <LuLogOut aria-hidden="true" />
       </button>
 
-      <div className="patient-shell-content">
-        <Outlet />
-      </div>
+      <KneeGuideDeviceProvider>
+        <div className="patient-shell-content">
+          <Outlet />
+        </div>
+      </KneeGuideDeviceProvider>
 
       <PatientDock />
     </div>

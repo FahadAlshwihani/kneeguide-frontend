@@ -1,38 +1,39 @@
 // src/pages/PatientProfile.jsx
-import React, { useState } from "react";
+import React from "react";
+import { useSearchParams } from "react-router-dom";
 import "../styles/PatientProfile.css";
 import LanguageDropdown from "../../../../components/common/LanguageDropdown"; // ← تمت إضافته
+import { useKneeGuideDevice } from "../device/KneeGuideDeviceContext";
+
+// The set of tabs this page actually renders — also the allowlist an
+// incoming `?tab=` deep link is checked against (see below); anything
+// else (missing, mistyped, stale) safely falls back to "overview"
+// instead of rendering a blank/broken tab.
+const PROFILE_TABS = ["overview", "medical", "rehab", "settings", "security", "devices"];
 
 const PatientProfile = () => {
-  const [tab, setTab] = useState("overview");
+  // Tab selection lives in the URL (`?tab=devices`), not local-only
+  // React state — this is what makes the KneeGuide Assistant's "Open
+  // Devices settings" action land directly on the Devices tab, and makes
+  // that landing survive a refresh/back/forward instead of resetting to
+  // Overview. "overview" itself is never written to the URL (falls
+  // through as the default), so the plain /patient/profile URL stays
+  // clean.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const tab = PROFILE_TABS.includes(requestedTab) ? requestedTab : "overview";
 
-  // Device state
-  const [scanning, setScanning] = useState(false);
-  const [devices, setDevices] = useState([]);
-  const [connectedDevice, setConnectedDevice] = useState(null);
-
-  const mockDevices = [
-    { id: 1, name: "KneeGuide-Sensor-01", signal: -55 },
-    { id: 2, name: "RehabTracker v2", signal: -61 },
-  ];
-
-  const startScan = () => {
-    setScanning(true);
-    setDevices([]);
-
-    setTimeout(() => {
-      setScanning(false);
-      setDevices(mockDevices);
-    }, 1500);
+  const setTab = (nextTab) => {
+    setSearchParams(nextTab === "overview" ? {} : { tab: nextTab });
   };
 
-  const connectToDevice = (device) => {
-    setConnectedDevice(null);
-
-    setTimeout(() => {
-      setConnectedDevice(device);
-    }, 1200);
-  };
+  // Device state/logic is NOT owned here — this is the same shared
+  // scan/connect capability the KneeGuide Assistant's "How do I connect
+  // my device?" action uses (see device/KneeGuideDeviceContext.jsx,
+  // mounted once in PatientLayout.jsx). Profile and the Assistant are two
+  // interfaces into one device capability, never two copies of it.
+  const { scanning, devices, connectingDeviceId, connectedDevice, scanForDevices, connectToDevice, disconnectDevice } =
+    useKneeGuideDevice();
 
   // MOCK DATA
   const user = {
@@ -185,7 +186,7 @@ const PatientProfile = () => {
 
                     <button
                       className="pdvc-btn-outline"
-                      onClick={() => setConnectedDevice(null)}
+                      onClick={disconnectDevice}
                     >
                       Disconnect
                     </button>
@@ -221,8 +222,9 @@ const PatientProfile = () => {
                         <button
                           className="pdvc-connect-btn"
                           onClick={() => connectToDevice(d)}
+                          disabled={connectingDeviceId === d.id}
                         >
-                          Connect
+                          {connectingDeviceId === d.id ? "Connecting..." : "Connect"}
                         </button>
                       </div>
                     ))}
