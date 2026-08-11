@@ -486,6 +486,7 @@
         "latestReport": "Show my latest report",
         "logPain": "Log today's pain",
         "rehabProgress": "How is my rehab progress?",
+        "connectDevice": "How do I connect my device?",
         "changePain": "Yes, change it",
         "keepPain": "No, keep it"
       },
@@ -506,7 +507,20 @@
         "unsupported": "I'm not able to answer open-ended questions yet. I can help you check your exercises, appointments, reports, pain log, or rehab progress.",
         "capabilityReportAnalysis": "I can show you your current report, but detailed analysis and smart comparisons between reports aren't connected yet.",
         "capabilityExerciseAnalysis": "I can show your exercise list, but detailed performance analysis isn't connected yet.",
-        "capabilityBooking": "I'm not able to book appointments yet — I can show your next appointment, but booking isn't connected yet."
+        "capabilityBooking": "I'm not able to book appointments yet — I can show your next appointment, but booking isn't connected yet.",
+        "exercisesIntro": "You have {{count}} exercises scheduled for today:",
+        "noExercisesToday": "You don't have any exercises assigned for today.",
+        "openExerciseProgram": "Open exercise program",
+        "deviceIntro": "You can connect your KneeGuide sensor from Profile → Devices, or scan for it directly here.",
+        "deviceScan": "Scan for devices",
+        "openDeviceSettings": "Open Devices settings",
+        "deviceScanning": "Searching for nearby devices...",
+        "deviceFound": "I found {{count}} nearby devices:",
+        "deviceSignal": "Signal: {{value}} dBm",
+        "deviceConnect": "Connect",
+        "deviceConnecting": "Connecting...",
+        "deviceConnectAriaLabel": "Connect to {{name}}",
+        "deviceConnected": "Connected to {{name}}."
       }
     },
     "logout": "Logout",

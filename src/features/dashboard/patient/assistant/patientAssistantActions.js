@@ -225,6 +225,46 @@ export const PATIENT_ASSISTANT_ACTIONS = [
       };
     },
   },
+  {
+    id: "CONNECT_DEVICE",
+    labelKey: "patientDashboard.assistant.actions.connectDevice",
+    icon: LuBluetooth,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: [
+        "how do i connect my device",
+        "connect my device",
+        "connect sensor",
+        "connect device",
+        "scan for devices",
+        "pair my sensor",
+        "pair sensor",
+      ],
+      ar: [
+        "كيف اربط الجهاز",
+        "كيف أربط جهازي",
+        "اربط الجهاز",
+        "ابحث عن الجهاز",
+        "ابحث عن أجهزة",
+        "كيف اشبك الحساس",
+      ],
+    },
+    // Deliberately no device-specific data here — `widget: { type:
+    // "deviceScanner" }` only NAMES the capability; the actual
+    // scan/connect state (PatientHomeAssistant.jsx's rendering of it)
+    // reads live from the same shared useKneeGuideDevice() context Patient
+    // Profile > Devices reads from (see device/KneeGuideDeviceContext.js)
+    // — there is no second Bluetooth/device implementation here, only a
+    // second UI surface onto the one that already exists.
+    execute: ({ t, navigate, language }) => ({
+      message: t("patientDashboard.assistant.responses.deviceIntro", { lng: language }),
+      widget: { type: "deviceScanner" },
+      secondaryAction: {
+        labelKey: "patientDashboard.assistant.responses.openDeviceSettings",
+        onClick: () => navigate(`${ROUTES.PATIENT_PROFILE}?tab=devices`),
+      },
+    }),
+  },
 ];
 
 const normalize = (value) => (typeof value === "string" ? value.toLowerCase().trim() : "");

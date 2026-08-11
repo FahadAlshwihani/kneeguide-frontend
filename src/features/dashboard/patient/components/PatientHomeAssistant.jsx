@@ -12,6 +12,7 @@ import {
 import { detectConversationLanguage } from "../assistant/patientAssistantLanguage";
 import { createMockHistoryConversations } from "../assistant/patientAssistantMockHistory";
 import { getLatestPainLog, savePainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorage";
+import { useKneeGuideDevice } from "../device/KneeGuideDeviceContext";
 import KneeGuideAssistantOrb from "./KneeGuideAssistantOrb";
 import TypewriterText from "./TypewriterText";
 import PatientButton from "./PatientButton";
