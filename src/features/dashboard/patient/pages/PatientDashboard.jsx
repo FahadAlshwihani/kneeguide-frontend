@@ -4,7 +4,6 @@ import "../styles/PatientDashboard.css";
 import { useAuth } from "../../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import PainWheel from "../components/PainWheel";
-import PatientBottomNav from "../components/PatientBottomNav";
 import DashboardCard from "../../shared/components/DashboardCard";
 import ProgressCard from "../../shared/components/ProgressCard";
 import AppointmentCard from "../../shared/components/AppointmentCard";
@@ -447,9 +446,6 @@ const PatientDashboard = () => {
           </div>
         </DashboardCard>
       </div>
-
-      {/* BOTTOM NAV */}
-      <PatientBottomNav active="home" />
     </div>
   );
 };

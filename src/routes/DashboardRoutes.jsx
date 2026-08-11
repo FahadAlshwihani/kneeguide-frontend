@@ -3,6 +3,7 @@ import { Route } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
+import PatientLayout from "../layouts/PatientLayout";
 
 // Patient
 import PatientDashboard from "../features/dashboard/patient/pages/PatientDashboard";
@@ -25,42 +26,51 @@ import DoctorPatientNewAppointmentPage from "../features/dashboard/doctor/pages/
 
 const DashboardRoutes = (
   <Route element={<DashboardLayout />}>
-    {/* PATIENT */}
-    <Route
-      path={ROUTES.PATIENT_DASHBOARD}
-      element={
-        <ProtectedRoute allowedRoles={["patient"]}>
-          <PatientDashboard />
-        </ProtectedRoute>
-      }
-    />
+    {/* PATIENT — nested one level under PatientLayout, which renders the
+        shared PatientDock/language toggle/token scope exactly once and a
+        single Outlet for these four (see layouts/PatientLayout.jsx).
+        Doctor routes below are siblings of this nested group, never
+        descendants of it, so none of this reaches Doctor screens. Each
+        route keeps its own existing ProtectedRoute wrapper unchanged —
+        this nesting only adds shared chrome around them, it doesn't touch
+        the auth-protection mechanism itself. */}
+    <Route element={<PatientLayout />}>
+      <Route
+        path={ROUTES.PATIENT_DASHBOARD}
+        element={
+          <ProtectedRoute allowedRoles={["patient"]}>
+            <PatientDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-    <Route
-      path={ROUTES.PATIENT_REPORTS}
-      element={
-        <ProtectedRoute allowedRoles={["patient"]}>
-          <Reports />
-        </ProtectedRoute>
-      }
-    />
+      <Route
+        path={ROUTES.PATIENT_REPORTS}
+        element={
+          <ProtectedRoute allowedRoles={["patient"]}>
+            <Reports />
+          </ProtectedRoute>
+        }
+      />
 
-    <Route
-      path="/patient/exercises"
-      element={
-        <ProtectedRoute allowedRoles={["patient"]}>
-          <PatientExercises />
-        </ProtectedRoute>
-      }
-    />
+      <Route
+        path={ROUTES.PATIENT_EXERCISES}
+        element={
+          <ProtectedRoute allowedRoles={["patient"]}>
+            <PatientExercises />
+          </ProtectedRoute>
+        }
+      />
 
-    <Route
-      path={ROUTES.PATIENT_PROFILE}
-      element={
-        <ProtectedRoute allowedRoles={["patient"]}>
-          <PatientProfile />
-        </ProtectedRoute>
-      }
-    />
+      <Route
+        path={ROUTES.PATIENT_PROFILE}
+        element={
+          <ProtectedRoute allowedRoles={["patient"]}>
+            <PatientProfile />
+          </ProtectedRoute>
+        }
+      />
+    </Route>
 
     {/* DOCTOR */}
     <Route
