@@ -539,42 +539,111 @@
       "title": "Your Exercise Program",
       "subtitle": "Follow your daily routine to support knee recovery."
     },
-    "tabs": {
-      "today": "Today",
-      "all": "All Exercises"
-    },
-    "labels": {
-      "lastDone": "Last done"
-    },
-    "buttons": {
-      "start": "Start exercise",
-      "close": "Close"
-    },
     "mock": {
       "quadSets": {
         "name": "Quad Sets",
-        "lastDone": "Yesterday",
-        "description": "Strengthens the quadriceps to support knee stability."
+        "description": "Strengthens the quadriceps to support knee stability.",
+        "target": "Knee extension control",
+        "instructions": [
+          "Sit or lie down with the leg supported and the knee straight.",
+          "Tighten the front of the thigh, as if pressing the knee down.",
+          "Hold the contraction briefly.",
+          "Relax slowly and repeat."
+        ],
+        "cues": [
+          "Keep the movement controlled, not forceful.",
+          "Breathe normally throughout.",
+          "Stop if you feel sharp pain."
+        ],
+        "mistakes": [
+          "Rushing through each repetition.",
+          "Holding your breath.",
+          "Forcing through painful range."
+        ]
       },
       "legRaises": {
         "name": "Straight Leg Raises",
-        "lastDone": "Today",
-        "description": "Improves thigh control and reduces knee pressure."
+        "description": "Improves thigh control and reduces knee pressure.",
+        "target": "Hip and thigh control",
+        "instructions": [
+          "Lie on your back with one knee bent and the other leg straight.",
+          "Tighten the thigh of the straight leg.",
+          "Lift it slowly to the height of the bent knee.",
+          "Lower it back down with control."
+        ],
+        "cues": [
+          "Keep the knee straight throughout the lift.",
+          "Move slowly rather than swinging the leg.",
+          "Keep your lower back relaxed against the surface."
+        ],
+        "mistakes": [
+          "Letting the knee bend during the lift.",
+          "Lifting too high or too fast.",
+          "Arching the lower back."
+        ]
       },
       "heelSlides": {
         "name": "Heel Slides",
-        "lastDone": "2 days ago",
-        "description": "Enhances knee flexion and mobility safely."
+        "description": "Enhances knee flexion and mobility safely.",
+        "target": "Knee flexion range",
+        "instructions": [
+          "Lie on your back with legs straight.",
+          "Slowly slide your heel toward your body, bending the knee.",
+          "Go as far as comfortable, then pause.",
+          "Slide the heel back to the starting position."
+        ],
+        "cues": [
+          "Keep the movement smooth and slow.",
+          "Stop at the first sign of sharp pain.",
+          "Support the movement with your hands if needed."
+        ],
+        "mistakes": [
+          "Forcing the knee further than comfortable.",
+          "Sliding too quickly.",
+          "Letting the foot lift off the surface."
+        ]
       },
       "hamstring": {
         "name": "Hamstring Stretch",
-        "lastDone": "5 days ago",
-        "description": "Reduces tightness behind the knee."
+        "description": "Reduces tightness behind the knee.",
+        "target": "Hamstring flexibility",
+        "instructions": [
+          "Sit with the leg extended in front of you.",
+          "Keep your back straight and gently lean forward from the hips.",
+          "Hold the stretch without bouncing.",
+          "Release slowly."
+        ],
+        "cues": [
+          "Stretch until you feel gentle tension, not pain.",
+          "Keep the movement slow and controlled.",
+          "Breathe normally during the hold."
+        ],
+        "mistakes": [
+          "Bouncing while stretching.",
+          "Rounding the back to reach further.",
+          "Holding through sharp pain."
+        ]
       },
       "calfRaises": {
         "name": "Calf Raises",
-        "lastDone": "1 week ago",
-        "description": "Strengthens lower leg muscles for stability."
+        "description": "Strengthens lower leg muscles for stability.",
+        "target": "Lower leg strength",
+        "instructions": [
+          "Stand with your feet flat, holding support if needed.",
+          "Slowly rise onto your toes.",
+          "Hold briefly at the top.",
+          "Lower back down with control."
+        ],
+        "cues": [
+          "Keep the movement slow and controlled.",
+          "Distribute weight evenly across both feet.",
+          "Use support for balance if needed."
+        ],
+        "mistakes": [
+          "Rising too quickly.",
+          "Letting the ankles roll outward.",
+          "Skipping the controlled lowering phase."
+        ]
       }
     },
     "session": {
@@ -660,12 +729,20 @@
         "sessionPainDecreased": "Your pain eased compared to before the session, and your movement stayed consistent throughout. Keep following your existing recovery plan.",
         "sessionConsistent": "Your movement was consistent throughout today's session. Keep following your existing recovery plan."
       },
-      "targets": {
-        "quadSets": "Knee extension control",
-        "legRaises": "Hip and thigh control",
-        "heelSlides": "Knee flexion range"
-      },
-      "devReset": "Reset demo session (dev only)"
+      "devReset": "Reset demo session (dev only)",
+      "libraryIntro": "Reference exercises used in your rehabilitation program.",
+      "details": {
+        "title": "Exercise details",
+        "viewInstructionsFor": "View instructions for {{name}}",
+        "todaysPrescription": "Today's prescription",
+        "purpose": "Purpose",
+        "howToPerform": "How to perform",
+        "keyCues": "Key cues",
+        "watchFor": "Watch for",
+        "kneeGuideTip": "KneeGuide tip",
+        "kneeGuideTipMessage": "Today's target range is {{min}}–{{max}}°. Focus on consistency rather than increasing range quickly.",
+        "mediaUnavailable": "Instructional media isn't available for this exercise yet."
+      }
     }
   },
   "patientReports": {
