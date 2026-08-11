@@ -459,6 +459,9 @@
       "inputHint": "Try one of the suggestions below — free-form questions aren't connected yet.",
       "sendLabel": "Send",
       "suggestionsLabel": "Suggested actions",
+      "followUpLabel": "Follow-up suggestions",
+      "historyLabel": "Conversation",
+      "youLabel": "You",
       "actions": {
         "showExercises": "Show today's exercises",
         "nextAppointment": "When is my next appointment?",
@@ -473,19 +476,9 @@
         "latestReport": "Your latest report from {{date}} is marked {{status}}, with a recorded pain level of {{pain}}.",
         "noProgress": "No adherence data is available yet.",
         "rehabProgress": "You're on a {{days}}-day streak, with {{percent}}% of this week's exercises completed.",
-        "viewReports": "View reports"
+        "viewReports": "View reports",
+        "logPainPrompt": "How would you rate your pain today?"
       }
-    },
-    "context": {
-      "regionLabel": "Quick overview",
-      "nextAppointment": "Next appointment",
-      "todayExercises": "Today's exercises",
-      "exercisesProgress": "{{done}} of {{total}} done",
-      "noExercises": "None assigned today",
-      "latestPain": "Latest pain"
-    },
-    "pain": {
-      "title": "Log today's pain"
     },
     "logout": "Logout",
     "mock": {
