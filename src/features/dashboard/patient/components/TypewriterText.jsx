@@ -38,7 +38,7 @@ const segmentGraphemes = (str) => {
  * per-character DOM mutations, matching the "no noisy typewriter
  * announcements" requirement without losing the message itself.
  */
-const TypewriterText = ({ text, as: Tag = "p", className = "", speed = 26, onComplete }) => {
+const TypewriterText = ({ text, as: Tag = "p", className = "", speed = 26, onComplete, dir }) => {
   const graphemes = useMemo(() => segmentGraphemes(text), [text]);
   const reducedMotion = prefersReducedMotion();
 
@@ -74,7 +74,7 @@ const TypewriterText = ({ text, as: Tag = "p", className = "", speed = 26, onCom
   const visibleText = graphemes.slice(0, visibleCount).join("");
 
   return (
-    <Tag className={`typewriter-text ${className}`.trim()}>
+    <Tag className={`typewriter-text ${className}`.trim()} dir={dir}>
       <span aria-hidden="true">
         {visibleText}
         {!done && <span className="typewriter-cursor" />}
