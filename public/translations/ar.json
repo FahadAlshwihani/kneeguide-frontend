@@ -878,6 +878,116 @@
       "sets": "مجموعات"
     }
   },
+  "patientAppointments": {
+    "header": {
+      "title": "المواعيد",
+      "subtitle": "تابع مواعيد المتابعة العلاجية واطلب موعدًا مع فريقك الطبي."
+    },
+    "close": "إغلاق",
+    "viewDetails": "عرض التفاصيل",
+    "clinician": {
+      "label": "الطبيب المعالج",
+      "name": "د. سارة أحمد",
+      "specialty": "العلاج الطبيعي"
+    },
+    "location": {
+      "clinicName": "عيادة KneeGuide",
+      "room": "الغرفة {{room}}"
+    },
+    "types": {
+      "followUp": "جلسة متابعة علاج طبيعي",
+      "initial": "التقييم الأولي"
+    },
+    "hero": {
+      "title": "الموعد القادم",
+      "today": "اليوم",
+      "daysAway": "بعد {{count}} أيام",
+      "addToCalendar": "إضافة إلى التقويم",
+      "emptyText": "ما عندك موعد قادم مجدول حاليًا. تقدر تطلب موعد مع فريقك الطبي من الأسفل."
+    },
+    "insight": {
+      "title": "تحليل KneeGuide للمواعيد",
+      "clinicianFollowUp": "{{doctorName}} اقترحت الاستمرار على برنامجك الحالي قبل المتابعة القادمة. موعد المراجعة المقترح: {{followUp}}.",
+      "alternativeProposed": "اقترحت {{doctorName}} موعدًا جديدًا لطلبك — راجعه بالأسفل.",
+      "upcomingSoon": "موعدك القادم مع {{doctorName}} بعد {{count}} أيام.",
+      "pendingRequest": "طلب موعدك بانتظار مراجعة طبيبك.",
+      "noUpcoming": "ما عندك متابعة مجدولة حاليًا. إذا حاب تتواصل مع فريقك الطبي، تقدر تطلب موعد.",
+      "neutral": "موعدك القادم مع {{doctorName}} مسجل. خبّر طبيبك إذا تغيّر أي شي قبله."
+    },
+    "sections": {
+      "requests": "طلبات المواعيد",
+      "requestsEmpty": "ما عندك طلبات معلّقة أو حديثة.",
+      "upcoming": "المواعيد القادمة",
+      "upcomingEmpty": "لا توجد مواعيد قادمة.",
+      "past": "المواعيد السابقة",
+      "pastEmpty": "لا توجد مواعيد سابقة بعد."
+    },
+    "status": {
+      "REQUESTED": "بانتظار المراجعة",
+      "CONFIRMED": "مؤكد",
+      "ALTERNATIVE_PROPOSED": "تم اقتراح موعد جديد",
+      "DECLINED": "تم رفض الطلب",
+      "COMPLETED": "مكتمل",
+      "CANCELLED": "ملغى"
+    },
+    "reasons": {
+      "painIncreased": "زيادة في الألم",
+      "reviewProgress": "مراجعة تقدم التأهيل",
+      "romConcern": "قلق بشأن الحركة / مدى الحركة",
+      "exerciseDifficulty": "صعوبة في أداء التمارين",
+      "deviceIssue": "مشكلة في الجهاز / الحساس",
+      "generalFollowUp": "متابعة عامة",
+      "other": "أخرى"
+    },
+    "request": {
+      "cta": "طلب موعد",
+      "title": "طلب موعد جديد",
+      "chooseAnotherTimeTitle": "اختيار موعد آخر",
+      "reasonLabel": "سبب الموعد",
+      "noteLabel": "في شي حاب تخبر طبيبك فيه؟",
+      "notePlaceholder": "ملاحظة اختيارية...",
+      "chooseDate": "اختيار التاريخ",
+      "chooseTime": "اختيار الوقت",
+      "available": "متاح",
+      "unavailable": "غير متاح",
+      "selected": "محدد",
+      "reviewTitle": "مراجعة طلبك",
+      "back": "رجوع",
+      "next": "التالي",
+      "submit": "إرسال الطلب",
+      "submittedTitle": "تم إرسال طلب الموعد",
+      "submittedBody": "تم إرسال طلبك ليوم {{date}} الساعة {{time}} إلى فريقك الطبي.",
+      "slotNoLongerAvailable": "هذا الوقت لم يعد متاحًا — الرجاء اختيار وقت آخر.",
+      "errorConflict": "لديك موعد مؤكد بالفعل في هذا الوقت.",
+      "errorDuplicate": "لديك طلب بالفعل لهذا الوقت."
+    },
+    "details": {
+      "eyebrow": "الموعد",
+      "time": "الوقت",
+      "location": "المكان",
+      "doctorResponse": "رد الطبيب",
+      "youRequested": "طلبت:",
+      "doctorSuggested": "اقترحت {{doctorName}}:",
+      "acceptAlternative": "قبول الموعد الجديد",
+      "chooseAnotherTime": "اختيار موعد آخر",
+      "suggestedNextReview": "موعد المراجعة المقترح",
+      "timeline": "مسار الطلب"
+    },
+    "timeline": {
+      "submitted": "تم إرسال الطلب",
+      "reviewed": "راجعته {{doctorName}}",
+      "alternativeProposed": "تم اقتراح موعد بديل",
+      "declined": "تم رفض الطلب",
+      "confirmed": "تم التأكيد"
+    },
+    "followUp": {
+      "nextWeek": "الأسبوع القادم"
+    },
+    "doctorResponses": {
+      "alternative1": "حاب تكمل برنامجك يوم إضافي قبل موعد المتابعة — تقدر نأجل الموعد لأول فترة صباحية باليوم اللي بعده؟",
+      "declined1": "تقاريرك الأخيرة تُظهر تحسن ثابت. استمر على البرنامج الحالي لأسبوع إضافي، وبعدها نراجع تقدمك."
+    }
+  },
   "verifyOtp": {
     "title": "تأكيد البريد الإلكتروني",
     "subtitle": "أدخل رمز التحقق المكوّن من 6 أرقام المُرسل إلى بريدك.",
@@ -914,6 +1024,7 @@
     "navLabel": "التنقل بين صفحات المريض",
     "home": "الرئيسية",
     "exercises": "التمارين",
+    "appointments": "المواعيد",
     "reports": "التقارير",
     "profile": "الملف الشخصي"
   },
