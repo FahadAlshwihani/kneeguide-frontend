@@ -1,0 +1,109 @@
+.rehab-day-rail {
+  width: 100%;
+}
+
+.rehab-day-rail-label {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rehab-day-rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 4px;
+  display: flex;
+  gap: var(--patient-space-2xs);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--patient-border) transparent;
+}
+
+.rehab-day-rail-list::-webkit-scrollbar {
+  height: 6px;
+}
+
+.rehab-day-rail-list::-webkit-scrollbar-thumb {
+  background: var(--patient-border);
+  border-radius: var(--patient-radius-button);
+}
+
+.rehab-day-chip {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 64px;
+  padding: var(--patient-space-2xs) var(--patient-space-xs);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-card);
+  color: var(--patient-color-muted);
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.rehab-day-chip:hover {
+  background: var(--patient-surface-hover);
+}
+
+.rehab-day-chip:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.rehab-day-chip-weekday {
+  font: var(--patient-text-caption);
+  text-transform: uppercase;
+}
+
+.rehab-day-chip-number {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-text);
+}
+
+.rehab-day-chip-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font: var(--patient-text-caption);
+  white-space: nowrap;
+}
+
+.rehab-day-chip-status svg {
+  width: 11px;
+  height: 11px;
+  color: var(--patient-color-success);
+}
+
+/* Today — the obvious, primary chip (Section 3: "make Today obvious"). */
+.rehab-day-chip--today {
+  border-color: var(--patient-color-primary);
+  background: var(--patient-surface-selected);
+}
+
+.rehab-day-chip--today .rehab-day-chip-number {
+  color: var(--patient-color-heading);
+}
+
+/* Selection is layered on top of (not instead of) the day's own
+   today/completed/upcoming identity — never the only visual difference,
+   and never color-only (the outline + slightly stronger border both
+   reinforce it). */
+.rehab-day-chip--selected {
+  border-color: var(--patient-color-primary);
+  box-shadow: 0 0 0 1px var(--patient-color-primary);
+}
+
+.rehab-day-chip--completed:not(.rehab-day-chip--today) .rehab-day-chip-status {
+  color: var(--patient-color-success);
+}
+
+@media (max-width: 480px) {
+  .rehab-day-chip {
+    min-width: 56px;
+  }
+}
