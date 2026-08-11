@@ -1,0 +1,21 @@
+.orb-container {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.orb-container canvas {
+  display: block;
+}
+
+/* Rendered instead of the canvas if WebGL fails/is lost — a soft radial
+   glow using the exact same background color the shader would have
+   blended into, so the page never shows a hard black square or an
+   obviously "broken" element where the assistant presence should be. */
+.orb-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-image: radial-gradient(circle at 50% 42%, rgba(37, 99, 235, 0.55), rgba(37, 99, 235, 0.12) 55%, transparent 75%);
+}
