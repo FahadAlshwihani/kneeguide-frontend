@@ -104,16 +104,18 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     id: "LOG_PAIN",
     labelKey: "patientDashboard.assistant.actions.logPain",
     icon: LuHeartPulse,
-    type: ASSISTANT_ACTION_TYPES.REVEAL,
-    // Reveals the existing pain-wheel interaction already on Home (kept
-    // collapsed by default to reduce clutter — see PatientDashboard.jsx).
-    // There is no backend persistence for this reading today (it's local
-    // component state, same as before this redesign), so this only ever
-    // reveals the real interaction — it never claims to "log" anything to
-    // a server.
-    execute: ({ reveal }) => {
-      reveal("pain");
-    },
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    // Surfaces the real, existing Pain Wheel interaction inline as this
+    // turn's response (widget: "painWheel" — see PatientHomeAssistant.jsx
+    // for the actual <PainWheel/> it maps to). There is no backend
+    // persistence for this reading today (it's local component state,
+    // same as before this redesign) — the message asks a question rather
+    // than claiming anything was "logged" to a server, so the response
+    // stays honest about what this actually does.
+    execute: ({ t }) => ({
+      message: t("patientDashboard.assistant.responses.logPainPrompt"),
+      widget: "painWheel",
+    }),
   },
   {
     id: "REHAB_PROGRESS",
