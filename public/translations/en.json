@@ -456,18 +456,24 @@
       "intro": "How can I help you with your recovery today?",
       "inputLabel": "Ask KneeGuide about your recovery",
       "inputPlaceholder": "Ask KneeGuide about your recovery...",
-      "inputHint": "Try one of the suggestions below — free-form questions aren't connected yet.",
       "sendLabel": "Send",
       "suggestionsLabel": "Suggested actions",
       "followUpLabel": "Follow-up suggestions",
       "historyLabel": "Conversation",
       "youLabel": "You",
+      "painLogger": {
+        "rangeLabel": "Pain level, 0 to 10",
+        "submit": "Submit pain level",
+        "logged": "Logged"
+      },
       "actions": {
         "showExercises": "Show today's exercises",
         "nextAppointment": "When is my next appointment?",
         "latestReport": "Show my latest report",
         "logPain": "Log today's pain",
-        "rehabProgress": "How is my rehab progress?"
+        "rehabProgress": "How is my rehab progress?",
+        "changePain": "Yes, change it",
+        "keepPain": "No, keep it"
       },
       "responses": {
         "noAppointment": "You don't have an upcoming appointment scheduled.",
@@ -477,7 +483,13 @@
         "noProgress": "No adherence data is available yet.",
         "rehabProgress": "You're on a {{days}}-day streak, with {{percent}}% of this week's exercises completed.",
         "viewReports": "View reports",
-        "logPainPrompt": "How would you rate your pain today?"
+        "logPainPrompt": "How would you rate your pain today?",
+        "painRecentExists": "You recently logged your pain as {{value}}/10. Would you like to change it?",
+        "painChangePrompt": "Sure. What is your pain level now?",
+        "painKept": "Okay, I'll keep your current pain log at {{value}}/10.",
+        "painLogged": "Got it. I've logged your pain as {{value}}/10.",
+        "painUpdated": "Done. I've updated your pain log to {{value}}/10.",
+        "unsupported": "I'm not able to answer open-ended questions yet. I can help you check your exercises, appointments, reports, pain log, or rehab progress."
       }
     },
     "logout": "Logout",
