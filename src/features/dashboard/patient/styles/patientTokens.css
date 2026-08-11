@@ -1,0 +1,124 @@
+/* ============================================================
+   PATIENT DASHBOARD DESIGN SYSTEM — token layer
+   ============================================================
+   Single source of truth for Patient Dashboard styling. Every future
+   patient page/component should read from these custom properties
+   instead of hardcoding its own colors/spacing/radii — see PatientButton
+   and PatientDock for the first consumers.
+
+   Architecture (see the task's own diagram):
+     global design primitives (index.css :root — --color-primary,
+     --radius-*, --shadow-*, --z-*, Tajawal via --font-product)
+       -> patient dashboard tokens (this file, --patient-*)
+       -> patient UI primitives (PatientButton, PatientDock, ...)
+       -> patient features/pages (PatientDashboard, PatientExercises, ...)
+
+   Scoped to `.patient-shell` (PatientLayout.jsx's own wrapper), NOT to
+   `.dashboard-root` and NOT to `:root` — this is what keeps the Patient
+   Dashboard a genuinely dedicated visual scope, independent of the Doctor
+   Dashboard, which shares `.dashboard-root` (for Tajawal only) but never
+   sees a single one of these --patient-* values. Values that ARE truly
+   universal (the KneeGuide blue, the base radius scale, Tajawal itself)
+   are referenced via var(...) from the global tokens rather than
+   redeclared, so this layer only adds genuinely patient-specific meaning
+   on top of them, not a parallel competing set of raw values. */
+
+.patient-shell {
+  /* ---------- Typography ---------- */
+  /* Tajawal is already the product typeface for both languages via
+     --font-product (index.css) — this layer just gives it patient-
+     specific semantic names, so PatientButton/PatientDock/future patient
+     components never need to think about the font stack directly. */
+  --patient-font: var(--font-product);
+
+  --patient-text-display: 700 clamp(1.75rem, 3vw, 2.25rem) / 1.2 var(--patient-font);
+  --patient-text-page-heading: 700 clamp(1.4rem, 2.4vw, 1.75rem) / 1.25 var(--patient-font);
+  --patient-text-section-heading: 600 1.05rem / 1.3 var(--patient-font);
+  --patient-text-card-heading: 600 0.95rem / 1.35 var(--patient-font);
+  --patient-text-body: 400 0.9rem / 1.5 var(--patient-font);
+  --patient-text-supporting: 400 0.82rem / 1.5 var(--patient-font);
+  --patient-text-label: 600 0.78rem / 1.3 var(--patient-font);
+  --patient-text-caption: 500 0.72rem / 1.3 var(--patient-font);
+  --patient-text-button: 600 0.85rem / 1 var(--patient-font);
+  --patient-text-nav-label: 600 0.72rem / 1 var(--patient-font);
+
+  /* ---------- Spacing rhythm ---------- */
+  --patient-space-3xs: 4px;
+  --patient-space-2xs: 8px;
+  --patient-space-xs: 12px;
+  --patient-space-sm: 16px;
+  --patient-space-md: 20px;
+  --patient-space-lg: 24px;
+  --patient-space-xl: 32px;
+
+  --patient-page-padding-inline: clamp(16px, 4vw, 32px);
+  --patient-page-padding-block: var(--patient-space-lg);
+  --patient-page-max-width: 1120px;
+
+  --patient-section-gap: var(--patient-space-lg);
+  --patient-grid-gap: var(--patient-space-sm);
+  --patient-card-padding: var(--patient-space-md);
+  --patient-card-gap: var(--patient-space-sm);
+  --patient-field-gap: var(--patient-space-2xs);
+  --patient-action-gap: var(--patient-space-xs);
+  --patient-nav-gap: 12px;
+
+  /* Reserved bottom clearance for the fixed PatientDock — owned once,
+     here, so no individual page ever needs its own "leave room for the
+     nav" bottom padding again (see PatientLayout.jsx's content wrapper).
+     Sized from the Dock's own resting panel height (64px) + its bottom
+     offset (16px) + breathing room for the hover/focus tooltip and
+     magnification, independent of env(safe-area-inset-bottom), which is
+     added on top at the point of use, not folded into this value. */
+  --patient-dock-clearance: 104px;
+
+  /* ---------- Surfaces ---------- */
+  --patient-surface-page: #050509;
+  --patient-surface-card: #0b0e17;
+  --patient-surface-elevated: #10141f;
+  --patient-surface-hover: rgba(255, 255, 255, 0.05);
+  --patient-surface-selected: var(--color-primary-soft, rgba(37, 99, 235, 0.14));
+  --patient-surface-subtle: rgba(255, 255, 255, 0.03);
+  --patient-border: rgba(255, 255, 255, 0.08);
+  --patient-divider: rgba(255, 255, 255, 0.06);
+  --patient-shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --patient-shadow-elevated: 0 18px 45px rgba(0, 0, 0, 0.5);
+
+  /* ---------- Colors ---------- */
+  --patient-color-primary: var(--color-primary, #2563eb);
+  --patient-color-primary-strong: var(--color-primary-strong, #1d4ed8);
+  --patient-color-primary-soft: var(--color-primary-soft, rgba(37, 99, 235, 0.12));
+  --patient-color-text: #e5e7eb;
+  --patient-color-heading: #ffffff;
+  --patient-color-muted: #9ca3af;
+  --patient-color-faint: #6b7280;
+  --patient-color-border: var(--patient-border);
+  --patient-color-success: #22c55e;
+  --patient-color-success-soft: rgba(34, 197, 94, 0.12);
+  --patient-color-warning: #eab308;
+  --patient-color-warning-soft: rgba(234, 179, 8, 0.12);
+  --patient-color-danger: var(--color-danger, #ef4444);
+  --patient-color-danger-soft: var(--color-danger-soft, rgba(239, 68, 68, 0.1));
+  --patient-color-info: #38bdf8;
+  --patient-color-info-soft: rgba(56, 189, 248, 0.12);
+  --patient-color-focus: var(--patient-color-primary);
+  --patient-color-nav-active: var(--patient-color-primary);
+
+  /* ---------- Radii ---------- */
+  --patient-radius-card: var(--radius-lg, 18px);
+  --patient-radius-control: var(--radius-sm, 8px);
+  --patient-radius-button: 999px;
+  --patient-radius-badge: 999px;
+  --patient-radius-dock: 20px;
+  --patient-radius-tooltip: 6px;
+
+  /* ---------- Transitions ---------- */
+  --patient-transition-fast: 120ms ease;
+  --patient-transition-normal: 200ms ease;
+  --patient-transition-nav: 160ms ease;
+  --patient-spring: 0.1 150 12; /* mass stiffness damping — see PatientDock.jsx */
+
+  color: var(--patient-color-text);
+  background: var(--patient-surface-page);
+  font-family: var(--patient-font);
+}
