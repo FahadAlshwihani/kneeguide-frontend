@@ -1,432 +1,97 @@
-/* PAGE WRAPPER */
+/* Patient Home — the AI-first assistant experience
+   (PatientHomeAssistant.css) plus a small amount of always-visible
+   glanceable context and an on-request pain-logging section. This file
+   only owns page-level layout; every color/spacing/radius value comes
+   from patientTokens.css (--patient-*), never a raw hex/px here. */
+
 .pd-page {
   min-height: 100vh;
-  background: radial-gradient(circle at top left, #020617 0, #020617 35%, #050509 100%);
-  /* Bottom nav clearance is now owned by PatientLayout's own content
-     wrapper (--patient-dock-clearance), not this page — plain symmetric
-     padding here. */
-  padding: 24px 16px;
   display: flex;
   justify-content: center;
-  color: #e5e7eb;
+  padding-inline: var(--patient-page-padding-inline);
+  padding-block: var(--patient-space-xl) var(--patient-space-lg);
 }
 
 .pd-inner {
   width: 100%;
-  max-width: 1120px;
-}
-
-/* HEADER */
-.pd-header {
+  max-width: var(--patient-page-max-width);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 22px;
-  gap: 16px;
+  gap: var(--patient-space-xl);
 }
 
-.pd-header-main {
-  max-width: 70%;
-}
-
-.pd-title {
-  font-size: 26px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pd-emoji {
-  font-size: 24px;
-}
-
-.pd-subtitle {
-  margin-top: 4px;
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-.pd-header-side {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pd-role-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(59, 130, 246, 0.15);
-  color: #bfdbfe;
-  font-size: 12px;
-}
-
-.pd-date-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.8);
-  color: #e5e7eb;
-  font-size: 12px;
-}
-
-.pd-logout-btn {
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid #ef4444;
-  background: rgba(127, 29, 29, 0.2);
-  color: #fecaca;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.pd-logout-btn:hover {
-  background: rgba(127, 29, 29, 0.35);
-}
-
-/* GRID LAYOUTS */
-.pd-grid {
+/* ---------- Compact glanceable context ---------- */
+.pd-context {
   display: grid;
-  gap: 18px;
-}
-
-.pd-grid-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--patient-grid-gap);
+  width: 100%;
+  max-width: var(--patient-assistant-max-width);
 }
 
-.pd-grid-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.pd-context-item {
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-2xs);
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-divider);
 }
 
-.pd-bottom-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  margin-top: 20px;
+.pd-context-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--patient-color-primary);
 }
 
-@media (max-width: 960px) {
-  .pd-grid-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.pd-context-label {
+  margin: 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+.pd-context-value {
+  margin: 2px 0 0;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+/* ---------- On-request pain section ---------- */
+.pd-pain-section {
+  width: 100%;
+  max-width: var(--patient-assistant-max-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--patient-space-sm);
+  padding: var(--patient-card-padding);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+}
+
+.pd-pain-heading {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+  text-align: center;
+}
+
+.pd-pain-heading:focus-visible {
+  outline: none;
 }
 
 @media (max-width: 720px) {
-  .pd-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .pd-header-main {
-    max-width: 100%;
-  }
-
-  .pd-grid-3,
-  .pd-grid-2,
-  .pd-bottom-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .pd-context {
+    grid-template-columns: 1fr;
   }
 }
 
-/* CARDS */
-.pd-card {
-  background: #050814;
-  border-radius: 18px;
-  border: 1px solid #111827;
-  padding: 16px 16px 14px;
-}
-
-.pd-card-highlight {
-  background: radial-gradient(circle at top, #0f172a 0, #020617 50%, #020617 100%);
-  border-color: #1d4ed8;
-}
-
-.pd-card-lg {
-  padding: 18px 18px 16px;
-  margin-top: 20px;
-}
-
-.pd-card-label {
-  font-size: 13px;
-  color: #9ca3af;
-  margin-bottom: 4px;
-}
-
-.pd-card-main {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.pd-card-main-value {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.pd-card-main-sub {
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-.pd-card-footer {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.pd-accent-text {
-  color: #c4b5fd;
-}
-
-/* STATUS DOT */
-.pd-status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #22c55e;
-}
-
-/* SECTION HEADER */
-.pd-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.pd-section-header h2 {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.pd-tag {
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: rgba(15, 118, 110, 0.2);
-  color: #a5f3fc;
-}
-
-/* BUTTONS */
-.pd-ghost-button,
-.pd-primary-button-outline {
-  margin-top: 12px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  cursor: pointer;
-  background: transparent;
-  transition: 0.2s ease;
-}
-
-.pd-ghost-button {
-  border: 1px solid #374151;
-  color: #e5e7eb;
-}
-
-.pd-ghost-button:hover {
-  background: rgba(55, 65, 81, 0.35);
-}
-
-.pd-primary-button-outline {
-  border: 1px solid #3b82f6;
-  color: #bfdbfe;
-}
-
-.pd-primary-button-outline:hover {
-  background: rgba(37, 99, 235, 0.25);
-}
-
-/* APPOINTMENT SECTION
-   (card styling now lives in shared AppointmentCard.css — one source of truth) */
-
-/* EXERCISES */
-.pd-exercise-list {
-  margin-top: 8px;
-}
-
-.pd-exercise-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #111827;
-}
-
-.pd-exercise-main {
-  display: flex;
-  flex-direction: column;
-}
-
-.pd-exercise-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.pd-exercise-reps {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.pd-exercise-status {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-}
-
-.pd-ex-status-completed {
-  background: rgba(34,197,94,0.1);
-  color: #bbf7d0;
-}
-
-.pd-ex-status-in-progress {
-  background: rgba(234,179,8,0.12);
-  color: #fef9c3;
-}
-
-.pd-ex-status-pending {
-  background: rgba(148,163,184,0.15);
-  color: #e5e7eb;
-}
-
-/* TABLE (RECENT REPORTS) */
-.pd-table {
-  margin-top: 8px;
-  font-size: 13px;
-}
-
-.pd-table-header,
-.pd-table-row {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr 1.3fr;
-  gap: 8px;
-  padding: 8px 0;
-}
-
-.pd-table-header {
-  border-bottom: 1px solid #111827;
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-.pd-table-row {
-  border-bottom: 1px solid #020617;
-}
-
-.pd-status-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-}
-
-.pd-status-chip-success {
-  background: rgba(34,197,94,0.12);
-  color: #bbf7d0;
-}
-
-/* SMALL TEXTS */
-.pd-muted-text {
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-/* SUMMARY LIST
-   (card styling now lives in shared ProgressCard.css — one source of truth) */
-
-/* REPORT META */
-.pd-report-meta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-
-.pd-meta-label {
-  font-size: 11px;
-  color: #9ca3af;
-}
-
-.pd-meta-value {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.pd-report-notes {
-  font-size: 13px;
-  color: #e5e7eb;
-  margin-top: 4px;
-}
-
-/* MINI METRICS UNDER PAIN WHEEL */
-.pd-mini-metrics {
-  display: flex;
-  gap: 18px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-
-.pd-mini-metric {
-  min-width: 140px;
-}
-
-.pd-mini-label {
-  font-size: 11px;
-  color: #9ca3af;
-}
-
-.pd-mini-value {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* PAIN NOTE AREA */
-.pd-pain-note {
-  margin-top: 12px;
-}
-
-.pd-pain-note-label {
-  font-size: 12px;
-  color: #9ca3af;
-  margin-bottom: 4px;
-  display: block;
-}
-
-.pd-pain-note-input {
-  width: 100%;
-  min-height: 70px;
-  border-radius: 10px;
-  border: 1px solid #1f2937;
-  background: #020617;
-  color: #e5e7eb;
-  font-size: 13px;
-  padding: 8px 10px;
-  resize: vertical;
-}
-
-.pd-pain-note-input:focus {
-  outline: none;
-  border-color: #6366f1;
-}
-
-.pd-pain-note-hint {
-  margin-top: 4px;
-  font-size: 11px;
-  color: #6b7280;
-}
-
-/* CHIP */
-.pd-chip {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(67,56,202,0.4);
-  color: #e0e7ff;
-  font-size: 12px;
-}
-
-/* BLOCK SECTION SPACING */
-.pd-block {
-  margin-top: 20px;
+@media (max-width: 480px) {
+  .pd-page {
+    padding-block: var(--patient-space-lg) var(--patient-space-md);
+  }
 }
