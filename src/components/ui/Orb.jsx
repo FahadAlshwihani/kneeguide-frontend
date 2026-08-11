@@ -351,7 +351,11 @@ export default function Orb({
   }, [hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor]);
 
   if (hasError) {
-    return <div className={`orb-fallback ${className}`.trim()} style={{ background: backgroundColor }} />;
+    // No inline `background` here on purpose — it's a shorthand, and would
+    // silently reset `background-image` (the actual fallback gradient,
+    // Orb.css) to `none` even though inline styles normally only need to
+    // beat external rules for the exact same longhand.
+    return <div className={`orb-fallback ${className}`.trim()} />;
   }
 
   return <div ref={ctnDom} className={`orb-container ${className}`.trim()} />;
