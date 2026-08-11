@@ -13,26 +13,30 @@ import { ROUTES } from "../../../../utils/routes";
  * by a real AI backend's intent resolution ("intent: VIEW_NEXT_APPOINTMENT"
  * invoking this exact same `execute`) without PatientHome or this registry
  * needing to change shape. No medical business logic lives here — `execute`
- * only ever navigates, reveals an existing section, or formats already-
- * loaded data into a deterministic response descriptor; it never
- * interprets, infers, or fabricates anything.
+ * only ever navigates or formats already-loaded data into a deterministic
+ * response descriptor; it never interprets, infers, or fabricates anything.
  *
  * ACTION TYPES
- * - NAVIGATE: goes to an existing, already-implemented Patient route.
- * - REVEAL:   reveals/scrolls/focuses an existing section already on Home.
+ * - NAVIGATE: goes to an existing, already-implemented Patient route. No
+ *             conversation turn is created — the destination page IS the
+ *             response (see PatientHomeAssistant.jsx's runAction).
  * - DISPLAY:  returns a response descriptor (plain data, not JSX) built
  *             from real, already-loaded data — PatientHomeAssistant.jsx
- *             renders it through structured React, never
- *             dangerouslySetInnerHTML.
+ *             renders it as a conversation turn through structured React,
+ *             never dangerouslySetInnerHTML. `widget` is an optional
+ *             semantic identifier (a string, e.g. "painWheel") naming an
+ *             existing interactive component to render alongside the
+ *             message — the registry names WHICH real capability, the
+ *             chat renderer owns the actual widget-to-component mapping,
+ *             so no JSX/UI concern leaks into this file.
  *
- * `execute(context)` receives `{ navigate, t, data, reveal }` and returns
- * either `undefined` (NAVIGATE/REVEAL — the side effect already happened)
- * or a response descriptor `{ message, secondaryAction? }` (DISPLAY).
+ * `execute(context)` receives `{ navigate, t, data }` and returns either
+ * `undefined` (NAVIGATE — the side effect already happened) or a response
+ * descriptor `{ message, secondaryAction?, widget? }` (DISPLAY).
  */
 
 export const ASSISTANT_ACTION_TYPES = {
   NAVIGATE: "NAVIGATE",
-  REVEAL: "REVEAL",
   DISPLAY: "DISPLAY",
 };
 
