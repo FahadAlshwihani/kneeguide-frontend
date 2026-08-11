@@ -1,0 +1,124 @@
+.appointment-list-title {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.appointment-list-empty {
+  margin: 0;
+  padding: var(--patient-space-sm) 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-faint);
+}
+
+.appointment-list-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-2xs);
+}
+
+.appointment-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--patient-space-sm);
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.appointment-row:hover {
+  background: var(--patient-surface-hover);
+}
+
+.appointment-row:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.appointment-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.appointment-row-date {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.appointment-row-clinician {
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-text);
+}
+
+.appointment-row-type {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.appointment-row-end {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-2xs);
+}
+
+.appointment-row-status {
+  padding: 2px var(--patient-space-2xs);
+  border-radius: var(--patient-radius-badge);
+  font: var(--patient-text-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.appointment-row-status--positive {
+  background: var(--patient-color-success-soft);
+  color: var(--patient-color-success);
+}
+
+.appointment-row-status--neutral {
+  background: var(--patient-color-info-soft);
+  color: var(--patient-color-info);
+}
+
+.appointment-row-status--warning {
+  background: var(--patient-color-warning-soft);
+  color: var(--patient-color-warning);
+}
+
+.appointment-row-status--danger {
+  background: var(--patient-color-danger-soft);
+  color: var(--patient-color-danger);
+}
+
+.appointment-row-status--muted {
+  background: var(--patient-surface-hover);
+  color: var(--patient-color-faint);
+}
+
+.appointment-row-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--patient-color-faint);
+}
+
+[dir="rtl"] .appointment-row-chevron {
+  transform: scaleX(-1);
+}
+
+@media (max-width: 480px) {
+  .appointment-row {
+    flex-wrap: wrap;
+  }
+}
