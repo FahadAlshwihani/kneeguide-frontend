@@ -264,11 +264,11 @@ export default function Orb({
           iResolution: {
             value: new Vec3(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height),
           },
-          hue: { value: hue },
+          hue: { value: liveProps.current.hue },
           hover: { value: 0 },
           rot: { value: 0 },
-          hoverIntensity: { value: hoverIntensity },
-          backgroundColor: { value: hexToVec3(backgroundColor) },
+          hoverIntensity: { value: liveProps.current.hoverIntensity },
+          backgroundColor: { value: hexToVec3(liveProps.current.backgroundColor) },
         },
       });
 
