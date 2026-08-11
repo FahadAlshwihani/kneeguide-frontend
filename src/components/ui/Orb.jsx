@@ -24,6 +24,16 @@ import "./Orb.css";
  * - No React state is set per animation frame — `iTime`/`hover`/`rot` are
  *   plain mutable values inside the RAF closure/GL uniforms, exactly like
  *   the original; only `hasError` (set once, on failure) is React state.
+ * - WebGL setup (renderer/program/mesh/RAF loop) runs exactly ONCE, in a
+ *   mount-only effect (`[]` deps) — it used to re-run (tearing down and
+ *   recreating the entire renderer/canvas/context) every time `hue`/
+ *   `hoverIntensity`/`forceHoverState`/etc changed, which happens on every
+ *   semantic Orb state change (KneeGuideAssistantOrb.jsx) and, now, on
+ *   every conversation turn. A separate, cheap effect just writes the
+ *   latest prop values into a ref (`liveProps`) on every change; the RAF
+ *   loop reads from that ref each frame instead of closing over the props
+ *   directly. This is what makes state/size changes update the live
+ *   uniforms smoothly without ever recreating the WebGL context.
  *
  * Preserved from the original: the shader itself (unchanged GLSL), the
  * hover-distortion/rotation interaction, and the overall prop API (hue,
