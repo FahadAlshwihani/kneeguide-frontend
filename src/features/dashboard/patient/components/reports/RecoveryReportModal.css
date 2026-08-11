@@ -1,0 +1,120 @@
+/* Backdrop/base panel/close button live in PatientDialog.css. */
+.recovery-report-panel {
+  max-width: 640px;
+}
+
+.recovery-report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--patient-space-sm);
+  margin-bottom: var(--patient-space-sm);
+}
+
+.recovery-report-eyebrow {
+  margin: 0 0 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recovery-report-title {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.recovery-report-pills {
+  display: flex;
+  gap: var(--patient-space-3xs);
+}
+
+.recovery-report-pill {
+  display: inline-flex;
+  padding: 2px var(--patient-space-2xs);
+  border-radius: var(--patient-radius-badge);
+  font: var(--patient-text-caption);
+  font-weight: 600;
+}
+
+.recovery-report-pill--positive {
+  background: var(--patient-color-success-soft);
+  color: var(--patient-color-success);
+}
+
+.recovery-report-pill--neutral {
+  background: var(--patient-color-warning-soft);
+  color: var(--patient-color-warning);
+}
+
+.recovery-report-summary {
+  margin: 0 0 var(--patient-space-sm);
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: var(--patient-space-sm);
+}
+
+.recovery-report-summary dt {
+  margin: 0 0 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.recovery-report-summary dd {
+  margin: 0;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.recovery-report-insight-slot {
+  margin-bottom: var(--patient-space-sm);
+}
+
+.recovery-report-section-title {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.recovery-report-exercises {
+  margin-bottom: var(--patient-space-sm);
+  padding-bottom: var(--patient-space-sm);
+  border-bottom: 1px solid var(--patient-divider);
+}
+
+.recovery-report-exercise-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recovery-report-exercise-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--patient-space-2xs);
+  padding: var(--patient-space-3xs) 0;
+}
+
+.recovery-report-exercise-name {
+  font: var(--patient-text-supporting);
+  font-weight: 600;
+  color: var(--patient-color-text);
+}
+
+.recovery-report-exercise-meta {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}

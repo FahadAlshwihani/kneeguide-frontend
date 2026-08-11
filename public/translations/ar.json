@@ -771,7 +771,12 @@
       "flexion": "تحسن مدى الثني",
       "hintImprovement": "معدل التحسن الكلي",
       "completion": "معدل الإنجاز",
-      "hintCompletion": "الجلسات المكتملة"
+      "hintCompletionCount": "{{completed}} من {{total}} جلسات",
+      "painComparison": "{{direction}} {{value}} مقارنة بآخر 5 جلسات",
+      "down": "↓",
+      "up": "↑",
+      "improving": "في تحسّن",
+      "declining": "في تراجع"
     },
     "table": {
       "title": "سجل الجلسات",
@@ -781,20 +786,96 @@
         "pain": "الألم",
         "flexion": "الثني",
         "extension": "المدّ",
-        "status": "الحالة"
-      }
+        "status": "الحالة",
+        "review": "المراجعة"
+      },
+      "view": "عرض"
     },
     "status": {
-      "completed": "مكتملة",
-      "pending": "قيد التنفيذ"
-    },
-    "chart": {
-      "title": "نظرة على الاتجاه العام",
-      "subtitle": "مقارنة مرئية بين مستوى الألم ومدى الثني.",
-      "legend": {
-        "flexion": "الثني",
-        "pain": "الألم"
+      "session": {
+        "completed": "مكتملة",
+        "incomplete": "غير مكتملة"
+      },
+      "review": {
+        "reviewed": "تمت المراجعة",
+        "awaiting_review": "بانتظار المراجعة",
+        "not_shared": "لم تُشارك"
       }
+    },
+    "empty": {
+      "noReportsYet": "لا توجد تقارير تعافي بعد. أكمل جلسة تأهيل لتبدأ بمتابعة تقدمك.",
+      "noReportsInRange": "لا توجد تقارير ضمن هذه المدة الزمنية. جرّب مدة أوسع.",
+      "noResultsForFilter": "لا توجد جلسات مطابقة لهذا العرض.",
+      "singleReportTrend": "نحتاج جلسات أكثر قبل ما يقدر KneeGuide يحدد اتجاه واضح للتعافي."
+    },
+    "insight": {
+      "title": "تحليل KneeGuide للتعافي",
+      "viewTrends": "عرض التقدم التفصيلي",
+      "painImproving": "الألم في تحسّن",
+      "painChanging": "اتجاه الألم",
+      "flexionImproving": "مدى الثني في تحسّن",
+      "flexionChanging": "اتجاه مدى الثني",
+      "adherence": "الالتزام",
+      "recentTrend": "الاتجاه الأخير",
+      "trendDirection": {
+        "improving": "في تحسّن",
+        "stable": "مستقر",
+        "declining": "في تراجع",
+        "insufficient_data": "بيانات غير كافية"
+      }
+    },
+    "milestones": {
+      "title": "أبرز مؤشرات التعافي",
+      "bestFlexion": "أفضل مدى ثني: {{value}}°",
+      "lowestPain": "أقل مستوى ألم: {{value}}/10",
+      "sessionsTracked": "{{completed}} من {{total}} جلسات مكتملة"
+    },
+    "trends": {
+      "title": "نظرة على الاتجاه العام",
+      "subtitle": "الألم ومدى الثني عبر جلساتك الأخيرة.",
+      "painLabel": "اتجاه الألم",
+      "flexionLabel": "اتجاه مدى الثني"
+    },
+    "insights": {
+      "recovery": {
+        "insufficientHistory": "نحتاج جلسات أكثر قبل ما يقدر KneeGuide يحدد اتجاه واضح للتعافي.",
+        "improvingFull": "تعافيك تحسّن خلال آخر {{count}} جلسات. الألم نزل من {{oldPain}}/10 إلى {{newPain}}/10، بينما تحسّن مدى ثني الركبة من {{oldFlexion}}° إلى {{newFlexion}}°.",
+        "improvingPartial": "تعافيك يُظهر اتجاهًا إيجابيًا خلال آخر {{count}} جلسات.",
+        "declining": "آخر {{count}} جلسات تُظهر ارتفاعًا بالألم أو انخفاضًا بمدى الحركة. يُفضّل مناقشة ذلك مع طبيبك.",
+        "stable": "مستوى الألم ومدى الحركة عندك ثابتين خلال آخر {{count}} جلسات."
+      },
+      "trend": {
+        "painDownRomUp": "الألم انخفض بشكل عام بينما تحسّن مدى ثني الركبة خلال جلساتك الأخيرة.",
+        "romUpPainStable": "مدى حركتك مستمر بالتحسن، بينما بقي الألم مستقرًا خلال جلساتك الأخيرة.",
+        "reviewWithClinician": "جلساتك الأخيرة تُظهر تحسنًا أقل من السابق — يُفضّل مراجعة ذلك مع طبيبك إذا استمر.",
+        "bothStable": "مستوى الألم ومدى الحركة عندك ثابتين خلال جلساتك الأخيرة.",
+        "mixed": "مدى حركتك يتجه بشكل جيد، لكن الألم تغيّر شوي — يستاهل المتابعة."
+      },
+      "session": {
+        "improvedBoth": "مدى ثني ركبتك زاد {{flexionDelta}}° مقارنة بجلستك السابقة، وتحسّن الألم أيضًا.",
+        "flexionImproved": "مدى ثني ركبتك زاد {{flexionDelta}}° مقارنة بجلستك السابقة.",
+        "painImproved": "الألم نزل {{painDelta}} نقاط مقارنة بجلستك السابقة.",
+        "mixed": "بعض المؤشرات تحسّنت وأخرى تراجعت مقارنة بجلستك السابقة — يستاهل المتابعة.",
+        "stable": "هذه الجلسة كانت متماشية مع جلستك السابقة."
+      }
+    },
+    "doctorFeedback": {
+      "title": "ملاحظات الطبيب",
+      "awaitingReview": "هذه الجلسة ما راجعها طبيبك بعد.",
+      "notShared": "هذا التقرير ما تمت مشاركته مع فريقك الطبي.",
+      "followUpRecommended": "يُنصح بموعد متابعة",
+      "fixtures": {
+        "detailed1": "تقدم ممتاز — بسط وثني ركبتك يتحسنان بثبات. استمر على البرنامج الحالي وواصل متابعة الألم بعد التمارين.",
+        "detailed2": "مدى حركتك مستمر بالتحسن بشكل جيد. لاحظت زيادة بسيطة بالألم بعد جلستك الأخيرة — خلنا نتابعها. خفف الشدة شوي إذا استمر الانزعاج، وبنرتب موعد متابعة لمراجعة تقدمك."
+      }
+    },
+    "reportModal": {
+      "eyebrow": "تقرير التعافي",
+      "close": "إغلاق",
+      "duration": "المدة",
+      "sessionInsightTitle": "تحليل KneeGuide",
+      "exercises": "التمارين",
+      "sets": "مجموعات"
     }
   },
   "verifyOtp": {

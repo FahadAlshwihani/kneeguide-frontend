@@ -1,0 +1,82 @@
+.doctor-feedback {
+  padding-top: var(--patient-space-sm);
+  border-top: 1px solid var(--patient-divider);
+}
+
+.doctor-feedback-title {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.doctor-feedback-body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--patient-space-xs);
+}
+
+/* Deliberately a neutral gray avatar, not KneeGuide blue/purple — this
+   is the visual signal that distinguishes clinician content from Orb/AI
+   content (Section 14). */
+.doctor-feedback-avatar {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--patient-surface-elevated);
+  border: 1px solid var(--patient-border);
+  color: var(--patient-color-text);
+  font: var(--patient-text-caption);
+  font-weight: 700;
+}
+
+.doctor-feedback-content {
+  min-width: 0;
+}
+
+.doctor-feedback-byline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--patient-space-2xs);
+  margin-bottom: 2px;
+}
+
+.doctor-feedback-name {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.doctor-feedback-badge {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-success);
+}
+
+.doctor-feedback-message {
+  margin: 0;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+}
+
+.doctor-feedback-followup {
+  margin: var(--patient-space-2xs) 0 0;
+  display: inline-flex;
+  padding: 2px var(--patient-space-2xs);
+  border-radius: var(--patient-radius-badge);
+  background: var(--patient-color-info-soft);
+  color: var(--patient-color-info);
+  font: var(--patient-text-caption);
+  font-weight: 600;
+}
+
+.doctor-feedback--pending .doctor-feedback-pending-text {
+  margin: 0;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-faint);
+  font-style: italic;
+}

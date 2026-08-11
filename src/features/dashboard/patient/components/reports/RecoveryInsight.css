@@ -1,0 +1,60 @@
+.recovery-insight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-sm);
+  width: 100%;
+}
+
+.recovery-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--patient-space-sm);
+}
+
+.recovery-signal {
+  flex: 1 1 140px;
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-2xs);
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+}
+
+.recovery-signal svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--patient-color-primary);
+}
+
+.recovery-signal-label {
+  margin: 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.recovery-signal-value {
+  margin: 0;
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+@media (max-width: 640px) {
+  .recovery-signals {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .recovery-signals::-webkit-scrollbar {
+    display: none;
+  }
+
+  .recovery-signal {
+    flex: 0 0 auto;
+    min-width: 130px;
+  }
+}

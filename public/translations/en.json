@@ -771,7 +771,12 @@
       "flexion": "Flexion Gain",
       "hintImprovement": "Overall improvement",
       "completion": "Completion Rate",
-      "hintCompletion": "Finished sessions"
+      "hintCompletionCount": "{{completed}} of {{total}} sessions",
+      "painComparison": "{{direction}} {{value}} vs previous 5 sessions",
+      "down": "↓",
+      "up": "↑",
+      "improving": "Improving",
+      "declining": "Declining"
     },
     "table": {
       "title": "Sessions Log",
@@ -781,20 +786,96 @@
         "pain": "Pain",
         "flexion": "Flexion",
         "extension": "Extension",
-        "status": "Status"
-      }
+        "status": "Status",
+        "review": "Review"
+      },
+      "view": "View"
     },
     "status": {
-      "completed": "Completed",
-      "pending": "Pending"
-    },
-    "chart": {
-      "title": "Trend Overview",
-      "subtitle": "Visual comparison of pain & flexion.",
-      "legend": {
-        "flexion": "Flexion",
-        "pain": "Pain"
+      "session": {
+        "completed": "Completed",
+        "incomplete": "Incomplete"
+      },
+      "review": {
+        "reviewed": "Reviewed",
+        "awaiting_review": "Awaiting review",
+        "not_shared": "Not shared"
       }
+    },
+    "empty": {
+      "noReportsYet": "No recovery reports yet. Complete a rehabilitation session to start tracking your progress.",
+      "noReportsInRange": "No reports in this time range. Try a wider range.",
+      "noResultsForFilter": "No sessions match this view.",
+      "singleReportTrend": "More sessions are needed before KneeGuide can identify a recovery trend."
+    },
+    "insight": {
+      "title": "KneeGuide Recovery Insight",
+      "viewTrends": "View detailed progress",
+      "painImproving": "Pain improving",
+      "painChanging": "Pain trend",
+      "flexionImproving": "Flexion improving",
+      "flexionChanging": "Flexion trend",
+      "adherence": "Adherence",
+      "recentTrend": "Recent trend",
+      "trendDirection": {
+        "improving": "Improving",
+        "stable": "Stable",
+        "declining": "Declining",
+        "insufficient_data": "Not enough data"
+      }
+    },
+    "milestones": {
+      "title": "Recovery milestones",
+      "bestFlexion": "Best flexion: {{value}}°",
+      "lowestPain": "Lowest pain: {{value}}/10",
+      "sessionsTracked": "{{completed}} of {{total}} sessions completed"
+    },
+    "trends": {
+      "title": "Trend Overview",
+      "subtitle": "Pain and flexion across your recent sessions.",
+      "painLabel": "Pain Trend",
+      "flexionLabel": "Flexion Trend"
+    },
+    "insights": {
+      "recovery": {
+        "insufficientHistory": "More sessions are needed before KneeGuide can identify a recovery trend.",
+        "improvingFull": "Your recovery has improved over your last {{count}} sessions. Pain decreased from {{oldPain}}/10 to {{newPain}}/10 while knee flexion improved from {{oldFlexion}}° to {{newFlexion}}°.",
+        "improvingPartial": "Your recovery shows an improving trend over your last {{count}} sessions.",
+        "declining": "Your last {{count}} sessions show pain trending higher or reduced range of motion. Consider discussing this with your clinician.",
+        "stable": "Your pain and range of motion have remained stable across your last {{count}} sessions."
+      },
+      "trend": {
+        "painDownRomUp": "Pain has generally decreased while knee flexion has increased across your recent sessions.",
+        "romUpPainStable": "Your range of motion continues to improve, while pain has remained stable during your recent sessions.",
+        "reviewWithClinician": "Recent sessions show less improvement than earlier ones — consider reviewing this with your clinician if it continues.",
+        "bothStable": "Your pain and range of motion have remained steady across your recent sessions.",
+        "mixed": "Your range of motion is trending well, though pain has shifted slightly — worth keeping an eye on."
+      },
+      "session": {
+        "improvedBoth": "Your flexion increased by {{flexionDelta}}° compared with your previous session while pain also improved.",
+        "flexionImproved": "Your flexion increased by {{flexionDelta}}° compared with your previous session.",
+        "painImproved": "Your pain decreased by {{painDelta}} points compared with your previous session.",
+        "mixed": "Some measures improved and others declined compared with your previous session — worth keeping an eye on.",
+        "stable": "This session was consistent with your previous one."
+      }
+    },
+    "doctorFeedback": {
+      "title": "Doctor Feedback",
+      "awaitingReview": "This session hasn't been reviewed by your clinician yet.",
+      "notShared": "This report hasn't been shared with your care team.",
+      "followUpRecommended": "Follow-up recommended",
+      "fixtures": {
+        "detailed1": "Great progress — your knee extension and flexion are both improving steadily. Continue the current program and keep monitoring pain after exercises.",
+        "detailed2": "Your range of motion continues to improve well. I noticed a slight increase in pain after your last session — let's keep an eye on it. Reduce intensity slightly if discomfort continues, and we'll plan a follow-up to review your progress."
+      }
+    },
+    "reportModal": {
+      "eyebrow": "Recovery Report",
+      "close": "Close",
+      "duration": "Duration",
+      "sessionInsightTitle": "KneeGuide Insight",
+      "exercises": "Exercises",
+      "sets": "sets"
     }
   },
   "verifyOtp": {

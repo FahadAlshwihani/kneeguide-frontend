@@ -1,0 +1,224 @@
+.session-history {
+  padding: var(--patient-space-lg);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+}
+
+.session-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--patient-space-sm);
+  margin-bottom: var(--patient-space-md);
+}
+
+.session-history-header h2 {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-history-header p {
+  margin: 4px 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-history-sort {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-history-sort label {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.session-history-sort select {
+  background: var(--patient-surface-elevated);
+  color: var(--patient-color-text);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid var(--patient-border);
+  padding: 6px var(--patient-space-2xs);
+  font: var(--patient-text-caption);
+}
+
+.session-history-sort select:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.session-history-empty {
+  margin: 0;
+  padding: var(--patient-space-md) 0;
+  text-align: center;
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Status pills ---------- */
+.session-history-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--patient-space-2xs);
+  border-radius: var(--patient-radius-badge);
+  font: var(--patient-text-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.session-history-pill--positive {
+  background: var(--patient-color-success-soft);
+  color: var(--patient-color-success);
+}
+
+.session-history-pill--neutral {
+  background: var(--patient-color-warning-soft);
+  color: var(--patient-color-warning);
+}
+
+.session-history-dash {
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Desktop table ---------- */
+.session-history-table-wrapper {
+  overflow-x: auto;
+}
+
+.session-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--patient-text-caption);
+}
+
+.session-history-table th,
+.session-history-table td {
+  text-align: start;
+  padding: var(--patient-space-2xs) var(--patient-space-2xs);
+  border-bottom: 1px solid var(--patient-divider);
+}
+
+.session-history-table th {
+  color: var(--patient-color-faint);
+  font-weight: 600;
+}
+
+.session-history-table td {
+  color: var(--patient-color-text);
+}
+
+.session-history-table tbody tr:hover {
+  background: var(--patient-surface-hover);
+}
+
+.session-history-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  color: var(--patient-color-primary);
+  font: var(--patient-text-caption);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.session-history-view-btn:hover {
+  text-decoration: underline;
+}
+
+.session-history-view-btn:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.session-history-view-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+[dir="rtl"] .session-history-view-btn svg {
+  transform: scaleX(-1);
+}
+
+/* ---------- Mobile cards ---------- */
+.session-history-cards {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: var(--patient-space-2xs);
+}
+
+.session-history-card-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-3xs);
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-elevated);
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.session-history-card-btn:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.session-history-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.session-history-card-date {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.session-history-card-metrics {
+  display: flex;
+  gap: var(--patient-space-sm);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+.session-history-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.session-history-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font: var(--patient-text-caption);
+  font-weight: 600;
+  color: var(--patient-color-primary);
+}
+
+.session-history-card-action svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 720px) {
+  .session-history-table-wrapper {
+    display: none;
+  }
+
+  .session-history-cards {
+    display: flex;
+  }
+}

@@ -1,0 +1,80 @@
+.recovery-trends {
+  padding: var(--patient-space-lg);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-md);
+}
+
+.recovery-trends-header h2 {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.recovery-trends-header p {
+  margin: 4px 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.recovery-trend-row-label {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-muted);
+}
+
+.recovery-trend-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--patient-space-2xs);
+  overflow-x: auto;
+}
+
+.recovery-trend-bar-column {
+  flex: 1 1 0;
+  min-width: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.recovery-trend-bar-value {
+  font: var(--patient-text-caption);
+  font-weight: 700;
+  color: var(--patient-color-text);
+}
+
+.recovery-trend-bar-track {
+  width: 100%;
+  max-width: 22px;
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-surface-elevated);
+  overflow: hidden;
+}
+
+.recovery-trend-bar-fill {
+  width: 100%;
+  border-radius: var(--patient-radius-button);
+  transition: height 300ms ease;
+}
+
+.recovery-trend-bar-date {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+  white-space: nowrap;
+}
+
+.recovery-trends-explanation {
+  margin: 0;
+  padding-top: var(--patient-space-2xs);
+  border-top: 1px solid var(--patient-divider);
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}

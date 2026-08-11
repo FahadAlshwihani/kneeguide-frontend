@@ -1,0 +1,34 @@
+.recovery-milestones {
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+}
+
+.recovery-milestones-title {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.recovery-milestones-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--patient-space-sm);
+}
+
+.recovery-milestone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-text);
+}
+
+.recovery-milestone svg {
+  width: 15px;
+  height: 15px;
+  color: var(--patient-color-primary);
+}
