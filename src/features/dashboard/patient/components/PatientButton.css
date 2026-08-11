@@ -1,0 +1,151 @@
+/* Patient Dashboard button primitive — reads only from patientTokens.css
+   (--patient-*). Must be used inside `.patient-shell` (PatientLayout.jsx)
+   so those custom properties resolve; falls back to sane values via `var()`
+   defaults elsewhere are intentionally omitted here since this component
+   has no reason to exist outside the patient scope. */
+
+.patient-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--patient-space-2xs);
+  font: var(--patient-text-button);
+  border-radius: var(--patient-radius-button);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  min-height: 40px;
+  padding-inline: var(--patient-space-md);
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal),
+    color var(--patient-transition-normal), opacity var(--patient-transition-normal);
+}
+
+.patient-btn:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.patient-btn:disabled,
+.patient-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.patient-btn--full {
+  width: 100%;
+}
+
+/* ---------- Sizes ---------- */
+.patient-btn--sm {
+  min-height: 34px;
+  padding-inline: var(--patient-space-sm);
+  font-size: 0.78rem;
+}
+
+.patient-btn--lg {
+  min-height: 44px;
+  padding-inline: var(--patient-space-lg);
+  font-size: 0.92rem;
+}
+
+/* ---------- Variants ---------- */
+.patient-btn--primary {
+  background: var(--patient-color-primary);
+  color: #ffffff;
+}
+
+.patient-btn--primary:hover:not(:disabled) {
+  background: var(--patient-color-primary-strong);
+}
+
+.patient-btn--secondary {
+  background: var(--patient-surface-elevated);
+  color: var(--patient-color-text);
+  border-color: var(--patient-color-border);
+}
+
+.patient-btn--secondary:hover:not(:disabled) {
+  background: var(--patient-surface-hover);
+}
+
+.patient-btn--outline {
+  background: transparent;
+  color: var(--patient-color-text);
+  border-color: var(--patient-color-border);
+}
+
+.patient-btn--outline:hover:not(:disabled) {
+  background: var(--patient-surface-hover);
+  border-color: var(--patient-color-primary);
+}
+
+.patient-btn--ghost {
+  background: transparent;
+  color: var(--patient-color-muted);
+}
+
+.patient-btn--ghost:hover:not(:disabled) {
+  background: var(--patient-surface-hover);
+  color: var(--patient-color-text);
+}
+
+.patient-btn--danger {
+  background: transparent;
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.patient-btn--danger:hover:not(:disabled) {
+  background: var(--patient-color-danger-soft);
+}
+
+/* ---------- Icon ---------- */
+.patient-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.patient-btn-icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.patient-btn-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---------- Loading ---------- */
+.patient-btn--loading {
+  cursor: progress;
+}
+
+.patient-btn-spinner {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+  animation: patient-btn-spin 700ms linear infinite;
+}
+
+@keyframes patient-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patient-btn {
+    transition-duration: 1ms;
+  }
+
+  .patient-btn-spinner {
+    animation-duration: 1400ms;
+  }
+}
