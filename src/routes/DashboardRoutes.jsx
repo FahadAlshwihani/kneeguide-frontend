@@ -10,6 +10,7 @@ import PatientDashboard from "../features/dashboard/patient/pages/PatientDashboa
 import Reports from "../features/dashboard/patient/pages/Reports";
 import PatientExercises from "../features/dashboard/patient/pages/PatientExercises";
 import PatientProfile from "../features/dashboard/patient/pages/PatientProfile";
+import PatientAppointments from "../features/dashboard/patient/pages/PatientAppointments";
 
 // Doctor
 import DoctorDashboard from "../features/dashboard/doctor/pages/DoctorDashboard";
@@ -67,6 +68,15 @@ const DashboardRoutes = (
         element={
           <ProtectedRoute allowedRoles={["patient"]}>
             <PatientProfile />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.PATIENT_APPOINTMENTS}
+        element={
+          <ProtectedRoute allowedRoles={["patient"]}>
+            <PatientAppointments />
           </ProtectedRoute>
         }
       />

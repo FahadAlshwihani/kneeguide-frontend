@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LuHouse, LuDumbbell, LuFileText, LuUserRound } from "react-icons/lu";
+import { LuHouse, LuDumbbell, LuFileText, LuUserRound, LuCalendarClock } from "react-icons/lu";
 import Dock from "../../../../components/ui/Dock";
 import { ROUTES } from "../../../../utils/routes";
 import "./PatientDock.css";
@@ -9,12 +9,17 @@ import "./PatientDock.css";
 // Route config lives here — the generic Dock (components/ui/Dock.jsx)
 // never sees a patient route/icon/label directly, so a future, separately
 // designed Doctor navigation can be built without touching or extending
-// this file or the generic primitive. All four routes are real,
+// this file or the generic primitive. All five routes are real,
 // already-implemented patient pages (routes/DashboardRoutes.jsx) — this
 // is a 1:1 map onto that reality, not new/invented navigation.
+// LuCalendarClock reuses the exact icon the Assistant's own
+// NEXT_APPOINTMENT suggestion chip already uses (patientAssistantActions.js)
+// — one consistent "appointments" glyph across the product, not a second
+// unrelated calendar icon.
 const NAV_ITEMS = [
   { key: "home", to: ROUTES.PATIENT_DASHBOARD, Icon: LuHouse, labelKey: "patientBottomNav.home" },
   { key: "exercises", to: ROUTES.PATIENT_EXERCISES, Icon: LuDumbbell, labelKey: "patientBottomNav.exercises" },
+  { key: "appointments", to: ROUTES.PATIENT_APPOINTMENTS, Icon: LuCalendarClock, labelKey: "patientBottomNav.appointments" },
   { key: "reports", to: ROUTES.PATIENT_REPORTS, Icon: LuFileText, labelKey: "patientBottomNav.reports" },
   { key: "profile", to: ROUTES.PATIENT_PROFILE, Icon: LuUserRound, labelKey: "patientBottomNav.profile" },
 ];

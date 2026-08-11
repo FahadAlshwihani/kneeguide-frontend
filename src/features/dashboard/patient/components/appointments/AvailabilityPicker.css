@@ -1,0 +1,129 @@
+.availability-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-md);
+}
+
+.availability-picker-label {
+  margin: 0 0 var(--patient-space-2xs);
+  font: var(--patient-text-label);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Day rail ---------- */
+.availability-day-rail {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 4px;
+  display: flex;
+  gap: var(--patient-space-2xs);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--patient-border) transparent;
+}
+
+.availability-day-chip {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 56px;
+  padding: var(--patient-space-2xs) var(--patient-space-xs);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-card);
+  color: var(--patient-color-muted);
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.availability-day-chip:hover:not(:disabled) {
+  background: var(--patient-surface-hover);
+}
+
+.availability-day-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.availability-day-chip:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.availability-day-chip--selected {
+  border-color: var(--patient-color-primary);
+  background: var(--patient-surface-selected);
+  box-shadow: 0 0 0 1px var(--patient-color-primary);
+}
+
+.availability-day-chip-weekday {
+  font: var(--patient-text-caption);
+  text-transform: uppercase;
+}
+
+.availability-day-chip-number {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-text);
+}
+
+.availability-day-chip--selected .availability-day-chip-number {
+  color: var(--patient-color-heading);
+}
+
+/* ---------- Time slot grid ---------- */
+.availability-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--patient-space-2xs);
+}
+
+.availability-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--patient-space-2xs);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-card);
+  color: var(--patient-color-text);
+  font: var(--patient-text-supporting);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.availability-slot:hover:not(:disabled) {
+  background: var(--patient-surface-hover);
+  border-color: var(--patient-color-primary-soft);
+}
+
+.availability-slot:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.availability-slot:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  background: transparent;
+}
+
+.availability-slot--selected {
+  border-color: var(--patient-color-primary);
+  background: var(--patient-surface-selected);
+  color: var(--patient-color-heading);
+  box-shadow: 0 0 0 1px var(--patient-color-primary);
+}
+
+.availability-slot-status {
+  font: var(--patient-text-caption);
+  font-weight: 400;
+  color: var(--patient-color-faint);
+}
+
+.availability-slot--selected .availability-slot-status {
+  color: var(--patient-color-primary);
+}

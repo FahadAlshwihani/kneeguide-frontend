@@ -1,4 +1,5 @@
 import { getTodaySessionPlan } from "./patientRehabPlanData";
+import { DEFAULT_CLINICIAN } from "./patientClinicianData";
 import { loadSessionState } from "../session/patientSessionStorage";
 import { SESSION_STATUS } from "../session/patientSessionEngine";
 import { getAverageRom, getSessionAverageQuality } from "../session/patientSessionMetrics";
@@ -162,7 +163,7 @@ const buildFixtureReports = (referenceDate) => [
     ],
     clinicalReview: {
       status: REVIEW_STATUS.REVIEWED,
-      doctorName: "Dr. Sarah Ahmed",
+      doctorName: DEFAULT_CLINICIAN.name,
       reviewedAt: dayOffset(-5, referenceDate),
       messageKey: "patientReports.doctorFeedback.fixtures.detailed1",
       followUpRecommended: false,
@@ -186,7 +187,7 @@ const buildFixtureReports = (referenceDate) => [
     ],
     clinicalReview: {
       status: REVIEW_STATUS.REVIEWED,
-      doctorName: "Dr. Sarah Ahmed",
+      doctorName: DEFAULT_CLINICIAN.name,
       reviewedAt: dayOffset(-1, referenceDate),
       messageKey: "patientReports.doctorFeedback.fixtures.detailed2",
       followUpRecommended: true,

@@ -9,6 +9,7 @@ export const ROUTES = {
   PATIENT_REPORTS: "/patient/reports",
   PATIENT_EXERCISES: "/patient/exercises",
   PATIENT_PROFILE: "/patient/profile",
+  PATIENT_APPOINTMENTS: "/patient/appointments",
 
   // Doctor pages
   DOCTOR_DASHBOARD: "/doctor/dashboard",

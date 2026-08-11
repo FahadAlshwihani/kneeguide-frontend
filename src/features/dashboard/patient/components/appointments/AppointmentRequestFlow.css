@@ -1,0 +1,156 @@
+/* Backdrop/base panel/close button live in PatientDialog.css. */
+.appointment-request-panel {
+  max-width: 560px;
+}
+
+.appointment-request-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--patient-space-sm);
+  margin-bottom: var(--patient-space-md);
+}
+
+.appointment-request-title {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.appointment-request-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-sm);
+}
+
+.appointment-request-step-label {
+  margin: 0;
+  font: var(--patient-text-label);
+  color: var(--patient-color-faint);
+}
+
+.appointment-request-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--patient-space-2xs);
+}
+
+.appointment-request-reason {
+  padding: 8px var(--patient-space-sm);
+  border-radius: var(--patient-radius-button);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-card);
+  color: var(--patient-color-text);
+  font: var(--patient-text-caption);
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.appointment-request-reason:hover {
+  background: var(--patient-surface-hover);
+}
+
+.appointment-request-reason:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.appointment-request-reason--selected {
+  border-color: var(--patient-color-primary);
+  background: var(--patient-surface-selected);
+  color: var(--patient-color-heading);
+}
+
+.appointment-request-note {
+  width: 100%;
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-card);
+  color: var(--patient-color-text);
+  font: var(--patient-text-body);
+  resize: vertical;
+}
+
+.appointment-request-note:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.appointment-request-error {
+  margin: 0;
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-color-danger-soft);
+  color: var(--patient-color-danger);
+  font: var(--patient-text-caption);
+}
+
+.appointment-request-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--patient-space-2xs);
+}
+
+.appointment-request-summary {
+  margin: 0;
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-control);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--patient-space-sm);
+}
+
+.appointment-request-summary-note {
+  grid-column: 1 / -1;
+}
+
+.appointment-request-summary dt {
+  margin: 0 0 2px;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+.appointment-request-summary dd {
+  margin: 0;
+  font: var(--patient-text-supporting);
+  font-weight: 600;
+  color: var(--patient-color-heading);
+}
+
+/* ---------- Submitted confirmation ---------- */
+.appointment-request-submitted {
+  align-items: center;
+  text-align: center;
+  padding: var(--patient-space-md) 0;
+}
+
+.appointment-request-submitted-title {
+  margin: 0;
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.appointment-request-submitted-text {
+  margin: 0;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+  max-width: 40ch;
+}
+
+.appointment-request-submitted-status {
+  display: inline-flex;
+  padding: 3px var(--patient-space-sm);
+  border-radius: var(--patient-radius-badge);
+  background: var(--patient-color-info-soft);
+  color: var(--patient-color-info);
+  font: var(--patient-text-caption);
+  font-weight: 700;
+}
+
+.appointment-request-submitted .appointment-request-actions {
+  justify-content: center;
+  width: 100%;
+}
