@@ -461,6 +461,19 @@
       "followUpLabel": "Follow-up suggestions",
       "historyLabel": "Conversation",
       "youLabel": "You",
+      "history": {
+        "title": "Conversation history",
+        "newChat": "New chat",
+        "openHistory": "Open conversation history",
+        "closeHistory": "Close conversation history",
+        "collapse": "Collapse sidebar",
+        "expand": "Expand sidebar",
+        "today": "Today",
+        "previous": "Previous conversations",
+        "untitled": "New conversation",
+        "mockBadge": "Demo",
+        "empty": "No conversations yet"
+      },
       "painLogger": {
         "rangeLabel": "Pain level, 0 to 10",
         "valueText": "{{value}} out of 10, {{severity}}",

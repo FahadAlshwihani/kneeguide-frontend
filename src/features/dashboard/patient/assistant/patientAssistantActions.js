@@ -4,8 +4,9 @@ import { getRecentPainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorag
 
 /**
  * The Patient Assistant action registry — one source of truth mapping
- * each quick-suggestion chip to something that genuinely already exists
- * in KneeGuide (audited against routes/DashboardRoutes.jsx and
+ * each quick-suggestion chip (and now, bilingual free-form phrases — see
+ * `patterns` below) to something that genuinely already exists in
+ * KneeGuide (audited against routes/DashboardRoutes.jsx and
  * PatientDashboard.jsx's own data before writing this file — see the
  * final report for exactly what was found real vs. mock).
  *
@@ -37,9 +38,17 @@ import { getRecentPainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorag
  *             to that ONE message, distinct from the global suggestion
  *             chips below the composer.
  *
- * `execute(context)` receives `{ navigate, t, data }` and returns either
- * `undefined` (NAVIGATE — the side effect already happened) or a response
- * descriptor `{ message, secondaryAction?, widget?, actions? }` (DISPLAY).
+ * `execute(context)` receives `{ navigate, t, data, language }` and
+ * returns either `undefined` (NAVIGATE — the side effect already
+ * happened) or a response descriptor `{ message, secondaryAction?,
+ * widget?, actions? }` (DISPLAY). `language` ('en' | 'ar') is the
+ * CONVERSATION language for this turn (see patientAssistantLanguage.js) —
+ * NOT the active UI language — so `execute` asks i18next for a
+ * fixed-language string via `t(key, { lng: language, ...values })`
+ * instead of `i18n.changeLanguage()`, which is never called anywhere in
+ * this feature. `patterns` below are the bilingual, bounded, literal
+ * phrase list a typed free-form message is matched against — still not
+ * NLP, just an explicit dictionary per action per language.
  */
 
 export const ASSISTANT_ACTION_TYPES = {
@@ -53,6 +62,10 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     labelKey: "patientDashboard.assistant.actions.showExercises",
     icon: LuDumbbell,
     type: ASSISTANT_ACTION_TYPES.NAVIGATE,
+    patterns: {
+      en: ["show today's exercises", "show my exercises", "today's exercises", "my exercises", "exercises"],
+      ar: ["عرض تمارين اليوم", "تمارين اليوم", "اعرض تمارين", "تمارين"],
+    },
     // /patient/exercises is a real, already-implemented route with a real
     // page (PatientExercises.jsx) — its own exercise data is mock, but the
     // route/page/interaction genuinely exists, so this is a real capability.
@@ -65,18 +78,23 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     labelKey: "patientDashboard.assistant.actions.nextAppointment",
     icon: LuCalendarClock,
     type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["next appointment", "when is my appointment", "when is my next appointment", "my appointment"],
+      ar: ["متى موعدي", "موعدي القادم", "متى موعدي القادم", "متى موعدي الجاي", "الموعد الجاي", "موعدي الجاي"],
+    },
     // No dedicated Patient appointments route exists anywhere in this app
     // today (only Doctor has one) — confirmed by auditing
     // routes/DashboardRoutes.jsx before writing this. This response is
     // therefore display-only, with no secondary "view appointments"
     // action, rather than inventing a destination that doesn't exist.
-    execute: ({ t, data }) => {
+    execute: ({ t, data, language }) => {
       const { nextAppointment } = data;
       if (!nextAppointment) {
-        return { message: t("patientDashboard.assistant.responses.noAppointment") };
+        return { message: t("patientDashboard.assistant.responses.noAppointment", { lng: language }) };
       }
       return {
         message: t("patientDashboard.assistant.responses.nextAppointment", {
+          lng: language,
           date: nextAppointment.date,
           time: nextAppointment.time,
           doctor: nextAppointment.doctor,
@@ -89,13 +107,18 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     labelKey: "patientDashboard.assistant.actions.latestReport",
     icon: LuFileText,
     type: ASSISTANT_ACTION_TYPES.DISPLAY,
-    execute: ({ t, navigate, data }) => {
+    patterns: {
+      en: ["latest report", "my latest report", "show my report", "my report", "report"],
+      ar: ["آخر تقرير", "تقريري الأخير", "عرض تقريري", "وش وضع تقريري", "تقريري"],
+    },
+    execute: ({ t, navigate, data, language }) => {
       const { lastReport } = data;
       if (!lastReport) {
-        return { message: t("patientDashboard.assistant.responses.noReport") };
+        return { message: t("patientDashboard.assistant.responses.noReport", { lng: language }) };
       }
       return {
         message: t("patientDashboard.assistant.responses.latestReport", {
+          lng: language,
           date: lastReport.date,
           status: lastReport.statusLabel,
           pain: lastReport.painLevel,
@@ -112,6 +135,10 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     labelKey: "patientDashboard.assistant.actions.logPain",
     icon: LuHeartPulse,
     type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["log today's pain", "log my pain", "log pain", "today's pain"],
+      ar: ["تسجيل ألم اليوم", "سجل الألم", "سجل ألمي", "الم اليوم", "ألم اليوم"],
+    },
     // Reads the real (mock, local-only) pain log before deciding how to
     // respond — this is exactly the "deterministic data access" this
     // registry already does for appointments/reports/adherence, just
@@ -122,12 +149,15 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     // transitions live in PatientHomeAssistant.jsx (see its
     // handleChangePain/handleKeepPain/handlePainSubmit), since they're
     // conversation-flow orchestration, not registry-level capability.
-    execute: ({ t }) => {
+    execute: ({ t, language }) => {
       const recent = getRecentPainLog();
 
       if (recent) {
         return {
-          message: t("patientDashboard.assistant.responses.painRecentExists", { value: recent.value }),
+          message: t("patientDashboard.assistant.responses.painRecentExists", {
+            lng: language,
+            value: recent.value,
+          }),
           widget: { type: "painExistingConfirmation", value: recent.value },
           actions: [
             { id: "change-pain", labelKey: "patientDashboard.assistant.actions.changePain" },
@@ -137,7 +167,7 @@ export const PATIENT_ASSISTANT_ACTIONS = [
       }
 
       return {
-        message: t("patientDashboard.assistant.responses.logPainPrompt"),
+        message: t("patientDashboard.assistant.responses.logPainPrompt", { lng: language }),
         widget: { type: "painLogger", value: DEFAULT_PAIN_VALUE, mode: "log" },
       };
     },
@@ -147,13 +177,18 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     labelKey: "patientDashboard.assistant.actions.rehabProgress",
     icon: LuChartLine,
     type: ASSISTANT_ACTION_TYPES.DISPLAY,
-    execute: ({ t, navigate, data }) => {
+    patterns: {
+      en: ["rehab progress", "my progress", "how is my progress", "recovery progress", "progress"],
+      ar: ["تقدم برنامجي", "تقدمي العلاجي", "كيف تقدمي", "تقدم التأهيل", "تقدمي"],
+    },
+    execute: ({ t, navigate, data, language }) => {
       const { adherence } = data;
       if (!adherence) {
-        return { message: t("patientDashboard.assistant.responses.noProgress") };
+        return { message: t("patientDashboard.assistant.responses.noProgress", { lng: language }) };
       }
       return {
         message: t("patientDashboard.assistant.responses.rehabProgress", {
+          lng: language,
           days: adherence.streakDays,
           percent: adherence.completionPercentage,
         }),
@@ -165,3 +200,105 @@ export const PATIENT_ASSISTANT_ACTIONS = [
     },
   },
 ];
+
+const normalize = (value) => (typeof value === "string" ? value.toLowerCase().trim() : "");
+
+/**
+ * Bounded, deterministic free-form matcher — NOT NLP. `language` narrows
+ * which of an action's two pattern lists is checked, so a typed phrase
+ * resolves to the same action regardless of the active UI language (e.g.
+ * UI English + Arabic-typed "متى موعدي الجاي؟" still resolves to
+ * NEXT_APPOINTMENT). Exactly one match required, mirroring the previous
+ * single-language behavior — zero or multiple matches are the caller's
+ * (PatientHomeAssistant.jsx's) job to turn into an honest fallback.
+ */
+export const matchAssistantAction = (query, language) => {
+  const normalizedQuery = normalize(query);
+  if (!normalizedQuery) return null;
+
+  const matches = PATIENT_ASSISTANT_ACTIONS.filter((action) => {
+    const patterns = action.patterns?.[language] || [];
+    return patterns.some((pattern) => normalizedQuery.includes(normalize(pattern)));
+  });
+
+  return matches.length === 1 ? matches[0] : null;
+};
+
+/**
+ * A small, explicit dictionary of themes the mock conversation history
+ * (patientAssistantMockHistory.js) demonstrates as FUTURE capability, so
+ * the still-deterministic LIVE assistant can answer honestly instead of
+ * silently falling through to the generic "unsupported" line — e.g.
+ * someone who just read the report-analysis demo conversation typing
+ * "حلل تقريري وقارن الزوايا" gets a specific, honest "not connected yet"
+ * reply naming what it *can* do today, not a fabricated analysis. This is
+ * intentionally NOT a general intent classifier — three fixed themes,
+ * literal phrase lists, same bounded shape as the action patterns above.
+ */
+export const CAPABILITY_FALLBACK_THEMES = [
+  {
+    id: "reportAnalysis",
+    responseKey: "patientDashboard.assistant.responses.capabilityReportAnalysis",
+    patterns: {
+      en: [
+        "analyze my report",
+        "analyse my report",
+        "compare my report",
+        "compare reports",
+        "compare my angles",
+        "compare angles",
+        "detailed analysis",
+        "report analysis",
+      ],
+      ar: [
+        "حلل تقريري",
+        "حلل التقرير",
+        "قارن تقاريري",
+        "قارن التقارير",
+        "قارن الزوايا",
+        "تحليل تقريري",
+        "تحليل التقرير",
+        "تحليل مفصل",
+      ],
+    },
+  },
+  {
+    id: "exerciseAnalysis",
+    responseKey: "patientDashboard.assistant.responses.capabilityExerciseAnalysis",
+    patterns: {
+      en: [
+        "analyze my exercise",
+        "analyse my exercise",
+        "analyze my form",
+        "analyze my performance",
+        "exercise analysis",
+      ],
+      ar: ["حلل تماريني", "حلل تمريني", "حلل أدائي", "تحليل تماريني", "تحليل الأداء"],
+    },
+  },
+  {
+    id: "booking",
+    responseKey: "patientDashboard.assistant.responses.capabilityBooking",
+    patterns: {
+      en: [
+        "book an appointment",
+        "book me an appointment",
+        "book appointment",
+        "schedule an appointment",
+        "reserve an appointment",
+      ],
+      ar: ["احجز لي موعد", "احجز موعد", "حجز موعد", "ابغى احجز", "ابي احجز موعد"],
+    },
+  },
+];
+
+export const matchCapabilityTheme = (query, language) => {
+  const normalizedQuery = normalize(query);
+  if (!normalizedQuery) return null;
+
+  return (
+    CAPABILITY_FALLBACK_THEMES.find((theme) =>
+      (theme.patterns?.[language] || []).some((pattern) => normalizedQuery.includes(normalize(pattern)))
+    ) || null
+  );
+};
