@@ -1,5 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { LuLogOut } from "react-icons/lu";
+import { useAuth } from "../context/AuthContext";
 import PatientDock from "../features/dashboard/patient/components/PatientDock";
 import SidebarLanguageSwitcher from "../components/common/SidebarLanguageSwitcher";
 import "../features/dashboard/patient/styles/patientTokens.css";
