@@ -450,6 +450,22 @@ const PatientHomeAssistant = ({ data, onModeChange }) => {
   // change; the Orb's own independent `layout` transition (
   // KneeGuideAssistantOrb.jsx, unaffected by any of this) remains the
   // primary carrier of the large-to-compact visual transformation.
+  // `layout="size"` intentionally does NOT apply in Conversation Mode —
+  // that mode's own height is now bounded/flex-driven (see
+  // PatientHomeAssistant.css), a fundamentally different sizing scheme
+  // than Welcome Mode's normal-flow box, and animating a FLIP transform
+  // across that scheme change risks a glitchy snap. Welcome Mode keeps it
+  // (unchanged from before) purely to smooth its own intro-exit height
+  // change; the Orb's own independent `layout` transition (
+  // KneeGuideAssistantOrb.jsx, unaffected by any of this) remains the
+  // primary carrier of the large-to-compact visual transformation.
+  //
+  // AnimatePresence here stays mounted across BOTH modes (same as every
+  // other top-level child below) — only ITS child conditionally renders
+  // on `mode`. This is what lets the intro block actually play its exit
+  // animation instead of just vanishing: if the whole Welcome/Conversation
+  // branch were swapped as one unit, AnimatePresence itself would unmount
+  // together with its child and never get the chance to animate the exit.
   return (
     <motion.section
       layout={mode === "welcome" ? "size" : undefined}
@@ -458,70 +474,74 @@ const PatientHomeAssistant = ({ data, onModeChange }) => {
       aria-label={t("patientDashboard.assistant.regionLabel")}
     >
       {mode === "welcome" ? (
+        <KneeGuideAssistantOrb state={orbState} size="large" className="patient-assistant-orb" />
+      ) : (
+        // HEADER — outside the transcript scroll container entirely,
+        // never scrolls with messages.
+        <div className="patient-assistant-header">
+          <KneeGuideAssistantOrb state={orbState} size="compact" className="patient-assistant-orb" />
+          <span className="patient-assistant-identity-label">{t("patientDashboard.assistant.orbLabel")}</span>
+        </div>
+      )}
+
+      <AnimatePresence initial={false}>
+        {mode === "welcome" && (
+          <motion.div
+            key="patient-assistant-intro"
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+            transition={{ duration: reducedMotion ? 0 : 0.2, ease: "easeOut" }}
+            className="patient-assistant-intro"
+          >
+            <h1 className="patient-assistant-greeting">
+              {t(`patientDashboard.greeting.${greetingKey}`, { name: displayName })}
+            </h1>
+            <TypewriterText
+              as="p"
+              className="patient-assistant-message"
+              text={t("patientDashboard.assistant.intro")}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {mode === "conversation" && (
+        // TRANSCRIPT — the ONE vertically scrolling element in
+        // Conversation Mode (.patient-assistant--conversation
+        // .patient-chat-history in the CSS).
+        <div
+          ref={transcriptRef}
+          onScroll={handleTranscriptScroll}
+          className="patient-chat-history"
+          role="log"
+          aria-label={t("patientDashboard.assistant.historyLabel")}
+        >
+          {messages.map((message) => (
+            <ConversationTurn
+              key={message.id}
+              message={message}
+              reducedMotion={reducedMotion}
+              scrollRef={message.id === lastUserMessageId ? latestUserMessageRef : null}
+              onTypedComplete={() => markTyped(message.id)}
+              onPainValueChange={handlePainValueChange}
+              onPainSubmit={handlePainSubmit}
+              onContextualAction={handleContextualAction}
+            />
+          ))}
+        </div>
+      )}
+
+      {mode === "welcome" ? (
         <>
-          <KneeGuideAssistantOrb state={orbState} size="large" className="patient-assistant-orb" />
-
-          <AnimatePresence initial={false}>
-            <motion.div
-              key="patient-assistant-intro"
-              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-              transition={{ duration: reducedMotion ? 0 : 0.2, ease: "easeOut" }}
-              className="patient-assistant-intro"
-            >
-              <h1 className="patient-assistant-greeting">
-                {t(`patientDashboard.greeting.${greetingKey}`, { name: displayName })}
-              </h1>
-              <TypewriterText
-                as="p"
-                className="patient-assistant-message"
-                text={t("patientDashboard.assistant.intro")}
-              />
-            </motion.div>
-          </AnimatePresence>
-
           {suggestionsNode}
           {composerNode}
         </>
       ) : (
-        <>
-          {/* HEADER — outside the transcript scroll container entirely,
-              never scrolls with messages. */}
-          <div className="patient-assistant-header">
-            <KneeGuideAssistantOrb state={orbState} size="compact" className="patient-assistant-orb" />
-            <span className="patient-assistant-identity-label">{t("patientDashboard.assistant.orbLabel")}</span>
-          </div>
-
-          {/* TRANSCRIPT — the ONE vertically scrolling element in
-              Conversation Mode (patient-assistant--conversation
-              .patient-chat-history in the CSS). */}
-          <div
-            ref={transcriptRef}
-            onScroll={handleTranscriptScroll}
-            className="patient-chat-history"
-            role="log"
-            aria-label={t("patientDashboard.assistant.historyLabel")}
-          >
-            {messages.map((message) => (
-              <ConversationTurn
-                key={message.id}
-                message={message}
-                reducedMotion={reducedMotion}
-                scrollRef={message.id === lastUserMessageId ? latestUserMessageRef : null}
-                onTypedComplete={() => markTyped(message.id)}
-                onPainValueChange={handlePainValueChange}
-                onPainSubmit={handlePainSubmit}
-                onContextualAction={handleContextualAction}
-              />
-            ))}
-          </div>
-
-          {/* FOOTER — composer + follow-up suggestions, outside the
-              transcript, never scrolls with messages. */}
-          <div className="patient-assistant-footer">
-            {composerNode}
-            {suggestionsNode}
-          </div>
-        </>
+        // FOOTER — composer + follow-up suggestions, outside the
+        // transcript, never scrolls with messages.
+        <div className="patient-assistant-footer">
+          {composerNode}
+          {suggestionsNode}
+        </div>
       )}
     </motion.section>
   );
