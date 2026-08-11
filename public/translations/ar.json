@@ -487,12 +487,17 @@
         "logPain": "تسجيل ألم اليوم",
         "rehabProgress": "كيف يسير تقدّم برنامجي العلاجي؟",
         "connectDevice": "كيف أربط جهازي؟",
+        "requestAppointment": "أبي أحجز موعد",
+        "chooseAppointmentTime": "اختيار موعد",
         "changePain": "نعم، أريد تغييره",
         "keepPain": "لا، أبقِه كما هو"
       },
       "responses": {
         "noAppointment": "ليس لديك موعد قادم مجدول حالياً.",
         "nextAppointment": "موعدك القادم في {{date}} الساعة {{time}} مع {{doctor}}.",
+        "openAppointments": "عرض المواعيد",
+        "requestAppointmentIntro": "أكيد. أقدر أساعدك بطلب موعد متابعة مع {{doctorName}}.",
+        "appointmentRequestSubmitted": "تم تسجيل طلبك ليوم {{date}} الساعة {{time}}. الحالة: {{status}}.",
         "noReport": "لا توجد تقارير سريرية لك بعد.",
         "latestReport": "آخر تقرير لك بتاريخ {{date}} مُصنَّف بحالة {{status}}، بمستوى ألم مسجَّل {{pain}}.",
         "noProgress": "لا تتوفر بيانات التزام حتى الآن.",
