@@ -1,7 +1,12 @@
 import React from "react";
+import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import Orb from "../../../../components/ui/Orb";
 import "./KneeGuideAssistantOrb.css";
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // KneeGuide's own tuned hue rotation — the reference shader's three base
 // colors are a violet (~hue 270), a cyan (~hue 195), and a deep blue
