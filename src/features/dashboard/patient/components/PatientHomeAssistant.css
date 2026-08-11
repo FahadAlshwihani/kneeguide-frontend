@@ -1,0 +1,209 @@
+/* The primary Patient Home experience — deliberately restrained per the
+   task's own direction: no glass cards, no glowing borders, no gradient
+   noise. The Orb is the one expressive element; everything else here is
+   quiet typography and a couple of flat, low-contrast surfaces. */
+
+.patient-assistant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--patient-assistant-gap);
+  width: 100%;
+  max-width: var(--patient-assistant-max-width);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.patient-assistant-orb {
+  margin-block: var(--patient-space-2xs);
+}
+
+.patient-assistant-greeting {
+  margin: 0;
+  font: var(--patient-text-page-heading);
+  color: var(--patient-color-heading);
+}
+
+.patient-assistant-message {
+  margin: 0;
+  font: var(--patient-text-body);
+  color: var(--patient-color-muted);
+  max-width: 46ch;
+}
+
+/* ---------- Input ---------- */
+.patient-assistant-form {
+  width: 100%;
+}
+
+.patient-assistant-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-2xs);
+  width: 100%;
+  padding: var(--patient-space-3xs);
+  padding-inline-start: var(--patient-space-md);
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  transition: border-color var(--patient-transition-normal);
+}
+
+.patient-assistant-input-row:focus-within {
+  border-color: var(--patient-color-primary);
+}
+
+.patient-assistant-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+  padding-block: var(--patient-space-2xs);
+}
+
+.patient-assistant-input::placeholder {
+  color: var(--patient-color-faint);
+}
+
+.patient-assistant-send {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--patient-color-primary);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal);
+}
+
+.patient-assistant-send:hover {
+  background: var(--patient-color-primary-strong);
+}
+
+.patient-assistant-send:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.patient-assistant-send svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Mirrors the arrow so it still points toward the trailing edge in RTL —
+   logical, not a manual `[dir=rtl]` override of position (the button
+   itself never moves, only the icon it contains). */
+[dir="rtl"] .patient-assistant-send svg {
+  transform: scaleX(-1);
+}
+
+.patient-assistant-input-note {
+  margin: var(--patient-space-2xs) 0 0;
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+/* ---------- Suggestions ---------- */
+.patient-assistant-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--patient-space-2xs);
+  width: 100%;
+}
+
+.patient-assistant-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  padding: 8px var(--patient-space-sm);
+  border-radius: var(--patient-radius-button);
+  border: 1px solid var(--patient-assistant-suggestion-border);
+  background: var(--patient-assistant-suggestion-bg);
+  color: var(--patient-color-text);
+  font: var(--patient-text-caption);
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal);
+}
+
+.patient-assistant-chip:hover {
+  background: var(--patient-assistant-suggestion-bg-hover);
+}
+
+.patient-assistant-chip:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.patient-assistant-chip svg {
+  width: 14px;
+  height: 14px;
+  color: var(--patient-color-primary);
+  flex-shrink: 0;
+}
+
+/* ---------- Response surface ---------- */
+.patient-assistant-response {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--patient-space-2xs);
+  width: 100%;
+  padding: var(--patient-space-sm);
+  border-radius: var(--patient-radius-card);
+  background: var(--patient-assistant-response-bg);
+  border: 1px solid var(--patient-assistant-response-border);
+  animation: patient-assistant-response-in var(--patient-transition-normal) ease;
+}
+
+.patient-assistant-response p {
+  margin: 0;
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+}
+
+@keyframes patient-assistant-response-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patient-assistant-response {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .patient-assistant-message {
+    max-width: 32ch;
+  }
+
+  .patient-assistant-suggestions {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .patient-assistant-suggestions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .patient-assistant-chip {
+    flex-shrink: 0;
+  }
+}
