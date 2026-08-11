@@ -61,7 +61,35 @@ const PatientExercises = () => {
   const displayName = user?.first_name?.trim() || t("patientDashboard.greeting.fallbackName");
 
   const [viewMode, setViewMode] = useState("session");
-  const [activeLibraryExercise, setActiveLibraryExercise] = useState(null);
+
+  // ---------- Exercise Details modal (UI-only state — never touches the session engine) ----------
+  const [detailsExercise, setDetailsExercise] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  // Builds the view-model ExerciseDetailsModal renders. `planItem` is
+  // only present when opened from today's session (carries the
+  // session-specific prescription/target ROM); Library rows pass no
+  // planItem, so the modal falls back to the catalog's own default reps
+  // string and omits the KneeGuide tip entirely — see that component.
+  const openExerciseDetails = (catalogExercise, planItem = null) => {
+    if (!catalogExercise) return;
+    setDetailsExercise({
+      id: catalogExercise.id,
+      name: t(catalogExercise.nameKey),
+      target: catalogExercise.targetKey ? t(catalogExercise.targetKey) : null,
+      purpose: t(catalogExercise.descriptionKey),
+      image: catalogExercise.image,
+      video: catalogExercise.video,
+      prescriptionLabel: planItem
+        ? t("patientExercises.session.setsReps", { sets: planItem.sets, reps: planItem.repsPerSet })
+        : catalogExercise.reps,
+      instructions: catalogExercise.instructionsKey ? t(catalogExercise.instructionsKey, { returnObjects: true }) : [],
+      cues: catalogExercise.cuesKey ? t(catalogExercise.cuesKey, { returnObjects: true }) : [],
+      mistakes: catalogExercise.mistakesKey ? t(catalogExercise.mistakesKey, { returnObjects: true }) : [],
+      todaysTargetRange: planItem ? { min: planItem.targetRomMin, max: planItem.targetRomMax } : null,
+    });
+    setDetailsOpen(true);
+  };
 
   // ---------- Rehab week / today's plan (stable for the page's lifetime) ----------
   const rehabWeek = useMemo(() => getRehabWeek(), []);
@@ -172,9 +200,6 @@ const PatientExercises = () => {
     setReportOpen(true);
   };
 
-  // ---------- Exercise Library (secondary destination — unchanged behavior) ----------
-  const libraryExercises = ALL_EXERCISES.map((exercise) => resolveExercise(t, exercise));
-
   return (
     <div className="pe-page">
       <div className="pe-inner">
@@ -240,52 +265,44 @@ const PatientExercises = () => {
                 onPainValueChange={setPainCheckValue}
                 onSubmitPain={handleSubmitPainAfter}
                 onSkipPain={handleSkipPainCheck}
+                onViewDetails={(planItem) => openExerciseDetails(planItem.catalog, planItem)}
               />
             )}
           </div>
         ) : (
-          <div className="pe-list">
-            {libraryExercises.map((ex, idx) => (
-              <ExerciseCard
-                key={idx}
-                name={ex.name}
-                reps={ex.reps}
-                lastDoneLabel={t("patientExercises.labels.lastDone")}
-                lastDone={ex.lastDone}
-                progress={ex.progress}
-                image={ex.image}
-                startLabel={t("patientExercises.buttons.start")}
-                onStart={() => setActiveLibraryExercise(ex)}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Exercise Library video modal — unchanged from before this round. */}
-        {activeLibraryExercise && (
-          <div className="pe-modal-backdrop" onClick={() => setActiveLibraryExercise(null)}>
-            <div className="pe-modal" onClick={(e) => e.stopPropagation()}>
-              <h2 className="pe-modal-title">{activeLibraryExercise.name}</h2>
-
-              <div className="pe-video-wrapper">
-                <iframe
-                  src={activeLibraryExercise.video.replace("watch?v=", "embed/")}
-                  title="Exercise Video"
-                  allowFullScreen
-                />
-              </div>
-
-              <p className="pe-modal-text">{activeLibraryExercise.description}</p>
-
-              <button className="pe-close-btn" onClick={() => setActiveLibraryExercise(null)}>
-                {t("patientExercises.buttons.close")}
-              </button>
-            </div>
+          // Exercise Library — a compact REFERENCE list (Section 14/15/31),
+          // not the old image-card grid. No "Start Exercise" control here
+          // (Section 16) — the prescribed session is the only thing that
+          // drives execution; this list only explains exercises via the
+          // same ExerciseDetailsModal a session row opens.
+          <div className="exercise-library">
+            <p className="exercise-library-intro">{t("patientExercises.session.libraryIntro")}</p>
+            <ul className="exercise-library-list">
+              {ALL_EXERCISES.map((exercise) => {
+                const name = t(exercise.nameKey);
+                return (
+                  <li key={exercise.id} className="exercise-library-row">
+                    <div className="exercise-library-row-main">
+                      <span className="exercise-library-row-name" dir="auto">
+                        {name}
+                      </span>
+                      {exercise.targetKey && (
+                        <span className="exercise-library-row-target" dir="auto">
+                          {t(exercise.targetKey)}
+                        </span>
+                      )}
+                    </div>
+                    <ExerciseInfoButton exerciseName={name} onClick={() => openExerciseDetails(exercise)} />
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         )}
       </div>
 
       <SessionReportModal isOpen={reportOpen} onClose={() => setReportOpen(false)} report={reportData} />
+      <ExerciseDetailsModal isOpen={detailsOpen} onClose={() => setDetailsOpen(false)} exercise={detailsExercise} />
     </div>
   );
 };
