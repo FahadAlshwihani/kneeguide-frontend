@@ -128,7 +128,35 @@
   --patient-transition-nav: 160ms ease;
   --patient-spring: 0.1 150 12; /* mass stiffness damping — see PatientDock.jsx */
 
+  /* ---------- Assistant (Patient Home) ---------- */
+  /* Semantic tokens for the AI-first Home experience — see
+     PatientHomeAssistant.css. Kept here rather than scattered as magic
+     values in that stylesheet, same as every other Patient primitive. */
+  --patient-assistant-max-width: 640px;
+  --patient-assistant-gap: var(--patient-space-md);
+  --patient-assistant-suggestion-bg: rgba(255, 255, 255, 0.04);
+  --patient-assistant-suggestion-bg-hover: rgba(255, 255, 255, 0.08);
+  --patient-assistant-suggestion-border: var(--patient-border);
+  --patient-assistant-response-bg: var(--patient-surface-elevated);
+  --patient-assistant-response-border: var(--patient-color-primary-soft);
+
   color: var(--patient-color-text);
   background: var(--patient-surface-page);
   font-family: var(--patient-font);
+}
+
+/* Same technique as index.css's `.public-root .visually-hidden` — that
+   one is scoped away from the Patient Dashboard (which never carries
+   `.public-root`'s own reset), so this is its Patient-scoped equivalent
+   rather than a duplicate visual system. */
+.patient-shell .patient-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

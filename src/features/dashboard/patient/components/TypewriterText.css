@@ -2,8 +2,9 @@
   /* Reserves room for a realistic 1-2 line assistant message so the
      surrounding layout doesn't shift as more of it is revealed — the
      message strings this renders are short, known, translated sentences,
-     not arbitrary long-form content. */
-  min-height: calc(var(--patient-text-body-line, 1.5em) * 2);
+     not arbitrary long-form content. 3em ~= two lines at this component's
+     expected line-height. */
+  min-height: 3em;
 }
 
 .typewriter-cursor {
