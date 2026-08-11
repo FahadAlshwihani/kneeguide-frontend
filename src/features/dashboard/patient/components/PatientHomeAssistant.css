@@ -59,7 +59,10 @@
 }
 
 /* ---------- Conversation: compact identity header ---------- */
-.patient-assistant-identity {
+/* Sits OUTSIDE .patient-chat-history entirely (see the JSX) — structurally
+   guaranteed to never scroll with messages, not just visually pinned. */
+.patient-assistant-header {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -72,13 +75,42 @@
   color: var(--patient-color-heading);
 }
 
-/* ---------- Conversation history ---------- */
+/* ---------- Conversation history (the ONE vertical scroller) ---------- */
 .patient-chat-history {
   display: flex;
   flex-direction: column;
   gap: var(--patient-space-md);
   width: 100%;
   text-align: start;
+}
+
+.patient-assistant--conversation .patient-chat-history {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Own top/bottom padding instead of relying on the header/footer's
+     margins — keeps the first/last message from touching the header or
+     footer edge-to-edge while scrolled to either extreme. */
+  padding-block: var(--patient-space-2xs);
+  /* Subtle, dark-theme-appropriate scrollbar — visible/discoverable
+     (unlike the suggestion rail's intentionally hidden one below), just
+     restrained: a thin muted thumb, no bright/oversized native chrome. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--patient-border) transparent;
+}
+
+.patient-assistant--conversation .patient-chat-history::-webkit-scrollbar {
+  width: 6px;
+}
+
+.patient-assistant--conversation .patient-chat-history::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.patient-assistant--conversation .patient-chat-history::-webkit-scrollbar-thumb {
+  background: var(--patient-border);
+  border-radius: var(--patient-radius-button);
 }
 
 .patient-chat-turn {
@@ -103,6 +135,12 @@
   background: var(--patient-surface-elevated);
   color: var(--patient-color-heading);
   font: var(--patient-text-body);
+  /* Normal chat text always wraps — long URLs/identifiers break onto a
+     new line rather than forcing horizontal scroll or overflowing the
+     bubble. Only the suggestion rail (below) is ever horizontally
+     scrollable; ordinary message content never is. */
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .patient-chat-turn--assistant {
@@ -120,6 +158,8 @@
   margin: 0;
   font: var(--patient-text-body);
   color: var(--patient-color-text);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .patient-chat-widget {
