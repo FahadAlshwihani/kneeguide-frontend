@@ -1,4 +1,63 @@
 {
+  "rehabDomain": {
+    "diagnosis": {
+      "aclPartialTear": "ACL Partial Tear",
+      "meniscusTearPostOp": "Meniscus Tear (Post-op)",
+      "patellarTendinopathy": "Patellar Tendinopathy",
+      "aclReconstruction": "ACL Reconstruction"
+    },
+    "goal": {
+      "romStrength": "Improve ROM & strength",
+      "restoreMobility": "Restore mobility",
+      "returnToSport": "Return to sport"
+    },
+    "phase": {
+      "phase1": "Phase 1",
+      "phase2": "Phase 2",
+      "phase3": "Phase 3"
+    },
+    "noteTypes": {
+      "sessionProgress": "Session progress",
+      "initialAssessment": "Initial assessment",
+      "general": "Clinical note"
+    },
+    "notes": {
+      "ahmedSessionProgress": "Latest session shows a pain spike and a small ROM dip versus the previous session — worth a closer look before progressing the program.",
+      "ahmedInitialAssessment": "ACL partial tear confirmed. Starting Phase 2 rehabilitation program: Quad Sets, Leg Raises, Heel Slides."
+    },
+    "fileTypes": {
+      "imaging": "Imaging",
+      "assessment": "Assessment report"
+    },
+    "reports": {
+      "seedNotes": {
+        "ahmedWeek5": "Steady improvement across the week. Continue current program.",
+        "saraWeek1": "Adherence below target — discussed schedule barriers with patient."
+      }
+    },
+    "attentionLevel": {
+      "needsAttention": "Needs attention",
+      "reviewRecommended": "Review recommended",
+      "stable": "Stable"
+    },
+    "attentionReason": {
+      "painIncreased": "Pain increased",
+      "romRegression": "ROM regressed",
+      "missedSessions": "Sessions missed",
+      "lowAdherence": "Adherence below target",
+      "reportAwaitingReview": "Report awaiting review",
+      "appointmentPending": "Appointment request pending"
+    },
+    "trend": {
+      "improving": "Improving",
+      "stable": "Stable",
+      "requiresReview": "Requires review"
+    },
+    "exerciseMode": {
+      "reps": "Reps",
+      "duration": "Duration"
+    }
+  },
   "login": {
     "title": "Welcome back",
     "subtitle": "Sign in to continue to KneeGuide.",

@@ -1,4 +1,63 @@
 {
+  "rehabDomain": {
+    "diagnosis": {
+      "aclPartialTear": "قطع جزئي بالرباط الصليبي الأمامي",
+      "meniscusTearPostOp": "تمزق الغضروف الهلالي (بعد الجراحة)",
+      "patellarTendinopathy": "اعتلال وتر الرضفة",
+      "aclReconstruction": "إعادة بناء الرباط الصليبي الأمامي"
+    },
+    "goal": {
+      "romStrength": "تحسين مدى الحركة والقوة",
+      "restoreMobility": "استعادة الحركة",
+      "returnToSport": "العودة لممارسة الرياضة"
+    },
+    "phase": {
+      "phase1": "المرحلة 1",
+      "phase2": "المرحلة 2",
+      "phase3": "المرحلة 3"
+    },
+    "noteTypes": {
+      "sessionProgress": "تقدم الجلسة",
+      "initialAssessment": "التقييم الأولي",
+      "general": "ملاحظة سريرية"
+    },
+    "notes": {
+      "ahmedSessionProgress": "أظهرت آخر جلسة ارتفاعًا في الألم وانخفاضًا طفيفًا في مدى الحركة مقارنة بالجلسة السابقة — يستحق المراجعة قبل تطوير البرنامج.",
+      "ahmedInitialAssessment": "تم تأكيد قطع جزئي بالرباط الصليبي الأمامي. بدء برنامج تأهيل المرحلة 2: تمارين الفخذ الرباعي، رفع الساق، وانزلاق الكعب."
+    },
+    "fileTypes": {
+      "imaging": "تصوير طبي",
+      "assessment": "تقرير تقييم"
+    },
+    "reports": {
+      "seedNotes": {
+        "ahmedWeek5": "تحسّن ثابت خلال الأسبوع. الاستمرار في البرنامج الحالي.",
+        "saraWeek1": "الالتزام أقل من المستهدف — تمت مناقشة معوقات الجدول مع المريضة."
+      }
+    },
+    "attentionLevel": {
+      "needsAttention": "يحتاج متابعة",
+      "reviewRecommended": "يوصى بالمراجعة",
+      "stable": "مستقر"
+    },
+    "attentionReason": {
+      "painIncreased": "ارتفاع الألم",
+      "romRegression": "تراجع مدى الحركة",
+      "missedSessions": "جلسات فائتة",
+      "lowAdherence": "الالتزام أقل من المستهدف",
+      "reportAwaitingReview": "تقرير بانتظار المراجعة",
+      "appointmentPending": "طلب موعد قيد الانتظار"
+    },
+    "trend": {
+      "improving": "في تحسّن",
+      "stable": "مستقر",
+      "requiresReview": "يتطلب مراجعة"
+    },
+    "exerciseMode": {
+      "reps": "تكرارات",
+      "duration": "مدة"
+    }
+  },
   "login": {
     "title": "مرحبًا بعودتك",
     "subtitle": "سجّل دخولك للمتابعة في KneeGuide.",

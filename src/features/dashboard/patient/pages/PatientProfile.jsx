@@ -7,6 +7,7 @@ import { useKneeGuideDevice } from "../device/KneeGuideDeviceContext";
 import { getNextConfirmedAppointment } from "../appointments/patientAppointmentService";
 import { DEFAULT_CLINICIAN } from "../data/patientClinicianData";
 import { getAdherence } from "../data/patientRehabPlanData";
+import { getPatientById, PATIENT_PROFILE_PATIENT_ID } from "../../../../domain/rehab/demoData/patients";
 import { getOverviewInsight, getMedicalInsight, getRehabInsight, getDevicesInsight } from "../profile/patientProfileInsights";
 import ProfileHero from "../components/profile/ProfileHero";
 import ProfileOverviewTab from "../components/profile/ProfileOverviewTab";
@@ -60,19 +61,28 @@ const PatientProfile = () => {
   const { scanning, devices, connectingDeviceId, connectedDevice, scanForDevices, connectToDevice, disconnectDevice } =
     useKneeGuideDevice();
 
+  // Identity/diagnosis/phase/contact now come from the shared rehab
+  // domain's canonical patient record (Section 35 of the Doctor Patients
+  // module brief: "Doctor -> Ahmed Ali must represent THE SAME Ahmed") —
+  // this is what makes a Doctor Workspace edit to Ahmed's diagnosis/phase
+  // (were that ever added) show up here too, instead of two independent
+  // copies. `height`/`weight`/`clinicalNoteKey` stay local: physical
+  // stats and this page's own cosmetic summary blurb were never part of
+  // the Doctor-side facts and have no cross-role consistency requirement.
+  const canonicalPatient = getPatientById(PATIENT_PROFILE_PATIENT_ID);
   const user = {
-    first_name: "Ahmed",
-    last_name: "Ali",
-    age: 32,
+    first_name: canonicalPatient.firstName,
+    last_name: canonicalPatient.lastName,
+    age: canonicalPatient.age,
     height: 178,
     weight: 82,
-    goalKey: "patientProfile.mock.goal",
-    diagnosisKey: "patientProfile.mock.diagnosis",
-    surgeryDate: "2025-09-10",
-    rehabPhaseKey: "phase2",
+    goalKey: canonicalPatient.goalKey,
+    diagnosisKey: canonicalPatient.diagnosisKey,
+    surgeryDate: canonicalPatient.programStartDate,
+    rehabPhaseKey: canonicalPatient.phaseKey,
     clinicalNoteKey: "patientProfile.mock.clinicalNote",
-    email: "ahmed@example.com",
-    phone: "0555555555",
+    email: canonicalPatient.email,
+    phone: canonicalPatient.phone,
   };
 
   const avatarLetters = `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();

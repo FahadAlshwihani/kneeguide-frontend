@@ -17,6 +17,8 @@ import { loadSessionState, saveSessionState, clearSessionState } from "../sessio
 import { getSessionAverageQuality, getAverageRom } from "../session/patientSessionMetrics";
 import { getSessionInsight } from "../session/patientSessionInsights";
 import { getLatestPainLog, savePainLog, DEFAULT_PAIN_VALUE } from "../utils/patientPainStorage";
+import { rehabRepository } from "../../../../domain/rehab/useRehabDomain";
+import { PATIENT_PROFILE_PATIENT_ID } from "../../../../domain/rehab/demoData/patients";
 import RehabDayRail from "../components/exercises/RehabDayRail";
 import SessionHero from "../components/exercises/SessionHero";
 import SessionExerciseSequence from "../components/exercises/SessionExerciseSequence";
@@ -114,6 +116,36 @@ const PatientExercises = () => {
   useEffect(() => {
     saveSessionState(sessionState);
   }, [sessionState]);
+
+  // Once the guided session actually finishes, push it into the shared
+  // rehab domain so the Doctor's Sessions/Overview/Reports/Assistant all
+  // see it immediately (Section 18/56 Scenario B of the Doctor Patients
+  // module brief: "Patient completes a session -> Doctor sees it"). A
+  // stable id keyed on `todayId` (not a fresh random id) makes this
+  // idempotent — a page reload/remount with an already-completed today
+  // session must NOT create a second canonical record.
+  useEffect(() => {
+    if (sessionState.status !== SESSION_STATUS.COMPLETED || !todayId) return;
+    const stableId = `live-${PATIENT_PROFILE_PATIENT_ID}-${todayId}`;
+    if (rehabRepository.getSessionById(stableId)) return;
+
+    rehabRepository.completeSession(PATIENT_PROFILE_PATIENT_ID, {
+      id: stableId,
+      date: sessionState.startedAt || new Date().toISOString(),
+      startedAt: sessionState.startedAt,
+      completedAt: sessionState.completedAt,
+      painBefore: sessionState.painBefore,
+      painAfter: sessionState.painAfter,
+      exercises: sessionState.exercises.map((exercise) => ({
+        id: exercise.id,
+        completedSets: exercise.completedSets,
+        totalSets: exercise.totalSets,
+        rom: getAverageRom(exercise.setMetrics),
+        qualityKey: getSessionAverageQuality([exercise]),
+        durationMs: getExerciseElapsedMs(exercise, Date.now()),
+      })),
+    });
+  }, [sessionState.status, sessionState.completedAt, todayId]);
 
   // ONE lightweight visible-clock mechanism for the whole page (Section
   // 41) — a single interval, running only while something is actually
