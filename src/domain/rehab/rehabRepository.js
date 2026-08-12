@@ -5,6 +5,7 @@ import { buildInitialAppointments } from "./demoData/appointments";
 import { buildInitialReports } from "./demoData/reports";
 import { buildInitialClinicalNotes } from "./demoData/clinicalNotes";
 import { buildInitialMedicalFiles } from "./demoData/medicalFiles";
+import { buildInitialDoctorProfile } from "./demoData/doctorProfile";
 import { APPOINTMENT_STATUS, REPORT_STATUS, PRESCRIPTION_STATUS, NOTE_AUTHOR_ROLE, NOTE_VISIBILITY, ATTENTION_LEVEL } from "./rehabEnums";
 import {
   generateReportMetrics,
@@ -99,10 +100,17 @@ const buildInitialState = (referenceDate = new Date()) => {
     });
   });
 
-  return { prescriptions, sessions, appointments, reports, clinicalNotes, medicalFiles, painLogs };
+  return { prescriptions, sessions, appointments, reports, clinicalNotes, medicalFiles, painLogs, doctorProfile: buildInitialDoctorProfile() };
 };
 
 let state = loadRehabState() || buildInitialState();
+// Backfill for state persisted before `doctorProfile` existed (Section 1 of
+// the Doctor Profile brief) — a structurally valid OLDER envelope loads
+// successfully but simply predates this field; never let a real doctor
+// mutation crash because of a missing default instead of failing loudly.
+if (!state.doctorProfile) {
+  state = { ...state, doctorProfile: buildInitialDoctorProfile() };
+}
 if (!loadRehabState()) {
   clearLegacyKeys();
   saveRehabState(state);
@@ -130,6 +138,9 @@ export const getState = () => state;
 
 export const getPatients = () => PATIENTS;
 export const getPatient = (patientId) => PATIENTS.find((patient) => patient.id === patientId) || null;
+
+/** THE canonical, editable doctor identity/availability (Doctor Profile brief) — one record, every consumer. */
+export const getDoctorProfile = () => state.doctorProfile;
 
 export const getPrescriptions = (patientId, { activeOnly = true } = {}) =>
   state.prescriptions.filter((rx) => rx.patientId === patientId && (!activeOnly || rx.status === PRESCRIPTION_STATUS.ACTIVE));
@@ -530,6 +541,20 @@ export const addClinicalNote = (patientId, { authorId, authorRole = NOTE_AUTHOR_
   };
   setState({ clinicalNotes: [...state.clinicalNotes, note] });
   return note;
+};
+
+/**
+ * The ONE mutation Doctor Profile (and nothing else) calls to persist
+ * identity/contact/availability/working-hours edits — a plain merge, no
+ * validation here (the form validates before ever calling this, same
+ * division of labor as every other canonical mutation in this file).
+ * `id` is never accepted in `patch` — the anchor to the existing
+ * `clinicianId` every appointment already stores must never drift.
+ */
+export const updateDoctorProfile = (patch) => {
+  const { id, ...safePatch } = patch;
+  setState({ doctorProfile: { ...state.doctorProfile, ...safePatch } });
+  return state.doctorProfile;
 };
 
 /** Dev-only escape hatch — never exposed as a patient/doctor-facing control. */

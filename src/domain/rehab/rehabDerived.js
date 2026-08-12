@@ -1,4 +1,4 @@
-import { ATTENTION_LEVEL, ATTENTION_REASON, APPOINTMENT_STATUS, REPORT_STATUS, TREND_DIRECTION, REPORT_TREND } from "./rehabEnums";
+import { ATTENTION_LEVEL, ATTENTION_REASON, APPOINTMENT_STATUS, REPORT_STATUS, TREND_DIRECTION, REPORT_TREND, WEEKDAY_ORDER } from "./rehabEnums";
 
 /**
  * Pure derivation functions over plain domain data — no React, no
@@ -203,6 +203,34 @@ export const deriveReportTrend = (report) => {
 
   if (hasAnyTrend && noneWorsened && atLeastOneImproved) return REPORT_TREND.IMPROVING;
   return REPORT_TREND.STABLE;
+};
+
+/**
+ * Which of a set of (already-CONFIRMED, future) appointments would fall
+ * OUTSIDE a candidate `workingHours` schedule (Doctor Profile brief,
+ * Section 17) — a real, derived check reusing each appointment's own
+ * `startAt`, never a guess. `workingHours` is the
+ * `{ sunday: {enabled,start,end}, ... }` shape `doctorProfile.js` seeds
+ * and Profile's working-hours editor produces. Returns the SUBSET of
+ * `appointments` that would no longer fit, so the caller can show
+ * "N existing appointments fall outside these updated hours" honestly —
+ * never auto-cancels anything itself (Section 17: doctor decides).
+ */
+export const findAppointmentsOutsideWorkingHours = (workingHours, appointments) => {
+  const toMinutes = (hhmm) => {
+    const [h, m] = hhmm.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  return appointments.filter((appointment) => {
+    const start = new Date(appointment.startAt);
+    const dayKey = WEEKDAY_ORDER[start.getDay()];
+    const day = workingHours[dayKey];
+    if (!day || !day.enabled) return true;
+
+    const startMinutes = start.getHours() * 60 + start.getMinutes();
+    return startMinutes < toMinutes(day.start) || startMinutes >= toMinutes(day.end);
+  });
 };
 
 /**

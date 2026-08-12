@@ -23,6 +23,23 @@ export const APPOINTMENT_STATUS = {
   CANCELLED: "CANCELLED",
 };
 
+/**
+ * The doctor's own broad availability override (Doctor Profile brief,
+ * Section 13/18) — reuses the exact 3-value taxonomy the pre-refactor
+ * Profile mock already established (never invented fresh here). AVAILABLE
+ * means working hours apply normally; BUSY/AWAY both mean "not currently
+ * accepting new bookings" for the Appointments composer's warning, while
+ * never erasing the underlying working-hours schedule (Section 18: the
+ * override must stay reversible).
+ */
+export const DOCTOR_AVAILABILITY_STATUS = {
+  AVAILABLE: "available",
+  BUSY: "busy",
+  AWAY: "away",
+};
+
+export const WEEKDAY_ORDER = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+
 export const APPOINTMENT_SOURCE = {
   PATIENT: "patient",
   DOCTOR: "doctor",
