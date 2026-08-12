@@ -197,12 +197,14 @@ export const getPatientBundle = (patientId) => {
   const latestRom = deriveLatestRom(sessions);
   const romTrend = deriveRomTrend(sessions);
   const trendDirection = deriveTrendDirection(priority);
+  const latestSession = sessions[sessions.length - 1] || null;
 
   return {
     patient,
     prescriptions,
     activePrescriptions,
     sessions,
+    latestSession,
     appointments,
     reports,
     clinicalNotes,
