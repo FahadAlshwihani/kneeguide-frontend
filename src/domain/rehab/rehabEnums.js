@@ -29,6 +29,24 @@ export const APPOINTMENT_SOURCE = {
   ASSISTANT: "assistant",
 };
 
+/**
+ * Small, controlled decline-reason taxonomy (Section 11 of the Doctor
+ * Appointments brief — a decline must carry a REAL reason, never a blind
+ * reject). Stored as `clinicianResponse.declineReasonCode` on the
+ * canonical appointment; `clinicianResponse.messageKey` is set from this
+ * same code (`patientAppointments.declineReasons.<code>`) so the existing
+ * Patient-side AppointmentDetailsModal — which already renders
+ * `clinicianResponse.messageKey` generically — shows a real reason with no
+ * Patient-side code change.
+ */
+export const DECLINE_REASON = {
+  SCHEDULE_CONFLICT: "schedule_conflict",
+  NO_CLINICAL_NEED_YET: "no_clinical_need_yet",
+  REQUESTED_TIME_UNAVAILABLE: "requested_time_unavailable",
+  CONTINUE_CURRENT_PLAN: "continue_current_plan",
+  OTHER: "other",
+};
+
 // Matches the pre-refactor Patient-side data/patientReportsData.js
 // REVIEW_STATUS values exactly (same reasoning as APPOINTMENT_STATUS
 // above). A freshly generated, not-yet-opened report is represented as

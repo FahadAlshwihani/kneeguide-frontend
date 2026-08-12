@@ -250,6 +250,34 @@
   font-size: 0.75rem;
 }
 
+fieldset.dw-field {
+  border: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+fieldset.dw-field legend {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  font-weight: 600;
+  padding: 0;
+  margin-block-end: 6px;
+}
+
+.dac-radio-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.dac-radio-row input[type="radio"] {
+  accent-color: var(--color-primary);
+}
+
 /* ---------- Shared card/section/empty-state helpers ---------- */
 .dw-section {
   background: var(--color-surface);

@@ -21,7 +21,7 @@ import SessionsTab from "../components/workspace/SessionsTab";
 import ReportsTab from "../components/workspace/ReportsTab";
 import AppointmentsTab from "../components/workspace/AppointmentsTab";
 import ClinicalRecordTab from "../components/workspace/ClinicalRecordTab";
-import ScheduleAppointmentModal from "../components/workspace/ScheduleAppointmentModal";
+import DoctorAppointmentComposer from "../components/workspace/DoctorAppointmentComposer";
 import "../styles/DoctorPatientWorkspace.css";
 
 const TABS = ["overview", "rehabilitation", "sessions", "reports", "appointments", "clinicalRecord"];
@@ -185,7 +185,7 @@ const DoctorPatientWorkspace = () => {
         </div>
       </div>
 
-      <ScheduleAppointmentModal isOpen={scheduleOpen} onClose={() => setScheduleOpen(false)} patient={patient} />
+      <DoctorAppointmentComposer isOpen={scheduleOpen} onClose={() => setScheduleOpen(false)} patientId={patient.id} />
     </DoctorLayout>
   );
 };

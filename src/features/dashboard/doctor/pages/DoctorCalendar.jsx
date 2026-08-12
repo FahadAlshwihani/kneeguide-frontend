@@ -1,652 +1,525 @@
-// src/pages/DoctorCalendar.jsx
-import React, { useMemo, useState } from "react";
-import DoctorLayout from "../components/DoctorLayout";
-import "../styles/DoctorCalendar.css";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { LuChevronLeft, LuChevronRight, LuPlus, LuCalendarClock } from "react-icons/lu";
+import DoctorLayout from "../components/DoctorLayout";
+import DoctorModal from "../components/workspace/DoctorModal";
+import DoctorAppointmentComposer from "../components/workspace/DoctorAppointmentComposer";
+import ProposeAlternativeModal from "../components/workspace/ProposeAlternativeModal";
+import DeclineAppointmentModal from "../components/workspace/DeclineAppointmentModal";
+import { useRehabAppointments, rehabRepository } from "../../../../domain/rehab/useRehabDomain";
+import { APPOINTMENT_STATUS, APPOINTMENT_SOURCE } from "../../../../domain/rehab/rehabEnums";
+import { getPendingAppointmentRequests, getTodayAppointments } from "../assistant/doctorClinicalInsights";
+import { ROUTES } from "../../../../utils/routes";
+import "../styles/DoctorCalendar.css";
 
-const initialEvents = [
-  {
-    id: "EV-1001",
-    title: "ACL follow-up",
-    patientName: "Ahmed Ali",
-    type: "followUp",
-    date: "2025-11-18",
-    start: "09:30",
-    end: "10:00",
-    status: "confirmed",
-    location: "Room 4",
-    note: "Check quad strength and gait.",
-  },
-  {
-    id: "EV-1002",
-    title: "Initial Assessment",
-    patientName: "Sara Almutairi",
-    type: "initial",
-    date: "2025-11-18",
-    start: "11:00",
-    end: "11:45",
-    status: "pending",
-    location: "Room 2",
-    note: "Suspected meniscus involvement.",
-  },
-  {
-    id: "EV-1003",
-    title: "Post-op review",
-    patientName: "Mohammed Aziz",
-    type: "postOp",
-    date: "2025-11-19",
-    start: "14:00",
-    end: "14:30",
-    status: "confirmed",
-    location: "Room 3",
-    note: "Day 5 post-op, adjust pain meds.",
-  },
-  {
-    id: "EV-1004",
-    title: "Rehab session",
-    patientName: "Ruba Salem",
-    type: "rehab",
-    date: "2025-11-20",
-    start: "16:00",
-    end: "16:45",
-    status: "cancelled",
-    location: "Gym A",
-    note: "Cancelled by patient.",
-  },
-  {
-    id: "EV-1005",
-    title: "Progress check",
-    patientName: "Fahad Alotaibi",
-    type: "check",
-    date: "2025-11-22",
-    start: "10:30",
-    end: "11:00",
-    status: "confirmed",
-    location: "Room 1",
-    note: "ROM improving, update program.",
-  },
-];
+/**
+ * Doctor Appointments (Global Calendar) — rebuilt on the SAME canonical
+ * rehab domain every other Doctor/Patient/Assistant surface already reads
+ * (src/domain/rehab/). There is no independent event array here: every
+ * appointment rendered comes straight from `useRehabAppointments()`
+ * (a reactive wrapper over `rehabRepository.getAllAppointments()`), the
+ * exact same records the Patient's own Appointments page and this
+ * patient's Workspace "Appointments" tab render. Creating, accepting,
+ * declining, proposing, or cancelling here calls the exact same
+ * `rehabRepository` mutations those surfaces use — there is only one
+ * appointment workflow in the product, viewed from three places.
+ */
 
-function formatDateKey(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+const STATUS_TONE = {
+  [APPOINTMENT_STATUS.REQUESTED]: "pending",
+  [APPOINTMENT_STATUS.CONFIRMED]: "confirmed",
+  [APPOINTMENT_STATUS.ALTERNATIVE_PROPOSED]: "proposed",
+  [APPOINTMENT_STATUS.DECLINED]: "declined",
+  [APPOINTMENT_STATUS.CANCELLED]: "cancelled",
+  [APPOINTMENT_STATUS.COMPLETED]: "completed",
+};
+
+const formatDateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const startOfDay = (date) => {
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+  return next;
+};
+
+const buildMonthGrid = (currentDate) => {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstOfMonth = new Date(year, month, 1);
+  const startOffset = firstOfMonth.getDay();
+  const gridStart = new Date(year, month, 1 - startOffset);
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const cellDate = new Date(gridStart);
+    cellDate.setDate(gridStart.getDate() + index);
+    return cellDate;
+  });
+};
 
 const DoctorCalendar = () => {
   const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [currentDate, setCurrentDate] = useState(new Date("2025-11-18"));
+  const [currentDate, setCurrentDate] = useState(() => new Date());
   const [viewMode, setViewMode] = useState("month");
-  const [selectedDate, setSelectedDate] = useState("2025-11-18");
-  const [events, setEvents] = useState(initialEvents);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(() => formatDateKey(new Date()));
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
 
-  const [newEvent, setNewEvent] = useState({
-    title: "",
-    patientName: "",
-    date: "2025-11-18",
-    start: "10:00",
-    end: "10:30",
-    type: "followUp",
-    status: "confirmed",
-    location: "",
-    note: "",
-  });
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerPatientId, setComposerPatientId] = useState(null);
+  const [proposing, setProposing] = useState(null);
+  const [declining, setDeclining] = useState(null);
 
-  const daysOfWeek = [
-    t("calendar.weekdays.sun"),
-    t("calendar.weekdays.mon"),
-    t("calendar.weekdays.tue"),
-    t("calendar.weekdays.wed"),
-    t("calendar.weekdays.thu"),
-    t("calendar.weekdays.fri"),
-    t("calendar.weekdays.sat")
-  ];
+  const allAppointments = useRehabAppointments();
 
-  const monthLabel = currentDate.toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", {
-    month: "long",
-    year: "numeric",
-  });
+  const appointments = useMemo(
+    () => allAppointments.map((appointment) => ({ ...appointment, patient: rehabRepository.getPatient(appointment.patientId) })),
+    [allAppointments]
+  );
 
-  // Build 42-day grid (6 weeks)
-  const monthGrid = useMemo(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstOfMonth = new Date(year, month, 1);
-    const firstDayOfWeek = firstOfMonth.getDay();
-    const gridStart = new Date(year, month, 1 - firstDayOfWeek);
-    const cells = [];
+  // Deep links from the Doctor Assistant (Section 17/18) — "Schedule an
+  // appointment" opens THIS SAME composer prefilled with the chosen
+  // canonical patient; a pending-request reply opens THIS SAME details
+  // view for a specific appointment. Consumed once, then stripped from the
+  // URL so a refresh doesn't reopen them.
+  useEffect(() => {
+    const composeFor = searchParams.get("composeFor");
+    const openAppointment = searchParams.get("openAppointment");
+    if (!composeFor && !openAppointment) return;
 
-    for (let i = 0; i < 42; i++) {
-      const d = new Date(gridStart);
-      d.setDate(gridStart.getDate() + i);
-
-      const key = formatDateKey(d);
-      const isCurrentMonth = d.getMonth() === month;
-      const isToday = key === formatDateKey(new Date());
-
-      const dayEvents = events.filter((ev) => ev.date === key);
-
-      cells.push({
-        dateObj: d,
-        key,
-        isCurrentMonth,
-        isToday,
-        events: dayEvents,
-      });
+    if (composeFor && rehabRepository.getPatient(composeFor)) {
+      setComposerPatientId(composeFor);
+      setComposerOpen(true);
     }
+    if (openAppointment) {
+      const target = rehabRepository.getAppointmentById(openAppointment);
+      if (target) {
+        setCurrentDate(new Date(target.startAt));
+        setSelectedDate(formatDateKey(new Date(target.startAt)));
+        setSelectedAppointmentId(openAppointment);
+      }
+    }
+    const next = new URLSearchParams(searchParams);
+    next.delete("composeFor");
+    next.delete("openAppointment");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    return cells;
-  }, [currentDate, events]);
+  const monthGrid = useMemo(() => buildMonthGrid(currentDate), [currentDate]);
+  const weekdayLabels = useMemo(() => t("doctorAppointments.weekdaysShort", { returnObjects: true }), [t, i18n.language]);
 
-  const eventsForSelectedDate = events
-    .filter((ev) => ev.date === selectedDate)
-    .sort((a, b) => (a.start > b.start ? 1 : -1));
+  const monthLabel = currentDate.toLocaleDateString(i18n.language, { month: "long", year: "numeric" });
+  const todayKey = formatDateKey(new Date());
+
+  const eventsByDateKey = useMemo(() => {
+    const map = new Map();
+    appointments.forEach((appointment) => {
+      const key = formatDateKey(new Date(appointment.startAt));
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(appointment);
+    });
+    map.forEach((list) => list.sort((a, b) => new Date(a.startAt) - new Date(b.startAt)));
+    return map;
+  }, [appointments]);
+
+  const selectedDayAppointments = eventsByDateKey.get(selectedDate) || [];
+  const selectedAppointment = appointments.find((appointment) => appointment.id === selectedAppointmentId) || null;
+
+  const pendingRequests = useMemo(() => getPendingAppointmentRequests(), [appointments]);
+  const todayAppointments = useMemo(() => getTodayAppointments(), [appointments]);
+
+  const monthAppointments = useMemo(
+    () =>
+      appointments.filter((appointment) => {
+        const d = new Date(appointment.startAt);
+        return d.getFullYear() === currentDate.getFullYear() && d.getMonth() === currentDate.getMonth();
+      }),
+    [appointments, currentDate]
+  );
+
+  const monthSummary = useMemo(() => {
+    const counts = { requested: 0, confirmed: 0, alternativeProposed: 0, declined: 0, cancelled: 0, completed: 0 };
+    monthAppointments.forEach((appointment) => {
+      counts[STATUS_TONE[appointment.status] === "pending" ? "requested" : STATUS_TONE[appointment.status]] += 1;
+    });
+    return counts;
+  }, [monthAppointments]);
 
   const agendaGroups = useMemo(() => {
-    const map = {};
-    events.forEach((ev) => {
-      if (!map[ev.date]) map[ev.date] = [];
-      map[ev.date].push(ev);
+    const now = startOfDay(new Date());
+    const tomorrowKey = formatDateKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
+    const upcoming = appointments
+      .filter((appointment) => new Date(appointment.startAt) >= now)
+      .sort((a, b) => new Date(a.startAt) - new Date(b.startAt));
+
+    const groups = { today: [], tomorrow: [], upcoming: [] };
+    upcoming.forEach((appointment) => {
+      const key = formatDateKey(new Date(appointment.startAt));
+      if (key === todayKey) groups.today.push(appointment);
+      else if (key === tomorrowKey) groups.tomorrow.push(appointment);
+      else groups.upcoming.push(appointment);
     });
+    return groups;
+  }, [appointments, todayKey]);
 
-    Object.keys(map).forEach((k) => {
-      map[k].sort((a, b) => (a.start > b.start ? 1 : -1));
-    });
+  const goToPrevMonth = () => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  const goToNextMonth = () => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
 
-    return Object.keys(map)
-      .sort((a, b) => (a > b ? 1 : -1))
-      .map((date) => ({ date, events: map[date] }));
-  }, [events]);
+  const openDetails = (appointment) => setSelectedAppointmentId(appointment.id);
+  const closeDetails = () => setSelectedAppointmentId(null);
 
-
-  const openCreateModal = () => {
-    setNewEvent((prev) => ({
-      ...prev,
-      date: selectedDate,
-    }));
-    setIsCreateOpen(true);
+  const openComposer = (patientId = null) => {
+    setComposerPatientId(patientId);
+    setComposerOpen(true);
   };
 
-  const handleCreateChange = (e) => {
-    const { name, value } = e.target;
-    setNewEvent((prev) => ({ ...prev, [name]: value }));
+  const openProposeFor = (appointment) => {
+    closeDetails();
+    setProposing(appointment);
+  };
+  const openDeclineFor = (appointment) => {
+    closeDetails();
+    setDeclining(appointment);
+  };
+  const acceptAppointment = (id) => {
+    rehabRepository.confirmAppointment(id);
+  };
+  const cancelAppointment = (id) => {
+    rehabRepository.cancelAppointment(id);
+    closeDetails();
   };
 
-  const handleCreateSubmit = (e) => {
-    e.preventDefault();
-    if (!newEvent.title || !newEvent.patientName) return;
+  const timeFormatter = new Intl.DateTimeFormat(i18n.language, { hour: "2-digit", minute: "2-digit" });
+  const dateTimeFormatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short" });
 
-    const id = `EV-${Math.floor(Math.random() * 9000) + 1000}`;
-
-    setEvents((prev) => [...prev, { id, ...newEvent }]);
-    setIsCreateOpen(false);
-
-    setNewEvent({
-      title: "",
-      patientName: "",
-      date: selectedDate,
-      start: "10:00",
-      end: "10:30",
-      type: "followUp",
-      status: "confirmed",
-      location: "",
-      note: "",
-    });
-  };
-
-  const statusLabel = (st) => t(`calendar.status.${st}`);
-  const typeLabel = (tp) => t(`calendar.types.${tp}`);
-
-  const formatNiceDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const insightSeverity = pendingRequests.length > 0 ? "warning" : "info";
+  const insightText =
+    pendingRequests.length > 0
+      ? t("doctorAppointments.insight.withPending", { pending: pendingRequests.length, today: todayAppointments.length })
+      : t("doctorAppointments.insight.noPending", { today: todayAppointments.length });
 
   return (
     <DoctorLayout active="appointments">
       <div className="dc-page">
         <div className="dc-wrapper">
-
-          {/* HEADER */}
-          <div className="dc-header">
+          <header className="dc-header">
             <div>
-              <h1>{t("calendar.header.title")}</h1>
-              <p>{t("calendar.header.subtitle")}</p>
+              <h1>{t("doctorAppointments.title")}</h1>
+              <p>{t("doctorAppointments.subtitle")}</p>
             </div>
-
             <div className="dc-header-controls">
-              <span className="dc-pill">
-                {t("calendar.header.totalEvents")}: {events.length}
-              </span>
-              <button className="dc-primary-btn" onClick={openCreateModal}>
-                {t("calendar.header.newAppointment")}
+              <span className="dc-pill">{t("doctorAppointments.totalPill", { count: appointments.length })}</span>
+              <button type="button" className="dc-primary-btn" onClick={() => openComposer(null)}>
+                <LuPlus aria-hidden="true" /> {t("doctorAppointments.newAppointment")}
               </button>
             </div>
+          </header>
+
+          <div className={`dc-insight-strip dc-insight-strip--${insightSeverity}`}>
+            <LuCalendarClock aria-hidden="true" />
+            <span>{insightText}</span>
           </div>
 
-          {/* CONTROLS */}
           <div className="dc-controls-row">
             <div className="dc-month-nav">
-              <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="dc-nav-btn">
-                {t("calendar.controls.prev")}
+              <button type="button" className="dc-nav-btn" onClick={goToPrevMonth} aria-label={t("doctorAppointments.prevMonth")}>
+                {i18n.dir() === "rtl" ? <LuChevronRight aria-hidden="true" /> : <LuChevronLeft aria-hidden="true" />}
               </button>
-
-              <span className="dc-month-label">{monthLabel}</span>
-
-              <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="dc-nav-btn">
-                {t("calendar.controls.next")}
+              <span className="dc-month-label" dir="auto">
+                {monthLabel}
+              </span>
+              <button type="button" className="dc-nav-btn" onClick={goToNextMonth} aria-label={t("doctorAppointments.nextMonth")}>
+                {i18n.dir() === "rtl" ? <LuChevronLeft aria-hidden="true" /> : <LuChevronRight aria-hidden="true" />}
               </button>
             </div>
-
-            <div className="dc-view-toggle">
-              <button
-                className={viewMode === "month" ? "active" : ""}
-                onClick={() => setViewMode("month")}
-              >
-                {t("calendar.controls.month")}
+            <div className="dc-view-toggle" role="group" aria-label={t("doctorAppointments.viewToggleLabel")}>
+              <button type="button" className={viewMode === "month" ? "active" : ""} onClick={() => setViewMode("month")}>
+                {t("doctorAppointments.viewMonth")}
               </button>
-
-              <button
-                className={viewMode === "agenda" ? "active" : ""}
-                onClick={() => setViewMode("agenda")}
-              >
-                {t("calendar.controls.agenda")}
+              <button type="button" className={viewMode === "agenda" ? "active" : ""} onClick={() => setViewMode("agenda")}>
+                {t("doctorAppointments.viewAgenda")}
               </button>
             </div>
           </div>
 
-          {/* MAIN LAYOUT */}
           <div className="dc-main-layout">
-
-            {/* CALENDAR */}
             <div className="dc-calendar-card">
-              {viewMode === "month" && (
+              {viewMode === "month" ? (
                 <>
                   <div className="dc-weekdays-row">
-                    {daysOfWeek.map((d) => (
-                      <div key={d} className="dc-weekday">{d}</div>
-                    ))}
-                  </div>
-
-                  <div className="dc-grid">
-                    {monthGrid.map((cell) => (
-                      <div
-                        key={cell.key}
-                        className={[
-                          "dc-day-cell",
-                          !cell.isCurrentMonth ? "dc-day-muted" : "",
-                          cell.isToday ? "dc-day-today" : "",
-                          cell.key === selectedDate ? "dc-day-selected" : "",
-                        ].join(" ")}
-                        onClick={() => setSelectedDate(cell.key)}
-                      >
-                        <div className="dc-day-number">
-                          {cell.dateObj.getDate()}
-                        </div>
-
-                        <div className="dc-events-mini">
-                          {cell.events.slice(0, 3).map((ev) => (
-                            <div
-                              key={ev.id}
-                              className={`dc-event-chip dc-event-chip-${ev.status}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedEvent(ev);
-                              }}
-                            >
-                              <span className="dc-event-dot" />
-                              <span className="dc-event-chip-time">{ev.start}</span>
-                              <span className="dc-event-chip-title">{ev.title}</span>
-                            </div>
-                          ))}
-
-                          {cell.events.length > 3 && (
-                            <div className="dc-more-chip">
-                              +{cell.events.length - 3}
-                            </div>
-                          )}
-                        </div>
+                    {weekdayLabels.map((label) => (
+                      <div key={label} className="dc-weekday">
+                        {label}
                       </div>
                     ))}
+                  </div>
+                  <div className="dc-grid">
+                    {monthGrid.map((cellDate) => {
+                      const key = formatDateKey(cellDate);
+                      const dayEvents = eventsByDateKey.get(key) || [];
+                      const isMuted = cellDate.getMonth() !== currentDate.getMonth();
+                      const isToday = key === todayKey;
+                      const isSelected = key === selectedDate;
+                      return (
+                        <button
+                          type="button"
+                          key={key}
+                          className={`dc-day-cell ${isMuted ? "dc-day-muted" : ""} ${isToday ? "dc-day-today" : ""} ${isSelected ? "dc-day-selected" : ""}`}
+                          onClick={() => setSelectedDate(key)}
+                          aria-current={isToday ? "date" : undefined}
+                          aria-pressed={isSelected}
+                        >
+                          <span className="dc-day-number">{cellDate.getDate()}</span>
+                          <span className="dc-events-mini">
+                            {dayEvents.slice(0, 3).map((event) => (
+                              <span key={event.id} className={`dc-event-chip dc-event-chip-${STATUS_TONE[event.status]}`}>
+                                <span className="dc-event-dot" aria-hidden="true" />
+                                <span className="dc-event-chip-time" dir="ltr">
+                                  {timeFormatter.format(new Date(event.startAt))}
+                                </span>
+                                <span className="dc-event-chip-title" dir="auto">
+                                  {event.patient?.name}
+                                </span>
+                              </span>
+                            ))}
+                            {dayEvents.length > 3 && <span className="dc-more-chip">{t("doctorAppointments.moreCount", { count: dayEvents.length - 3 })}</span>}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </>
-              )}
-
-              {/* AGENDA */}
-              {viewMode === "agenda" && (
+              ) : (
                 <div className="dc-agenda">
-                  {agendaGroups.length === 0 && (
-                    <div className="dc-empty">{t("calendar.agenda.empty")}</div>
-                  )}
-
-                  {agendaGroups.map((group) => (
-                    <div key={group.date} className="dc-agenda-day">
-                      <div className="dc-agenda-date">
-                        {formatNiceDate(group.date)}
-                      </div>
-
-                      {group.events.map((ev) => (
-                        <div
-                          key={ev.id}
-                          className="dc-agenda-item"
-                          onClick={() => setSelectedEvent(ev)}
-                        >
-                          <div className="dc-agenda-main">
-                            <span className="dc-agenda-time">
-                              {ev.start} – {ev.end}
-                            </span>
-                            <span className="dc-agenda-title">
-                              {ev.title} · {ev.patientName}
-                            </span>
+                  {[
+                    { key: "today", labelKey: "doctorAppointments.agenda.today", items: agendaGroups.today },
+                    { key: "tomorrow", labelKey: "doctorAppointments.agenda.tomorrow", items: agendaGroups.tomorrow },
+                    { key: "upcoming", labelKey: "doctorAppointments.agenda.upcoming", items: agendaGroups.upcoming },
+                  ].map((group) =>
+                    group.items.length === 0 ? null : (
+                      <div key={group.key} className="dc-agenda-day">
+                        <div className="dc-agenda-date">{t(group.labelKey)}</div>
+                        {group.items.map((event) => (
+                          <div key={event.id} className="dc-agenda-item" onClick={() => openDetails(event)} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && openDetails(event)}>
+                            <div className="dc-agenda-main">
+                              <span className="dc-agenda-time" dir="ltr">
+                                {dateTimeFormatter.format(new Date(event.startAt))}
+                              </span>
+                              <span className="dc-agenda-title" dir="auto">
+                                {event.patient?.name} · {t(event.typeKey)}
+                              </span>
+                            </div>
+                            <span className={`dc-chip dc-chip-${STATUS_TONE[event.status]}`}>{t(`doctorAppointments.status.${event.status}`)}</span>
                           </div>
-
-                          <span className={`dc-chip dc-chip-${ev.status}`}>
-                            {statusLabel(ev.status)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                        ))}
+                      </div>
+                    )
+                  )}
+                  {agendaGroups.today.length + agendaGroups.tomorrow.length + agendaGroups.upcoming.length === 0 && (
+                    <p className="dc-empty">{t("doctorAppointments.agenda.empty")}</p>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* SIDE PANEL */}
             <div className="dc-side-panel">
+              {pendingRequests.length > 0 && (
+                <div className="dc-side-card">
+                  <div className="dc-side-header">
+                    <h2>{t("doctorAppointments.requests.title")}</h2>
+                    <span className="dc-side-date">{t("doctorAppointments.requests.count", { count: pendingRequests.length })}</span>
+                  </div>
+                  <div className="dc-side-events-list">
+                    {pendingRequests.map(({ appointment, patient }) => (
+                      <div key={appointment.id} className="dc-request-row">
+                        <button type="button" className="dc-request-main" onClick={() => openDetails({ ...appointment, patient })}>
+                          <span className="dc-side-event-title" dir="auto">
+                            {patient?.name}
+                          </span>
+                          <span className="dc-side-event-time" dir="ltr">
+                            {dateTimeFormatter.format(new Date(appointment.startAt))}
+                          </span>
+                        </button>
+                        <div className="dc-request-actions">
+                          <button type="button" className="dc-mini-btn dc-mini-btn--primary" onClick={() => acceptAppointment(appointment.id)}>
+                            {t("doctorPatientWorkspace.appointments.accept")}
+                          </button>
+                          <button type="button" className="dc-mini-btn" onClick={() => openProposeFor({ ...appointment, patient })}>
+                            {t("doctorAppointments.requests.propose")}
+                          </button>
+                          <button type="button" className="dc-mini-btn dc-mini-btn--danger" onClick={() => openDeclineFor({ ...appointment, patient })}>
+                            {t("doctorAppointments.requests.decline")}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Selected day */}
               <div className="dc-side-card">
                 <div className="dc-side-header">
-                  <h2>{t("calendar.sidepanel.selectedDay")}</h2>
-                  <span className="dc-side-date">
-                    {formatNiceDate(selectedDate)}
+                  <h2>{t("doctorAppointments.selectedDay.title")}</h2>
+                  <span className="dc-side-date" dir="auto">
+                    {new Date(`${selectedDate}T00:00:00`).toLocaleDateString(i18n.language, { weekday: "short", month: "short", day: "numeric" })}
                   </span>
                 </div>
-
-                <div className="dc-side-events-list">
-                  {eventsForSelectedDate.length === 0 && (
-                    <div className="dc-empty">
-                      {t("calendar.sidepanel.noEvents")}
-                    </div>
-                  )}
-
-                  {eventsForSelectedDate.map((ev) => (
-                    <div
-                      key={ev.id}
-                      className="dc-side-event-row"
-                      onClick={() => setSelectedEvent(ev)}
-                    >
-                      <div>
-                        <div className="dc-side-event-time">
-                          {ev.start} – {ev.end}
+                {selectedDayAppointments.length === 0 ? (
+                  <p className="dc-empty">{t("doctorAppointments.selectedDay.empty")}</p>
+                ) : (
+                  <div className="dc-side-events-list">
+                    {selectedDayAppointments.map((event) => (
+                      <div key={event.id} className="dc-side-event-row" onClick={() => openDetails(event)} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && openDetails(event)}>
+                        <div>
+                          <div className="dc-side-event-title" dir="auto">
+                            {event.patient?.name}
+                          </div>
+                          <div className="dc-side-event-patient">{t(event.typeKey)}</div>
                         </div>
-                        <div className="dc-side-event-title">{ev.title}</div>
-                        <div className="dc-side-event-patient">{ev.patientName}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span className="dc-side-event-time" dir="ltr">
+                            {timeFormatter.format(new Date(event.startAt))}
+                          </span>
+                          <span className={`dc-chip dc-chip-${STATUS_TONE[event.status]}`}>{t(`doctorAppointments.status.${event.status}`)}</span>
+                        </div>
                       </div>
-
-                      <span className={`dc-chip dc-chip-${ev.status}`}>
-                        {statusLabel(ev.status)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  className="dc-secondary-btn"
-                  onClick={openCreateModal}
-                >
-                  {t("calendar.sidepanel.addAppointment")}
+                    ))}
+                  </div>
+                )}
+                <button type="button" className="dc-secondary-btn" onClick={() => openComposer(null)}>
+                  {t("doctorAppointments.selectedDay.addAppointment")}
                 </button>
               </div>
 
-              {/* Summary */}
               <div className="dc-side-card dc-side-summary">
-                <h2>{t("calendar.sidepanel.summary")}</h2>
+                <h2>{t("doctorAppointments.summary.title", { month: monthLabel })}</h2>
                 <ul className="dc-summary-list">
                   <li>
-                    <span>{t("calendar.sidepanel.confirmed")}</span>
-                    <span>{events.filter((e) => e.status === "confirmed").length}</span>
+                    <span>{t("doctorAppointments.status.REQUESTED")}</span> <span>{monthSummary.requested}</span>
                   </li>
                   <li>
-                    <span>{t("calendar.sidepanel.pending")}</span>
-                    <span>{events.filter((e) => e.status === "pending").length}</span>
+                    <span>{t("doctorAppointments.status.CONFIRMED")}</span> <span>{monthSummary.confirmed}</span>
                   </li>
                   <li>
-                    <span>{t("calendar.sidepanel.cancelled")}</span>
-                    <span>{events.filter((e) => e.status === "cancelled").length}</span>
+                    <span>{t("doctorAppointments.status.ALTERNATIVE_PROPOSED")}</span> <span>{monthSummary.alternativeProposed}</span>
+                  </li>
+                  <li>
+                    <span>{t("doctorAppointments.status.DECLINED")}</span> <span>{monthSummary.declined}</span>
+                  </li>
+                  <li>
+                    <span>{t("doctorAppointments.status.CANCELLED")}</span> <span>{monthSummary.cancelled}</span>
+                  </li>
+                  <li>
+                    <span>{t("doctorAppointments.status.COMPLETED")}</span> <span>{monthSummary.completed}</span>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
-
-          {/* EVENT DETAILS MODAL */}
-          {selectedEvent && (
-            <div
-              className="dc-modal-backdrop"
-              onClick={() => setSelectedEvent(null)}
-            >
-              <div className="dc-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="dc-modal-header">
-                  <div>
-                    <h2>{selectedEvent.title}</h2>
-                    <p>
-                      {selectedEvent.patientName} ·{" "}
-                      {formatNiceDate(selectedEvent.date)}
-                    </p>
-                  </div>
-                  <button className="dc-modal-close" onClick={() => setSelectedEvent(null)}>
-                    ✕
-                  </button>
-                </div>
-
-                <div className="dc-modal-tags">
-                  <span className={`dc-chip dc-chip-${selectedEvent.status}`}>
-                    {statusLabel(selectedEvent.status)}
-                  </span>
-
-                  <span className="dc-chip dc-chip-soft">
-                    {selectedEvent.start} – {selectedEvent.end}
-                  </span>
-
-                  <span className="dc-chip dc-chip-soft">
-                    {typeLabel(selectedEvent.type)}
-                  </span>
-                </div>
-
-                <div className="dc-modal-body">
-                  <ul className="dc-details-list">
-                    <li>
-                      <span>{t("calendar.modal.details.location")}</span>
-                      <span>{selectedEvent.location}</span>
-                    </li>
-                    <li>
-                      <span>{t("calendar.modal.details.date")}</span>
-                      <span>{selectedEvent.date}</span>
-                    </li>
-                    <li>
-                      <span>{t("calendar.modal.details.patient")}</span>
-                      <span>{selectedEvent.patientName}</span>
-                    </li>
-                  </ul>
-
-                  <div className="dc-modal-section">
-                    <h3>{t("calendar.modal.notesTitle")}</h3>
-                    <p>
-                      {selectedEvent.note || t("calendar.modal.notesEmpty")}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="dc-modal-footer">
-                  <button
-                    className="dc-ghost-btn"
-                    onClick={() => setSelectedEvent(null)}
-                  >
-                    {t("calendar.modal.close")}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* CREATE MODAL */}
-          {isCreateOpen && (
-            <div
-              className="dc-modal-backdrop"
-              onClick={() => setIsCreateOpen(false)}
-            >
-              <div className="dc-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="dc-modal-header">
-                  <div>
-                    <h2>{t("calendar.createModal.title")}</h2>
-                    <p>{t("calendar.createModal.subtitle")}</p>
-                  </div>
-
-                  <button
-                    className="dc-modal-close"
-                    onClick={() => setIsCreateOpen(false)}
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <form onSubmit={handleCreateSubmit} className="dc-form">
-                  <div className="dc-form-grid">
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.title")}</label>
-                      <input
-                        type="text"
-                        name="title"
-                        value={newEvent.title}
-                        onChange={handleCreateChange}
-                        placeholder={t("calendar.createModal.form.titlePlaceholder")}
-                      />
-                    </div>
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.patientName")}</label>
-                      <input
-                        type="text"
-                        name="patientName"
-                        value={newEvent.patientName}
-                        onChange={handleCreateChange}
-                        placeholder={t("calendar.createModal.form.patientPlaceholder")}
-                      />
-                    </div>
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.date")}</label>
-                      <input
-                        type="date"
-                        name="date"
-                        value={newEvent.date}
-                        onChange={handleCreateChange}
-                      />
-                    </div>
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.start")}</label>
-                      <input
-                        type="time"
-                        name="start"
-                        value={newEvent.start}
-                        onChange={handleCreateChange}
-                      />
-                    </div>
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.end")}</label>
-                      <input
-                        type="time"
-                        name="end"
-                        value={newEvent.end}
-                        onChange={handleCreateChange}
-                      />
-                    </div>
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.type")}</label>
-                      <select
-                        name="type"
-                        value={newEvent.type}
-                        onChange={handleCreateChange}
-                      >
-                        <option value="followUp">{t("calendar.types.followUp")}</option>
-                        <option value="initial">{t("calendar.types.initial")}</option>
-                        <option value="postOp">{t("calendar.types.postOp")}</option>
-                        <option value="rehab">{t("calendar.types.rehab")}</option>
-                        <option value="check">{t("calendar.types.check")}</option>
-                      </select>
-                    </div>
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.status")}</label>
-                      <select
-                        name="status"
-                        value={newEvent.status}
-                        onChange={handleCreateChange}
-                      >
-                        <option value="confirmed">{t("calendar.status.confirmed")}</option>
-                        <option value="pending">{t("calendar.status.pending")}</option>
-                        <option value="cancelled">{t("calendar.status.cancelled")}</option>
-                      </select>
-                    </div>
-
-                    <div className="dc-form-group">
-                      <label>{t("calendar.createModal.form.location")}</label>
-                      <input
-                        type="text"
-                        name="location"
-                        value={newEvent.location}
-                        onChange={handleCreateChange}
-                        placeholder={t("calendar.createModal.form.locationPlaceholder")}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="dc-form-group">
-                    <label>{t("calendar.createModal.form.notes")}</label>
-                    <textarea
-                      name="note"
-                      rows="3"
-                      value={newEvent.note}
-                      onChange={handleCreateChange}
-                      placeholder={t("calendar.createModal.form.notesPlaceholder")}
-                    />
-                  </div>
-
-                  <div className="dc-modal-footer">
-                    <button
-                      type="button"
-                      className="dc-ghost-btn"
-                      onClick={() => setIsCreateOpen(false)}
-                    >
-                      {t("calendar.createModal.buttons.cancel")}
-                    </button>
-
-                    <button type="submit" className="dc-primary-btn">
-                      {t("calendar.createModal.buttons.save")}
-                    </button>
-                  </div>
-
-                </form>
-              </div>
-            </div>
-          )}
-
         </div>
       </div>
+
+      {selectedAppointment && (
+        <DoctorModal isOpen={!!selectedAppointment} onClose={closeDetails} title={t("doctorAppointments.details.title")} closeLabel={t("doctorPatientWorkspace.close")}>
+          <div className="dc-details-header">
+            <button type="button" className="dc-details-patient-link" onClick={() => navigate(`${ROUTES.DOCTOR_PATIENT_PROFILE.replace(":id", selectedAppointment.patientId)}?tab=appointments`)}>
+              {selectedAppointment.patient?.name}
+            </button>
+            <span className={`dc-chip dc-chip-${STATUS_TONE[selectedAppointment.status]}`}>{t(`doctorAppointments.status.${selectedAppointment.status}`)}</span>
+          </div>
+          <p className="dc-details-source">
+            {t(selectedAppointment.source === APPOINTMENT_SOURCE.DOCTOR ? "doctorAppointments.details.sourceDoctor" : "doctorAppointments.details.sourcePatient")}
+          </p>
+
+          <ul className="dc-details-list">
+            <li>
+              <span>{t("doctorAppointments.details.dateTime")}</span>
+              <span dir="ltr">{dateTimeFormatter.format(new Date(selectedAppointment.startAt))}</span>
+            </li>
+            <li>
+              <span>{t("doctorAppointments.details.type")}</span>
+              <span>{t(selectedAppointment.typeKey)}</span>
+            </li>
+            <li>
+              <span>{t("doctorAppointments.details.reason")}</span>
+              <span>{t(`patientAppointments.reasons.${selectedAppointment.reasonCode}`)}</span>
+            </li>
+            <li>
+              <span>{t("doctorAppointments.details.location")}</span>
+              <span>{t(selectedAppointment.location.nameKey)}</span>
+            </li>
+          </ul>
+
+          {selectedAppointment.note && (
+            <div className="dc-modal-section">
+              <h3>{t("doctorAppointments.details.note")}</h3>
+              <p dir="auto">{selectedAppointment.note}</p>
+            </div>
+          )}
+
+          {selectedAppointment.status === APPOINTMENT_STATUS.ALTERNATIVE_PROPOSED && selectedAppointment.clinicianResponse && (
+            <div className="dc-modal-section">
+              <h3>{t("doctorAppointments.details.yourProposal")}</h3>
+              <p dir="ltr">{dateTimeFormatter.format(new Date(selectedAppointment.clinicianResponse.suggestedStartAt))}</p>
+              <p className="dc-details-waiting">{t("doctorAppointments.details.awaitingPatient")}</p>
+            </div>
+          )}
+
+          {selectedAppointment.status === APPOINTMENT_STATUS.DECLINED && selectedAppointment.clinicianResponse?.declineReasonCode && (
+            <div className="dc-modal-section">
+              <h3>{t("doctorAppointments.decline.reasonLabel")}</h3>
+              <p>{t(`doctorAppointments.declineReasons.${selectedAppointment.clinicianResponse.declineReasonCode}`)}</p>
+              {selectedAppointment.clinicianResponse.messageNote && <p dir="auto">{selectedAppointment.clinicianResponse.messageNote}</p>}
+            </div>
+          )}
+
+          {selectedAppointment.status === APPOINTMENT_STATUS.REQUESTED && (
+            <div className="dc-modal-footer">
+              <button type="button" className="dc-ghost-btn" onClick={() => openDeclineFor(selectedAppointment)}>
+                {t("doctorAppointments.requests.decline")}
+              </button>
+              <button type="button" className="dc-ghost-btn" onClick={() => openProposeFor(selectedAppointment)}>
+                {t("doctorAppointments.requests.propose")}
+              </button>
+              <button
+                type="button"
+                className="dc-primary-btn"
+                onClick={() => {
+                  acceptAppointment(selectedAppointment.id);
+                  closeDetails();
+                }}
+              >
+                {t("doctorPatientWorkspace.appointments.accept")}
+              </button>
+            </div>
+          )}
+
+          {selectedAppointment.status === APPOINTMENT_STATUS.CONFIRMED && new Date(selectedAppointment.startAt) > new Date() && (
+            <div className="dc-modal-footer">
+              <button type="button" className="dc-ghost-btn" onClick={() => cancelAppointment(selectedAppointment.id)}>
+                {t("doctorPatientWorkspace.appointments.cancel")}
+              </button>
+            </div>
+          )}
+        </DoctorModal>
+      )}
+
+      <DoctorAppointmentComposer
+        isOpen={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        patientId={composerPatientId}
+        initialDate={selectedDate}
+      />
+      <ProposeAlternativeModal isOpen={!!proposing} onClose={() => setProposing(null)} appointment={proposing} />
+      <DeclineAppointmentModal isOpen={!!declining} onClose={() => setDeclining(null)} appointment={declining} />
     </DoctorLayout>
   );
 };

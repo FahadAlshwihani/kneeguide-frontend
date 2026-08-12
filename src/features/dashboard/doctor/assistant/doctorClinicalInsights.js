@@ -44,6 +44,46 @@ export const getNewReports = () =>
     .flatMap((bundle) => bundle.reports.filter((report) => report.reviewStatus === REPORT_STATUS.AWAITING_REVIEW).map((report) => ({ report, patient: bundle.patient })));
 
 /**
+ * Every appointment across every canonical patient that needs a doctor
+ * decision — REQUESTED (new ask) or ALTERNATIVE_PROPOSED-that-the-doctor-
+ * themself-owns is excluded (that status means it's the PATIENT's turn).
+ * This is the single source both the Doctor Appointments page's Requests
+ * rail and the Assistant's PENDING_APPOINTMENT_REQUESTS action read, so the
+ * two counts can never disagree.
+ */
+export const getPendingAppointmentRequests = (referenceDate = new Date()) =>
+  rehabRepository
+    .getAllAppointments()
+    .filter((appointment) => appointment.status === APPOINTMENT_STATUS.REQUESTED)
+    .map((appointment) => ({ appointment, patient: rehabRepository.getPatient(appointment.patientId) }))
+    .sort((a, b) => new Date(a.appointment.startAt) - new Date(b.appointment.startAt));
+
+/**
+ * Real, derived pairs of upcoming CONFIRMED appointments whose times
+ * actually overlap (Section 19/38 — never a fabricated "gap" suggestion).
+ * With `scheduleAppointment`/the composer now checking
+ * `rehabRepository.findSchedulingConflict` before every write, this should
+ * normally be empty going forward; it stays honest about pre-existing data.
+ */
+export const getUpcomingScheduleConflicts = (referenceDate = new Date()) => {
+  const confirmed = rehabRepository
+    .getAllAppointments()
+    .filter((appointment) => appointment.status === APPOINTMENT_STATUS.CONFIRMED && new Date(appointment.startAt) > referenceDate);
+
+  const conflicts = [];
+  for (let i = 0; i < confirmed.length; i += 1) {
+    for (let j = i + 1; j < confirmed.length; j += 1) {
+      const a = confirmed[i];
+      const b = confirmed[j];
+      if (new Date(a.startAt) < new Date(b.endAt) && new Date(b.startAt) < new Date(a.endAt)) {
+        conflicts.push({ a, b, patientA: rehabRepository.getPatient(a.patientId), patientB: rehabRepository.getPatient(b.patientId) });
+      }
+    }
+  }
+  return conflicts;
+};
+
+/**
  * The Clinical Brief's own three numbers (Doctor Home's welcome greeting
  * + the Topbar drawer's welcome brief) — ONE function so both surfaces
  * never risk reading two different counts for the same thing.

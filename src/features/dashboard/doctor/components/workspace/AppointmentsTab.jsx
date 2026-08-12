@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import DoctorModal from "./DoctorModal";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { APPOINTMENT_STATUS } from "../../../../../domain/rehab/rehabEnums";
+import ProposeAlternativeModal from "./ProposeAlternativeModal";
+import DeclineAppointmentModal from "./DeclineAppointmentModal";
 import "./AppointmentsTab.css";
 
 /**
@@ -10,39 +11,26 @@ import "./AppointmentsTab.css";
  * the Patient side's Appointments page reads/writes (Section 26: no
  * duplicate doctor/patient appointment mocks). Actions are gated by
  * status, matching the state machine in rehabRepository.js:
- *   requested            -> accept / propose new time / reject
+ *   requested            -> accept / propose new time / decline (with reason)
  *   alternative_proposed  -> (patient's turn — read-only here)
  *   confirmed              -> cancel
  *   completed/declined/cancelled -> read-only
+ *
+ * Propose/decline now open the SAME shared modals the Global Appointments
+ * page uses (ProposeAlternativeModal/DeclineAppointmentModal) instead of an
+ * inline form only this tab had — one review workflow, not two.
  */
 const AppointmentsTab = ({ bundle, onScheduleNew }) => {
   const { t, i18n } = useTranslation();
   const { appointments } = bundle;
   const [proposing, setProposing] = useState(null);
-  const [proposedDate, setProposedDate] = useState("");
-  const [proposedTime, setProposedTime] = useState("");
+  const [declining, setDeclining] = useState(null);
 
   const dateTimeFormatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short" });
   const ordered = [...appointments].sort((a, b) => new Date(b.startAt) - new Date(a.startAt));
 
   const handleAccept = (id) => rehabRepository.confirmAppointment(id);
-  const handleReject = (id) => rehabRepository.rejectAppointment(id, {});
   const handleCancel = (id) => rehabRepository.cancelAppointment(id);
-
-  const openPropose = (appointment) => {
-    const start = new Date(appointment.startAt);
-    setProposing(appointment.id);
-    setProposedDate(start.toISOString().slice(0, 10));
-    setProposedTime(start.toISOString().slice(11, 16));
-  };
-
-  const submitPropose = () => {
-    if (!proposedDate || !proposedTime) return;
-    const suggestedStartAt = new Date(`${proposedDate}T${proposedTime}:00`).toISOString();
-    const suggestedEndAt = new Date(new Date(suggestedStartAt).getTime() + 30 * 60000).toISOString();
-    rehabRepository.proposeAppointmentTime(proposing, { suggestedStartAt, suggestedEndAt });
-    setProposing(null);
-  };
 
   return (
     <div>
@@ -82,16 +70,22 @@ const AppointmentsTab = ({ bundle, onScheduleNew }) => {
                 </p>
               )}
 
+              {appt.status === APPOINTMENT_STATUS.DECLINED && appt.clinicianResponse?.declineReasonCode && (
+                <p className="at-proposed">
+                  {t("doctorAppointments.decline.reasonLabel")}: {t(`doctorAppointments.declineReasons.${appt.clinicianResponse.declineReasonCode}`)}
+                </p>
+              )}
+
               <div className="at-actions">
                 {appt.status === APPOINTMENT_STATUS.REQUESTED && (
                   <>
                     <button type="button" className="dw-btn-primary" onClick={() => handleAccept(appt.id)}>
                       {t("doctorPatientWorkspace.appointments.accept")}
                     </button>
-                    <button type="button" className="dw-btn-secondary" onClick={() => openPropose(appt)}>
+                    <button type="button" className="dw-btn-secondary" onClick={() => setProposing(appt)}>
                       {t("doctorPatientWorkspace.appointments.proposeNewTime")}
                     </button>
-                    <button type="button" className="dw-btn-danger" onClick={() => handleReject(appt.id)}>
+                    <button type="button" className="dw-btn-danger" onClick={() => setDeclining(appt)}>
                       {t("doctorPatientWorkspace.appointments.reject")}
                     </button>
                   </>
@@ -107,33 +101,8 @@ const AppointmentsTab = ({ bundle, onScheduleNew }) => {
         </div>
       )}
 
-      <DoctorModal
-        isOpen={!!proposing}
-        onClose={() => setProposing(null)}
-        title={t("doctorPatientWorkspace.appointments.proposeNewTime")}
-        closeLabel={t("doctorPatientWorkspace.close")}
-        footer={
-          <>
-            <button type="button" className="dw-btn-secondary" onClick={() => setProposing(null)}>
-              {t("doctorPatientWorkspace.cancel")}
-            </button>
-            <button type="button" className="dw-btn-primary" onClick={submitPropose} disabled={!proposedDate || !proposedTime}>
-              {t("doctorPatientWorkspace.appointments.sendProposal")}
-            </button>
-          </>
-        }
-      >
-        <div className="dw-field-row">
-          <div className="dw-field">
-            <label htmlFor="at-date">{t("doctorPatientWorkspace.appointments.fields.date")}</label>
-            <input id="at-date" type="date" value={proposedDate} onChange={(event) => setProposedDate(event.target.value)} />
-          </div>
-          <div className="dw-field">
-            <label htmlFor="at-time">{t("doctorPatientWorkspace.appointments.fields.time")}</label>
-            <input id="at-time" type="time" value={proposedTime} onChange={(event) => setProposedTime(event.target.value)} />
-          </div>
-        </div>
-      </DoctorModal>
+      <ProposeAlternativeModal isOpen={!!proposing} onClose={() => setProposing(null)} appointment={proposing} />
+      <DeclineAppointmentModal isOpen={!!declining} onClose={() => setDeclining(null)} appointment={declining} />
     </div>
   );
 };

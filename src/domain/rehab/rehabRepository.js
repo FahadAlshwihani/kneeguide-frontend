@@ -146,6 +146,28 @@ export const getAllAppointments = () => [...state.appointments].sort((a, b) => n
 
 export const getAppointmentById = (appointmentId) => state.appointments.find((appt) => appt.id === appointmentId) || null;
 
+/**
+ * Real scheduling-conflict detection (Section 14/39 of the Doctor
+ * Appointments brief — "do not silently allow overlapping doctor
+ * appointments"). Only CONFIRMED appointments represent an actual
+ * clinician time commitment, so only those are checked; a REQUESTED or
+ * ALTERNATIVE_PROPOSED slot hasn't been committed to yet. Returns the
+ * first conflicting appointment, or null.
+ */
+export const findSchedulingConflict = (startAt, endAt, { excludeAppointmentId } = {}) => {
+  const start = new Date(startAt).getTime();
+  const end = new Date(endAt).getTime();
+  return (
+    state.appointments.find((appt) => {
+      if (appt.id === excludeAppointmentId) return false;
+      if (appt.status !== APPOINTMENT_STATUS.CONFIRMED) return false;
+      const apptStart = new Date(appt.startAt).getTime();
+      const apptEnd = new Date(appt.endAt).getTime();
+      return start < apptEnd && apptStart < end;
+    }) || null
+  );
+};
+
 export const getReports = (patientId) =>
   state.reports.filter((report) => report.patientId === patientId).sort((a, b) => new Date(b.periodEnd) - new Date(a.periodEnd));
 
@@ -400,12 +422,19 @@ export const proposeAppointmentTime = (appointmentId, { suggestedStartAt, sugges
     clinicianResponse: { messageKey: null, messageNote: messageNote || null, suggestedStartAt, suggestedEndAt, followUpLabelKey: null },
   });
 
-/** Doctor rejects a REQUESTED appointment. */
-export const rejectAppointment = (appointmentId, { note } = {}) =>
+/** Doctor rejects a REQUESTED appointment — a real reason is always required (Section 39: never a blind reject). */
+export const rejectAppointment = (appointmentId, { reasonCode, note } = {}) =>
   patchAppointment(appointmentId, {
     status: APPOINTMENT_STATUS.DECLINED,
     reviewedAt: nowIso(),
-    clinicianResponse: { messageKey: null, messageNote: note || null, suggestedStartAt: null, suggestedEndAt: null, followUpLabelKey: null },
+    clinicianResponse: {
+      messageKey: reasonCode ? `patientAppointments.declineReasons.${reasonCode}` : null,
+      declineReasonCode: reasonCode || null,
+      messageNote: note || null,
+      suggestedStartAt: null,
+      suggestedEndAt: null,
+      followUpLabelKey: null,
+    },
   });
 
 export const cancelAppointment = (appointmentId) => patchAppointment(appointmentId, { status: APPOINTMENT_STATUS.CANCELLED });
