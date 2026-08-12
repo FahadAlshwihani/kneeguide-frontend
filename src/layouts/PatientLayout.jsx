@@ -1,10 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { LuLogOut } from "react-icons/lu";
-import { useAuth } from "../context/AuthContext";
 import PatientDock from "../features/dashboard/patient/components/PatientDock";
 import { KneeGuideDeviceProvider } from "../features/dashboard/patient/device/KneeGuideDeviceContext";
+import { PatientPreferencesProvider, usePatientPreferences } from "../features/dashboard/patient/preferences/PatientPreferencesContext";
 import "../features/dashboard/patient/styles/patientTokens.css";
 import "./PatientLayout.css";
 
@@ -27,19 +25,12 @@ import "./PatientLayout.css";
  * each page guessing its own bottom padding for a nav it doesn't render
  * itself anymore.
  *
- * Logout lives here — audited before ever moving it (in an earlier
- * round): the old PatientDashboard header's logout button was the ONLY
- * working logout control anywhere in the Patient Dashboard (Profile's own
- * "Logout" button under its Security tab has never had a click handler
- * wired to it). Kept here, now alone, after this round's own removal of
- * the floating language switcher from Patient scope (see below) — Patient
- * language selection is intentionally moving to Profile/Settings in a
- * future task; this only removes the UI control, never i18n itself
- * (SidebarLanguageSwitcher, the actual component, is untouched — still
- * imported/rendered exactly as before by DoctorSidebar; only this file
- * stopped rendering it). The app's current language keeps rendering
- * everywhere via the same i18next instance regardless of this control's
- * presence.
+ * Logout no longer lives here (Profile V2, Section 4) — it used to be a
+ * fixed top-end icon rendered on every Patient page, which meant Profile's
+ * own Security tab and this layout were two competing logout locations.
+ * The REAL logout implementation (`useAuth().logout`) is unchanged; only
+ * its one caller moved, to Profile -> Security (see
+ * pages/PatientProfile.jsx / components/profile/ProfileSecurityTab.jsx).
  *
  * `KneeGuideDeviceProvider` wraps the Outlet for the exact same reason
  * PatientDock lives here instead of on each page: Patient Profile's
@@ -48,22 +39,21 @@ import "./PatientLayout.css";
  * mounting the provider once, above every Patient page, is what makes
  * that guaranteed rather than coincidental (see
  * device/KneeGuideDeviceContext.jsx).
+ *
+ * `PatientPreferencesProvider` is the equivalent single mount point for
+ * language + appearance (Profile V2, Section 40) — `PatientShellInner`
+ * below reads the resolved theme back out of it and stamps
+ * `data-patient-theme` on `.patient-shell` itself, which is what
+ * patientTokens.css's light-mode override block selects on. Scoped to
+ * this one element (never `:root`/`document.body`), so Doctor/Public/Auth
+ * routes — siblings of this nested group, not descendants — are
+ * structurally unable to see a Patient theme change.
  */
-const PatientLayout = () => {
-  const { t } = useTranslation();
-  const { logout } = useAuth();
+const PatientShellInner = () => {
+  const { resolvedTheme } = usePatientPreferences();
 
   return (
-    <div className="patient-shell">
-      <button
-        type="button"
-        className="patient-shell-logout"
-        onClick={logout}
-        aria-label={t("patientDashboard.logout")}
-      >
-        <LuLogOut aria-hidden="true" />
-      </button>
-
+    <div className="patient-shell" data-patient-theme={resolvedTheme}>
       <KneeGuideDeviceProvider>
         <div className="patient-shell-content">
           <Outlet />
@@ -74,5 +64,11 @@ const PatientLayout = () => {
     </div>
   );
 };
+
+const PatientLayout = () => (
+  <PatientPreferencesProvider>
+    <PatientShellInner />
+  </PatientPreferencesProvider>
+);
 
 export default PatientLayout;
