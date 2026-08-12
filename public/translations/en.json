@@ -1103,14 +1103,77 @@
     },
     "backToLogin": "Back to Login"
   },
-  "doctorSidebar": {
-    "title": "Doctor Panel",
-    "dashboard": "Dashboard",
-    "patients": "Patients",
-    "appointments": "Appointments",
-    "reports": "Reports",
-    "profile": "Profile",
-    "logout": "Logout"
+  "doctorShell": {
+    "sidebar": {
+      "navLabel": "Doctor navigation",
+      "workspace": "Doctor Workspace",
+      "nav": {
+        "home": "Home",
+        "patients": "Patients",
+        "appointments": "Appointments",
+        "reports": "Reports"
+      },
+      "collapse": "Collapse sidebar",
+      "expand": "Expand sidebar",
+      "openNav": "Open navigation menu"
+    },
+    "topbar": {
+      "pageTitles": {
+        "patients": "Patients",
+        "appointments": "Appointments",
+        "reports": "Reports",
+        "profile": "Profile"
+      }
+    },
+    "assistantLauncher": {
+      "label": "KneeGuide Assistant"
+    },
+    "assistantDrawer": {
+      "close": "Close assistant",
+      "openFull": "Open full assistant"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "empty": "No notifications right now.",
+      "bellLabel": "Notifications, {{count}} unread",
+      "readState": {
+        "read": "Read",
+        "unread": "Unread"
+      },
+      "relative": {
+        "justNow": "Just now",
+        "minutesAgo": "{{count}}m ago",
+        "hoursAgo": "{{count}}h ago",
+        "daysAgo": "{{count}}d ago"
+      },
+      "items": {
+        "painSpike": {
+          "title": "Ahmed Ali",
+          "message": "Pain increased to {{pain}}/10 in the latest session."
+        },
+        "missedSessions": {
+          "title": "Sara Almutairi",
+          "message": "Missed {{count}} prescribed sessions this week."
+        },
+        "reportReady": {
+          "title": "Mohammed Aziz",
+          "message": "New rehabilitation report is ready for review."
+        },
+        "appointmentRequest": {
+          "title": "Lama Khaled",
+          "message": "New appointment request received."
+        }
+      }
+    },
+    "account": {
+      "menuLabel": "Account menu",
+      "profile": "Profile",
+      "language": "Language",
+      "languageEnglish": "English",
+      "languageArabic": "العربية",
+      "logout": "Logout"
+    }
   },
   "patientProfile": {
     "tabsLabel": "Profile tabs",

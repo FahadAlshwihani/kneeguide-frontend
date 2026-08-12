@@ -1103,14 +1103,77 @@
     },
     "backToLogin": "العودة لتسجيل الدخول"
   },
-  "doctorSidebar": {
-    "title": "لوحة الطبيب",
-    "dashboard": "الواجهة الرئيسية",
-    "patients": "المرضى",
-    "appointments": "المواعيد",
-    "reports": "التقارير",
-    "profile": "الملف الشخصي",
-    "logout": "تسجيل الخروج"
+  "doctorShell": {
+    "sidebar": {
+      "navLabel": "تنقل الطبيب",
+      "workspace": "مساحة عمل الطبيب",
+      "nav": {
+        "home": "الرئيسية",
+        "patients": "المرضى",
+        "appointments": "المواعيد",
+        "reports": "التقارير"
+      },
+      "collapse": "طي القائمة الجانبية",
+      "expand": "توسيع القائمة الجانبية",
+      "openNav": "فتح قائمة التنقل"
+    },
+    "topbar": {
+      "pageTitles": {
+        "patients": "المرضى",
+        "appointments": "المواعيد",
+        "reports": "التقارير",
+        "profile": "الملف الشخصي"
+      }
+    },
+    "assistantLauncher": {
+      "label": "مساعد KneeGuide"
+    },
+    "assistantDrawer": {
+      "close": "إغلاق المساعد",
+      "openFull": "فتح المساعد بالكامل"
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "markAllRead": "تحديد الكل كمقروء",
+      "empty": "لا توجد إشعارات حاليًا.",
+      "bellLabel": "الإشعارات، {{count}} غير مقروءة",
+      "readState": {
+        "read": "مقروء",
+        "unread": "غير مقروء"
+      },
+      "relative": {
+        "justNow": "الآن",
+        "minutesAgo": "قبل {{count}} دقيقة",
+        "hoursAgo": "قبل {{count}} ساعة",
+        "daysAgo": "قبل {{count}} يوم"
+      },
+      "items": {
+        "painSpike": {
+          "title": "Ahmed Ali",
+          "message": "ارتفع مستوى الألم إلى {{pain}}/10 في آخر جلسة."
+        },
+        "missedSessions": {
+          "title": "Sara Almutairi",
+          "message": "فاتته {{count}} جلسات مقررة هذا الأسبوع."
+        },
+        "reportReady": {
+          "title": "Mohammed Aziz",
+          "message": "تقرير تأهيل جديد جاهز للمراجعة."
+        },
+        "appointmentRequest": {
+          "title": "Lama Khaled",
+          "message": "تم استلام طلب موعد جديد."
+        }
+      }
+    },
+    "account": {
+      "menuLabel": "قائمة الحساب",
+      "profile": "الملف الشخصي",
+      "language": "اللغة",
+      "languageEnglish": "English",
+      "languageArabic": "العربية",
+      "logout": "تسجيل الخروج"
+    }
   },
   "patientProfile": {
     "tabsLabel": "علامات تبويب الملف الشخصي",
