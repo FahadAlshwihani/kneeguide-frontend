@@ -1020,6 +1020,122 @@
     "profile": "الملف الشخصي",
     "logout": "تسجيل الخروج"
   },
+  "patientProfile": {
+    "tabsLabel": "علامات تبويب الملف الشخصي",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "medical": "المعلومات الطبية",
+      "rehab": "التأهيل",
+      "devices": "الأجهزة",
+      "preferences": "التفضيلات",
+      "security": "الأمان"
+    },
+    "hero": {
+      "role": "مريض تأهيل",
+      "context": "{{phase}} · {{week}}"
+    },
+    "rehabPhase": {
+      "phase2": "المرحلة الثانية"
+    },
+    "mock": {
+      "goal": "تحسين مدى الحركة والقوة",
+      "diagnosis": "تمزق جزئي في الرباط الصليبي الأمامي",
+      "clinicalNote": "الاستمرار في تمارين مدى الحركة، والتحسن ملحوظ."
+    },
+    "insight": {
+      "title": "رؤية KneeGuide",
+      "overview": "أنت ملتزم بـ {{percent}}% من برنامج هذا الأسبوع خلال {{phase}} — استمرارية جيدة.",
+      "medical": "مرحلتك التأهيلية الحالية ({{phase}}) تتوافق مع آخر ملاحظة طبية — استمر في اتباع برنامجك الموصوف.",
+      "rehab": "لقد أكملت {{percent}}% من برنامج التأهيل لهذا الأسبوع. حافظ على الاستمرارية للبقاء على المسار الصحيح.",
+      "rehabWithLeader": "لقد أكملت {{percent}}% من برنامج التأهيل لهذا الأسبوع، وقد أظهر تمرين {{exerciseName}} أفضل جودة حركة مؤخرًا.",
+      "deviceConnected": "تم توصيل مستشعر KneeGuide الخاص بك ({{name}}). أنت جاهز لبدء جلسة التأهيل لهذا اليوم."
+    },
+    "overview": {
+      "recoveryProfile": {
+        "title": "الملف التأهيلي",
+        "diagnosis": "التشخيص",
+        "phase": "المرحلة التأهيلية",
+        "week": "أسبوع التعافي",
+        "surgeryDate": "تاريخ الجراحة"
+      },
+      "personal": {
+        "title": "المعلومات الشخصية",
+        "age": "العمر",
+        "ageValue": "{{count}} سنة",
+        "height": "الطول",
+        "heightValue": "{{value}} سم",
+        "weight": "الوزن",
+        "weightValue": "{{value}} كجم",
+        "goal": "هدف التعافي"
+      },
+      "careTeam": {
+        "title": "الفريق الطبي",
+        "nextAppointment": "الموعد القادم: {{date}} الساعة {{time}}",
+        "noAppointment": "لا يوجد موعد قادم مجدول",
+        "viewAppointments": "عرض المواعيد"
+      }
+    },
+    "medical": {
+      "title": "المعلومات الطبية",
+      "diagnosis": "التشخيص",
+      "phase": "التأهيل",
+      "surgeryDate": "الجراحة",
+      "note": "آخر ملاحظة طبية",
+      "viewReports": "عرض تقارير التعافي"
+    },
+    "rehab": {
+      "title": "برنامج التأهيل",
+      "exercises": "التمارين",
+      "sets": "إجمالي المجموعات",
+      "duration": "المدة",
+      "durationValue": "~{{count}} دقيقة",
+      "phase": "المرحلة",
+      "setsByReps": "{{sets}} × {{reps}}",
+      "openSession": "فتح جلسة التأهيل لهذا اليوم"
+    },
+    "devices": {
+      "title": "مستشعر الركبة",
+      "subtitle": "قم بتوصيل مستشعر KneeGuide عبر البلوتوث لمزامنة بيانات حركتك.",
+      "connected": "متصل",
+      "disconnect": "قطع الاتصال",
+      "emptyTitle": "لا يوجد مستشعر ركبة متصل",
+      "emptyCopy": "ابحث عن الأجهزة القريبة لتوصيل مستشعر KneeGuide وبدء مزامنة بيانات الحركة.",
+      "scan": "البحث عن الأجهزة",
+      "scanning": "جارٍ البحث عن أجهزة قريبة...",
+      "signal": "الإشارة: {{value}} dBm",
+      "connect": "اتصال",
+      "connecting": "جارٍ الاتصال..."
+    },
+    "preferences": {
+      "language": {
+        "title": "اللغة",
+        "subtitle": "اختر اللغة التي تظهر بها لوحة تحكم المريض في KneeGuide.",
+        "en": "English",
+        "ar": "العربية"
+      },
+      "theme": {
+        "title": "المظهر",
+        "subtitle": "اختر شكل لوحة تحكم المريض. يتبع خيار «النظام» إعداد جهازك.",
+        "system": "النظام",
+        "light": "فاتح",
+        "dark": "داكن"
+      }
+    },
+    "security": {
+      "password": {
+        "title": "كلمة المرور",
+        "account": "البريد الإلكتروني للحساب",
+        "change": "تغيير كلمة المرور",
+        "unavailable": "تغيير كلمة المرور غير متاح حاليًا."
+      },
+      "session": {
+        "title": "الجلسة الحالية",
+        "device": "هذا الجهاز",
+        "current": "نشطة الآن",
+        "signOut": "تسجيل الخروج"
+      }
+    }
+  },
   "patientBottomNav": {
     "navLabel": "التنقل بين صفحات المريض",
     "home": "الرئيسية",

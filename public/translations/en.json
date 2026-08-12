@@ -1020,6 +1020,122 @@
     "profile": "Profile",
     "logout": "Logout"
   },
+  "patientProfile": {
+    "tabsLabel": "Profile tabs",
+    "tabs": {
+      "overview": "Overview",
+      "medical": "Medical",
+      "rehab": "Rehab",
+      "devices": "Devices",
+      "preferences": "Preferences",
+      "security": "Security"
+    },
+    "hero": {
+      "role": "Rehabilitation patient",
+      "context": "{{phase}} · {{week}}"
+    },
+    "rehabPhase": {
+      "phase2": "Phase 2"
+    },
+    "mock": {
+      "goal": "Improve ROM & strength",
+      "diagnosis": "ACL Partial Tear",
+      "clinicalNote": "Continue ROM training, improving well."
+    },
+    "insight": {
+      "title": "KneeGuide Insight",
+      "overview": "You're keeping up with {{percent}}% of this week's program during {{phase}} — solid consistency.",
+      "medical": "Your current rehabilitation phase ({{phase}}) matches your latest clinical note — keep following your prescribed program.",
+      "rehab": "You've completed {{percent}}% of this week's rehab program. Keep up the consistency to stay on track.",
+      "rehabWithLeader": "You've completed {{percent}}% of this week's rehab program, and {{exerciseName}} has shown the strongest movement quality recently.",
+      "deviceConnected": "Your KneeGuide sensor ({{name}}) is connected. You're ready to begin today's rehabilitation session."
+    },
+    "overview": {
+      "recoveryProfile": {
+        "title": "Recovery Profile",
+        "diagnosis": "Diagnosis",
+        "phase": "Rehabilitation phase",
+        "week": "Recovery week",
+        "surgeryDate": "Surgery date"
+      },
+      "personal": {
+        "title": "Personal",
+        "age": "Age",
+        "ageValue": "{{count}} years",
+        "height": "Height",
+        "heightValue": "{{value}} cm",
+        "weight": "Weight",
+        "weightValue": "{{value}} kg",
+        "goal": "Recovery goal"
+      },
+      "careTeam": {
+        "title": "Care Team",
+        "nextAppointment": "Next appointment: {{date}} at {{time}}",
+        "noAppointment": "No upcoming appointment scheduled",
+        "viewAppointments": "View appointments"
+      }
+    },
+    "medical": {
+      "title": "Medical Information",
+      "diagnosis": "Diagnosis",
+      "phase": "Rehabilitation",
+      "surgeryDate": "Surgery",
+      "note": "Latest clinical note",
+      "viewReports": "View recovery reports"
+    },
+    "rehab": {
+      "title": "Rehabilitation Program",
+      "exercises": "Exercises",
+      "sets": "Total sets",
+      "duration": "Duration",
+      "durationValue": "~{{count}} min",
+      "phase": "Phase",
+      "setsByReps": "{{sets}} × {{reps}}",
+      "openSession": "Open today's rehabilitation session"
+    },
+    "devices": {
+      "title": "Knee Sensor Device",
+      "subtitle": "Connect your KneeGuide Bluetooth sensor to sync your movement data.",
+      "connected": "Connected",
+      "disconnect": "Disconnect",
+      "emptyTitle": "No knee sensor connected",
+      "emptyCopy": "Scan for nearby devices to connect your KneeGuide sensor and start syncing movement data.",
+      "scan": "Scan for devices",
+      "scanning": "Searching for nearby devices...",
+      "signal": "Signal: {{value}} dBm",
+      "connect": "Connect",
+      "connecting": "Connecting..."
+    },
+    "preferences": {
+      "language": {
+        "title": "Language",
+        "subtitle": "Choose the language KneeGuide displays across your Patient Dashboard.",
+        "en": "English",
+        "ar": "العربية"
+      },
+      "theme": {
+        "title": "Appearance",
+        "subtitle": "Choose how the Patient Dashboard looks. System follows your device setting.",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    },
+    "security": {
+      "password": {
+        "title": "Password",
+        "account": "Account email",
+        "change": "Change password",
+        "unavailable": "Password changes aren't available yet."
+      },
+      "session": {
+        "title": "Current Session",
+        "device": "This device",
+        "current": "Active now",
+        "signOut": "Sign out"
+      }
+    }
+  },
   "patientBottomNav": {
     "navLabel": "Patient navigation",
     "home": "Home",
