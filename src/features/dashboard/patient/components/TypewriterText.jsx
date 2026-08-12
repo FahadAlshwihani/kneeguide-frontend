@@ -37,8 +37,16 @@ const segmentGraphemes = (str) => {
  * available immediately — so assistive tech never receives a stream of
  * per-character DOM mutations, matching the "no noisy typewriter
  * announcements" requirement without losing the message itself.
+ *
+ * `visuallyHiddenClassName` defaults to `"patient-visually-hidden"`
+ * (unchanged from before this prop existed — every existing Patient call
+ * site keeps working identically) — the class that actually hides that
+ * span is scoped to `.patient-shell` (patientTokens.css), so a consumer
+ * OUTSIDE that scope (e.g. Doctor Home, which reuses this otherwise fully
+ * generic component) must pass its own equivalent utility class instead of
+ * silently rendering visible duplicate text.
  */
-const TypewriterText = ({ text, as: Tag = "p", className = "", speed = 26, onComplete, dir }) => {
+const TypewriterText = ({ text, as: Tag = "p", className = "", speed = 26, onComplete, dir, visuallyHiddenClassName = "patient-visually-hidden" }) => {
   const graphemes = useMemo(() => segmentGraphemes(text), [text]);
   const reducedMotion = prefersReducedMotion();
 
@@ -79,7 +87,7 @@ const TypewriterText = ({ text, as: Tag = "p", className = "", speed = 26, onCom
         {visibleText}
         {!done && <span className="typewriter-cursor" />}
       </span>
-      <span className="patient-visually-hidden">{text}</span>
+      <span className={visuallyHiddenClassName}>{text}</span>
     </Tag>
   );
 };

@@ -143,11 +143,19 @@ const DoctorHomeAssistant = ({ onModeChange }) => {
   const { user } = useAuth();
   const reducedMotion = prefersReducedMotion();
 
-  const [{ conversations: initialConversations, activeConversationId: initialActiveId }] = useState(buildInitialConversations);
-  const [conversations, setConversations] = useState(initialConversations);
-  const [activeConversationId, setActiveConversationId] = useState(
-    () => (initialConversations.some((c) => c.id === initialActiveId) ? initialActiveId : initialConversations[initialConversations.length - 1].id)
-  );
+  // Computed exactly once (mock history + either a restored live
+  // conversation or a fresh draft) — a ref, not two independent useState
+  // lazy initializers, so localStorage/mock-history seeding never runs
+  // twice on the same mount.
+  const initialStateRef = useRef(null);
+  if (initialStateRef.current === null) {
+    initialStateRef.current = buildInitialConversations();
+  }
+  const [conversations, setConversations] = useState(() => initialStateRef.current.conversations);
+  const [activeConversationId, setActiveConversationId] = useState(() => {
+    const { conversations: seeded, activeConversationId: storedId } = initialStateRef.current;
+    return seeded.some((conversation) => conversation.id === storedId) ? storedId : seeded[seeded.length - 1].id;
+  });
   const [inputValue, setInputValue] = useState("");
   const [orbState, setOrbState] = useState("idle");
   const [lastActionId, setLastActionId] = useState(null);

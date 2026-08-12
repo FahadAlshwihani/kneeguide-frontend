@@ -1,0 +1,432 @@
+/* Doctor Home — the Clinical Assistant IS the page. Restrained per the
+   same direction Patient Home already established: the Orb is the one
+   expressive element, everything else is quiet typography and flat, low-
+   contrast surfaces. Reads exclusively from the EXISTING global tokens
+   (index.css :root), never a new Doctor-only token layer and never
+   --patient-*. Two presentation modes over the same markup family
+   (.doctor-assistant--welcome / --conversation), same reasoning as
+   PatientHomeAssistant.css: `mode` is derived, never separate state. */
+
+.doctor-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.doctor-home-workspace {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  min-height: 0;
+  font-family: var(--font-product);
+}
+
+.doctor-mobile-toolbar {
+  display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media (max-width: 1023.98px) {
+  .doctor-mobile-toolbar {
+    display: flex;
+  }
+}
+
+.doctor-assistant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.doctor-assistant--conversation {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  gap: 16px;
+}
+
+/* ---------- Welcome: Orb + greeting + Clinical Brief ---------- */
+.doctor-assistant-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.doctor-assistant-greeting {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.4vw, 1.75rem);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.doctor-assistant-message {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  max-width: 56ch;
+}
+
+.doctor-brief-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.doctor-brief-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 92px;
+  padding: 10px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.doctor-brief-chip--attention {
+  border-color: var(--color-warning);
+}
+
+.doctor-brief-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.doctor-brief-chip--attention .doctor-brief-value {
+  color: var(--color-warning);
+}
+
+.doctor-brief-label {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+}
+
+.doctor-assistant-prompt {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ---------- Conversation: compact identity header ---------- */
+.doctor-assistant-header {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.doctor-assistant-identity-label {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+/* ---------- Conversation transcript (the ONE vertical scroller) ---------- */
+.doctor-chat-history {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  text-align: start;
+}
+
+.doctor-assistant--conversation .doctor-chat-history {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-block: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.doctor-assistant--conversation .doctor-chat-history::-webkit-scrollbar {
+  width: 6px;
+}
+
+.doctor-assistant--conversation .doctor-chat-history::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.doctor-assistant--conversation .doctor-chat-history::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.doctor-chat-turn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 88%;
+}
+
+.doctor-chat-turn--user {
+  align-self: flex-end;
+}
+
+.doctor-chat-bubble {
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-soft);
+  color: var(--color-heading);
+  font-size: 0.9rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.doctor-chat-turn--assistant {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.doctor-chat-turn-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.doctor-chat-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.doctor-chat-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.doctor-chat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.doctor-chat-action-btn {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.doctor-chat-action-btn:hover {
+  background: var(--color-surface-soft);
+  border-color: var(--color-primary-soft);
+}
+
+.doctor-chat-action-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Footer: composer + follow-up suggestions ---------- */
+.doctor-assistant-footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.doctor-assistant-form {
+  width: 100%;
+}
+
+.doctor-assistant-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px;
+  padding-inline-start: 16px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: border-color 160ms ease;
+}
+
+.doctor-assistant-input-row:focus-within {
+  border-color: var(--color-primary);
+}
+
+.doctor-assistant-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  padding-block: 8px;
+}
+
+.doctor-assistant-input::placeholder {
+  color: var(--color-muted);
+}
+
+.doctor-assistant-send {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.doctor-assistant-send:hover {
+  background: var(--color-primary-hover, var(--color-primary-strong));
+}
+
+.doctor-assistant-send:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.doctor-assistant-send svg {
+  width: 16px;
+  height: 16px;
+}
+
+[dir="rtl"] .doctor-assistant-send svg {
+  transform: scaleX(-1);
+}
+
+/* ---------- Suggestions ---------- */
+.doctor-assistant-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.doctor-assistant-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+  white-space: nowrap;
+}
+
+.doctor-assistant-chip:hover {
+  background: var(--color-surface-soft);
+}
+
+.doctor-assistant-chip:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.doctor-assistant-chip svg {
+  width: 14px;
+  height: 14px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.doctor-assistant--conversation .doctor-assistant-suggestions {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  justify-content: flex-start;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.doctor-assistant--conversation .doctor-assistant-suggestions::-webkit-scrollbar {
+  display: none;
+}
+
+.doctor-assistant--conversation .doctor-assistant-chip {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 480px) {
+  .doctor-assistant-message {
+    max-width: 32ch;
+  }
+
+  .doctor-chat-turn {
+    max-width: 94%;
+  }
+
+  .doctor-assistant-suggestions {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .doctor-assistant-suggestions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .doctor-assistant-chip {
+    flex-shrink: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doctor-history-rail,
+  .doctor-assistant-input-row,
+  .doctor-assistant-send,
+  .doctor-assistant-chip,
+  .doctor-chat-action-btn {
+    transition-duration: 1ms;
+  }
+}
