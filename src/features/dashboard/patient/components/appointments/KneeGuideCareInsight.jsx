@@ -2,7 +2,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import KneeGuideInsightCard from "../exercises/KneeGuideInsightCard";
 import PatientButton from "../PatientButton";
-import "./KneeGuideCareInsight.css";
 
 /**
  * "KneeGuide Care Insight" — ONE restrained, deterministic insight

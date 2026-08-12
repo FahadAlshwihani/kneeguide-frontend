@@ -85,7 +85,11 @@ const atTime = (date, hours, minutes = 0) => {
 const HALF_HOUR_MS = 30 * 60000;
 
 const buildFixtureAppointments = (referenceDate) => {
-  const confirmedDay = dayOffset(7, referenceDate);
+  // Kept within the AvailabilityPicker's default 7-day window (days 0-6)
+  // so this conflict is actually visible/demonstrable when requesting a
+  // new appointment (Section 51) — a confirmed slot exactly at the edge
+  // of or past that window would never show as blocked in the picker.
+  const confirmedDay = dayOffset(5, referenceDate);
   const confirmedStart = atTime(confirmedDay, 10, 0);
 
   const alternativeRequestedDay = dayOffset(3, referenceDate);

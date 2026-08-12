@@ -37,24 +37,30 @@ import PatientButton from "../components/PatientButton";
 const PatientAppointments = () => {
   const { t } = useTranslation();
 
-  const [refreshKey, setRefreshKey] = useState(0);
+  // Only the setter is used — bumping this forces a re-render (which is
+  // all `refresh()` needs) after a mutation writes to localStorage; the
+  // value itself is never read.
+  const [, setRefreshKey] = useState(0);
   const [detailsAppointment, setDetailsAppointment] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [requestFlow, setRequestFlow] = useState({ open: false, mode: "new", rescheduleAppointmentId: null, initialReasonCode: null, initialNote: "" });
 
   const referenceDate = useMemo(() => new Date(), []);
 
-  // `refreshKey` is the only reason each of these re-runs after mount —
-  // the imported service functions themselves are stable module
-  // references, not reactive values react-hooks/exhaustive-deps needs
-  // listed.
-  const appointments = useMemo(() => getAllAppointments(referenceDate), [referenceDate, refreshKey]);
-  const nextAppointment = useMemo(() => getNextConfirmedAppointment(referenceDate), [referenceDate, refreshKey]);
-  const requestAppointments = useMemo(() => getRequestAppointments(referenceDate), [referenceDate, refreshKey]);
-  const upcomingAppointments = useMemo(() => getUpcomingAppointments(referenceDate), [referenceDate, refreshKey]);
-  const pastAppointments = useMemo(() => getPastAppointments(referenceDate), [referenceDate, refreshKey]);
+  // Deliberately NOT memoized on `refreshKey` — these are cheap
+  // synchronous reads/filters over a handful of appointments, so there's
+  // no real cost to recomputing them every render, and it sidesteps the
+  // awkward "bump a counter just to force useMemo to re-run" pattern
+  // entirely. `refreshKey` itself only exists to trigger a re-render
+  // after a mutation (see `refresh` below); React re-running this
+  // function body on that re-render is all that's actually needed.
+  const appointments = getAllAppointments(referenceDate);
+  const nextAppointment = getNextConfirmedAppointment(referenceDate);
+  const requestAppointments = getRequestAppointments(referenceDate);
+  const upcomingAppointments = getUpcomingAppointments(referenceDate);
+  const pastAppointments = getPastAppointments(referenceDate);
 
-  const careInsight = useMemo(() => getCareInsight(appointments, referenceDate), [appointments, referenceDate]);
+  const careInsight = getCareInsight(appointments, referenceDate);
 
   const refresh = () => setRefreshKey((value) => value + 1);
 
