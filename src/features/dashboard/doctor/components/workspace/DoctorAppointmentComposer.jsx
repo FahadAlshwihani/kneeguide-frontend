@@ -6,6 +6,7 @@ import "../../styles/DoctorPatientWorkspace.css";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { DEFAULT_CLINICIAN_ID } from "../../../../../domain/rehab/demoData/patients";
 import { APPOINTMENT_TYPE } from "../../../../../domain/rehab/demoData/appointments";
+import { DOCTOR_AVAILABILITY_STATUS, WEEKDAY_ORDER } from "../../../../../domain/rehab/rehabEnums";
 import { getPendingAppointmentRequests } from "../../assistant/doctorClinicalInsights";
 
 const DURATION_OPTIONS_MINUTES = [30, 45, 60];
@@ -56,6 +57,24 @@ const DoctorAppointmentComposer = ({ isOpen, onClose, patientId: lockedPatientId
   const existingPendingForPatient = patientId
     ? getPendingAppointmentRequests().find((entry) => entry.appointment.patientId === patientId)
     : null;
+
+  // Doctor Profile brief, Section 14 — the composer must not casually
+  // present the doctor as normally available. This is informational only
+  // (never blocks submit, unlike the hard scheduling-conflict check below)
+  // since an availability status/working-hours window is an
+  // administrative default the doctor can knowingly override.
+  const doctorProfile = rehabRepository.getDoctorProfile();
+  const availabilityWarning = (() => {
+    if (!date || !time) return null;
+    if (doctorProfile.availabilityStatus !== DOCTOR_AVAILABILITY_STATUS.AVAILABLE) {
+      return { type: "status", status: doctorProfile.availabilityStatus };
+    }
+    const dayKey = WEEKDAY_ORDER[new Date(`${date}T00:00:00`).getDay()];
+    const hours = doctorProfile.workingHours[dayKey];
+    if (!hours || !hours.enabled) return { type: "closed", dayKey };
+    if (time < hours.start || time >= hours.end) return { type: "outsideHours", dayKey, start: hours.start, end: hours.end };
+    return null;
+  })();
 
   const handleClose = () => {
     onClose();
@@ -183,6 +202,23 @@ const DoctorAppointmentComposer = ({ isOpen, onClose, patientId: lockedPatientId
         <label htmlFor="dac-note">{t("doctorPatientWorkspace.appointments.fields.note")}</label>
         <textarea id="dac-note" rows={3} value={note} onChange={(event) => setNote(event.target.value)} />
       </div>
+
+      {availabilityWarning && (
+        <div className="dac-existing-request-banner">
+          <p>
+            {availabilityWarning.type === "status" &&
+              t("doctorAppointments.composer.availabilityWarnings.status", { name: doctorProfile.name, status: t(`doctorProfile.status.${availabilityWarning.status}`) })}
+            {availabilityWarning.type === "closed" &&
+              t("doctorAppointments.composer.availabilityWarnings.closed", { name: doctorProfile.name, day: t(`doctorProfile.workingHours.days.${availabilityWarning.dayKey}`) })}
+            {availabilityWarning.type === "outsideHours" &&
+              t("doctorAppointments.composer.availabilityWarnings.outsideHours", {
+                name: doctorProfile.name,
+                start: new Date(`2000-01-01T${availabilityWarning.start}`).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
+                end: new Date(`2000-01-01T${availabilityWarning.end}`).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
+              })}
+          </p>
+        </div>
+      )}
 
       {error && <p className="dw-field-error">{error}</p>}
       {conflict && (

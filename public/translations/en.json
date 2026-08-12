@@ -816,12 +816,10 @@
   },
   "doctorProfile": {
     "title": "Doctor Profile",
-    "subtitle": "Manage your professional information, contact details, and availability.",
-    "liveProfile": "Live profile",
-    "lastSynced": "Last synced: 2 min ago (mock)",
-    "saveMockMessage": "Profile updated (mock). In real app, this will be saved to backend.",
-    "professionalDetails": "Professional details",
-    "visibleToAdmins": "Visible to clinic admins",
+    "subtitle": "Manage your professional information, contact details, and appointment availability.",
+    "saveSuccess": "Profile updated.",
+    "professionalInfo": "Professional information",
+    "visibleToAdmins": "Visible to clinic administrators",
     "contactAvailability": "Contact & availability",
     "labels": {
       "fullName": "Full name",
@@ -835,23 +833,49 @@
       "location": "Location / city",
       "availabilityStatus": "Availability status"
     },
-    "placeholders": {
-      "bio": "Describe your expertise, approach, and focus areas."
+    "errors": {
+      "required": "This field is required.",
+      "yearsExperience": "Enter a whole number between 0 and 70.",
+      "licenseNumber": "Enter a valid license number (at least 3 characters).",
+      "email": "Enter a valid email address.",
+      "phone": "Enter a valid phone number.",
+      "bioLength": "Keep your bio under {{max}} characters.",
+      "workingHours": "Each open day's end time must be later than its start time."
     },
     "status": {
       "available": "Available for appointments",
       "busy": "Busy / in sessions",
       "away": "Away"
     },
-    "workHoursTitle": "Working hours (mock)",
-    "workHoursNote": "In real implementation, working hours will be editable and connected to appointment booking rules.",
-    "saveChangesTitle": "Save changes",
-    "saveChangesSubtitle": "These settings affect how your profile appears in KneeGuide system.",
-    "saveProfile": "Save profile",
-    "saving": "Saving...",
-    "reset": "Reset to default (mock)",
-    "changePhoto": "Change photo (mock)",
-    "mockNote": "* This page currently uses mock data only. Later it will be bound to real API endpoints."
+    "avatar": {
+      "change": "Change photo",
+      "remove": "Remove photo",
+      "errors": {
+        "type": "Please choose a JPG, PNG, or WEBP image.",
+        "size": "Please choose an image under 1.5MB."
+      }
+    },
+    "workingHours": {
+      "title": "Working hours",
+      "copySunday": "Copy Sunday hours to other open days",
+      "closed": "Closed",
+      "startLabel": "{{day}} start time",
+      "endLabel": "{{day}} end time",
+      "conflictWarning": "{{count}} existing appointment(s) fall outside these updated working hours.",
+      "reviewAppointments": "Review appointments",
+      "saveAnyway": "Save anyway",
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday"
+      }
+    },
+    "cancel": "Cancel",
+    "saveChanges": "Save changes"
   },
   "patientDashboard": {
     "greeting": {
