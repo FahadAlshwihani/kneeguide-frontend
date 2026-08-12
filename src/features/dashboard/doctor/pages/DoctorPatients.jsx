@@ -12,6 +12,8 @@ import {
   ATTENTION_REASON_I18N_KEY,
 } from "../../../../domain/rehab/rehabEnums";
 import { ROUTES } from "../../../../utils/routes";
+import { buildWorklistInsight } from "../assistant/doctorAssistantInsights";
+import DoctorClinicalOrb from "../components/assistant/DoctorClinicalOrb";
 import "../styles/DoctorPatients.css";
 
 /**
@@ -112,6 +114,32 @@ const DoctorPatients = () => {
             <span className="dp-summary-value">{summary.reportsAwaitingReview}</span>
             <span className="dp-summary-label">{t("doctorPatients.summary.reportsAwaitingReview")}</span>
           </div>
+        </div>
+
+        {(() => {
+          const worklistInsight = buildWorklistInsight(worklist);
+          return (
+            <div className="dp-assistant-summary">
+              <DoctorClinicalOrb state="idle" size="tiny" className="dp-assistant-summary-orb" />
+              <p>{t(worklistInsight.messageKey, worklistInsight.values)}</p>
+              {worklistInsight.values.attentionCount > 0 && (
+                <button type="button" className="dp-assistant-summary-link" onClick={() => setFilter("needsAttention")}>
+                  {t("doctorAssistantInsights.worklist.showAttention")}
+                </button>
+              )}
+              {worklistInsight.values.reportCount > 0 && (
+                <button type="button" className="dp-assistant-summary-link" onClick={() => setFilter("reportAwaitingReview")}>
+                  {t("doctorAssistantInsights.worklist.showReports")}
+                </button>
+              )}
+              {worklistInsight.values.appointmentCount > 0 && (
+                <button type="button" className="dp-assistant-summary-link" onClick={() => setFilter("pendingAppointment")}>
+                  {t("doctorAssistantInsights.worklist.showAppointments")}
+                </button>
+              )}
+            </div>
+          );
+        })()}
         </div>
 
         <div className="dp-controls">
