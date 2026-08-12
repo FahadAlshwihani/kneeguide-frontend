@@ -14,6 +14,15 @@
   height: clamp(88px, 8vw, 120px);
 }
 
+/* The Assistant Insight Card's own size (visual-polish pass) — bigger
+   than --compact (which was tuned for the Drawer's small welcome state),
+   smaller than --large (the Doctor Home hero moment): the Orb should read
+   as the card's visual "face", not a decoration above the text. */
+.doctor-clinical-orb--insight {
+  width: clamp(120px, 11vw, 170px);
+  height: clamp(120px, 11vw, 170px);
+}
+
 /* Fixed-size, not clamp()-based like the other two — this variant only
    ever appears in small fixed-height chrome (Assistant Drawer header,
    Topbar launcher), never a viewport-proportional layout, so a fixed
@@ -32,5 +41,10 @@
   .doctor-clinical-orb--compact {
     width: clamp(64px, 20vw, 88px);
     height: clamp(64px, 20vw, 88px);
+  }
+
+  .doctor-clinical-orb--insight {
+    width: clamp(90px, 24vw, 120px);
+    height: clamp(90px, 24vw, 120px);
   }
 }

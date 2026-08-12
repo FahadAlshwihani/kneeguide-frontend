@@ -6,21 +6,32 @@ import "./AssistantInsightCard.css";
 
 /**
  * The ONE reusable "clinical decision support" presentation component for
- * every KneeGuide Assistant insight surfaced inside the Doctor Patient
- * Workspace (Overview/Rehabilitation/Sessions/Reports/Appointments) — a
- * small identity + a translated sentence (or a short sequence of them) +
- * an optional severity indicator + up to a few real actions. Never a
- * giant chatbot block: no composer, no history, no orb animation beyond
- * the shared tiny `DoctorClinicalOrb` identity mark already used by the
- * Assistant Drawer/Home.
+ * every KneeGuide Assistant insight in the Doctor Patient Workspace.
+ * Visual-polish-pass composition (rebuilt from the original tiny-Orb-
+ * above-text layout): an Orb "face" column beside a content column —
  *
- * `lines` is an array of `{ messageKey, values }` so a tab can compose
- * 1-3 short sentences (Section 5.J's "combine related facts") without
- * concatenating raw strings in JS — every piece still goes through
- * `t()`. `actions` is the same `{ id, labelKey, routeTo }` shape used
- * throughout the Assistant (doctorAssistantInsights.js), so a click here
- * is a real `navigate()` into an existing Workspace tab — never a fake
- * button.
+ *   [ ORB ]   KNEEGUIDE ASSISTANT
+ *             concise insight
+ *             secondary insight
+ *             [ actions ]
+ *
+ * `flex-direction: row` (AssistantInsightCard.css) is what mirrors this
+ * correctly in RTL with zero JS/branching — flexbox's main axis for
+ * `row` already follows the document's inline direction, so the Orb ends
+ * up on the correct logical "start" side in both languages automatically
+ * (verified: the Orb itself never mirrors, only its position swaps).
+ *
+ * `lines` is an array of `{ messageKey, values }` so a caller can compose
+ * up to a few short sentences (never a bullet list, never nested cards
+ * per sentence — see doctorAssistantInsights.js's own message-key
+ * catalog) without concatenating raw strings here; every piece still
+ * resolves through `t()`. `actions` is the same `{ id, labelKey, routeTo }`
+ * shape used throughout the Assistant.
+ *
+ * This component is rendered ONCE per Workspace (DoctorPatientWorkspace.jsx
+ * hoists it above the swapped tab content specifically so the Orb/WebGL
+ * canvas inside it never unmounts on tab navigation — see that file's own
+ * comment for the full flicker root-cause writeup).
  */
 const AssistantInsightCard = ({ titleKey = "doctorAssistantInsights.cardTitle", severity = "info", lines, actions = [], className = "" }) => {
   const { t } = useTranslation();
@@ -30,28 +41,31 @@ const AssistantInsightCard = ({ titleKey = "doctorAssistantInsights.cardTitle", 
 
   return (
     <section className={`assistant-insight-card assistant-insight-card--${severity} ${className}`.trim()} aria-label={t(titleKey)}>
-      <div className="assistant-insight-card-header">
-        <DoctorClinicalOrb state="idle" size="tiny" className="assistant-insight-card-orb" />
-        <span className="assistant-insight-card-title">{t(titleKey)}</span>
+      <div className="assistant-insight-card-orb-col">
+        <DoctorClinicalOrb state="idle" size="insight" />
       </div>
 
-      <div className="assistant-insight-card-body">
-        {lines.map((line, index) => (
-          <p key={`${line.messageKey}-${index}`} dir="auto">
-            {t(line.messageKey, line.values)}
-          </p>
-        ))}
-      </div>
+      <div className="assistant-insight-card-content">
+        <span className="assistant-insight-card-label">{t(titleKey)}</span>
 
-      {actions.length > 0 && (
-        <div className="assistant-insight-card-actions">
-          {actions.map((action) => (
-            <button key={action.id} type="button" className="assistant-insight-card-action" onClick={() => navigate(action.routeTo)}>
-              {t(action.labelKey)}
-            </button>
+        <div className="assistant-insight-card-body">
+          {lines.map((line, index) => (
+            <p key={`${line.messageKey}-${index}`} dir="auto" className={index === 0 ? "assistant-insight-card-primary" : "assistant-insight-card-secondary"}>
+              {t(line.messageKey, line.values)}
+            </p>
           ))}
         </div>
-      )}
+
+        {actions.length > 0 && (
+          <div className="assistant-insight-card-actions">
+            {actions.map((action) => (
+              <button key={action.id} type="button" className="assistant-insight-card-action" onClick={() => navigate(action.routeTo)}>
+                {t(action.labelKey)}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 };
