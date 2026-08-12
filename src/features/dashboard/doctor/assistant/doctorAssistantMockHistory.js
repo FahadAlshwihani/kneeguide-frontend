@@ -1,5 +1,5 @@
 import { getAhmedTrend, getPatientsNeedingAttention } from "./doctorClinicalInsights";
-import { buildAttentionItems, ASSISTANT_ACTION_TYPES } from "./doctorAssistantActions";
+import { buildAttentionItems } from "./doctorAssistantActions";
 import { ROUTES } from "../../../../utils/routes";
 import { getPatientById } from "../data/doctorClinicalMockData";
 
@@ -107,7 +107,7 @@ const buildAttentionConversation = () => {
     messages: [
       staticMessage("mock-dpa-1", "user", "Who should I review today?"),
       staticMessage("mock-dpa-2", "assistant", `${entries.length} patients stand out in today's rehabilitation data:`, {
-        widget: { type: ASSISTANT_ACTION_TYPES.DISPLAY && "attentionList", items: buildAttentionItems(entries) },
+        widget: { type: "attentionList", items: buildAttentionItems(entries) },
       }),
       staticMessage("mock-dpa-3", "user", "What about Sara specifically — is it serious?"),
       staticMessage(
