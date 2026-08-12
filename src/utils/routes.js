@@ -18,11 +18,11 @@ export const ROUTES = {
   APPOINTMENTS: "/doctor/appointments",
   DOCTOR_PROFILE: "/doctor/profile",
 
-  // Patient-specific (doctor view)
+  // Patient Workspace (doctor view) — ONE route with local tabs
+  // (?tab=overview|rehabilitation|sessions|reports|appointments|clinicalRecord),
+  // replacing the old separate profile/reports/exercises/new-appointment
+  // routes (Section 9 of the Doctor Patients module brief).
   DOCTOR_PATIENT_PROFILE: "/doctor/patient/:id",
-  DOCTOR_PATIENT_REPORTS: "/doctor/patient/:id/reports",
-  DOCTOR_PATIENT_EXERCISES: "/doctor/patient/:id/exercises",
-  DOCTOR_PATIENT_NEW_APPOINTMENT: "/doctor/patient/:id/new-appointment",
 
   NOT_FOUND: "/404",
 };

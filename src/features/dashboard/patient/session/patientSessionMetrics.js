@@ -71,7 +71,7 @@ export const getSessionRomTrend = (exercises, plan) => {
     .map((exercise) => {
       if (exercise.setMetrics.length === 0) return null;
       const planEntry = plan.find((item) => item.exerciseId === exercise.id);
-      if (!planEntry) return null;
+      if (!planEntry || typeof planEntry.previous?.rom !== "number") return null;
       return getAverageRom(exercise.setMetrics) - planEntry.previous.rom;
     })
     .filter((value) => value !== null);

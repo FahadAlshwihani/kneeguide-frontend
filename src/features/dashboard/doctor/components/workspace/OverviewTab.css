@@ -1,0 +1,96 @@
+.ov-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.ov-facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.ov-facts dt {
+  color: var(--color-muted);
+}
+
+.ov-facts dd {
+  margin: 0;
+  color: var(--color-heading);
+  font-weight: 600;
+  text-align: end;
+}
+
+.ov-trend--improving {
+  color: var(--color-success);
+}
+
+.ov-trend--stable {
+  color: var(--color-info);
+}
+
+.ov-trend--requiresReview {
+  color: var(--color-warning);
+}
+
+.ov-visualization-note {
+  margin: 12px 0 0;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.ov-attention-section {
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+.ov-reason-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ov-reason-list li {
+  background: rgba(234, 179, 8, 0.1);
+  color: var(--color-warning);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.ov-activity-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ov-activity-list li {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+  padding-block: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ov-activity-list li:last-child {
+  border-bottom: none;
+}
+
+.ov-activity-date {
+  flex: 0 0 70px;
+  color: var(--color-muted);
+}
+
+.ov-activity-text {
+  color: var(--color-text);
+}

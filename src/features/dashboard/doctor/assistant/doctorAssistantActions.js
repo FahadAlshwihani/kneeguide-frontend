@@ -36,10 +36,19 @@ export const ASSISTANT_ACTION_TYPES = {
   DISPLAY: "DISPLAY",
 };
 
+// "ahmed-ali" matches doctorClinicalMockData.js's own AHMED.id (that
+// module is a separate, Assistant-only mock — see its header comment —
+// not yet migrated onto the shared rehab domain's canonical
+// "patient-ahmed" id; full migration is tracked as follow-up work).
+// Route targets below DO use the canonical workspace id/route, since
+// that is what actually exists post-refactor (Section 9: one Workspace
+// route with local tabs, replacing the old separate profile/reports/
+// exercises routes this file used to point at).
 const AHMED_ID = "ahmed-ali";
-const ahmedProfileRoute = () => ROUTES.DOCTOR_PATIENT_PROFILE.replace(":id", "1");
-const ahmedReportsRoute = () => ROUTES.DOCTOR_PATIENT_REPORTS.replace(":id", "1");
-const ahmedExercisesRoute = () => ROUTES.DOCTOR_PATIENT_EXERCISES.replace(":id", "1");
+const CANONICAL_AHMED_ROUTE_ID = "patient-ahmed";
+const ahmedProfileRoute = () => ROUTES.DOCTOR_PATIENT_PROFILE.replace(":id", CANONICAL_AHMED_ROUTE_ID);
+const ahmedReportsRoute = () => `${ahmedProfileRoute()}?tab=reports`;
+const ahmedExercisesRoute = () => `${ahmedProfileRoute()}?tab=rehabilitation`;
 
 const severityToKey = (severity) => {
   switch (severity) {

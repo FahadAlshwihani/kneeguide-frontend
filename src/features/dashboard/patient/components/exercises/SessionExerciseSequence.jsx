@@ -224,7 +224,11 @@ const SessionExerciseSequence = ({
                     <h3 dir="auto">{name}</h3>
                     <ExerciseInfoButton exerciseName={name} onClick={() => onViewDetails(planItem)} />
                   </div>
-                  <p>{t("patientExercises.session.setsReps", { sets: planItem.sets, reps: planItem.repsPerSet })}</p>
+                  <p>
+                    {planItem.repsPerSet != null
+                      ? t("patientExercises.session.setsReps", { sets: planItem.sets, reps: planItem.repsPerSet })
+                      : t("patientExercises.session.setsDuration", { sets: planItem.sets, seconds: planItem.durationSeconds })}
+                  </p>
                 </div>
                 <span className="session-exercise-step-badge">
                   {isCompleted && <LuCheck aria-hidden="true" />}
@@ -243,10 +247,13 @@ const SessionExerciseSequence = ({
                   {planItem.previous && (
                     <>
                       {" · "}
-                      {t("patientExercises.session.previousSession")}: {t(`patientExercises.session.quality.${planItem.previous.qualityKey}`)},{" "}
-                      <span dir="ltr">
-                        {t("patientExercises.session.previousRom", { value: planItem.previous.rom })}
-                      </span>
+                      {t("patientExercises.session.previousSession")}: {t(`patientExercises.session.quality.${planItem.previous.qualityKey}`)}
+                      {typeof planItem.previous.rom === "number" && (
+                        <>
+                          ,{" "}
+                          <span dir="ltr">{t("patientExercises.session.previousRom", { value: planItem.previous.rom })}</span>
+                        </>
+                      )}
                     </>
                   )}
                 </p>

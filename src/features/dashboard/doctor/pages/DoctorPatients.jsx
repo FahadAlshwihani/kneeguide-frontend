@@ -190,7 +190,7 @@ const DoctorPatients = () => {
                   {priority.reasons.length > 0 && (
                     <ul className="dp-reasons">
                       {priority.reasons.slice(0, 2).map((reason) => (
-                        <li key={reason.code}>{t(`rehabDomain.attentionReason.${ATTENTION_REASON_KEY[reason.code]}`)}</li>
+                        <li key={reason.code}>{t(`rehabDomain.attentionReason.${ATTENTION_REASON_I18N_KEY[reason.code]}`)}</li>
                       ))}
                     </ul>
                   )}

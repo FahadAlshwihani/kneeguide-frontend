@@ -533,26 +533,218 @@
     }
   },
   "doctorPatients": {
-    "title": "قائمة المرضى",
-    "subtitle": "إدارة واستعراض جميع المرضى تحت رعايتك.",
-    "total": "الإجمالي",
-    "search": "ابحث باسم المريض...",
-    "id": "الرقم",
-    "age": "العمر",
-    "email": "البريد الإلكتروني",
-    "phone": "رقم الجوال",
-    "lastVisit": "آخر زيارة",
-    "recovery": "تحسن",
-    "risk": {
-      "low": "مخاطر منخفضة",
-      "medium": "مخاطر متوسطة",
-      "high": "مخاطر عالية"
+    "title": "المرضى",
+    "subtitle": "تابع قائمة مرضاك، وحدد من يحتاج الأولوية، وافتح السجل التأهيلي لأي مريض.",
+    "search": "ابحث بالاسم أو رقم المريض",
+    "empty": "لا يوجد مرضى مطابقون لهذه الفلاتر.",
+    "summary": {
+      "active": "المرضى النشطون",
+      "needAttention": "يحتاجون متابعة",
+      "pendingAppointments": "طلبات مواعيد قيد الانتظار",
+      "reportsAwaitingReview": "تقارير بانتظار المراجعة"
+    },
+    "filters": {
+      "label": "تصفية",
+      "all": "الكل",
+      "needsAttention": "يحتاج متابعة",
+      "stable": "مستقر",
+      "pendingAppointment": "موعد قيد الانتظار",
+      "reportAwaitingReview": "تقرير بانتظار المراجعة"
+    },
+    "sort": {
+      "label": "ترتيب حسب",
+      "priority": "الأولوية",
+      "activity": "آخر نشاط",
+      "name": "الاسم"
+    },
+    "metrics": {
+      "adherence": "الالتزام",
+      "latestPain": "آخر ألم",
+      "latestRom": "آخر مدى حركة"
+    },
+    "tags": {
+      "appointmentPending": "موعد قيد الانتظار",
+      "reportPending": "تقرير قيد الانتظار"
+    },
+    "activity": {
+      "none": "لا توجد جلسات بعد"
     },
     "actions": {
-      "profile": "عرض الملف",
+      "view": "عرض المريض"
+    },
+    "appointmentTypes": {
+      "rehabSession": "جلسة تأهيل"
+    }
+  },
+  "doctorPatientWorkspace": {
+    "tabsLabel": "أقسام مساحة عمل المريض",
+    "close": "إغلاق",
+    "done": "تم",
+    "cancel": "إلغاء",
+    "pendingAppointmentBanner": "لدى هذا المريض طلب موعد قيد الانتظار — راجعه في تبويب المواعيد.",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "rehabilitation": "التأهيل",
+      "sessions": "الجلسات",
       "reports": "التقارير",
-      "exercises": "التمارين",
-      "newAppointment": "موعد جديد"
+      "appointments": "المواعيد",
+      "clinicalRecord": "السجل السريري"
+    },
+    "header": {
+      "adherence": "التزام {{value}}%",
+      "editPlan": "تعديل برنامج التأهيل",
+      "scheduleAppointment": "جدولة موعد"
+    },
+    "overview": {
+      "clinicalStatus": "الحالة السريرية",
+      "diagnosis": "التشخيص",
+      "phase": "مرحلة التأهيل",
+      "week": "الأسبوع الحالي",
+      "weekValue": "الأسبوع {{number}}",
+      "clinician": "الطبيب المعالج",
+      "rehabProgress": "تقدم التأهيل",
+      "adherence": "الالتزام",
+      "sessionsThisWeek": "جلسات هذا الأسبوع",
+      "trend": "الاتجاه",
+      "latestMeasurements": "آخر القياسات",
+      "pain": "الألم",
+      "flexionRom": "مدى حركة الثني",
+      "movementQuality": "جودة الحركة",
+      "romVisualizationNote": "تصور مدى حركة الركبة — يعكس قياس آخر جلسة، وليس قراءة حية من مستشعر.",
+      "whyFlagged": "سبب تنبيه المتابعة",
+      "recentActivity": "النشاط الأخير",
+      "noActivity": "لا يوجد نشاط حديث بعد.",
+      "activity": {
+        "sessionCompleted": "اكتملت جلسة تأهيل",
+        "reportGenerated": "تم إنشاء تقرير تقدم",
+        "appointmentRequested": "تم طلب موعد"
+      }
+    },
+    "rehab": {
+      "currentPlan": "برنامج التأهيل الحالي",
+      "editPlan": "تعديل برنامج التأهيل",
+      "startDate": "بدأ في {{date}}",
+      "noExercises": "لا توجد تمارين موصوفة حاليًا.",
+      "remove": "إزالة التمرين",
+      "repsLine": "{{sets}} مجموعات × {{reps}} تكرار",
+      "durationLine": "{{sets}} مجموعات × {{seconds}} ثانية",
+      "holdLine": "ثبات {{seconds}} ثانية",
+      "frequencyLine": "{{count}} مرات/أسبوع",
+      "targetRomLine": "مدى الحركة المستهدف {{min}}°–{{max}}°",
+      "lastCompleted": "آخر إنجاز {{date}}",
+      "neverCompleted": "لم يُنجز بعد",
+      "activeExercises": "التمارين النشطة",
+      "addExercise": "إضافة تمرين",
+      "addToProgram": "إضافة للبرنامج",
+      "fields": {
+        "exercise": "التمرين",
+        "sets": "المجموعات",
+        "reps": "التكرارات",
+        "durationSeconds": "المدة (ثواني)",
+        "frequency": "التكرار (مرات/أسبوع)",
+        "holdSeconds": "الثبات (ثواني، اختياري)",
+        "targetRomMin": "أدنى مدى حركة مستهدف (اختياري)",
+        "targetRomMax": "أقصى مدى حركة مستهدف (اختياري)",
+        "instructions": "تعليمات (اختياري)"
+      },
+      "errors": {
+        "sets": "يجب أن تكون المجموعات رقمًا موجبًا.",
+        "reps": "يجب أن تكون التكرارات رقمًا موجبًا.",
+        "duration": "يجب أن تكون المدة رقمًا موجبًا بالثواني.",
+        "frequency": "يجب أن يكون التكرار بين 1 و7 جلسات أسبوعيًا."
+      }
+    },
+    "sessions": {
+      "empty": "لا توجد جلسات تأهيل مكتملة بعد.",
+      "markReviewed": "تمييز كمُراجَع",
+      "addNote": "إضافة ملاحظة سريرية (اختياري)",
+      "exerciseBreakdown": "تفصيل التمارين",
+      "source": "المصدر",
+      "sourceLive": "جلسة مريض حية",
+      "sourceHistorical": "سجل تاريخي",
+      "reviewed": "تمت المراجعة",
+      "awaitingReview": "بانتظار المراجعة",
+      "table": {
+        "date": "التاريخ",
+        "completion": "الإنجاز",
+        "pain": "الألم (قبل ← بعد)",
+        "rom": "مدى الحركة",
+        "review": "المراجعة"
+      }
+    },
+    "reports": {
+      "empty": "لم يتم إنشاء تقارير تأهيل لهذا المريض بعد.",
+      "generateNew": "إنشاء تقرير للفترة الحالية",
+      "markReviewed": "تمييز كمُراجَع",
+      "addNote": "إضافة ملاحظة الطبيب (اختياري)",
+      "reportTitle": "تقرير التأهيل",
+      "sessions": "الجلسات",
+      "adherence": "الالتزام",
+      "pain": "اتجاه الألم",
+      "rom": "اتجاه مدى الحركة",
+      "status": {
+        "awaiting_review": "بانتظار المراجعة",
+        "reviewed": "تمت المراجعة"
+      },
+      "flags": {
+        "painSpike": "ارتفاع الألم في آخر جلسة",
+        "romRegression": "تراجع طفيف في آخر مدى حركة"
+      }
+    },
+    "appointments": {
+      "empty": "لا توجد مواعيد بعد.",
+      "scheduleNew": "جدولة موعد",
+      "schedule": "جدولة",
+      "accept": "قبول",
+      "reject": "رفض",
+      "cancel": "إلغاء",
+      "proposeNewTime": "اقتراح وقت جديد",
+      "sendProposal": "إرسال الاقتراح",
+      "proposedTime": "الوقت المقترح",
+      "source": "المصدر: {{source}}",
+      "sourceValue": {
+        "patient": "طلبه المريض",
+        "doctor": "جدولة الطبيب",
+        "assistant": "طُلب عبر المساعد"
+      },
+      "status": {
+        "requested": "مطلوب",
+        "confirmed": "مؤكد",
+        "alternative_proposed": "تم اقتراح وقت جديد",
+        "declined": "مرفوض",
+        "completed": "مكتمل",
+        "cancelled": "ملغى"
+      },
+      "fields": {
+        "date": "التاريخ",
+        "time": "الوقت",
+        "type": "النوع",
+        "note": "ملاحظة (اختياري)"
+      },
+      "errors": {
+        "dateTime": "اختر تاريخًا ووقتًا.",
+        "invalidDate": "اختر تاريخًا ووقتًا قادمًا صالحًا."
+      }
+    },
+    "clinicalRecord": {
+      "notes": "الملاحظات السريرية",
+      "addNote": "إضافة ملاحظة سريرية",
+      "saveNote": "حفظ الملاحظة",
+      "noNotes": "لا توجد ملاحظات سريرية بعد.",
+      "clinicianOnly": "للطبيب فقط",
+      "files": "المستندات الطبية",
+      "noFiles": "لا توجد مستندات.",
+      "demoOnly": "تجريبي فقط",
+      "visitHistory": "سجل الزيارات",
+      "noVisits": "لا توجد زيارات سريرية مسجلة بعد.",
+      "visitTable": {
+        "date": "التاريخ",
+        "type": "النوع",
+        "status": "الحالة"
+      },
+      "errors": {
+        "emptyNote": "أدخل ملاحظة قبل الحفظ."
+      }
     }
   },
   "doctorProfile": {
@@ -818,6 +1010,7 @@
       "sessionTime": "وقت الجلسة",
       "elapsed": "مرّ {{time}}",
       "setsReps": "{{sets}} مجموعات × {{reps}} تكرار",
+      "setsDuration": "{{sets}} مجموعات × {{seconds}} ثانية",
       "target": "الهدف",
       "estimated": "المدة المتوقعة: {{minutes}} دقيقة",
       "previousSession": "الجلسة السابقة",

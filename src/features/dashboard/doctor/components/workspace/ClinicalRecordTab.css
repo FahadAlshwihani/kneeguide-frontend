@@ -1,0 +1,132 @@
+.cr-add-note {
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-block-end: 16px;
+}
+
+.cr-note-list,
+.cr-file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cr-note {
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.cr-note-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-block-end: 6px;
+}
+
+.cr-note-type {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.cr-note-visibility {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.cr-note-date {
+  margin-inline-start: auto;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+.cr-note-content {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.cr-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  color: var(--color-muted);
+}
+
+.cr-file-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.cr-file-name {
+  color: var(--color-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cr-file-meta {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+.cr-file-demo-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.cr-visit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cr-visit-table th {
+  text-align: start;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cr-visit-table td {
+  padding: 10px;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cr-visit-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cr-visit-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-success);
+  background: rgba(34, 197, 94, 0.12);
+  padding: 3px 8px;
+  border-radius: 999px;
+}

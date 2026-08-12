@@ -46,9 +46,11 @@ const staticMessage = (id, role, contentKey, values = {}, extra = {}) => ({
   ...extra,
 });
 
-const ahmedProfileRoute = ROUTES.DOCTOR_PATIENT_PROFILE.replace(":id", "1");
-const ahmedReportsRoute = ROUTES.DOCTOR_PATIENT_REPORTS.replace(":id", "1");
-const ahmedExercisesRoute = ROUTES.DOCTOR_PATIENT_EXERCISES.replace(":id", "1");
+// See doctorAssistantActions.js's own comment on the same routes for why
+// this is the canonical Workspace route/id, not the old separate pages.
+const ahmedProfileRoute = ROUTES.DOCTOR_PATIENT_PROFILE.replace(":id", "patient-ahmed");
+const ahmedReportsRoute = `${ahmedProfileRoute}?tab=reports`;
+const ahmedExercisesRoute = `${ahmedProfileRoute}?tab=rehabilitation`;
 
 const buildAhmedProgressConversation = () => {
   const ahmed = getPatientById("ahmed-ali");

@@ -1,14 +1,8 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_CLINICIAN } from "../../../../../domain/rehab/demoData/clinicians";
-import { TREND_DIRECTION } from "../../../../../domain/rehab/rehabEnums";
+import { TREND_DIRECTION_I18N_KEY, ATTENTION_REASON_I18N_KEY } from "../../../../../domain/rehab/rehabEnums";
 import "./OverviewTab.css";
-
-const TREND_KEY = {
-  [TREND_DIRECTION.IMPROVING]: "improving",
-  [TREND_DIRECTION.STABLE]: "stable",
-  [TREND_DIRECTION.REQUIRES_REVIEW]: "requiresReview",
-};
 
 const weekNumber = (programStartDate) => {
   const start = new Date(programStartDate);
@@ -78,7 +72,9 @@ const OverviewTab = ({ bundle }) => {
             </div>
             <div>
               <dt>{t("doctorPatientWorkspace.overview.trend")}</dt>
-              <dd className={`ov-trend ov-trend--${TREND_KEY[trendDirection]}`}>{t(`rehabDomain.trend.${TREND_KEY[trendDirection]}`)}</dd>
+              <dd className={`ov-trend ov-trend--${TREND_DIRECTION_I18N_KEY[trendDirection]}`}>
+                {t(`rehabDomain.trend.${TREND_DIRECTION_I18N_KEY[trendDirection]}`)}
+              </dd>
             </div>
           </dl>
         </section>
@@ -112,7 +108,7 @@ const OverviewTab = ({ bundle }) => {
           <h3>{t("doctorPatientWorkspace.overview.whyFlagged")}</h3>
           <ul className="ov-reason-list">
             {priority.reasons.map((reason) => (
-              <li key={reason.code}>{t(`rehabDomain.attentionReason.${reason.code.replace(/_([a-z])/g, (m, c) => c.toUpperCase())}`)}</li>
+              <li key={reason.code}>{t(`rehabDomain.attentionReason.${ATTENTION_REASON_I18N_KEY[reason.code]}`)}</li>
             ))}
           </ul>
         </section>

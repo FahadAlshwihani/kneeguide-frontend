@@ -106,8 +106,10 @@ const buildSaraSessions = (referenceDate) => {
 };
 
 const buildMohammedSessions = (referenceDate) => {
-  // Stable, positive: consistent completion, improving ROM, low/declining pain.
-  const dayOffsets = [-8, -6, -4, -2];
+  // Stable, positive: consistent completion (4 of 4 prescribed sessions
+  // within the trailing 7-day adherence window — matches
+  // rx-mohammed-*'s frequencyPerWeek: 4), improving ROM, low/declining pain.
+  const dayOffsets = [-6, -5, -3, -1];
   const flexionSeries = [96, 101, 106, 110];
   const painSeries = [5, 4, 3, 3];
   return dayOffsets.map((offset, index) => {
@@ -133,7 +135,9 @@ const buildMohammedSessions = (referenceDate) => {
 };
 
 const buildLamaSessions = (referenceDate) => {
-  const dayOffsets = [-3];
+  // On track with her (lighter, 2x/week) prescribed cadence — her only
+  // flagged signal is the pending appointment request, not adherence.
+  const dayOffsets = [-4, -1];
   return dayOffsets.map((offset, index) => {
     const date = dayOffset(offset, referenceDate);
     return {
@@ -146,10 +150,10 @@ const buildLamaSessions = (referenceDate) => {
       painBefore: 3,
       painAfter: 3,
       exercises: [
-        exerciseEntry("quadSets", 3, 3, 68, "good", 220000),
-        exerciseEntry("legRaises", 3, 3, 62, "good", 260000),
+        exerciseEntry("quadSets", 3, 3, 66 + index * 2, "good", 220000),
+        exerciseEntry("legRaises", 3, 3, 60 + index * 2, "good", 260000),
       ],
-      reviewed: false,
+      reviewed: index === 0,
       doctorNoteId: null,
       source: SESSION_SOURCE.SEED,
     };

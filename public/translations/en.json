@@ -533,26 +533,218 @@
     }
   },
   "doctorPatients": {
-    "title": "Patient List",
-    "subtitle": "Manage and review all patients under your care.",
-    "total": "Total",
-    "search": "Search by patient name...",
-    "id": "ID",
-    "age": "Age",
-    "email": "Email",
-    "phone": "Phone",
-    "lastVisit": "Last visit",
-    "recovery": "recovery",
-    "risk": {
-      "low": "Low risk",
-      "medium": "Medium risk",
-      "high": "High risk"
+    "title": "Patients",
+    "subtitle": "Track your caseload, see who needs attention first, and open any patient's rehabilitation record.",
+    "search": "Search by name or patient ID",
+    "empty": "No patients match these filters.",
+    "summary": {
+      "active": "Active patients",
+      "needAttention": "Need attention",
+      "pendingAppointments": "Pending appointment requests",
+      "reportsAwaitingReview": "Reports awaiting review"
+    },
+    "filters": {
+      "label": "Filter",
+      "all": "All",
+      "needsAttention": "Needs attention",
+      "stable": "Stable",
+      "pendingAppointment": "Pending appointment",
+      "reportAwaitingReview": "Report awaiting review"
+    },
+    "sort": {
+      "label": "Sort by",
+      "priority": "Priority",
+      "activity": "Last activity",
+      "name": "Name"
+    },
+    "metrics": {
+      "adherence": "Adherence",
+      "latestPain": "Latest pain",
+      "latestRom": "Latest ROM"
+    },
+    "tags": {
+      "appointmentPending": "Appointment pending",
+      "reportPending": "Report pending"
+    },
+    "activity": {
+      "none": "No sessions yet"
     },
     "actions": {
-      "profile": "View Profile",
+      "view": "View patient"
+    },
+    "appointmentTypes": {
+      "rehabSession": "Rehabilitation session"
+    }
+  },
+  "doctorPatientWorkspace": {
+    "tabsLabel": "Patient workspace sections",
+    "close": "Close",
+    "done": "Done",
+    "cancel": "Cancel",
+    "pendingAppointmentBanner": "This patient has a pending appointment request — review it in Appointments.",
+    "tabs": {
+      "overview": "Overview",
+      "rehabilitation": "Rehabilitation",
+      "sessions": "Sessions",
       "reports": "Reports",
-      "exercises": "Exercises",
-      "newAppointment": "New Appointment"
+      "appointments": "Appointments",
+      "clinicalRecord": "Clinical Record"
+    },
+    "header": {
+      "adherence": "{{value}}% adherence",
+      "editPlan": "Edit rehabilitation plan",
+      "scheduleAppointment": "Schedule appointment"
+    },
+    "overview": {
+      "clinicalStatus": "Clinical status",
+      "diagnosis": "Diagnosis",
+      "phase": "Rehab phase",
+      "week": "Current week",
+      "weekValue": "Week {{number}}",
+      "clinician": "Treating clinician",
+      "rehabProgress": "Rehabilitation progress",
+      "adherence": "Adherence",
+      "sessionsThisWeek": "Sessions this week",
+      "trend": "Trend",
+      "latestMeasurements": "Latest measurements",
+      "pain": "Pain",
+      "flexionRom": "Flexion ROM",
+      "movementQuality": "Movement quality",
+      "romVisualizationNote": "Knee ROM visualization — reflects the latest session's measurement, not a live sensor reading.",
+      "whyFlagged": "Why this patient was flagged",
+      "recentActivity": "Recent activity",
+      "noActivity": "No recent activity yet.",
+      "activity": {
+        "sessionCompleted": "Rehabilitation session completed",
+        "reportGenerated": "Progress report generated",
+        "appointmentRequested": "Appointment requested"
+      }
+    },
+    "rehab": {
+      "currentPlan": "Current rehabilitation plan",
+      "editPlan": "Edit rehabilitation plan",
+      "startDate": "Started {{date}}",
+      "noExercises": "No exercises are currently prescribed.",
+      "remove": "Remove exercise",
+      "repsLine": "{{sets}} sets × {{reps}} reps",
+      "durationLine": "{{sets}} sets × {{seconds}}s",
+      "holdLine": "{{seconds}}s hold",
+      "frequencyLine": "{{count}}x / week",
+      "targetRomLine": "Target ROM {{min}}°–{{max}}°",
+      "lastCompleted": "Last completed {{date}}",
+      "neverCompleted": "Not completed yet",
+      "activeExercises": "Active exercises",
+      "addExercise": "Add exercise",
+      "addToProgram": "Add to program",
+      "fields": {
+        "exercise": "Exercise",
+        "sets": "Sets",
+        "reps": "Reps",
+        "durationSeconds": "Duration (seconds)",
+        "frequency": "Frequency (per week)",
+        "holdSeconds": "Hold (seconds, optional)",
+        "targetRomMin": "Target ROM min (optional)",
+        "targetRomMax": "Target ROM max (optional)",
+        "instructions": "Instructions (optional)"
+      },
+      "errors": {
+        "sets": "Sets must be a positive number.",
+        "reps": "Reps must be a positive number.",
+        "duration": "Duration must be a positive number of seconds.",
+        "frequency": "Frequency must be between 1 and 7 sessions per week."
+      }
+    },
+    "sessions": {
+      "empty": "No completed rehabilitation sessions yet.",
+      "markReviewed": "Mark reviewed",
+      "addNote": "Add clinical note (optional)",
+      "exerciseBreakdown": "Exercise breakdown",
+      "source": "Source",
+      "sourceLive": "Live patient session",
+      "sourceHistorical": "Historical record",
+      "reviewed": "Reviewed",
+      "awaitingReview": "Awaiting review",
+      "table": {
+        "date": "Date",
+        "completion": "Completion",
+        "pain": "Pain (before → after)",
+        "rom": "ROM",
+        "review": "Review"
+      }
+    },
+    "reports": {
+      "empty": "No rehabilitation reports have been generated for this patient.",
+      "generateNew": "Generate report for current period",
+      "markReviewed": "Mark reviewed",
+      "addNote": "Add clinician note (optional)",
+      "reportTitle": "Rehabilitation report",
+      "sessions": "Sessions",
+      "adherence": "Adherence",
+      "pain": "Pain trend",
+      "rom": "ROM trend",
+      "status": {
+        "awaiting_review": "Awaiting review",
+        "reviewed": "Reviewed"
+      },
+      "flags": {
+        "painSpike": "Latest pain spike",
+        "romRegression": "Small latest ROM regression"
+      }
+    },
+    "appointments": {
+      "empty": "No appointments yet.",
+      "scheduleNew": "Schedule appointment",
+      "schedule": "Schedule",
+      "accept": "Accept",
+      "reject": "Reject",
+      "cancel": "Cancel",
+      "proposeNewTime": "Propose new time",
+      "sendProposal": "Send proposal",
+      "proposedTime": "Proposed time",
+      "source": "Source: {{source}}",
+      "sourceValue": {
+        "patient": "Patient requested",
+        "doctor": "Clinician scheduled",
+        "assistant": "Requested via Assistant"
+      },
+      "status": {
+        "requested": "Requested",
+        "confirmed": "Confirmed",
+        "alternative_proposed": "New time suggested",
+        "declined": "Declined",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "fields": {
+        "date": "Date",
+        "time": "Time",
+        "type": "Type",
+        "note": "Note (optional)"
+      },
+      "errors": {
+        "dateTime": "Choose a date and time.",
+        "invalidDate": "Choose a valid, upcoming date and time."
+      }
+    },
+    "clinicalRecord": {
+      "notes": "Clinical notes",
+      "addNote": "Add a clinical note",
+      "saveNote": "Save note",
+      "noNotes": "No clinical notes yet.",
+      "clinicianOnly": "Clinician-only",
+      "files": "Medical documents",
+      "noFiles": "No documents on file.",
+      "demoOnly": "Demo only",
+      "visitHistory": "Visit history",
+      "noVisits": "No clinical visits recorded yet.",
+      "visitTable": {
+        "date": "Date",
+        "type": "Type",
+        "status": "Status"
+      },
+      "errors": {
+        "emptyNote": "Enter a note before saving."
+      }
     }
   },
   "doctorProfile": {
@@ -818,6 +1010,7 @@
       "sessionTime": "Session time",
       "elapsed": "{{time}} elapsed",
       "setsReps": "{{sets}} sets × {{reps}} reps",
+      "setsDuration": "{{sets}} sets × {{seconds}}s",
       "target": "Target",
       "estimated": "Estimated: {{minutes}} min",
       "previousSession": "Previous session",

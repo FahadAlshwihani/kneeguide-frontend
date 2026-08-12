@@ -1,0 +1,83 @@
+.at-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-end: 12px;
+}
+
+.at-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.at-card {
+  margin: 0;
+}
+
+.at-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.at-datetime {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-heading);
+  font-size: 0.9rem;
+}
+
+.at-type {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.at-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.at-status--requested {
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--color-info);
+}
+
+.at-status--confirmed {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--color-success);
+}
+
+.at-status--alternative_proposed {
+  background: rgba(234, 179, 8, 0.12);
+  color: var(--color-warning);
+}
+
+.at-status--declined,
+.at-status--cancelled {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-danger);
+}
+
+.at-status--completed {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+.at-source,
+.at-proposed {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.at-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-start: 12px;
+}

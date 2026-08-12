@@ -3,7 +3,7 @@ import { useParams, useSearchParams, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DoctorLayout from "../components/DoctorLayout";
 import { useRehabPatient } from "../../../../domain/rehab/useRehabDomain";
-import { ATTENTION_LEVEL, APPOINTMENT_STATUS } from "../../../../domain/rehab/rehabEnums";
+import { APPOINTMENT_STATUS, ATTENTION_LEVEL_I18N_KEY } from "../../../../domain/rehab/rehabEnums";
 import { ROUTES } from "../../../../utils/routes";
 import OverviewTab from "../components/workspace/OverviewTab";
 import RehabilitationTab from "../components/workspace/RehabilitationTab";
@@ -15,12 +15,6 @@ import ScheduleAppointmentModal from "../components/workspace/ScheduleAppointmen
 import "../styles/DoctorPatientWorkspace.css";
 
 const TABS = ["overview", "rehabilitation", "sessions", "reports", "appointments", "clinicalRecord"];
-
-const ATTENTION_LEVEL_KEY = {
-  [ATTENTION_LEVEL.NEEDS_ATTENTION]: "needsAttention",
-  [ATTENTION_LEVEL.REVIEW_RECOMMENDED]: "reviewRecommended",
-  [ATTENTION_LEVEL.STABLE]: "stable",
-};
 
 /**
  * Doctor Patient WORKSPACE (Section 9-12 of the Doctor Patients module
@@ -47,7 +41,7 @@ const DoctorPatientWorkspace = () => {
   if (!bundle) return <Navigate to={ROUTES.DOCTOR_PATIENTS} replace />;
 
   const { patient, priority, adherence, appointments } = bundle;
-  const levelKey = ATTENTION_LEVEL_KEY[priority.level];
+  const levelKey = ATTENTION_LEVEL_I18N_KEY[priority.level];
   const pendingAppointment = appointments.find(
     (appt) => appt.status === APPOINTMENT_STATUS.REQUESTED || appt.status === APPOINTMENT_STATUS.ALTERNATIVE_PROPOSED
   );

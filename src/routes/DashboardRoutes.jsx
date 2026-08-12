@@ -18,12 +18,7 @@ import DoctorPatients from "../features/dashboard/doctor/pages/DoctorPatients";
 import DoctorReports from "../features/dashboard/doctor/pages/DoctorReports";
 import DoctorCalendar from "../features/dashboard/doctor/pages/DoctorCalendar";
 import DoctorProfile from "../features/dashboard/doctor/pages/DoctorProfile";
-import DoctorPatientProfile from "../features/dashboard/doctor/pages/DoctorPatientProfile";
-
-// Doctor patient tools
-import DoctorPatientReportsPage from "../features/dashboard/doctor/pages/DoctorPatientReportsPage";
-import DoctorPatientExercisesPage from "../features/dashboard/doctor/pages/DoctorPatientExercisesPage";
-import DoctorPatientNewAppointmentPage from "../features/dashboard/doctor/pages/DoctorPatientNewAppointmentPage";
+import DoctorPatientWorkspace from "../features/dashboard/doctor/pages/DoctorPatientWorkspace";
 
 const DashboardRoutes = (
   <Route element={<DashboardLayout />}>
@@ -128,39 +123,12 @@ const DashboardRoutes = (
       }
     />
 
-    {/* PATIENT-SPECIFIC (doctor view) */}
+    {/* PATIENT WORKSPACE (doctor view) — one page, local tabs (Section 9) */}
     <Route
       path={ROUTES.DOCTOR_PATIENT_PROFILE}
       element={
         <ProtectedRoute allowedRoles={["doctor"]}>
-          <DoctorPatientProfile />
-        </ProtectedRoute>
-      }
-    />
-
-    <Route
-      path={ROUTES.DOCTOR_PATIENT_REPORTS}
-      element={
-        <ProtectedRoute allowedRoles={["doctor"]}>
-          <DoctorPatientReportsPage />
-        </ProtectedRoute>
-      }
-    />
-
-    <Route
-      path={ROUTES.DOCTOR_PATIENT_EXERCISES}
-      element={
-        <ProtectedRoute allowedRoles={["doctor"]}>
-          <DoctorPatientExercisesPage />
-        </ProtectedRoute>
-      }
-    />
-
-    <Route
-      path={ROUTES.DOCTOR_PATIENT_NEW_APPOINTMENT}
-      element={
-        <ProtectedRoute allowedRoles={["doctor"]}>
-          <DoctorPatientNewAppointmentPage />
+          <DoctorPatientWorkspace />
         </ProtectedRoute>
       }
     />

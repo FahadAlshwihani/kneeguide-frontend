@@ -51,7 +51,7 @@ const findPreviousExerciseResult = (sessions, exerciseId) => {
       return { qualityKey: entry.qualityKey || "good", rom: entry.rom ?? 0, painAfter: sessions[i].painAfter ?? null };
     }
   }
-  return { qualityKey: "good", rom: 0, painAfter: null };
+  return { qualityKey: "good", rom: null, painAfter: null };
 };
 
 /**
