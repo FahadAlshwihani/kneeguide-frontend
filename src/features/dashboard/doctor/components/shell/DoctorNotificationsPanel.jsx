@@ -1,9 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { LuTriangleAlert, LuInfo, LuBellRing } from "react-icons/lu";
-import { getMockNotifications, getRelativeTimeBucket, NOTIFICATION_SEVERITY } from "../../data/doctorNotificationsMockData";
-import { loadReadNotificationIds, saveReadNotificationIds } from "../../assistant/doctorNotificationsStorage";
+import { getRelativeTimeBucket, NOTIFICATION_SEVERITY } from "../../data/doctorNotificationsMockData";
 import "./DoctorNotificationsPanel.css";
 
 const SEVERITY_ICON = {
@@ -14,50 +13,20 @@ const SEVERITY_ICON = {
 
 /**
  * Notification list content (rendered inside components/ui/Popover.jsx by
- * DoctorTopbar.jsx). Mock/deterministic (Section 13) — read/unread state
- * is the only thing persisted (doctorNotificationsStorage.js); the
- * notifications themselves always come fresh from
- * data/doctorNotificationsMockData.js so a language switch re-renders
- * every title/message/relative-time label immediately, same architecture
- * as the seeded Assistant conversations.
+ * DoctorTopbar.jsx). Purely presentational — all state comes from
+ * assistant/useDoctorNotifications.js, called ONCE by DoctorTopbar so the
+ * bell badge and this panel always agree on the unread count (Section 14).
+ * Mock/deterministic (Section 13): notifications always render fresh from
+ * data/doctorNotificationsMockData.js, so a language switch updates every
+ * title/message/relative-time label immediately, same architecture as the
+ * seeded Assistant conversations.
  */
-const useNotificationsState = () => {
-  const notifications = useMemo(() => getMockNotifications(), []);
-  const [readIds, setReadIds] = useState(() => new Set(loadReadNotificationIds()));
-
-  const markRead = (id) => {
-    setReadIds((prev) => {
-      if (prev.has(id)) return prev;
-      const next = new Set(prev);
-      next.add(id);
-      saveReadNotificationIds(Array.from(next));
-      return next;
-    });
-  };
-
-  const markAllRead = () => {
-    const next = new Set(notifications.map((notification) => notification.id));
-    setReadIds(next);
-    saveReadNotificationIds(Array.from(next));
-  };
-
-  const unreadCount = notifications.filter((notification) => !readIds.has(notification.id)).length;
-
-  return { notifications, readIds, markRead, markAllRead, unreadCount };
-};
-
-export const useDoctorNotificationsUnreadCount = () => {
-  const { unreadCount } = useNotificationsState();
-  return unreadCount;
-};
-
-const DoctorNotificationsPanel = ({ onClose }) => {
+const DoctorNotificationsPanel = ({ notifications, readIds, unreadCount, onMarkRead, onMarkAllRead, onClose }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { notifications, readIds, markRead, markAllRead, unreadCount } = useNotificationsState();
 
   const handleActivate = (notification) => {
-    markRead(notification.id);
+    onMarkRead(notification.id);
     if (notification.routeTo) {
       navigate(notification.routeTo);
       onClose?.();
@@ -68,7 +37,7 @@ const DoctorNotificationsPanel = ({ onClose }) => {
     <div className="doctor-notif-panel">
       <div className="doctor-notif-header">
         <p className="doctor-notif-title">{t("doctorShell.notifications.title")}</p>
-        <button type="button" className="doctor-notif-mark-all" onClick={markAllRead} disabled={unreadCount === 0}>
+        <button type="button" className="doctor-notif-mark-all" onClick={onMarkAllRead} disabled={unreadCount === 0}>
           {t("doctorShell.notifications.markAllRead")}
         </button>
       </div>
