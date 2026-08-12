@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams, useSearchParams, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DoctorLayout from "../components/DoctorLayout";
 import { useRehabPatient } from "../../../../domain/rehab/useRehabDomain";
 import { APPOINTMENT_STATUS, ATTENTION_LEVEL_I18N_KEY } from "../../../../domain/rehab/rehabEnums";
 import { ROUTES } from "../../../../utils/routes";
+import {
+  buildOverviewInsight,
+  buildClinicalInsight,
+  buildLatestSessionInsight,
+  buildReportInsight,
+  buildAppointmentInsight,
+  buildClinicalNoteInsight,
+} from "../assistant/doctorAssistantInsights";
+import AssistantInsightCard from "../components/workspace/AssistantInsightCard";
 import OverviewTab from "../components/workspace/OverviewTab";
 import RehabilitationTab from "../components/workspace/RehabilitationTab";
 import SessionsTab from "../components/workspace/SessionsTab";
@@ -15,6 +24,60 @@ import ScheduleAppointmentModal from "../components/workspace/ScheduleAppointmen
 import "../styles/DoctorPatientWorkspace.css";
 
 const TABS = ["overview", "rehabilitation", "sessions", "reports", "appointments", "clinicalRecord"];
+
+/**
+ * ONE insight descriptor per tab, computed here at the shell level instead
+ * of inside each tab component (Section 4 of the visual-polish brief — the
+ * ORB FLICKER root cause: OverviewTab/RehabilitationTab/SessionsTab/etc
+ * are distinct components, so a `<AssistantInsightCard>` rendered inside
+ * each one gets unmounted and a brand new one (with a brand new WebGL
+ * `<Orb>` — see components/ui/Orb.jsx's mount-once effect) remounted on
+ * every tab click. Hoisting ONE `<AssistantInsightCard>` to this
+ * always-mounted shell, feeding it whichever descriptor the active tab
+ * needs, means the Orb's canvas/WebGL context is created exactly once per
+ * patient and never touched again on tab navigation — no lifecycle
+ * change to Orb.jsx itself, no derivation-logic change, purely a
+ * relocation of WHERE these same pure functions are called from.
+ */
+const computeTabInsight = (tab, bundle) => {
+  if (tab === "overview") {
+    const overview = buildOverviewInsight(bundle);
+    const lines = [overview.clinical, overview.report, overview.appointment]
+      .filter(Boolean)
+      .map((part) => ({ messageKey: part.messageKey, values: part.values }));
+    return { severity: overview.severity, lines, actions: overview.actions };
+  }
+  if (tab === "rehabilitation") {
+    const clinical = buildClinicalInsight(bundle);
+    return { severity: clinical.severity, lines: [{ messageKey: clinical.messageKey, values: clinical.values }], actions: clinical.actions };
+  }
+  if (tab === "sessions") {
+    const session = buildLatestSessionInsight(bundle);
+    if (!session) return null;
+    return { severity: session.severity, lines: [{ messageKey: session.messageKey, values: session.values }], actions: session.actions };
+  }
+  if (tab === "reports") {
+    const report = buildReportInsight(bundle);
+    if (!report) return null;
+    return { severity: report.severity, lines: [{ messageKey: report.messageKey, values: report.values }], actions: report.actions };
+  }
+  if (tab === "appointments") {
+    const appointment = buildAppointmentInsight(bundle);
+    if (!appointment) return null;
+    const clinical = buildClinicalInsight(bundle);
+    const lines = [
+      { messageKey: appointment.messageKey, values: appointment.values },
+      clinical.category === "clinical" && { messageKey: "doctorAssistantInsights.appointment.clinicalContext", values: {} },
+    ].filter(Boolean);
+    return { severity: appointment.severity, lines, actions: appointment.actions };
+  }
+  if (tab === "clinicalRecord") {
+    const note = buildClinicalNoteInsight(bundle);
+    if (!note) return null;
+    return { severity: note.severity, lines: [{ messageKey: note.messageKey, values: note.values }], actions: [] };
+  }
+  return null;
+};
 
 /**
  * Doctor Patient WORKSPACE (Section 9-12 of the Doctor Patients module
@@ -37,6 +100,10 @@ const DoctorPatientWorkspace = () => {
   const setTab = (nextTab) => setSearchParams(nextTab === "overview" ? {} : { tab: nextTab });
 
   const bundle = useRehabPatient(patientId);
+  // Same pattern as `useRehabPatient` itself: called unconditionally,
+  // before the invalid-patient-id early return below, so hook order never
+  // changes across renders.
+  const tabInsight = useMemo(() => (bundle ? computeTabInsight(tab, bundle) : null), [tab, bundle]);
 
   if (!bundle) return <Navigate to={ROUTES.DOCTOR_PATIENTS} replace />;
 
@@ -100,6 +167,11 @@ const DoctorPatientWorkspace = () => {
             </button>
           ))}
         </nav>
+
+        {/* ONE Orb instance for the entire workspace session (see
+            computeTabInsight's own comment above) — content swaps per
+            tab, the Orb/card element itself never unmounts. */}
+        {tabInsight && <AssistantInsightCard severity={tabInsight.severity} lines={tabInsight.lines} actions={tabInsight.actions} />}
 
         <div className="dw-content" role="tabpanel">
           {tab === "overview" && <OverviewTab bundle={bundle} onNavigateTab={setTab} />}

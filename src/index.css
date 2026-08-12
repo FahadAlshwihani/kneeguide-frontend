@@ -107,16 +107,24 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Scrollbar (modern & subtle) */
-::-webkit-scrollbar {
+/* Scrollbar (modern & subtle) — scoped away from `.doctor-shell` and its
+   descendants, which use the fully native, unstyled system scrollbar
+   (Doctor Dashboard visual-polish pass). The `:not()` guard means no
+   `::-webkit-scrollbar` rule ever matches inside the Doctor shell at all,
+   which is what actually restores true OS-native rendering there (once
+   ANY such rule matches an element, the browser treats its scrollbar as
+   "customized" — there's no CSS value that hands it back). Every other
+   surface (Patient, Public, Auth) is unaffected — same treatment as
+   before. */
+:not(.doctor-shell, .doctor-shell *)::-webkit-scrollbar {
   width: 8px;
 }
 
-::-webkit-scrollbar-track {
+:not(.doctor-shell, .doctor-shell *)::-webkit-scrollbar-track {
   background: rgba(15, 23, 42, 0.9);
 }
 
-::-webkit-scrollbar-thumb {
+:not(.doctor-shell, .doctor-shell *)::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, #2563eb, #10b981);
   border-radius: 999px;
 }

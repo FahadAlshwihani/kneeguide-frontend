@@ -471,15 +471,8 @@
   margin-top: 10px;
 }
 
-.doctor-report-table-wrapper::-webkit-scrollbar {
-  height: 6px;
-}
-
-.doctor-report-table-wrapper::-webkit-scrollbar-thumb {
-  background: #7d5bff;
-  border-radius: 10px;
-}
-
-.doctor-report-table-wrapper::-webkit-scrollbar-track {
-  background: #1a1a1a;
-}
+/* Native scrollbar only — the previous purple thumb/dark track here was
+   exactly the "colored scrollbar" pattern this pass removes (Section 15).
+   `.doctor-shell` is now globally excluded from the app's own gradient
+   ::-webkit-scrollbar rule (src/index.css), so simply not re-declaring
+   one here is enough to get the true OS-native scrollbar back. */

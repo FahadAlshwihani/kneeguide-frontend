@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next";
 import DoctorModal from "./DoctorModal";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { REPORT_STATUS } from "../../../../../domain/rehab/rehabEnums";
-import { buildReportInsight } from "../../assistant/doctorAssistantInsights";
-import AssistantInsightCard from "./AssistantInsightCard";
 import "./ReportsTab.css";
 
 /**
@@ -43,21 +41,8 @@ const ReportsTab = ({ bundle }) => {
   const reviewerNoteText = (report) =>
     report.reviewerNote && report.reviewerNote.startsWith("rehabDomain.") ? t(report.reviewerNote) : report.reviewerNote;
 
-  // Section 10 — derived fresh every render, so marking the report
-  // reviewed (below) makes this card disappear immediately with no
-  // manually-maintained "dismissed" flag.
-  const reportInsight = buildReportInsight(bundle);
-
   return (
     <div>
-      {reportInsight && (
-        <AssistantInsightCard
-          severity={reportInsight.severity}
-          lines={[{ messageKey: reportInsight.messageKey, values: reportInsight.values }]}
-          actions={reportInsight.actions}
-        />
-      )}
-
       <div className="rp-toolbar">
         <button type="button" className="dw-btn-secondary" onClick={handleGenerate}>
           {t("doctorPatientWorkspace.reports.generateNew")}

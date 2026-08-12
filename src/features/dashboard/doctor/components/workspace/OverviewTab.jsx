@@ -2,8 +2,6 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_CLINICIAN } from "../../../../../domain/rehab/demoData/clinicians";
 import { TREND_DIRECTION_I18N_KEY, ATTENTION_REASON_I18N_KEY } from "../../../../../domain/rehab/rehabEnums";
-import { buildOverviewInsight } from "../../assistant/doctorAssistantInsights";
-import AssistantInsightCard from "./AssistantInsightCard";
 import "./OverviewTab.css";
 
 const weekNumber = (programStartDate) => {
@@ -36,21 +34,8 @@ const OverviewTab = ({ bundle }) => {
   const latestSession = sessions[sessions.length - 1] || null;
   const dateFormatter = useMemo(() => new Intl.DateTimeFormat(i18n.language, { month: "short", day: "numeric" }), [i18n.language]);
 
-  // Re-derived on every render from the live bundle (Section 22 — no
-  // useEffect/useState snapshot): mark a report reviewed or confirm an
-  // appointment elsewhere and this card updates the instant the shared
-  // store notifies, with zero refresh.
-  const overviewInsight = buildOverviewInsight(bundle);
-  const insightLines = [
-    { messageKey: overviewInsight.clinical.messageKey, values: overviewInsight.clinical.values },
-    overviewInsight.report && { messageKey: overviewInsight.report.messageKey, values: overviewInsight.report.values },
-    overviewInsight.appointment && { messageKey: overviewInsight.appointment.messageKey, values: overviewInsight.appointment.values },
-  ].filter(Boolean);
-
   return (
     <div>
-      <AssistantInsightCard severity={overviewInsight.severity} lines={insightLines} actions={overviewInsight.actions} />
-
       <div className="dw-grid-3">
         <section className="dw-section">
           <h3>{t("doctorPatientWorkspace.overview.clinicalStatus")}</h3>
