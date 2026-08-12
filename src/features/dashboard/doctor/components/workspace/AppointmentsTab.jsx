@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next";
 import DoctorModal from "./DoctorModal";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { APPOINTMENT_STATUS } from "../../../../../domain/rehab/rehabEnums";
-import { buildAppointmentInsight, buildClinicalInsight } from "../../assistant/doctorAssistantInsights";
-import AssistantInsightCard from "./AssistantInsightCard";
 import "./AppointmentsTab.css";
 
 /**
