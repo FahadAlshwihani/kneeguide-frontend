@@ -1,208 +1,38 @@
+/* Doctor Home — page-level chrome only; DoctorHomeAssistant.css owns the
+   actual Welcome/Conversation layout, chat turns, composer, and
+   suggestions (same split PatientDashboard.css/PatientHomeAssistant.css
+   already established). Every color/spacing value here comes from the
+   EXISTING global tokens (index.css :root), never a new Doctor-only
+   layer. */
+
 .doctor-dashboard {
   width: 100%;
-  padding: 30px;
-  color: #eee;
-}
-
-/* ============================
-   HEADER
-============================ */
-.dash-header {
+  min-height: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 35px;
+  justify-content: center;
 }
 
-.dash-header h1 {
-  font-size: 30px;
-  font-weight: 700;
-  color: #fff;
+/* Conversation Mode only (DoctorDashboard.jsx mirrors DoctorHomeAssistant's
+   own mode via onModeChange) — the page becomes a height-BOUNDED shell so
+   only the transcript inside DoctorHomeAssistant scrolls, never
+   `.doctor-content` (DoctorLayout.css) itself. `.doctor-content` already
+   spans the full `.doctor-layout` height (`height: 100vh` there) with
+   30px padding on every side — 60px is that padding, subtracted here
+   rather than guessed, so this container exactly fills what's actually
+   available and `.doctor-content`'s own `overflow-y: auto` never
+   actually triggers a second scrollbar. Welcome Mode is deliberately
+   untouched (`.doctor-dashboard` alone keeps normal, unbounded flow). */
+.doctor-dashboard--conversation {
+  height: calc(100vh - 60px);
+  min-height: 0;
+  overflow: hidden;
 }
 
-.dash-header p {
-  color: #9ca3af;
-  margin-top: 5px;
-  font-size: 14px;
-}
-
-/* QUICK ACTION BUTTONS */
-.quick-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.qa-btn {
-  padding: 10px 16px;
-  background: #7d5bff;
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: 0.25s ease;
-}
-
-.qa-btn:hover {
-  background: #6c4be3;
-  transform: translateY(-2px);
-}
-
-/* ============================
-   STAT CARDS
-   (card styling now lives in shared MetricCard.css — one source of truth)
-============================ */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-/* ============================
-   MAIN CHART CARD
-============================ */
-.chart-card {
-  background: #0b0b11;
-  padding: 25px;
-  border-radius: 18px;
-  border: 1px solid #161622;
-  margin-bottom: 35px;
-}
-
-.chart-card h2 {
-  margin-bottom: 15px;
-  font-size: 18px;
-  color: #e5e5e5;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ============================
-   LOWER GRID
-============================ */
-.dashboard-lower {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 25px;
-}
-
-@media (max-width: 900px) {
-  .dashboard-lower {
-    grid-template-columns: 1fr;
+@media (max-width: 480px) {
+  .doctor-dashboard--conversation {
+    /* DoctorLayout.css's own padding doesn't currently shrink on mobile —
+       matched here rather than guessed, so this stays exact instead of
+       leaving a stray gap or clipping content by a few pixels. */
+    height: calc(100vh - 60px);
   }
-}
-
-/* ============================
-   APPOINTMENTS TABLE
-============================ */
-.appointments-card {
-  background: #0b0b11;
-  padding: 25px;
-  border-radius: 18px;
-  border: 1px solid #161622;
-}
-
-.appointments-card h2 {
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table th {
-  text-align: left;
-  padding: 10px 0;
-  color: #9ca3af;
-  border-bottom: 1px solid #1f1f2b;
-  font-size: 13px;
-}
-
-table td {
-  padding: 14px 0;
-  color: #e5e5e5;
-  border-bottom: 1px solid #161622;
-  font-size: 14px;
-}
-
-/* Patient Image */
-.patient-with-img {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.patient-with-img img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-
-.date-cell {
-  color: #9ca3af;
-}
-
-/* ============================
-   RIGHT COLUMN
-============================ */
-.side-column {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* RISK PIE CARD */
-.quick-patients-card {
-  background: #0b0b11;
-  padding: 20px;
-  border-radius: 18px;
-  border: 1px solid #161622;
-}
-
-.quick-patients-card h2 {
-  margin-bottom: 10px;
-  font-size: 17px;
-  color: #e5e5e5;
-}
-
-/* ============================
-   ACTIVITY FEED
-============================ */
-.activity-card {
-  background: #0b0b11;
-  padding: 20px;
-  border-radius: 18px;
-  border: 1px solid #161622;
-}
-
-.activity-card h2 {
-  margin-bottom: 15px;
-  font-size: 17px;
-}
-
-.activity-row {
-  padding: 12px 10px;
-  border-bottom: 1px solid #161622;
-  display: flex;
-  flex-direction: column;
-}
-
-.activity-row:last-child {
-  border-bottom: none;
-}
-
-.activity-row p {
-  color: #d1d5db;
-  font-size: 14px;
-}
-
-.activity-row span {
-  color: #9ca3af;
-  font-size: 12px;
-  margin-top: 4px;
 }
