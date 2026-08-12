@@ -109,9 +109,6 @@ export const getTodayAppointments = (referenceDate = new Date()) => {
   }));
 };
 
-export const getNextAppointment = (appointments, now = new Date()) =>
-  appointments.find((appointment) => appointment.startAt > now) || null;
-
 // ---------- New reports ----------
 
 export const NEW_REPORTS = [

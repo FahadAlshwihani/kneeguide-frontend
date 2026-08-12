@@ -1,6 +1,6 @@
 import { LuUsers, LuCalendarClock, LuFileText, LuActivity, LuTrendingDown } from "react-icons/lu";
 import { ROUTES } from "../../../../utils/routes";
-import { getTodayAppointments, getNextAppointment, getNewReports, getPatientById } from "../data/doctorClinicalMockData";
+import { getTodayAppointments, getNewReports, getPatientById } from "../data/doctorClinicalMockData";
 import { getAhmedTrend, getPatientsNeedingAttention, ATTENTION_SEVERITY } from "./doctorClinicalInsights";
 
 /**
@@ -54,8 +54,14 @@ const severityToKey = (severity) => {
   }
 };
 
-/** Shared by DOCTOR_ATTENTION_PATIENTS and DOCTOR_ADHERENCE_RISK — one place builds the structured attentionList widget items. */
-const buildAttentionItems = (entries) =>
+/**
+ * Shared by DOCTOR_ATTENTION_PATIENTS/DOCTOR_ADHERENCE_RISK AND (exported)
+ * by doctorAssistantMockHistory.js, which seeds its own "patients needing
+ * attention" historical message with this exact same builder over the
+ * exact same live selector — one structured-widget shape, never a
+ * hand-duplicated copy of the same numbers.
+ */
+export const buildAttentionItems = (entries) =>
   entries.map(({ severity, patient, trend }) => {
     const isAhmed = patient.id === AHMED_ID;
     const metrics = [];
