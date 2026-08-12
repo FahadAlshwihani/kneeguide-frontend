@@ -336,8 +336,9 @@ export const DOCTOR_ASSISTANT_ACTIONS = [
     execute: ({ t, language, query }) => {
       const patientId = resolveNamedPatientId(query);
       const patient = patientId ? rehabRepository.getPatient(patientId) : null;
+      // rehabRepository.getReports sorts newest-first (by periodEnd desc), so index 0 is the latest.
       const reports = patientId ? rehabRepository.getReports(patientId) : [];
-      const latest = reports[reports.length - 1] || null;
+      const latest = reports[0] || null;
       if (!patient || !latest) {
         return { content: t("doctorDashboard.assistant.responses.patientNoReports", { lng: language, name: patient?.name || "" }) };
       }
@@ -364,8 +365,9 @@ export const DOCTOR_ASSISTANT_ACTIONS = [
     execute: ({ t, language, query }) => {
       const patientId = resolveNamedPatientId(query);
       const patient = patientId ? rehabRepository.getPatient(patientId) : null;
+      // rehabRepository.getReports sorts newest-first (by periodEnd desc), so index 0 is the latest.
       const reports = patientId ? rehabRepository.getReports(patientId) : [];
-      const latest = reports[reports.length - 1] || null;
+      const latest = reports[0] || null;
       const previous = latest ? getPreviousReportForPatient(patientId, latest.id) : null;
       if (!patient || !latest || !previous) {
         return { content: t("doctorDashboard.assistant.responses.noComparableReports", { lng: language, name: patient?.name || "" }) };
