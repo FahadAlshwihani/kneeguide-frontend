@@ -93,3 +93,30 @@ export const TREND_DIRECTION = {
   STABLE: "stable",
   REQUIRES_REVIEW: "requires_review",
 };
+
+/**
+ * Enum value -> i18n leaf-key maps (camelCase JSON keys can't contain the
+ * enum's own snake_case values directly). Defined once here so every
+ * consumer (DoctorPatients.jsx, OverviewTab.jsx, SessionsTab.jsx, ...)
+ * uses the exact same mapping instead of re-deriving it locally.
+ */
+export const ATTENTION_LEVEL_I18N_KEY = {
+  [ATTENTION_LEVEL.NEEDS_ATTENTION]: "needsAttention",
+  [ATTENTION_LEVEL.REVIEW_RECOMMENDED]: "reviewRecommended",
+  [ATTENTION_LEVEL.STABLE]: "stable",
+};
+
+export const ATTENTION_REASON_I18N_KEY = {
+  [ATTENTION_REASON.PAIN_INCREASED]: "painIncreased",
+  [ATTENTION_REASON.ROM_REGRESSION]: "romRegression",
+  [ATTENTION_REASON.MISSED_SESSIONS]: "missedSessions",
+  [ATTENTION_REASON.LOW_ADHERENCE]: "lowAdherence",
+  [ATTENTION_REASON.REPORT_AWAITING_REVIEW]: "reportAwaitingReview",
+  [ATTENTION_REASON.APPOINTMENT_PENDING]: "appointmentPending",
+};
+
+export const TREND_DIRECTION_I18N_KEY = {
+  [TREND_DIRECTION.IMPROVING]: "improving",
+  [TREND_DIRECTION.STABLE]: "stable",
+  [TREND_DIRECTION.REQUIRES_REVIEW]: "requiresReview",
+};

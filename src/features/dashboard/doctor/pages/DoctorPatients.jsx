@@ -4,7 +4,13 @@ import { useTranslation } from "react-i18next";
 import { LuSearch, LuChevronRight } from "react-icons/lu";
 import DoctorLayout from "../components/DoctorLayout";
 import { useRehabWorklist } from "../../../../domain/rehab/useRehabDomain";
-import { ATTENTION_LEVEL, APPOINTMENT_STATUS, REPORT_STATUS } from "../../../../domain/rehab/rehabEnums";
+import {
+  ATTENTION_LEVEL,
+  APPOINTMENT_STATUS,
+  REPORT_STATUS,
+  ATTENTION_LEVEL_I18N_KEY,
+  ATTENTION_REASON_I18N_KEY,
+} from "../../../../domain/rehab/rehabEnums";
 import { ROUTES } from "../../../../utils/routes";
 import "../styles/DoctorPatients.css";
 
@@ -22,21 +28,6 @@ const FILTERS = ["all", "needsAttention", "stable", "pendingAppointment", "repor
 const SORTS = ["priority", "activity", "name"];
 
 const PRIORITY_RANK = { [ATTENTION_LEVEL.NEEDS_ATTENTION]: 0, [ATTENTION_LEVEL.REVIEW_RECOMMENDED]: 1, [ATTENTION_LEVEL.STABLE]: 2 };
-
-const ATTENTION_LEVEL_KEY = {
-  [ATTENTION_LEVEL.NEEDS_ATTENTION]: "needsAttention",
-  [ATTENTION_LEVEL.REVIEW_RECOMMENDED]: "reviewRecommended",
-  [ATTENTION_LEVEL.STABLE]: "stable",
-};
-
-const ATTENTION_REASON_KEY = {
-  pain_increased: "painIncreased",
-  rom_regression: "romRegression",
-  missed_sessions: "missedSessions",
-  low_adherence: "lowAdherence",
-  report_awaiting_review: "reportAwaitingReview",
-  appointment_pending: "appointmentPending",
-};
 
 const hasPendingAppointment = (appointments) =>
   appointments.some((appt) => appt.status === APPOINTMENT_STATUS.REQUESTED || appt.status === APPOINTMENT_STATUS.ALTERNATIVE_PROPOSED);
@@ -167,7 +158,7 @@ const DoctorPatients = () => {
           <div className="dp-grid">
             {filtered.map((entry) => {
               const { patient, priority, adherence, latestPain, latestRom, latestSession } = entry;
-              const levelKey = ATTENTION_LEVEL_KEY[priority.level];
+              const levelKey = ATTENTION_LEVEL_I18N_KEY[priority.level];
               const pendingAppt = hasPendingAppointment(entry.appointments);
               const pendingReport = hasReportAwaitingReview(entry.reports);
 
