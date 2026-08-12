@@ -45,8 +45,20 @@ const ClinicalRecordTab = ({ bundle }) => {
 
   const noteText = (note) => (note.content.startsWith("rehabDomain.") ? t(note.content) : note.content);
 
+  // Section 12 — clinician-only, Doctor Workspace only. This function is
+  // never called anywhere Patient-facing, and `clinicalNotes` itself was
+  // already filtered to this patient by rehabRepository.getClinicalNotes.
+  const noteInsight = buildClinicalNoteInsight(bundle);
+
   return (
     <div>
+      {noteInsight && (
+        <AssistantInsightCard
+          severity={noteInsight.severity}
+          lines={[{ messageKey: noteInsight.messageKey, values: noteInsight.values }]}
+        />
+      )}
+
       <section className="dw-section">
         <h2>{t("doctorPatientWorkspace.clinicalRecord.notes")}</h2>
 
