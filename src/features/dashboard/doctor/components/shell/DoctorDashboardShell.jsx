@@ -16,9 +16,13 @@ import "./DoctorDashboardShell.css";
  * `activeOverlay` is ONE value (`null | 'assistant' | 'notifications' |
  * 'account'`), not three independent booleans — opening any one of the
  * three transient surfaces automatically closes whichever other was open
- * (Section 21/28). `mobileNavOpen` is separate (it's the global nav
- * drawer, not a Topbar-anchored popover, and can coexist conceptually,
- * though in practice a doctor only ever interacts with one at a time).
+ * (Section 21/28). `mobileNavOpen` is a separate boolean (it's the global
+ * nav drawer, not a Topbar-anchored popover), but `openOverlay`/
+ * `openMobileNav` below each close the other kind too — on a narrow
+ * viewport the nav drawer and, say, the Assistant Drawer would otherwise
+ * both be able to sit open at once, which is exactly the "only one
+ * transient surface open at a time" rule Section 21 asks for, just
+ * applied across both categories, not only within the popover trio.
  *
  * `DoctorAssistantProvider` mounts HERE — above both the Topbar (which
  * renders the Assistant Drawer) and `{children}` (which, on the Home
@@ -36,6 +40,7 @@ const DoctorDashboardShell = ({ active, children }) => {
   const [overlayTriggerRef, setOverlayTriggerRef] = useState(null);
 
   const openOverlay = (name, triggerRef) => {
+    setMobileNavOpen(false);
     setActiveOverlay(name);
     setOverlayTriggerRef(triggerRef || null);
   };
@@ -44,6 +49,11 @@ const DoctorDashboardShell = ({ active, children }) => {
     setActiveOverlay(null);
     overlayTriggerRef?.current?.focus();
     setOverlayTriggerRef(null);
+  };
+
+  const openMobileNav = () => {
+    setActiveOverlay(null);
+    setMobileNavOpen(true);
   };
 
   return (
@@ -57,7 +67,7 @@ const DoctorDashboardShell = ({ active, children }) => {
             activeOverlay={activeOverlay}
             onOpenOverlay={openOverlay}
             onCloseOverlay={closeOverlay}
-            onOpenMobileNav={() => setMobileNavOpen(true)}
+            onOpenMobileNav={openMobileNav}
             onLogout={logout}
           />
 
