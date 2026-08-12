@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useParams, useSearchParams, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { LuCalendarClock } from "react-icons/lu";
 import DoctorLayout from "../components/DoctorLayout";
 import { useRehabPatient } from "../../../../domain/rehab/useRehabDomain";
 import { APPOINTMENT_STATUS, ATTENTION_LEVEL_I18N_KEY } from "../../../../domain/rehab/rehabEnums";
@@ -149,6 +150,7 @@ const DoctorPatientWorkspace = () => {
 
         {pendingAppointment && tab !== "appointments" && (
           <button type="button" className="dw-pending-banner" onClick={() => setTab("appointments")}>
+            <LuCalendarClock aria-hidden="true" />
             {t("doctorPatientWorkspace.pendingAppointmentBanner")}
           </button>
         )}

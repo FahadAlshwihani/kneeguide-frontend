@@ -134,7 +134,6 @@
 .doctor-account-lang-btn--active {
   background: var(--color-surface);
   color: var(--color-heading);
-  border: 1px solid var(--color-border);
 }
 
 @media (prefers-reduced-motion: reduce) {
