@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import "../styles/PatientDashboard.css";
 import PatientHomeAssistant from "../components/PatientHomeAssistant";
+import { getAdherence } from "../data/patientRehabPlanData";
 
 /**
  * Patient Home — entirely the KneeGuide Assistant conversation experience
@@ -45,11 +46,7 @@ const PatientDashboard = () => {
     statusLabel: t("patientDashboard.mock.lastReport.statusLabel"),
   };
 
-  const adherence = {
-    streakDays: 5,
-    completionPercentage: 76,
-    missedThisWeek: 1,
-  };
+  const adherence = getAdherence();
 
   const assistantData = { lastReport, adherence };
 

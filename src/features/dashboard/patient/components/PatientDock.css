@@ -31,7 +31,7 @@
   --dock-gap: var(--patient-nav-gap);
   --dock-radius: var(--patient-radius-dock);
   --dock-icon-size: var(--patient-dock-icon-size);
-  --dock-bg: rgba(11, 14, 23, 0.88);
+  --dock-bg: var(--patient-dock-bg);
   --dock-border: var(--patient-border);
   --dock-shadow: var(--patient-shadow-elevated);
   --dock-item-radius: var(--patient-radius-control);

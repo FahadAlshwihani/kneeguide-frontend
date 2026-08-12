@@ -92,6 +92,22 @@ export const getSessionTotals = (plan = getTodaySessionPlan()) => ({
   estimatedMinutes: plan.reduce((sum, item) => sum + item.estimatedMinutes, 0),
 });
 
+/**
+ * Mock program-adherence snapshot — moved here from PatientDashboard.jsx
+ * (its own inline `adherence` object, unchanged values) so the Assistant's
+ * REHAB_PROGRESS action, PatientDashboard.jsx, and Profile V2's Rehab
+ * insight (profile/patientProfileInsights.js) all read the SAME numbers
+ * instead of PatientDashboard owning a private copy nothing else could see
+ * (exactly the kind of duplicate mock Section 31 flags). No real adherence
+ * tracking exists anywhere in this project — this stays a plain constant,
+ * not a computed/derived value, until a real backend can supply it.
+ */
+export const getAdherence = () => ({
+  streakDays: 5,
+  completionPercentage: 76,
+  missedThisWeek: 1,
+});
+
 const toDayId = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");

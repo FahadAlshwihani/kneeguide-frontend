@@ -2,7 +2,23 @@ import React from "react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import Orb from "../../../../components/ui/Orb";
+import { usePatientPreferences } from "../preferences/PatientPreferencesContext";
 import "./KneeGuideAssistantOrb.css";
+
+// The Orb's shader takes a literal hex `backgroundColor` uniform (Orb.jsx
+// blends it into the visual — see `bgLuminance`/`mix(darkCol, lightCol,
+// bgLuminance)` in its fragment shader), not a CSS custom property, so it
+// can't simply read `var(--patient-surface-page)` itself. These two values
+// are intentionally kept in lockstep with `--patient-surface-page` in
+// patientTokens.css's dark (default) and `[data-patient-theme="light"]`
+// blocks respectively — audited first (Section 23): the shader already
+// reacts to background luminance on its own, so light-mode contrast is
+// solved by feeding it the correct page color, never by touching the
+// shader/GLSL itself or mounting a second Orb/WebGL context.
+const ORB_BACKGROUND_BY_THEME = {
+  dark: "#050509",
+  light: "#f8f8f8",
+};
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -53,6 +69,7 @@ const STATE_CONFIG = {
  */
 const KneeGuideAssistantOrb = ({ state = "idle", size = "large", className = "" }) => {
   const { t } = useTranslation();
+  const { resolvedTheme } = usePatientPreferences();
   const config = STATE_CONFIG[state] || STATE_CONFIG.idle;
   const reducedMotion = prefersReducedMotion();
 
@@ -73,7 +90,7 @@ const KneeGuideAssistantOrb = ({ state = "idle", size = "large", className = "" 
         hoverIntensity={config.hoverIntensity}
         rotateOnHover
         forceHoverState={config.forceHoverState}
-        backgroundColor="#050509"
+        backgroundColor={ORB_BACKGROUND_BY_THEME[resolvedTheme] || ORB_BACKGROUND_BY_THEME.dark}
       />
     </motion.div>
   );
