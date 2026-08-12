@@ -251,6 +251,33 @@
           "mohammed": "Progress report — strong flexion improvement and lower reported pain.",
           "lama": "Routine follow-up report — no significant changes noted."
         }
+      },
+      "demo": {
+        "ahmedProgress": {
+          "title": "Ahmed Ali progress review",
+          "q1": "How has Ahmed been doing this week?",
+          "a1": "Ahmed completed {{completed}} of {{prescribed}} prescribed sessions this week ({{percent}}% adherence). Knee flexion improved from {{flexionOldest}}° to {{flexionLatest}}°, while pain has generally trended down toward {{painRecentAverage}}/10 before today. Movement quality remained stable. His latest session showed a small {{sessionDelta}}° ROM decrease compared with the previous session.",
+          "q2": "Do you think I should progress his exercises?",
+          "a2": "His recent trend is generally positive, but the latest ROM decrease is worth reviewing before changing the program. Today's pain log also came in higher than his recent average, so it's worth a look before progressing intensity."
+        },
+        "todayAppointments": {
+          "title": "Today's appointments",
+          "q1": "Who's on my schedule today?",
+          "a1": "{{count}} appointments are scheduled today. Your next appointment is {{nextName}} at {{nextTime}}, followed by {{followingName}} at {{followingTime}}.",
+          "q2": "Why did Ahmed request the appointment?",
+          "a2": "Ahmed requested a follow-up after reporting increased pain following his recent rehabilitation sessions. His latest pain log was {{painLatest}}/10 compared with a recent average of about {{painRecentAverage}}/10.",
+          "q3": "Move him to the first available slot.",
+          "a3": "Demo schedule updated — Ahmed is now shown in the earliest available mock slot. Since this is a frontend demo, no real appointment system was changed."
+        },
+        "attention": {
+          "title": "Patients needing attention",
+          "q1": "Who should I review today?",
+          "a1": "{{count}} patients stand out in today's rehabilitation data:",
+          "q2": "What about Sara specifically — is it serious?",
+          "a2": "Not an emergency, but worth a check-in — her weekly adherence has dropped to {{adherence}}% after missing several sessions, which is a pattern worth understanding rather than a clinical red flag on its own.",
+          "q3": "Got it, I'll message her before her next visit.",
+          "a3": "Sounds good. Let me know if you'd like a summary of her adherence trend to share with her."
+        }
       }
     }
   },

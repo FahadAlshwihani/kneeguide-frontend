@@ -25,10 +25,18 @@ const groupConversations = (conversations) => {
   return { today, previous };
 };
 
+// `titleKey` (seeded/demo conversations, doctorAssistantMockHistory.js) is
+// resolved fresh on every render so it follows the active dashboard
+// language immediately — the same reasoning as ConversationTurn's own
+// `contentKey` resolution in DoctorHomeAssistant.jsx. A live conversation
+// never has a title/titleKey; its fallback (first user message) also
+// needs the same contentKey check, since a live conversation started from
+// a seeded one could mix both message shapes.
 const getConversationTitle = (conversation, t) => {
+  if (conversation.titleKey) return t(conversation.titleKey);
   if (conversation.title) return conversation.title;
   const firstUserMessage = conversation.messages.find((message) => message.role === "user");
-  const raw = firstUserMessage?.content?.trim();
+  const raw = (firstUserMessage?.contentKey ? t(firstUserMessage.contentKey, firstUserMessage.values) : firstUserMessage?.content)?.trim();
   if (!raw) return t("doctorDashboard.assistant.history.untitled");
   return raw.length > 42 ? `${raw.slice(0, 42)}…` : raw;
 };

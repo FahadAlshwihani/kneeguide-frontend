@@ -30,8 +30,21 @@ const prefersReducedMotion = () =>
  * — see doctorAssistantActions.js's own comment on why these are always
  * serializable strings, never closures.
  */
+// Seeded/demo messages (doctorAssistantMockHistory.js) store a
+// `contentKey` + `values` pair instead of an already-rendered `content`
+// string, specifically so they re-render in the currently active
+// dashboard language rather than staying frozen in whatever language they
+// were authored in. Live/runtime messages (built in this file's own
+// `appendAssistantMessage`/`appendUserMessage`) keep working exactly as
+// before — they already resolved `content` once, in the detected INPUT
+// language for that turn (Section 16's own "these are two different
+// things" distinction) — this function is just the one place both shapes
+// funnel through, never a second copy of either code path.
+const resolveMessageText = (message, t) => (message.contentKey ? t(message.contentKey, message.values) : message.content);
+
 const ConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComplete, onNavigate }) => {
   const { t } = useTranslation();
+  const text = resolveMessageText(message, t);
 
   if (message.role === "user") {
     return (
@@ -44,7 +57,7 @@ const ConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComplete, 
       >
         <span className="doctor-visually-hidden">{t("doctorDashboard.assistant.youLabel")}</span>
         <p className="doctor-chat-bubble" dir="auto">
-          {message.content}
+          {text}
         </p>
       </motion.div>
     );
@@ -60,10 +73,10 @@ const ConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComplete, 
       <span className="doctor-chat-turn-label">{t("doctorDashboard.assistant.orbLabel")}</span>
 
       {message.pending ? (
-        <TypewriterText as="p" className="doctor-chat-text" dir="auto" text={message.content} onComplete={onTypedComplete} visuallyHiddenClassName="doctor-visually-hidden" />
+        <TypewriterText as="p" className="doctor-chat-text" dir="auto" text={text} onComplete={onTypedComplete} visuallyHiddenClassName="doctor-visually-hidden" />
       ) : (
         <p className="doctor-chat-text" dir="auto">
-          {message.content}
+          {text}
         </p>
       )}
 
