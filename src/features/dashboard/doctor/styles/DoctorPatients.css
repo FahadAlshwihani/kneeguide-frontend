@@ -1,224 +1,357 @@
-/* ================================
-   PAGE WRAPPER – ULTRA DARK ADMIN
-================================ */
-.dp-page {
-  padding: 25px 30px;
-  background: #050509;
-  min-height: 100vh;
-  color: #e5e5e5;
-}
+/* Doctor -> Patients: clinical worklist. Uses the shared dashboard design
+   tokens (src/index.css) exclusively — no hardcoded hex colors, no purple
+   CTAs (Section 42 of the Doctor Patients module brief). Logical
+   properties throughout so this mirrors correctly in RTL. */
 
-/* ================================
-   HEADER
-================================ */
-.dp-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+.dp-page {
+  padding-block: 4px 32px;
+  color: var(--color-text);
 }
 
 .dp-header h1 {
-  font-size: 28px;
+  font-size: 1.6rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-heading);
+  margin: 0;
 }
 
 .dp-header p {
-  color: #9ca3af;
-  margin-top: 4px;
+  color: var(--color-muted);
+  margin-block-start: 4px;
 }
 
-/* Count Pills */
-.dp-count-box {
-  display: flex;
-  gap: 10px;
-}
-
-.dp-count-pill {
-  background: #0b0b11;
-  border: 1px solid #1f2937;
-  color: #c7d2fe;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-/* ================================
-   SEARCH BOX
-================================ */
-.dp-search-box input {
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid #1f2937;
-  background: #020617;
-  color: #e5e5e5;
-  font-size: 15px;
-  margin-bottom: 25px;
-}
-
-.dp-search-box input::placeholder {
-  color: #6b7280;
-}
-
-.dp-search-box input:focus {
-  outline: none;
-  border-color: #7d5bff;
-}
-
-/* ================================
-   GRID
-================================ */
-.dp-grid {
+/* ---------- Summary metrics ---------- */
+.dp-summary-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-block: 20px;
 }
 
-/* ================================
-   PATIENT CARD – ULTRA ADMIN STYLE
-================================ */
-.dp-card {
-  background: #0b0b11;
-  padding: 20px;
-  border-radius: 18px;
-  border: 1px solid #111827;
-  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.35);
+.dp-summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  transition: 0.2s ease;
+  gap: 4px;
 }
 
-.dp-card:hover {
-  border-color: #4338ca;
-  box-shadow: 0px 8px 24px rgba(125, 91, 255, 0.18);
+.dp-summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-heading);
 }
 
-/* Top Section */
+.dp-summary-label {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.dp-summary-card--attention .dp-summary-value {
+  color: var(--color-warning);
+}
+
+.dp-summary-card--pending .dp-summary-value {
+  color: var(--color-info);
+}
+
+/* ---------- Controls ---------- */
+.dp-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-block-end: 20px;
+}
+
+.dp-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding-inline: 12px;
+  min-width: 220px;
+  flex: 1 1 220px;
+  color: var(--color-muted);
+}
+
+.dp-search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  padding-block: 10px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.dp-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dp-filter-chip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+
+.dp-filter-chip:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.dp-filter-chip.active {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dp-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.dp-sort select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+
+.dp-empty {
+  color: var(--color-muted);
+  padding: 40px 0;
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+/* ---------- Grid + cards ---------- */
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.dp-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: start;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.dp-card:hover,
+.dp-card:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
 .dp-card-top {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.dp-card-identity {
+  display: flex;
   align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dp-avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .dp-name {
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-heading);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dp-id {
-  font-size: 13px;
-  color: #9ca3af;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin: 2px 0 0;
 }
 
-/* ================================
-   RISK COLORS – DARK MODE
-================================ */
-.dp-risk {
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: 10px;
-  font-weight: 600;
-  text-transform: capitalize;
+.dp-attention {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
-.dp-risk-high {
-  background: rgba(220, 38, 38, 0.15);
-  color: #fca5a5;
-  border: 1px solid rgba(220, 38, 38, 0.4);
+.dp-attention-needsAttention {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
-.dp-risk-medium {
-  background: rgba(234, 179, 8, 0.15);
-  color: #fde68a;
-  border: 1px solid rgba(234, 179, 8, 0.4);
+.dp-attention-reviewRecommended {
+  background: rgba(234, 179, 8, 0.12);
+  color: var(--color-warning);
+  border: 1px solid rgba(234, 179, 8, 0.35);
 }
 
-.dp-risk-low {
-  background: rgba(34, 197, 94, 0.15);
-  color: #bbf7d0;
-  border: 1px solid rgba(34, 197, 94, 0.4);
+.dp-attention-stable {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--color-success);
+  border: 1px solid rgba(34, 197, 94, 0.35);
 }
 
-/* ================================
-   INFO SECTION
-================================ */
-.dp-info p {
-  margin: 4px 0;
-  font-size: 15px;
-  color: #d1d5db;
+.dp-clinical-context {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  margin: 0;
 }
 
-.dp-info strong {
-  color: #e5e5e5;
+.dp-reasons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-/* ================================
-   PROGRESS BAR – DARK MODE
-================================ */
-.dp-progress-bar {
-  width: 100%;
-  background: #111827;
-  height: 10px;
-  border-radius: 50px;
-  margin-top: 15px;
-  overflow: hidden;
+.dp-reasons li {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  position: relative;
+  padding-inline-start: 12px;
 }
 
-.dp-progress-bar div {
-  background: linear-gradient(90deg, #7d5bff, #4c1d95);
-  height: 100%;
-  border-radius: 50px;
+.dp-reasons li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-warning);
 }
 
-.dp-progress-label {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-/* ================================
-   ACTION BUTTONS
-================================ */
-.dp-actions {
-  margin-top: 20px;
+.dp-metrics {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  padding: 10px 4px;
 }
 
-/* Primary */
-.dp-btn-primary {
-  background: linear-gradient(90deg, #7d5bff, #4c1d95);
-  color: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
+.dp-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.dp-metric-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.dp-metric-label {
+  font-size: 0.68rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.dp-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block-start: auto;
+  padding-block-start: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.dp-activity {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.dp-pending-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.dp-tag {
+  font-size: 0.68rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: 0.15s;
+  padding: 3px 8px;
+  border-radius: 999px;
 }
 
-.dp-btn-primary:hover {
-  opacity: 0.9;
+.dp-tag--pending {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
-/* Secondary */
-.dp-btn-secondary {
-  background: #111827;
-  color: #c7d2fe;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #1f2937;
+.dp-view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.8rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: 0.15s;
+  color: var(--color-primary);
+  white-space: nowrap;
 }
 
-.dp-btn-secondary:hover {
-  border-color: #7d5bff;
-  color: #e0e7ff;
+@media (max-width: 640px) {
+  .dp-grid {
+    grid-template-columns: 1fr;
+  }
+  .dp-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
