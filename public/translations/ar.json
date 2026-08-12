@@ -160,33 +160,98 @@
     }
   },
   "doctorDashboard": {
-    "header": {
-      "title": "مرحباً دكتور"
+    "greeting": {
+      "morning": "صباح الخير، {{name}}.",
+      "afternoon": "مساء الخير، {{name}}.",
+      "evening": "مساء الخير، {{name}}.",
+      "fallbackName": "دكتور"
     },
-    "actions": {
-      "newAppointment": "+ موعد جديد",
-      "newReport": "+ تقرير جديد",
-      "viewPatients": "عرض المرضى"
-    },
-    "stats": {
-      "activePatients": "المرضى النشطون",
-      "todayAppointments": "مواعيد اليوم",
-      "newReports": "تقارير جديدة"
-    },
-    "chart": {
-      "title": "نظرة عامة على تحسن المرضى"
-    },
-    "appointments": {
-      "title": "أحدث المواعيد",
-      "columns": {
-        "patient": "المريض",
-        "condition": "الحالة",
-        "date": "التاريخ"
+    "assistant": {
+      "orbLabel": "مساعد KneeGuide السريري",
+      "regionLabel": "مساعد KneeGuide السريري",
+      "inputLabel": "اسأل مساعد KneeGuide السريري",
+      "inputPlaceholder": "اسأل عن مريض، أو المواعيد، أو التقارير...",
+      "sendLabel": "إرسال",
+      "suggestionsLabel": "اقتراحات",
+      "followUpLabel": "اقتراحات متابعة",
+      "historyLabel": "المحادثة",
+      "youLabel": "أنت",
+      "brief": "لديك {{appointments}} مواعيد اليوم و{{reports}} تقارير تأهيل جديدة للمراجعة. بناءً على نشاط التأهيل الأخير، قد يحتاج {{attention}} من المرضى إلى مراجعتك.",
+      "briefPrompt": "وش تحب تراجع؟",
+      "today": {
+        "title": "اليوم",
+        "appointments": "المواعيد",
+        "newReports": "تقارير جديدة",
+        "needAttention": "تحتاج مراجعة"
+      },
+      "history": {
+        "title": "سجل المحادثات",
+        "newChat": "محادثة جديدة",
+        "openHistory": "فتح سجل المحادثات",
+        "closeHistory": "إغلاق سجل المحادثات",
+        "collapse": "طي القائمة",
+        "expand": "توسيع القائمة",
+        "today": "اليوم",
+        "previous": "محادثات سابقة",
+        "untitled": "محادثة جديدة",
+        "mockBadge": "تجريبي",
+        "empty": "لا توجد محادثات بعد"
+      },
+      "actions": {
+        "attentionPatients": "مين يحتاج مراجعتي اليوم؟",
+        "todayAppointments": "وش مواعيدي اليوم؟",
+        "reportSummary": "لخص تقارير اليوم",
+        "ahmedProgress": "كيف تقدم أحمد علي؟",
+        "adherenceRisk": "مين متأخر في التأهيل؟"
+      },
+      "responses": {
+        "attentionIntro": "في {{count}} مرضى يبرزون في بيانات التأهيل اليوم:",
+        "attentionNone": "ما فيه مرضى يظهرون اتجاه مقلق حالياً بناءً على بيانات هذا الأسبوع التجريبية.",
+        "noAppointmentsToday": "ما عندك مواعيد مجدولة اليوم.",
+        "todayAppointmentsIntroWithNext": "عندك {{count}} مواعيد اليوم. موعدك القادم هو {{nextName}} الساعة {{nextTime}}، يليه {{followingName}} الساعة {{followingTime}}.",
+        "todayAppointmentsIntroLast": "عندك {{count}} مواعيد اليوم. موعدك القادم (والأخير) هو {{nextName}} الساعة {{nextTime}}.",
+        "todayAppointmentsIntroDone": "كان عندك {{count}} مواعيد اليوم — كلها خلصت.",
+        "noNewReports": "ما فيه تقارير تأهيل جديدة للمراجعة حالياً.",
+        "reportSummaryIntro": "عندك {{count}} تقارير تأهيل جديدة للمراجعة:",
+        "viewAllReports": "عرض كل التقارير",
+        "ahmedProgressSummary": "أحمد أكمل {{completed}} من أصل {{prescribed}} جلسات مقررة هالأسبوع (نسبة التزام {{percent}}%). مدى حركة الركبة تحسن من {{flexionOldest}}° إلى {{flexionLatest}}°، والألم بشكل عام يتجه للانخفاض نحو {{painRecentAverage}}/10 — بس تسجيل اليوم جا أعلى عند {{painLatest}}/10. جودة الحركة ظلت مستقرة. آخر جلسة له أظهرت انخفاض بسيط {{sessionDelta}}° بمدى الحركة مقارنة بالجلسة اللي قبلها.",
+        "openPatient": "فتح ملف المريض",
+        "viewLatestReport": "عرض آخر تقرير",
+        "reviewRehabProgram": "مراجعة برنامج التأهيل",
+        "adherenceRiskNone": "ما فيه مرضى يظهرون التزام ضعيف حالياً بناءً على بيانات هذا الأسبوع.",
+        "adherenceRiskIntro": "فيه {{count}} من المرضى ممكن يكونون متأخرين في برنامج التأهيل هالأسبوع:",
+        "unsupported": "أقدر أساعدك في مراجعة مرضاك، المواعيد، تقارير التأهيل، الألم، الالتزام وتقدم الحركة. جرّب تسألني عن مريض أو عن الحالات التي تحتاج مراجعة اليوم.",
+        "capabilityReschedule": "تغيير المواعيد مو متصل بنظام حجز حقيقي بعد في هذا العرض التجريبي — أقدر أعرض لك جدول اليوم، بس تغييره هنا مجرد عرض توضيحي، مو تحديث حقيقي."
+      },
+      "metrics": {
+        "pain": "الألم",
+        "flexion": "مدى الحركة",
+        "adherence": "الالتزام",
+        "missedSessions": "جلسات فائتة"
+      },
+      "attention": {
+        "severity": {
+          "high": "أولوية عالية",
+          "followUp": "متابعة",
+          "positive": "اتجاه إيجابي"
+        }
+      },
+      "reasons": {
+        "painIncreased": "زيادة في الألم",
+        "reviewProgress": "مراجعة التقدم",
+        "generalFollowUp": "متابعة عامة"
+      },
+      "mock": {
+        "ahmed": {
+          "diagnosis": "تمزق جزئي في الرباط الصليبي الأمامي"
+        },
+        "reports": {
+          "ahmed": "تقرير تقدم أسبوعي — الالتزام ومدى الحركة في تحسن، وتسجيل ألم اليوم ارتفع فجأة.",
+          "sara": "تقرير التزام — فاتها جلستين هالأسبوع، ونسبة إكمال الأسبوع أقل من المستهدف.",
+          "mohammed": "تقرير تقدم — تحسن ملحوظ بمدى الحركة وانخفاض بالألم المسجل.",
+          "lama": "تقرير متابعة روتيني — لا توجد تغييرات ملحوظة."
+        }
       }
-    },
-    "patients": {
-      "title": "نظرة عامة على المرضى",
-      "lastVisitLabel": "آخر زيارة:"
     }
   },
   "doctorExercises": {
