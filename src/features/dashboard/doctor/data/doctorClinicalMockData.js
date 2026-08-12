@@ -26,8 +26,6 @@
  * `Date.now()`-scaled.
  */
 
-export const DOCTOR_DISPLAY_NAME = "Dr. Sarah Ahmed";
-
 // ---------- Patients (clinical trend source) ----------
 //
 // Ahmed models a genuinely internally-consistent WEEK of sessions as a
