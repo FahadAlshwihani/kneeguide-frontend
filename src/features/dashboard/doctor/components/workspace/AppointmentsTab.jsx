@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import DoctorModal from "./DoctorModal";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { APPOINTMENT_STATUS } from "../../../../../domain/rehab/rehabEnums";
+import { buildAppointmentInsight, buildClinicalInsight } from "../../assistant/doctorAssistantInsights";
+import AssistantInsightCard from "./AssistantInsightCard";
 import "./AppointmentsTab.css";
 
 /**
@@ -44,8 +46,26 @@ const AppointmentsTab = ({ bundle, onScheduleNew }) => {
     setProposing(null);
   };
 
+  // Section 11 — the appointment insight reflects the EXACT current
+  // status (requested / alternative_proposed / nothing pending); a
+  // second short line is appended ONLY when the patient's latest session
+  // also carries a clinical flag, framed as relevant context, never as a
+  // reason the appointment is medically necessary.
+  const appointmentInsight = buildAppointmentInsight(bundle);
+  const clinicalInsight = buildClinicalInsight(bundle);
+  const appointmentLines = appointmentInsight
+    ? [
+        { messageKey: appointmentInsight.messageKey, values: appointmentInsight.values },
+        clinicalInsight.category === "clinical" && { messageKey: "doctorAssistantInsights.appointment.clinicalContext", values: {} },
+      ].filter(Boolean)
+    : [];
+
   return (
     <div>
+      {appointmentInsight && (
+        <AssistantInsightCard severity={appointmentInsight.severity} lines={appointmentLines} actions={appointmentInsight.actions} />
+      )}
+
       <div className="at-toolbar">
         <button type="button" className="dw-btn-primary" onClick={onScheduleNew}>
           {t("doctorPatientWorkspace.appointments.scheduleNew")}

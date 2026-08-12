@@ -4,6 +4,8 @@ import { LuLock, LuFileText } from "react-icons/lu";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { NOTE_VISIBILITY, APPOINTMENT_STATUS } from "../../../../../domain/rehab/rehabEnums";
 import { DEFAULT_CLINICIAN_ID } from "../../../../../domain/rehab/demoData/patients";
+import { buildClinicalNoteInsight } from "../../assistant/doctorAssistantInsights";
+import AssistantInsightCard from "./AssistantInsightCard";
 import "./ClinicalRecordTab.css";
 
 /**

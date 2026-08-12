@@ -102,8 +102,20 @@ const RehabilitationTab = ({ bundle }) => {
     rehabRepository.removePrescription(prescriptionId);
   };
 
+  // Section 8 — the Rehabilitation tab's own, narrower angle on the SAME
+  // clinical derivation Overview uses: whether the current session trend
+  // says anything relevant before the doctor changes intensity. Never a
+  // second computation of pain/ROM/adherence.
+  const clinicalInsight = buildClinicalInsight(bundle);
+
   return (
     <div>
+      <AssistantInsightCard
+        severity={clinicalInsight.severity}
+        lines={[{ messageKey: clinicalInsight.messageKey, values: clinicalInsight.values }]}
+        actions={clinicalInsight.actions}
+      />
+
       <section className="dw-section rt-plan-header">
         <div>
           <h2>{t("doctorPatientWorkspace.rehab.currentPlan")}</h2>

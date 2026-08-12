@@ -4,6 +4,8 @@ import DoctorModal from "./DoctorModal";
 import { ALL_EXERCISES } from "../../../../../domain/rehab/demoData/exercises";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { sessionAverageRom } from "../../../../../domain/rehab/rehabDerived";
+import { buildLatestSessionInsight } from "../../assistant/doctorAssistantInsights";
+import AssistantInsightCard from "./AssistantInsightCard";
 import "./SessionsTab.css";
 
 /**
@@ -49,8 +51,21 @@ const SessionsTab = ({ bundle }) => {
     setSelectedId(null);
   };
 
+  // Section 9 — only the LATEST session, and only when it actually
+  // carries a clinical flag (pain/ROM), gets a card here; an unreviewed
+  // but otherwise unremarkable session doesn't need an Assistant banner.
+  const latestSessionInsight = buildLatestSessionInsight(bundle);
+
   return (
     <div>
+      {latestSessionInsight && (
+        <AssistantInsightCard
+          severity={latestSessionInsight.severity}
+          lines={[{ messageKey: latestSessionInsight.messageKey, values: latestSessionInsight.values }]}
+          actions={latestSessionInsight.actions}
+        />
+      )}
+
       {ordered.length === 0 ? (
         <div className="dw-empty-state">{t("doctorPatientWorkspace.sessions.empty")}</div>
       ) : (
