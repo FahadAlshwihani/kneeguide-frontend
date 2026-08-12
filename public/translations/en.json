@@ -150,10 +150,6 @@
     "viewAgenda": "Agenda",
     "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     "moreCount": "+{{count}} more",
-    "insight": {
-      "withPending": "{{pending}} appointment request(s) need your review, and {{today}} appointment(s) are on today's schedule.",
-      "noPending": "No pending appointment requests. {{today}} appointment(s) are on today's schedule."
-    },
     "agenda": {
       "today": "Today",
       "tomorrow": "Tomorrow",
@@ -222,6 +218,14 @@
         "placeholder": "Search by name, patient ID, or diagnosis...",
         "noResults": "No patients match your search.",
         "change": "Change patient"
+      },
+      "existingPending": "{{name}} already has a pending appointment request for {{time}}.",
+      "reviewExisting": "Review existing request"
+    },
+    "assistant": {
+      "actions": {
+        "reviewRequest": "Review request",
+        "viewToday": "View today"
       }
     }
   },
@@ -233,6 +237,17 @@
       "reviewPlan": "Review rehabilitation plan",
       "reviewAppointment": "Review appointment request",
       "openPatient": "Open patient"
+    },
+    "appointmentsPage": {
+      "pendingRequest": "{{name}} has an appointment request waiting for your response for {{dateTime}}.",
+      "clinicalContext": {
+        "pain": "{{name}} has also shown a recent pain increase.",
+        "rom": "{{name}}'s latest movement (ROM) measurement has also decreased.",
+        "missedSessions": "{{name}} has also recently missed rehabilitation sessions."
+      },
+      "alsoToday": "You also have {{count}} appointment(s) today.",
+      "noneToday": "Nothing is scheduled for today. No appointment requests are waiting for review.",
+      "todaySummary": "You have {{count}} appointment(s) today. Your next appointment is {{nextName}} at {{time}}."
     },
     "clinical": {
       "painRomCombo": "{{name}} completed all prescribed sessions this period, but the latest session showed a pain increase (from {{painFrom}}/10 to {{painTo}}/10) and a small ROM regression (from {{romFrom}}° to {{romTo}}°). It may be worth reviewing the session before progressing the program.",
@@ -310,7 +325,8 @@
         "adherenceRisk": "Who is falling behind on rehab?",
         "pendingRequests": "Any pending appointment requests?",
         "scheduleAppointment": "Schedule an appointment",
-        "checkConflicts": "Check for scheduling conflicts"
+        "checkConflicts": "Check for scheduling conflicts",
+        "ahmedAppointments": "Show Ahmed's appointments"
       },
       "responses": {
         "attentionIntro": "{{count}} patients stand out in today's rehabilitation data:",
@@ -337,7 +353,9 @@
         "scheduleAppointmentIntro": "Who would you like to schedule an appointment for?",
         "noScheduleConflicts": "No scheduling conflicts found among your upcoming confirmed appointments.",
         "scheduleConflictsIntro": "{{count}} pair(s) of your upcoming confirmed appointments overlap in time — worth a look:",
-        "viewAppointments": "View appointments"
+        "viewAppointments": "View appointments",
+        "patientAppointmentsNone": "{{name}} has no appointments on file.",
+        "patientAppointmentsIntro": "{{name}} has {{count}} appointment(s):"
       },
       "metrics": {
         "pain": "Pain",

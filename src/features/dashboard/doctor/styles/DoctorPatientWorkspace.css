@@ -278,6 +278,25 @@ fieldset.dw-field legend {
   accent-color: var(--color-primary);
 }
 
+.dac-existing-request-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: rgba(234, 179, 8, 0.08);
+  border-inline-start: 2px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-block-end: 12px;
+}
+
+.dac-existing-request-banner p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text);
+}
+
 /* ---------- Shared card/section/empty-state helpers ---------- */
 .dw-section {
   background: var(--color-surface);

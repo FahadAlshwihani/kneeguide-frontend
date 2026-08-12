@@ -185,7 +185,12 @@ const DoctorPatientWorkspace = () => {
         </div>
       </div>
 
-      <DoctorAppointmentComposer isOpen={scheduleOpen} onClose={() => setScheduleOpen(false)} patientId={patient.id} />
+      <DoctorAppointmentComposer
+        isOpen={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        patientId={patient.id}
+        onReviewExisting={() => setTab("appointments")}
+      />
     </DoctorLayout>
   );
 };

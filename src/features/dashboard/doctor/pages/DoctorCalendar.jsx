@@ -235,9 +235,13 @@ const DoctorCalendar = () => {
   // the exact same rehabRepository mutations the Requests rail uses,
   // "Schedule appointment" opens the exact same composer, "Open patient"
   // is a real navigation. No second mutation path, no second form.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const appointmentsInsight = useMemo(
     () => buildAppointmentsPageInsight({ topRequest, todayAppointments: todayAppointmentsForInsight, formatDateTime: formatInsightDateTime }),
+    // formatInsightDateTime is a fresh closure every render (it just wraps
+    // the two Intl formatters above) — including it would defeat the memo
+    // without changing behavior, since it never captures anything that
+    // outlives this render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [topRequest, todayAppointmentsForInsight, i18n.language]
   );
 
@@ -592,6 +596,7 @@ const DoctorCalendar = () => {
         onClose={() => setComposerOpen(false)}
         patientId={composerPatientId}
         initialDate={selectedDate}
+        onReviewExisting={(appointmentId) => setSelectedAppointmentId(appointmentId)}
       />
       <ProposeAlternativeModal isOpen={!!proposing} onClose={() => setProposing(null)} appointment={proposing} />
       <DeclineAppointmentModal isOpen={!!declining} onClose={() => setDeclining(null)} appointment={declining} />

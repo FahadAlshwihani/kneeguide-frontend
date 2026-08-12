@@ -150,10 +150,6 @@
     "viewAgenda": "القائمة",
     "weekdaysShort": ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
     "moreCount": "+{{count}} أخرى",
-    "insight": {
-      "withPending": "هناك {{pending}} طلب موعد بانتظار مراجعتك، و{{today}} موعد على جدول اليوم.",
-      "noPending": "لا توجد طلبات مواعيد بانتظار المراجعة. {{today}} موعد على جدول اليوم."
-    },
     "agenda": {
       "today": "اليوم",
       "tomorrow": "غدًا",
@@ -222,6 +218,14 @@
         "placeholder": "ابحث بالاسم أو رقم المريض أو التشخيص...",
         "noResults": "لا يوجد مرضى مطابقون لبحثك.",
         "change": "تغيير المريض"
+      },
+      "existingPending": "لدى {{name}} طلب موعد بانتظار المراجعة بالفعل لـ {{time}}.",
+      "reviewExisting": "مراجعة الطلب الحالي"
+    },
+    "assistant": {
+      "actions": {
+        "reviewRequest": "مراجعة الطلب",
+        "viewToday": "عرض اليوم"
       }
     }
   },
@@ -233,6 +237,17 @@
       "reviewPlan": "مراجعة برنامج التأهيل",
       "reviewAppointment": "مراجعة طلب الموعد",
       "openPatient": "فتح ملف المريض"
+    },
+    "appointmentsPage": {
+      "pendingRequest": "لدى {{name}} طلب موعد بانتظار ردك لـ {{dateTime}}.",
+      "clinicalContext": {
+        "pain": "كما أظهر {{name}} ارتفاعًا حديثًا في الألم.",
+        "rom": "كما انخفض آخر قياس لمدى حركة {{name}}.",
+        "missedSessions": "كما فوّت {{name}} مؤخرًا بعض جلسات التأهيل."
+      },
+      "alsoToday": "لديك أيضًا {{count}} موعد اليوم.",
+      "noneToday": "لا يوجد شيء مجدول اليوم. لا توجد طلبات مواعيد بانتظار المراجعة.",
+      "todaySummary": "لديك {{count}} موعد اليوم. موعدك القادم هو {{nextName}} الساعة {{time}}."
     },
     "clinical": {
       "painRomCombo": "أكمل {{name}} جميع الجلسات الموصوفة خلال هذه الفترة، لكن آخر جلسة أظهرت ارتفاعًا في الألم (من {{painFrom}}/10 إلى {{painTo}}/10) وتراجعًا طفيفًا في مدى الحركة (من {{romFrom}}° إلى {{romTo}}°). قد يستحق الأمر مراجعة الجلسة قبل تطوير البرنامج.",
@@ -310,7 +325,8 @@
         "adherenceRisk": "مين متأخر في التأهيل؟",
         "pendingRequests": "فيه طلبات مواعيد بالانتظار؟",
         "scheduleAppointment": "احجز موعد",
-        "checkConflicts": "تحقق من تعارض المواعيد"
+        "checkConflicts": "تحقق من تعارض المواعيد",
+        "ahmedAppointments": "عرض مواعيد أحمد"
       },
       "responses": {
         "attentionIntro": "في {{count}} مرضى يبرزون في بيانات التأهيل اليوم:",
@@ -337,7 +353,9 @@
         "scheduleAppointmentIntro": "لمين تحب تحجز موعد؟",
         "noScheduleConflicts": "ما فيه تعارض بالمواعيد المؤكدة القادمة.",
         "scheduleConflictsIntro": "فيه {{count}} زوج من مواعيدك المؤكدة القادمة متعارضة بالوقت — تستحق المراجعة:",
-        "viewAppointments": "عرض المواعيد"
+        "viewAppointments": "عرض المواعيد",
+        "patientAppointmentsNone": "لا توجد مواعيد مسجلة لـ {{name}}.",
+        "patientAppointmentsIntro": "لدى {{name}} {{count}} موعد:"
       },
       "metrics": {
         "pain": "الألم",

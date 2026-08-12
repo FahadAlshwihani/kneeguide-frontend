@@ -124,6 +124,29 @@ const DoctorAppointmentComposer = ({ isOpen, onClose, patientId: lockedPatientId
         locked={!!lockedPatientId}
       />
 
+      {existingPendingForPatient && (
+        <div className="dac-existing-request-banner">
+          <p>
+            {t("doctorAppointments.composer.existingPending", {
+              name: existingPendingForPatient.patient.name,
+              time: new Date(existingPendingForPatient.appointment.startAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }),
+            })}
+          </p>
+          {onReviewExisting && (
+            <button
+              type="button"
+              className="dw-btn-secondary"
+              onClick={() => {
+                onReviewExisting(existingPendingForPatient.appointment.id);
+                handleClose();
+              }}
+            >
+              {t("doctorAppointments.composer.reviewExisting")}
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="dw-field-row">
         <div className="dw-field">
           <label htmlFor="dac-date">{t("doctorPatientWorkspace.appointments.fields.date")}</label>

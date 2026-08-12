@@ -237,13 +237,59 @@ export const DOCTOR_ASSISTANT_ACTIONS = [
     },
   },
   {
+    id: "PATIENT_APPOINTMENTS",
+    labelKey: "doctorDashboard.assistant.actions.ahmedAppointments",
+    icon: LuCalendarClock,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    // Ahmed-only, same honest scoping precedent as DOCTOR_PATIENT_PROGRESS
+    // above (this demo's free-text matcher can only reliably recognize one
+    // named patient without real NLP — matching "sara's appointments" would
+    // need per-patient pattern sets this bounded matcher doesn't have).
+    patterns: {
+      en: ["ahmed's appointments", "ahmed appointments", "show ahmed's appointments", "what are ahmed's appointments"],
+      ar: ["مواعيد أحمد", "مواعيد أحمد علي", "وش مواعيد أحمد"],
+    },
+    execute: ({ t, language }) => {
+      const appointments = rehabRepository.getAppointments(AHMED_ROUTE_ID);
+      if (appointments.length === 0) {
+        return { content: t("doctorDashboard.assistant.responses.patientAppointmentsNone", { lng: language, name: "Ahmed Ali" }) };
+      }
+      return {
+        content: t("doctorDashboard.assistant.responses.patientAppointmentsIntro", { lng: language, name: "Ahmed Ali", count: appointments.length }),
+        widget: {
+          // Reuses the existing appointmentList widget/renderer — its
+          // `reasonKey` slot holds the appointment STATUS here (this
+          // action is a per-patient rundown, not a "why" explanation),
+          // which the same generic `t(item.reasonKey)` call already
+          // renders correctly since it's just a translation key.
+          type: "appointmentList",
+          items: appointments.map((appointment) => ({
+            id: appointment.id,
+            name: `Ahmed Ali`,
+            timeIso: appointment.startAt,
+            reasonKey: `doctorAppointments.status.${appointment.status}`,
+          })),
+        },
+        actions: [{ id: "open-ahmed-appointments", labelKey: "doctorAssistantInsights.actions.openPatient", routeTo: `${ahmedProfileRoute()}?tab=appointments` }],
+      };
+    },
+  },
+  {
     id: "PENDING_APPOINTMENT_REQUESTS",
     labelKey: "doctorDashboard.assistant.actions.pendingRequests",
     icon: LuCalendarCheck,
     type: ASSISTANT_ACTION_TYPES.DISPLAY,
     patterns: {
-      en: ["pending appointment requests", "appointment requests", "who is waiting for an appointment", "new appointment requests", "requests waiting"],
-      ar: ["طلبات المواعيد", "طلبات مواعيد بالانتظار", "مين ينتظر موعد", "طلبات جديدة للمواعيد"],
+      en: [
+        "pending appointment requests",
+        "appointment requests",
+        "who is waiting for an appointment",
+        "new appointment requests",
+        "requests waiting",
+        "who requested an appointment",
+        "show pending appointment requests",
+      ],
+      ar: ["طلبات المواعيد", "طلبات مواعيد بالانتظار", "مين ينتظر موعد", "طلبات جديدة للمواعيد", "مين طلب موعد"],
     },
     execute: ({ t, language }) => {
       const pending = getPendingAppointmentRequests();

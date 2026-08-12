@@ -98,34 +98,11 @@
   background: var(--color-surface-soft);
 }
 
-/* Compact assistant insight strip (Section 37) — a quiet tinted line, not a dominant card. */
-.dc-insight-strip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* The compact KneeGuide Assistant card is the shared AssistantInsightCard
+   component (components/workspace/AssistantInsightCard.css) — this page
+   only nudges its top margin to sit flush under the header. */
+.dc-assistant-card {
   margin-top: 14px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
-  border-inline-start: 2px solid var(--color-info);
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--color-text);
-}
-
-.dc-insight-strip svg {
-  flex-shrink: 0;
-  width: 15px;
-  height: 15px;
-  color: var(--color-info);
-}
-
-.dc-insight-strip--warning {
-  border-inline-start-color: var(--color-warning);
-  background: rgba(234, 179, 8, 0.1);
-}
-
-.dc-insight-strip--warning svg {
-  color: var(--color-warning);
 }
 
 /* ===========================
