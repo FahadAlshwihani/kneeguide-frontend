@@ -1,73 +1,112 @@
-/* KneeGuide Assistant insight — a restrained "clinical decision support"
-   surface, not a chatbot card. Dark Doctor Dashboard tokens only
-   (src/index.css); logical properties for RTL. Severity communicated by
-   a thin border-inline-start accent, matching the same semantic colors
-   already used for attention badges (danger/warning/info/success) — no
-   new color vocabulary. */
+/* KneeGuide Assistant insight — Orb "face" + content, side by side.
+   Dark Doctor Dashboard tokens only (src/index.css); zero box-shadow
+   (flat-elevated hierarchy via surface tone + a single restrained border,
+   per the visual-polish pass). `flex-direction: row` mirrors correctly in
+   RTL on its own — see the component's own comment for why. */
 
 .assistant-insight-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-inline-start: 3px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 14px 16px;
-  margin-block-end: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.assistant-insight-card--danger {
-  border-inline-start-color: var(--color-danger);
-}
-
-.assistant-insight-card--warning {
-  border-inline-start-color: var(--color-warning);
-}
-
-.assistant-insight-card--info {
-  border-inline-start-color: var(--color-info);
-}
-
-.assistant-insight-card--success {
-  border-inline-start-color: var(--color-success);
-}
-
-.assistant-insight-card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: clamp(16px, 3vw, 28px);
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px 18px 26px;
+  margin-block-end: 16px;
+  overflow: hidden;
 }
 
-.assistant-insight-card-orb {
+/* Severity — a quiet logical-start accent strip + a very low-alpha tint
+   of the same semantic color, instead of a dominant full-height colored
+   border (Section 13 of the visual-polish brief). RTL-safe via the
+   logical `inset-inline-start` property, never physical `left`. */
+.assistant-insight-card::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 3px;
+  background: var(--color-border);
+}
+
+.assistant-insight-card--danger::before {
+  background: var(--color-danger);
+}
+.assistant-insight-card--danger {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.assistant-insight-card--warning::before {
+  background: var(--color-warning);
+}
+.assistant-insight-card--warning {
+  background: rgba(234, 179, 8, 0.05);
+}
+
+.assistant-insight-card--info::before {
+  background: var(--color-info);
+}
+
+.assistant-insight-card--success::before {
+  background: var(--color-success);
+}
+.assistant-insight-card--success {
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.assistant-insight-card-orb-col {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.assistant-insight-card-title {
-  font-size: 0.78rem;
+.assistant-insight-card-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assistant-insight-card-label {
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--color-muted);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
 }
 
 .assistant-insight-card-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  /* Readable line measure — the previous layout let this stretch across
+     the whole card width on wide viewports (Section 21). */
+  max-width: 74ch;
 }
 
 .assistant-insight-card-body p {
   margin: 0;
-  font-size: 0.88rem;
-  line-height: 1.5;
+  line-height: 1.55;
+}
+
+.assistant-insight-card-primary {
+  font-size: 0.94rem;
   color: var(--color-text);
+}
+
+.assistant-insight-card-secondary {
+  font-size: 0.84rem;
+  color: var(--color-muted);
 }
 
 .assistant-insight-card-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-block-start: 6px;
 }
 
 .assistant-insight-card-action {
@@ -75,7 +114,7 @@
   border: 1px solid var(--color-primary-soft);
   color: var(--color-primary);
   border-radius: var(--radius-md);
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
@@ -85,4 +124,31 @@
 .assistant-insight-card-action:hover,
 .assistant-insight-card-action:focus-visible {
   background: var(--color-primary-soft);
+}
+
+@media (max-width: 720px) {
+  .assistant-insight-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+  }
+
+  .assistant-insight-card-orb-col {
+    align-self: center;
+  }
+
+  .assistant-insight-card-content {
+    width: 100%;
+  }
+
+  .assistant-insight-card-body {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-insight-card-action {
+    transition-duration: 1ms;
+  }
 }
