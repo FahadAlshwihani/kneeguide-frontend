@@ -1,0 +1,194 @@
+/* Global tokens only. Compact by design (Section 6/34) — no marketing-navbar
+   height, no heavy borders. */
+
+.doctor-topbar {
+  flex: 0 0 auto;
+  height: var(--doctor-topbar-height, 60px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-inline: 20px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-background);
+  font-family: var(--font-product);
+}
+
+.doctor-topbar-start {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.doctor-topbar-menu-btn {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.doctor-topbar-menu-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.doctor-topbar-context {
+  margin: 0;
+  min-width: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doctor-topbar-end {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Assistant launcher — AI accent is allowed here, restrained ---------- */
+.doctor-topbar-assistant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(236, 72, 153, 0.1));
+  color: var(--color-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.doctor-topbar-assistant-btn:hover,
+.doctor-topbar-assistant-btn--active {
+  border-color: rgba(99, 102, 241, 0.55);
+}
+
+.doctor-topbar-assistant-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.doctor-topbar-assistant-btn svg {
+  width: 15px;
+  height: 15px;
+  color: var(--color-info);
+}
+
+.doctor-topbar-assistant-btn span {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .doctor-topbar-assistant-btn span {
+    display: inline;
+  }
+}
+
+/* ---------- Icon buttons (notifications) ---------- */
+.doctor-topbar-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.doctor-topbar-icon-btn:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-heading);
+}
+
+.doctor-topbar-icon-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.doctor-topbar-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.doctor-topbar-badge {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  min-width: 15px;
+  height: 15px;
+  padding-inline: 3px;
+  border-radius: 999px;
+  background: var(--color-danger);
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+
+/* ---------- Avatar ---------- */
+.doctor-topbar-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 160ms ease;
+}
+
+.doctor-topbar-avatar-btn:hover {
+  border-color: var(--color-primary);
+}
+
+.doctor-topbar-avatar-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1023.98px) {
+  .doctor-topbar-menu-btn {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .doctor-topbar {
+    padding-inline: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doctor-topbar-assistant-btn,
+  .doctor-topbar-icon-btn,
+  .doctor-topbar-avatar-btn {
+    transition-duration: 1ms;
+  }
+}

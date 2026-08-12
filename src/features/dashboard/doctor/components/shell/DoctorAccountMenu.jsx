@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { LuUser, LuLanguages, LuLogOut } from "react-icons/lu";
-import { ROUTES } from "../../../../utils/routes";
+import { ROUTES } from "../../../../../utils/routes";
 import "./DoctorAccountMenu.css";
 
 /**

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { LuX, LuSendHorizontal } from "react-icons/lu";
 import { useDoctorAssistant } from "../../assistant/DoctorAssistantContext";
 import { getContextualSuggestions } from "../../assistant/doctorAssistantSuggestions";
-import { ROUTES } from "../../../../utils/routes";
+import { ROUTES } from "../../../../../utils/routes";
 import DoctorClinicalOrb from "../assistant/DoctorClinicalOrb";
 import DoctorConversationTurn from "../assistant/DoctorConversationTurn";
 import "./DoctorAssistantDrawer.css";
