@@ -265,6 +265,13 @@
   padding: 2px 10px;
   border-radius: var(--patient-radius-badge);
   font: var(--patient-text-caption);
+  align-self: flex-end;
+  white-space: nowrap;
+}
+
+.pfl-status-pill svg {
+  width: 12px;
+  height: 12px;
 }
 
 .pfl-status-pill--positive {
@@ -273,8 +280,21 @@
   border: 1px solid var(--patient-color-success);
 }
 
-/* ---------- Devices ---------- */
-.pfl-device-empty {
+/* ---------- Devices ----------
+   One stable panel (`.pfl-device-panel`, fixed min-height) whose CONTENT
+   swaps between the centered empty/scanning block and the device-row list
+   — the panel itself never resizes dramatically between states, and
+   discovered/connecting/connected devices all render through the exact
+   same `.pfl-device-row` geometry (icon/name/metadata/action column
+   stay in the same place; only the action column's own content changes). */
+.pfl-device-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 208px;
+}
+
+.pfl-device-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -307,23 +327,14 @@
   max-width: 40ch;
 }
 
-.pfl-device-scanning {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--patient-space-xs);
-  padding: var(--patient-space-md) 0;
-  color: var(--patient-color-muted);
-  font: var(--patient-text-supporting);
-}
-
 .pfl-device-spinner {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 3px solid var(--patient-border);
   border-top-color: var(--patient-color-primary);
   animation: pfl-spin 0.9s linear infinite;
+  margin-top: var(--patient-space-2xs);
 }
 
 @keyframes pfl-spin {
@@ -332,48 +343,39 @@
   }
 }
 
-.pfl-device-list {
+.pfl-device-rows {
   display: flex;
   flex-direction: column;
   gap: var(--patient-space-2xs);
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 
+/* The shared row — same shape whether the device is merely discovered,
+   currently connecting, or already connected (see DeviceRow in
+   ProfileDevicesTab.jsx). Width is always the panel's full inner content
+   width (never a narrow floating card); only `--connected`'s left accent
+   border and icon color change, never a full-card color flood. */
 .pfl-device-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--patient-space-sm);
-  padding: var(--patient-space-xs);
+  width: 100%;
+  padding: var(--patient-space-sm) var(--patient-space-xs);
   background: var(--patient-surface-subtle);
   border: 1px solid var(--patient-divider);
+  border-inline-start: 3px solid transparent;
   border-radius: var(--patient-radius-control);
+  transition: border-color var(--patient-transition-normal), background-color var(--patient-transition-normal);
 }
 
-.pfl-device-name {
-  font: var(--patient-text-card-heading);
-  color: var(--patient-color-heading);
+.pfl-device-row--connected {
+  border-inline-start-color: var(--patient-color-success);
 }
 
-.pfl-device-signal {
-  font: var(--patient-text-caption);
-  color: var(--patient-color-muted);
-}
-
-.pfl-device-connected {
-  display: flex;
-  align-items: center;
-  gap: var(--patient-space-sm);
-  padding: var(--patient-space-sm);
-  background: var(--patient-color-success-soft);
-  border: 1px solid var(--patient-color-success);
-  border-radius: var(--patient-radius-card);
-  flex-wrap: wrap;
-}
-
-.pfl-device-connected-icon {
+.pfl-device-row-icon {
   flex: 0 0 auto;
   width: 40px;
   height: 40px;
@@ -381,22 +383,44 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--patient-surface-card);
-  color: var(--patient-color-success);
-  font-size: 20px;
+  background: var(--patient-surface-elevated);
+  color: var(--patient-color-muted);
+  font-size: 18px;
 }
 
-.pfl-device-connected-body {
-  flex: 1 1 160px;
+.pfl-device-row--connected .pfl-device-row-icon {
+  background: var(--patient-color-success-soft);
+  color: var(--patient-color-success);
+}
+
+.pfl-device-row-body {
+  flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--patient-space-3xs);
+  gap: 2px;
 }
 
-.pfl-device-connected-name {
+.pfl-device-row-name {
   font: var(--patient-text-card-heading);
   color: var(--patient-color-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pfl-device-row-meta,
+.pfl-device-row-signal {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+.pfl-device-row-action {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--patient-space-2xs);
 }
 
 /* ---------- Responsive ---------- */
