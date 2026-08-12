@@ -1,0 +1,54 @@
+/* Compact hero (Section 5) — a row, not a banner. Token-driven, so it
+   repaints correctly under both `data-patient-theme` values with zero
+   overrides here. */
+.pfl-hero {
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-sm);
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  border-radius: var(--patient-radius-card);
+  padding: var(--patient-space-sm) var(--patient-card-padding);
+  box-shadow: var(--patient-shadow-card);
+}
+
+.pfl-hero-avatar {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--patient-color-primary-soft);
+  color: var(--patient-color-primary);
+  font: var(--patient-text-section-heading);
+}
+
+.pfl-hero-body {
+  min-width: 0;
+}
+
+.pfl-hero-name {
+  font: var(--patient-text-page-heading);
+  color: var(--patient-color-heading);
+}
+
+.pfl-hero-sub {
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+}
+
+.pfl-hero-context {
+  margin-top: var(--patient-space-3xs);
+  font: var(--patient-text-caption);
+  color: var(--patient-color-primary);
+}
+
+@media (max-width: 380px) {
+  .pfl-hero-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 0.85rem;
+  }
+}

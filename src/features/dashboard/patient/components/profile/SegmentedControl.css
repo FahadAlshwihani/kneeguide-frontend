@@ -1,0 +1,49 @@
+.pfl-segmented {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--patient-border);
+  border-radius: var(--patient-radius-button);
+  background: var(--patient-surface-subtle);
+  margin: 0;
+}
+
+.pfl-segmented-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: calc(var(--patient-radius-button) - 3px);
+  border: none;
+  background: transparent;
+  color: var(--patient-color-muted);
+  font: var(--patient-text-label);
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), color var(--patient-transition-normal);
+}
+
+.pfl-segmented-option:hover {
+  color: var(--patient-color-text);
+}
+
+.pfl-segmented-option:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
+}
+
+.pfl-segmented-option--active {
+  background: var(--patient-surface-card);
+  color: var(--patient-color-heading);
+  box-shadow: var(--patient-shadow-card);
+}
+
+.pfl-segmented-icon {
+  display: inline-flex;
+  font-size: 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pfl-segmented-option {
+    transition-duration: 1ms;
+  }
+}

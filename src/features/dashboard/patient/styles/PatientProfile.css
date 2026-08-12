@@ -1,301 +1,440 @@
-/* PAGE */
-.pp-page {
+/* ============================================================
+   PATIENT PROFILE V2 — Control Center
+   ============================================================
+   Fully token-driven (--patient-*, patientTokens.css) — no raw hex/rgba
+   values below, which is what makes Light/Dark/System theming (Profile V2,
+   Section 18-26) fall out of patientTokens.css's own light-mode block
+   instead of a parallel `.light` ruleset here. Density follows Section 44:
+   compact rows/grids sized to content, not large sparse cards. */
+
+.pfl-page {
   min-height: 100vh;
-  background: #050509;
-  color: #e5e7eb;
-  /* Bottom nav clearance is now owned by PatientLayout's own content
-     wrapper (--patient-dock-clearance), not this page — plain symmetric
-     padding here. */
-  padding: 24px 16px;
+  background: var(--patient-surface-page);
+  color: var(--patient-color-text);
+  padding: var(--patient-page-padding-block) var(--patient-page-padding-inline);
   display: flex;
   justify-content: center;
 }
 
-.pp-inner {
+.pfl-inner {
   width: 100%;
-  max-width: 1120px;
-}
-
-/* HEADER */
-.pp-header {
+  max-width: var(--patient-page-max-width);
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: var(--patient-section-gap);
 }
 
-.pp-avatar {
-  width: 64px;
-  height: 64px;
-  background: #111827;
-  border: 1px solid #1f2937;
-  border-radius: 50%;
-  font-size: 22px;
-  font-weight: 700;
+/* ---------- Tabs ---------- */
+.pfl-tabs {
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.pp-name {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.pp-sub {
-  color: #9ca3af;
-  font-size: 14px;
-}
-
-/* TABS */
-.pp-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: var(--patient-space-2xs);
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
 }
 
-.pp-tabs button {
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1px solid #1f2937;
-  background: #111827;
-  font-size: 13px;
-  color: #9ca3af;
+.pfl-tabs button {
+  flex: 0 0 auto;
+  padding: var(--patient-space-2xs) var(--patient-space-sm);
+  border-radius: var(--patient-radius-button);
+  border: 1px solid var(--patient-border);
+  background: var(--patient-surface-card);
+  font: var(--patient-text-label);
+  color: var(--patient-color-muted);
   white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--patient-transition-normal), border-color var(--patient-transition-normal), color var(--patient-transition-normal);
 }
 
-.pp-tabs .active {
-  background: rgba(99, 102, 241, 0.25);
-  border-color: #6366f1;
-  color: #e0e7ff;
+.pfl-tabs button:hover {
+  color: var(--patient-color-text);
+  border-color: var(--patient-color-border);
 }
 
-/* CONTENT */
-.pp-card {
-  background: #050814;
-  border: 1px solid #111827;
-  border-radius: 18px;
-  padding: 20px;
-  margin-bottom: 20px;
+.pfl-tabs button:focus-visible {
+  outline: 2px solid var(--patient-color-focus);
+  outline-offset: 2px;
 }
 
-.pp-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 14px;
+.pfl-tabs button.active {
+  background: var(--patient-surface-selected);
+  border-color: var(--patient-color-primary);
+  color: var(--patient-color-heading);
 }
 
-/* GRID */
-.pp-grid {
+/* ---------- Tab content ---------- */
+.pfl-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.pfl-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-card-gap);
+}
+
+.pfl-card {
+  background: var(--patient-surface-card);
+  border: 1px solid var(--patient-border);
+  border-radius: var(--patient-radius-card);
+  padding: var(--patient-card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-sm);
+  box-shadow: var(--patient-shadow-card);
+}
+
+.pfl-card-title {
+  font: var(--patient-text-section-heading);
+  color: var(--patient-color-heading);
+}
+
+.pfl-card-subtext {
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+  margin-top: calc(var(--patient-space-2xs) * -1);
+}
+
+.pfl-card-footnote {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Info / metric grids (Overview, Rehab summary) ---------- */
+.pfl-info-grid,
+.pfl-metric-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--patient-grid-gap);
 }
 
-.pp-grid span {
-  font-size: 12px;
-  color: #9ca3af;
+.pfl-metric-grid--summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.pp-grid p {
-  margin-top: 4px;
-  font-size: 15px;
-}
-
-/* LIST */
-.pp-list {
+.pfl-info-item,
+.pfl-metric {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--patient-field-gap);
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-divider);
+  border-radius: var(--patient-radius-control);
+  padding: var(--patient-space-xs);
 }
 
-.pp-row {
+.pfl-info-item span,
+.pfl-metric span {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+.pfl-info-item p,
+.pfl-metric p {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+/* ---------- Row lists (Medical, Security) ---------- */
+.pfl-row-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-xs);
+}
+
+.pfl-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--patient-space-sm);
+  padding-block: var(--patient-space-2xs);
+  border-bottom: 1px solid var(--patient-divider);
 }
 
-.pp-tag {
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(79, 70, 229, 0.22);
-  border: 1px solid rgba(99, 102, 241, 0.4);
+.pfl-row:last-child {
+  border-bottom: none;
 }
 
-.pp-btn {
-  width: 100%;
-  padding: 10px;
-  background: rgba(79, 70, 229, 0.25);
-  border: 1px solid #4f46e5;
-  border-radius: 12px;
-  color: #e0e7ff;
-  font-size: 14px;
-  cursor: pointer;
+.pfl-row span {
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
 }
 
-.pp-btn:hover {
-  background: rgba(79, 70, 229, 0.35);
+.pfl-row p {
+  font: var(--patient-text-body);
+  color: var(--patient-color-text);
+  text-align: end;
 }
 
-.pp-btn.danger {
-  background: rgba(220, 38, 38, 0.22);
-  border-color: rgba(248, 113, 113, 0.5);
+.pfl-row--note {
+  flex-direction: column;
+  align-items: stretch;
 }
 
-.pp-value {
-  font-size: 14px;
+.pfl-row--note p {
+  text-align: start;
+  color: var(--patient-color-text);
 }
 
-.pp-subtext {
-  color: #9ca3af;
-  font-size: 13px;
-}
-
-.pdvc-page {
-  min-height: 100vh;
-  background: #050509;
-  color: #e5e7eb;
-  padding: 24px 16px 96px;
+/* ---------- Care Team ---------- */
+.pfl-care-team-row {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: var(--patient-space-sm);
+  flex-wrap: wrap;
 }
 
-.pdvc-inner {
-  width: 100%;
-  max-width: 1120px;
-}
-
-/* HEADER */
-.pdvc-header {
-  margin-bottom: 22px;
-}
-
-.pdvc-title {
-  font-size: 26px;
-  font-weight: 700;
-}
-
-.pdvc-sub {
-  font-size: 14px;
-  color: #9ca3af;
-  margin-top: 4px;
-}
-
-/* MAIN BUTTON */
-.pdvc-btn-main {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #e0e7ff;
-  background: rgba(79, 70, 229, 0.25);
-  border: 1px solid #4f46e5;
-  border-radius: 14px;
-  margin-top: 10px;
-}
-
-.pdvc-btn-main:disabled {
-  opacity: 0.6;
-}
-
-/* LOADING */
-.pdvc-loading {
-  margin-top: 26px;
-  text-align: center;
-}
-
-.pdvc-spinner {
-  width: 34px;
-  height: 34px;
-  margin: auto;
-  border: 4px solid #1f2937;
-  border-top-color: #6366f1;
+.pfl-care-team-avatar {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  animation: spin 0.9s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--patient-color-primary-soft);
+  color: var(--patient-color-primary);
+  font-size: 20px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.pfl-care-team-body {
+  flex: 1 1 200px;
+  min-width: 0;
 }
 
-/* DEVICES */
-.pdvc-device-list {
-  margin-top: 24px;
+.pfl-care-team-name {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.pfl-care-team-specialty {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+}
+
+.pfl-care-team-appointment {
+  margin-top: var(--patient-space-3xs);
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-text);
+}
+
+.pfl-care-team-appointment--muted {
+  color: var(--patient-color-faint);
+}
+
+/* ---------- Rehab exercise rows ---------- */
+.pfl-exercise-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--patient-space-2xs);
 }
 
-.pdvc-device-row {
-  background: #050814;
-  border: 1px solid #111827;
-  padding: 16px;
-  border-radius: 16px;
+.pfl-exercise-row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1.4fr;
+  align-items: center;
+  gap: var(--patient-space-xs);
+  padding: var(--patient-space-2xs) var(--patient-space-xs);
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-divider);
+  border-radius: var(--patient-radius-control);
+}
+
+.pfl-exercise-name {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.pfl-exercise-meta {
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-text);
+}
+
+.pfl-exercise-target {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
+  text-align: end;
+}
+
+/* ---------- Status pill (not color-only — see label text) ---------- */
+.pfl-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--patient-space-3xs);
+  padding: 2px 10px;
+  border-radius: var(--patient-radius-badge);
+  font: var(--patient-text-caption);
+}
+
+.pfl-status-pill--positive {
+  background: var(--patient-color-success-soft);
+  color: var(--patient-color-success);
+  border: 1px solid var(--patient-color-success);
+}
+
+/* ---------- Devices ---------- */
+.pfl-device-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--patient-space-2xs);
+  padding: var(--patient-space-lg) var(--patient-space-sm);
+}
+
+.pfl-device-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--patient-surface-elevated);
+  color: var(--patient-color-muted);
+  font-size: 22px;
+  margin-bottom: var(--patient-space-2xs);
+}
+
+.pfl-device-empty-title {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
+}
+
+.pfl-device-empty-copy {
+  font: var(--patient-text-supporting);
+  color: var(--patient-color-muted);
+  max-width: 40ch;
+}
+
+.pfl-device-scanning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--patient-space-xs);
+  padding: var(--patient-space-md) 0;
+  color: var(--patient-color-muted);
+  font: var(--patient-text-supporting);
+}
+
+.pfl-device-spinner {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid var(--patient-border);
+  border-top-color: var(--patient-color-primary);
+  animation: pfl-spin 0.9s linear infinite;
+}
+
+@keyframes pfl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pfl-device-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-2xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pfl-device-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--patient-space-sm);
+  padding: var(--patient-space-xs);
+  background: var(--patient-surface-subtle);
+  border: 1px solid var(--patient-divider);
+  border-radius: var(--patient-radius-control);
 }
 
-.pdvc-device-name {
-  font-size: 15px;
-  font-weight: 600;
+.pfl-device-name {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
 }
 
-.pdvc-signal {
-  color: #9ca3af;
-  font-size: 13px;
+.pfl-device-signal {
+  font: var(--patient-text-caption);
+  color: var(--patient-color-muted);
 }
 
-/* CONNECT BTN */
-.pdvc-connect-btn {
-  padding: 10px 14px;
-  border-radius: 12px;
-  background: rgba(79, 70, 229, 0.3);
-  border: 1px solid #4f46e5;
-  color: #e0e7ff;
-  font-size: 14px;
+.pfl-device-connected {
+  display: flex;
+  align-items: center;
+  gap: var(--patient-space-sm);
+  padding: var(--patient-space-sm);
+  background: var(--patient-color-success-soft);
+  border: 1px solid var(--patient-color-success);
+  border-radius: var(--patient-radius-card);
+  flex-wrap: wrap;
 }
 
-.pdvc-connect-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.pfl-device-connected-icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--patient-surface-card);
+  color: var(--patient-color-success);
+  font-size: 20px;
 }
 
-/* CONNECTED CARD */
-.pdvc-connected {
-  background: rgba(34, 197, 94, 0.09);
-  border: 1px solid #16a34a;
-  border-radius: 18px;
-  padding: 20px;
-  margin-top: 10px;
-  text-align: center;
+.pfl-device-connected-body {
+  flex: 1 1 160px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--patient-space-3xs);
 }
 
-.pdvc-connected h3 {
-  font-size: 18px;
-  margin-bottom: 6px;
+.pfl-device-connected-name {
+  font: var(--patient-text-card-heading);
+  color: var(--patient-color-heading);
 }
 
-.pdvc-connected-chip {
-  margin: 8px auto;
-  width: max-content;
-  padding: 4px 10px;
-  background: rgba(34, 197, 94, 0.2);
-  border: 1px solid #22c55e;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #bbf7d0;
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  .pfl-info-grid,
+  .pfl-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pfl-metric-grid--summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pfl-exercise-row {
+    grid-template-columns: 1fr;
+    text-align: start;
+  }
+
+  .pfl-exercise-target {
+    text-align: start;
+  }
+
+  .pfl-care-team-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-.pdvc-btn-outline {
-  margin-top: 10px;
-  padding: 10px 14px;
-  border: 1px solid #64748b;
-  color: #cbd5e1;
-  background: rgba(15, 23, 42, 0.4);
-  border-radius: 12px;
+@media (max-width: 380px) {
+  .pfl-info-grid,
+  .pfl-metric-grid,
+  .pfl-metric-grid--summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pfl-device-spinner {
+    animation-duration: 1.6s;
+  }
 }
