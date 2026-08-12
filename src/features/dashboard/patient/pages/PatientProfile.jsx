@@ -1,24 +1,49 @@
-// src/pages/PatientProfile.jsx
 import React from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "../styles/PatientProfile.css";
-import LanguageDropdown from "../../../../components/common/LanguageDropdown"; // ← تمت إضافته
+import { useAuth } from "../../../../context/AuthContext";
 import { useKneeGuideDevice } from "../device/KneeGuideDeviceContext";
+import { getNextConfirmedAppointment } from "../appointments/patientAppointmentService";
+import { DEFAULT_CLINICIAN } from "../data/patientClinicianData";
+import { getAdherence } from "../data/patientRehabPlanData";
+import { getOverviewInsight, getMedicalInsight, getRehabInsight, getDevicesInsight } from "../profile/patientProfileInsights";
+import ProfileHero from "../components/profile/ProfileHero";
+import ProfileOverviewTab from "../components/profile/ProfileOverviewTab";
+import ProfileMedicalTab from "../components/profile/ProfileMedicalTab";
+import ProfileRehabTab from "../components/profile/ProfileRehabTab";
+import ProfileDevicesTab from "../components/profile/ProfileDevicesTab";
+import ProfilePreferencesTab from "../components/profile/ProfilePreferencesTab";
+import ProfileSecurityTab from "../components/profile/ProfileSecurityTab";
 
-// The set of tabs this page actually renders — also the allowlist an
-// incoming `?tab=` deep link is checked against (see below); anything
-// else (missing, mistyped, stale) safely falls back to "overview"
-// instead of rendering a blank/broken tab.
-const PROFILE_TABS = ["overview", "medical", "rehab", "settings", "security", "devices"];
+// Section 2's tab order — also the allowlist an incoming `?tab=` deep link
+// is checked against (the Assistant's "Open Devices settings" secondary
+// action links straight to `?tab=devices`, see patientAssistantActions.js).
+// Anything missing/mistyped/stale (including the old "settings" tab this
+// replaces) safely falls back to "overview" instead of a blank panel.
+const PROFILE_TABS = ["overview", "medical", "rehab", "devices", "preferences", "security"];
 
+/**
+ * Patient Profile — the patient's recovery CONTROL CENTER (Profile V2),
+ * not a generic settings page. Hero -> [Overview, Medical, Rehab, Devices,
+ * Preferences, Security]. This page's own job is orchestration: it is the
+ * ONE place that reads the canonical sources (clinician identity,
+ * appointments, rehab plan/adherence, device capability) and hands already-
+ * resolved data + one deterministic insight down to each tab component —
+ * no tab component reaches into a data/service module a sibling tab
+ * already read, and none of them own a second copy of anything.
+ *
+ * MOCK PATIENT PROFILE — there is no dedicated Profile API/data module in
+ * this project (audited before this redesign); `user` below is the same
+ * kind of local mock object PatientProfile.jsx has always used, now with
+ * enum-like fields (`rehabPhaseKey`, `diagnosisKey`, `goalKey`,
+ * `clinicalNoteKey`) expressed as i18next keys instead of raw hardcoded
+ * English strings (Section 35), so both languages render correctly instead
+ * of just English with a translated shell around it.
+ */
 const PatientProfile = () => {
-  // Tab selection lives in the URL (`?tab=devices`), not local-only
-  // React state — this is what makes the KneeGuide Assistant's "Open
-  // Devices settings" action land directly on the Devices tab, and makes
-  // that landing survive a refresh/back/forward instead of resetting to
-  // Overview. "overview" itself is never written to the URL (falls
-  // through as the default), so the plain /patient/profile URL stays
-  // clean.
+  const { t } = useTranslation();
+  const { logout } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedTab = searchParams.get("tab");
   const tab = PROFILE_TABS.includes(requestedTab) ? requestedTab : "overview";
@@ -27,214 +52,81 @@ const PatientProfile = () => {
     setSearchParams(nextTab === "overview" ? {} : { tab: nextTab });
   };
 
-  // Device state/logic is NOT owned here — this is the same shared
-  // scan/connect capability the KneeGuide Assistant's "How do I connect
-  // my device?" action uses (see device/KneeGuideDeviceContext.jsx,
-  // mounted once in PatientLayout.jsx). Profile and the Assistant are two
-  // interfaces into one device capability, never two copies of it.
+  // Device state/logic is NOT owned here — the exact same shared
+  // scan/connect capability the KneeGuide Assistant's "How do I connect my
+  // device?" action uses (device/KneeGuideDeviceContext.jsx, mounted once
+  // in PatientLayout.jsx). Profile and the Assistant are two interfaces
+  // into one device capability, never two copies of it.
   const { scanning, devices, connectingDeviceId, connectedDevice, scanForDevices, connectToDevice, disconnectDevice } =
     useKneeGuideDevice();
 
-  // MOCK DATA
   const user = {
     first_name: "Ahmed",
     last_name: "Ali",
     age: 32,
     height: 178,
     weight: 82,
-    goal: "Improve ROM & strength",
-    surgery: "ACL Partial Tear",
+    goalKey: "patientProfile.mock.goal",
+    diagnosisKey: "patientProfile.mock.diagnosis",
     surgeryDate: "2025-09-10",
-    rehabPhase: "Phase 2",
+    rehabPhaseKey: "phase2",
+    clinicalNoteKey: "patientProfile.mock.clinicalNote",
     email: "ahmed@example.com",
     phone: "0555555555",
-    deviceLinked: false,
   };
 
   const avatarLetters = `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
 
+  // Cheap synchronous reads — same "don't bother memoizing on a refresh
+  // counter" call PatientAppointments.jsx already made for the same
+  // reason (see that file's own comment).
+  const adherence = getAdherence();
+  const nextAppointment = getNextConfirmedAppointment();
+
+  const overviewInsight = getOverviewInsight({ rehabPhase: t(`patientProfile.rehabPhase.${user.rehabPhaseKey}`), adherence });
+  const medicalInsight = getMedicalInsight({ rehabPhase: t(`patientProfile.rehabPhase.${user.rehabPhaseKey}`) });
+  const rehabInsight = getRehabInsight({ adherence });
+  const devicesInsight = getDevicesInsight({ connectedDevice });
+
   return (
-    <div className="pp-page">
-      <div className="pp-inner">
+    <div className="pfl-page">
+      <div className="pfl-inner">
+        <ProfileHero user={user} avatarLetters={avatarLetters} />
 
-        {/* HEADER */}
-        <div className="pp-header">
-          <div className="pp-avatar">{avatarLetters}</div>
-          <div>
-            <h1 className="pp-name">{user.first_name} {user.last_name}</h1>
-            <p className="pp-sub">Patient Profile</p>
-          </div>
-        </div>
+        <nav className="pfl-tabs" aria-label={t("patientProfile.tabsLabel")}>
+          {PROFILE_TABS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              className={tab === key ? "active" : ""}
+              aria-current={tab === key ? "page" : undefined}
+              onClick={() => setTab(key)}
+            >
+              {t(`patientProfile.tabs.${key}`)}
+            </button>
+          ))}
+        </nav>
 
-        {/* 🌐 LANGUAGE SWITCHER — أفضل مكان */}
-        <div style={{ marginTop: "10px", marginBottom: "20px" }}>
-          <LanguageDropdown />
-        </div>
-
-        {/* TABS */}
-        <div className="pp-tabs">
-          <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Overview</button>
-          <button className={tab === "medical" ? "active" : ""} onClick={() => setTab("medical")}>Medical Info</button>
-          <button className={tab === "rehab" ? "active" : ""} onClick={() => setTab("rehab")}>Rehab Program</button>
-          <button className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}>Settings</button>
-          <button className={tab === "security" ? "active" : ""} onClick={() => setTab("security")}>Security</button>
-          <button className={tab === "devices" ? "active" : ""} onClick={() => setTab("devices")}>Devices</button>
-        </div>
-
-        {/* CONTENT */}
-        <div className="pp-content">
-
-          {/* ================= OVERVIEW ================= */}
+        <div className="pfl-content">
           {tab === "overview" && (
-            <div className="pp-card">
-              <h2 className="pp-title">General Information</h2>
-
-              <div className="pp-grid">
-                <div><span>Age</span><p>{user.age}</p></div>
-                <div><span>Height</span><p>{user.height} cm</p></div>
-                <div><span>Weight</span><p>{user.weight} kg</p></div>
-                <div><span>Goal</span><p>{user.goal}</p></div>
-              </div>
-            </div>
+            <ProfileOverviewTab user={user} adherence={adherence} clinician={DEFAULT_CLINICIAN} nextAppointment={nextAppointment} insight={overviewInsight} />
           )}
-
-          {/* ================= MEDICAL INFO ================= */}
-          {tab === "medical" && (
-            <div className="pp-card">
-              <h2 className="pp-title">Medical Information</h2>
-
-              <div className="pp-grid">
-                <div><span>Diagnosis</span><p>{user.surgery}</p></div>
-                <div><span>Surgery Date</span><p>{user.surgeryDate}</p></div>
-                <div><span>Rehab Phase</span><p>{user.rehabPhase}</p></div>
-                <div><span>Doctor Notes</span><p>Continue ROM training, improving well.</p></div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= REHAB PROGRAM ================= */}
-          {tab === "rehab" && (
-            <div className="pp-card">
-              <h2 className="pp-title">Rehab Program</h2>
-
-              <div className="pp-list">
-                <div className="pp-row">
-                  <span>Quad Sets</span>
-                  <span className="pp-tag">3×12 daily</span>
-                </div>
-                <div className="pp-row">
-                  <span>Straight Leg Raises</span>
-                  <span className="pp-tag">3×10 daily</span>
-                </div>
-                <div className="pp-row">
-                  <span>Heel Slides</span>
-                  <span className="pp-tag">3×15 daily</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= SETTINGS ================= */}
-          {tab === "settings" && (
-            <div className="pp-card">
-              <h2 className="pp-title">Account Settings</h2>
-
-              <div className="pp-list">
-                <div className="pp-row">
-                  <span>Email</span>
-                  <p className="pp-value">{user.email}</p>
-                </div>
-
-                <div className="pp-row">
-                  <span>Phone</span>
-                  <p className="pp-value">{user.phone}</p>
-                </div>
-
-                <button className="pp-btn">Edit Information</button>
-              </div>
-            </div>
-          )}
-
-          {/* ================= SECURITY ================= */}
-          {tab === "security" && (
-            <div className="pp-card">
-              <h2 className="pp-title">Security</h2>
-
-              <div className="pp-list">
-                <button className="pp-btn">Change Password</button>
-                <button className="pp-btn danger">Logout</button>
-              </div>
-            </div>
-          )}
-
-          {/* ================= DEVICES ================= */}
+          {tab === "medical" && <ProfileMedicalTab user={user} insight={medicalInsight} />}
+          {tab === "rehab" && <ProfileRehabTab rehabPhaseKey={user.rehabPhaseKey} insight={rehabInsight} />}
           {tab === "devices" && (
-            <div className="pp-card">
-              <h2 className="pp-title">Knee Sensor Device</h2>
-              <p className="pp-subtext">
-                Connect your KneeGuide Bluetooth sensor to sync your movement data.
-              </p>
-
-              <div className="pdvc-section">
-
-                {connectedDevice && (
-                  <div className="pdvc-connected">
-                    <h3>Device Connected</h3>
-                    <p>{connectedDevice.name}</p>
-
-                    <div className="pdvc-connected-chip">LIVE</div>
-
-                    <button
-                      className="pdvc-btn-outline"
-                      onClick={disconnectDevice}
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                )}
-
-                {!connectedDevice && (
-                  <button
-                    className="pdvc-btn-main"
-                    onClick={scanForDevices}
-                    disabled={scanning}
-                  >
-                    {scanning ? "Scanning..." : "Scan for Devices"}
-                  </button>
-                )}
-
-                {scanning && (
-                  <div className="pdvc-loading">
-                    <div className="pdvc-spinner" />
-                    <p>Searching for nearby devices...</p>
-                  </div>
-                )}
-
-                {!scanning && !connectedDevice && devices.length > 0 && (
-                  <div className="pdvc-device-list">
-                    {devices.map((d) => (
-                      <div key={d.id} className="pdvc-device-row">
-                        <div>
-                          <h3 className="pdvc-device-name">{d.name}</h3>
-                          <p className="pdvc-signal">Signal: {d.signal} dBm</p>
-                        </div>
-
-                        <button
-                          className="pdvc-connect-btn"
-                          onClick={() => connectToDevice(d)}
-                          disabled={connectingDeviceId === d.id}
-                        >
-                          {connectingDeviceId === d.id ? "Connecting..." : "Connect"}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-              </div>
-            </div>
+            <ProfileDevicesTab
+              scanning={scanning}
+              devices={devices}
+              connectingDeviceId={connectingDeviceId}
+              connectedDevice={connectedDevice}
+              scanForDevices={scanForDevices}
+              connectToDevice={connectToDevice}
+              disconnectDevice={disconnectDevice}
+              insight={devicesInsight}
+            />
           )}
-
+          {tab === "preferences" && <ProfilePreferencesTab />}
+          {tab === "security" && <ProfileSecurityTab email={user.email} onLogout={logout} />}
         </div>
       </div>
     </div>
