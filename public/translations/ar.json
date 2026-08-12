@@ -38,7 +38,8 @@
     "attentionLevel": {
       "needsAttention": "يحتاج متابعة",
       "reviewRecommended": "يوصى بالمراجعة",
-      "stable": "مستقر"
+      "stable": "مستقر",
+      "improving": "في تحسّن"
     },
     "attentionReason": {
       "painIncreased": "ارتفاع الألم",
@@ -261,7 +262,17 @@
       "awaitingReview": "لدى {{name}} تقرير تأهيل بانتظار المراجعة.",
       "awaitingReviewFlagged": "لدى {{name}} تقرير تأهيل بانتظار المراجعة، ويتضمن تغييرات لافتة خلال هذه الفترة.",
       "compactSummary": "التزام {{percent}}% · الألم {{painFrom}} ← {{painTo}}",
-      "compactSummaryNoTrend": "التزام {{percent}}%"
+      "compactSummaryNoTrend": "التزام {{percent}}%",
+      "improvedSummary": "الألم {{painFrom}} ← {{painTo}} · مدى الحركة {{romFrom}}° ← {{romTo}}°",
+      "flagsSummary": "بسبب: {{flags}}"
+    },
+    "reportsPage": {
+      "needsAttentionLead": "تقرير {{name}} يُظهر تغيّرًا لافتًا وينتظر مراجعتك.",
+      "awaitingReviewLead": "تقرير {{name}} بانتظار مراجعتك.",
+      "flagSummary": "بسبب: {{flag}}.",
+      "alsoAwaiting": "يوجد {{count}} تقرير آخر بانتظار المراجعة أيضًا.",
+      "noUpcomingAppointment": "لا يوجد موعد KneeGuide قادم مجدول حاليًا.",
+      "noneAwaiting": "لا توجد تقارير بانتظار المراجعة حاليًا."
     },
     "appointment": {
       "requested": "طلب {{name}} تحديد موعد.",
@@ -326,7 +337,12 @@
         "pendingRequests": "فيه طلبات مواعيد بالانتظار؟",
         "scheduleAppointment": "احجز موعد",
         "checkConflicts": "تحقق من تعارض المواعيد",
-        "ahmedAppointments": "عرض مواعيد أحمد"
+        "ahmedAppointments": "عرض مواعيد أحمد",
+        "whoImproved": "مين تحسن؟",
+        "whoRegressed": "مين وضعه يسوء؟",
+        "highestPriorityReport": "أي تقرير أراجع أولاً؟",
+        "ahmedLatestReport": "عرض آخر تقرير لأحمد",
+        "compareLatestReports": "قارن آخر تقريرين لأحمد"
       },
       "responses": {
         "attentionIntro": "في {{count}} مرضى يبرزون في بيانات التأهيل اليوم:",
@@ -355,7 +371,16 @@
         "scheduleConflictsIntro": "فيه {{count}} زوج من مواعيدك المؤكدة القادمة متعارضة بالوقت — تستحق المراجعة:",
         "viewAppointments": "عرض المواعيد",
         "patientAppointmentsNone": "لا توجد مواعيد مسجلة لـ {{name}}.",
-        "patientAppointmentsIntro": "لدى {{name}} {{count}} موعد:"
+        "patientAppointmentsIntro": "لدى {{name}} {{count}} موعد:",
+        "noImprovedPatients": "لا يوجد مرضى يظهرون تغيّرًا إيجابيًا واضحًا بين تقارير قابلة للمقارنة حاليًا.",
+        "whoImprovedIntro": "{{count}} مريض يُظهرون تغيّرًا إيجابيًا في آخر تقرير قابل للمقارنة:",
+        "noRegressedPatients": "لا يوجد مرضى يظهرون تغيّرًا سلبيًا بين تقارير قابلة للمقارنة حاليًا.",
+        "whoRegressedIntro": "{{count}} مريض يُظهرون تغيّرًا سلبيًا في آخر تقرير لهم:",
+        "highestPriorityReportIntro": "يجب مراجعة تقرير {{name}} أولاً.",
+        "patientNoReports": "لا توجد تقارير مسجلة لـ {{name}}.",
+        "patientLatestReportIntro": "آخر تقرير لـ {{name}} مصنّف كـ {{trend}}.",
+        "noComparableReports": "لا يوجد تقرير سابق قابل للمقارنة لـ {{name}} بعد.",
+        "compareLatestReportsIntro": "آخر تقريرين لـ {{name}}: {{comparison}}"
       },
       "metrics": {
         "pain": "الألم",
@@ -515,74 +540,63 @@
     }
   },
   "doctorReports": {
-    "header": {
-      "title": "التقارير السريرية",
-      "subtitle": "إدارة ومراجعة جميع تقارير المرضى في مكان واحد."
-    },
+    "title": "التقارير السريرية",
+    "subtitle": "راجع تقارير التأهيل المُولَّدة والاتجاهات السريرية عبر مرضاك.",
     "meta": {
-      "total": "الإجمالي: {{count}}",
-      "pending": "قيد المراجعة: {{count}}"
+      "total": "{{count}} إجمالاً",
+      "awaitingReview": "{{count}} بانتظار المراجعة"
+    },
+    "overview": {
+      "label": "فلاتر نظرة عامة على التقارير",
+      "awaitingReview": "بانتظار المراجعة"
     },
     "filters": {
       "searchPlaceholder": "ابحث باسم المريض، رقم التقرير، أو رقم المريض...",
+      "statusLabel": "حالة المراجعة",
       "statusAll": "جميع الحالات",
-      "statusPending": "قيد المراجعة",
-      "statusReviewed": "مراجَع",
-      "severityAll": "كل درجات الشدة",
-      "severityLow": "منخفضة",
-      "severityMedium": "متوسطة",
-      "severityHigh": "مرتفعة"
+      "trendLabel": "الاتجاه السريري",
+      "trendAll": "كل الاتجاهات"
     },
     "table": {
       "columns": {
         "report": "التقرير",
         "patient": "المريض",
-        "date": "التاريخ",
-        "type": "النوع",
+        "period": "الفترة",
         "pain": "الألم",
         "status": "الحالة",
-        "severity": "شدة الإصابة",
-        "lastUpdated": "آخر تحديث",
-        "actions": ""
+        "trend": "الاتجاه السريري",
+        "updated": "آخر تحديث"
       },
-      "noResults": "لا توجد تقارير مطابقة لخيارات البحث."
+      "noResults": "لا توجد تقارير مطابقة لخيارات البحث.",
+      "reviewAction": "مراجعة",
+      "viewAction": "عرض"
     },
-    "status": {
-      "pendingShort": "قيد المراجعة",
-      "reviewedShort": "مراجَع",
-      "pendingLong": "بانتظار المراجعة السريرية",
-      "reviewedLong": "تمت المراجعة"
-    },
-    "severity": {
-      "low": "منخفضة",
-      "medium": "متوسطة",
-      "high": "مرتفعة",
-      "labelWithValue": "شدة الإصابة: {{value}}"
-    },
-    "painPill": "مستوى الألم: {{value}} / 10",
-    "modal": {
-      "titlePrefix": "التقرير",
-      "summaryTitle": "الملخّص",
-      "detailsTitle": "تفاصيل التقرير",
-      "doctorNotesTitle": "ملاحظات الطبيب (تجريبي)",
-      "doctorNotesBody": "في التطبيق الفعلي، سيحتوي هذا القسم على الملاحظات السريرية الكاملة (الذاتية والموضوعية) القادمة من نظام الباك إند.",
-      "doctorNotesBullets": {
-        "trackRehab": "متابعة تقدّم التأهيل مع مرور الوقت.",
-        "comparePain": "مقارنة مستوى الألم بالتقارير السابقة.",
-        "planNext": "تخطيط الزيارة القادمة وحمل التمارين."
-      },
-      "details": {
-        "date": "التاريخ",
-        "type": "نوع الزيارة",
-        "painLevel": "مستوى الألم",
-        "lastUpdated": "آخر تحديث"
-      },
-      "noSummary": "لا يوجد ملخص لهذا التقرير (بيانات تجريبية).",
+    "assistant": {
       "actions": {
-        "markReviewed": "تأكيد المراجعة",
-        "close": "إغلاق",
-        "view": "عرض"
+        "reviewReport": "مراجعة التقرير",
+        "compareWithPrevious": "قارن بالتقرير السابق"
       }
+    },
+    "detail": {
+      "title": "تقرير {{id}}",
+      "measurements": "القياسات الرئيسية",
+      "comparison": "مقارنة بالتقرير السابق",
+      "noComparison": "لا يوجد تقرير سابق قابل للمقارنة.",
+      "metric": "المقياس",
+      "previous": "السابق",
+      "current": "الحالي",
+      "change": "التغيّر",
+      "noChange": "لا تغيّر",
+      "metrics": {
+        "pain": "الألم",
+        "rom": "مدى ثني الركبة",
+        "adherence": "الالتزام"
+      },
+      "viewSessions": "عرض جلسات هذه الفترة",
+      "clinicianNote": "ملاحظة الطبيب",
+      "noClinicianNote": "لم تتم إضافة ملاحظة طبيب لهذا التقرير.",
+      "addNote": "أضف ملاحظة (اختياري)",
+      "markReviewed": "تأكيد المراجعة"
     }
   },
   "doctorPatients": {

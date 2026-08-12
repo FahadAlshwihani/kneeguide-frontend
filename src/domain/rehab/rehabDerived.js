@@ -219,17 +219,17 @@ export const compareReports = (current, previous) => {
   if (!previous) return [];
   const rows = [];
   if (current.painTrend && previous.painTrend) {
-    rows.push({ metric: "pain", previous: previous.painTrend.to, current: current.painTrend.to, change: current.painTrend.to - previous.painTrend.to, improvingDirection: -1 });
+    rows.push({ metric: "pain", previous: previous.painTrend.to, current: current.painTrend.to, change: round1(current.painTrend.to - previous.painTrend.to), improvingDirection: -1 });
   }
   if (current.romTrend && previous.romTrend) {
-    rows.push({ metric: "rom", previous: previous.romTrend.to, current: current.romTrend.to, change: current.romTrend.to - previous.romTrend.to, improvingDirection: 1 });
+    rows.push({ metric: "rom", previous: previous.romTrend.to, current: current.romTrend.to, change: round1(current.romTrend.to - previous.romTrend.to), improvingDirection: 1 });
   }
   if (typeof current.adherencePercent === "number" && typeof previous.adherencePercent === "number") {
     rows.push({
       metric: "adherence",
       previous: previous.adherencePercent,
       current: current.adherencePercent,
-      change: current.adherencePercent - previous.adherencePercent,
+      change: round1(current.adherencePercent - previous.adherencePercent),
       improvingDirection: 1,
     });
   }

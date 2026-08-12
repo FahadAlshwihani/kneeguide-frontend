@@ -371,7 +371,16 @@
         "scheduleConflictsIntro": "{{count}} pair(s) of your upcoming confirmed appointments overlap in time — worth a look:",
         "viewAppointments": "View appointments",
         "patientAppointmentsNone": "{{name}} has no appointments on file.",
-        "patientAppointmentsIntro": "{{name}} has {{count}} appointment(s):"
+        "patientAppointmentsIntro": "{{name}} has {{count}} appointment(s):",
+        "noImprovedPatients": "No patients currently show a clear positive change between comparable reports.",
+        "whoImprovedIntro": "{{count}} patient(s) show a positive change in their latest comparable report:",
+        "noRegressedPatients": "No patients currently show a negative change between comparable reports.",
+        "whoRegressedIntro": "{{count}} patient(s) show a negative change in their latest report:",
+        "highestPriorityReportIntro": "{{name}}'s report should be reviewed first.",
+        "patientNoReports": "{{name}} has no reports on file.",
+        "patientLatestReportIntro": "{{name}}'s latest report is classified as {{trend}}.",
+        "noComparableReports": "There isn't a previous comparable report for {{name}} yet.",
+        "compareLatestReportsIntro": "{{name}}'s latest two reports: {{comparison}}"
       },
       "metrics": {
         "pain": "Pain",
