@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { rehabRepository } from "../../../../domain/rehab/useRehabDomain";
+import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import "./DoctorClinicalMessage.css";
 
 /**

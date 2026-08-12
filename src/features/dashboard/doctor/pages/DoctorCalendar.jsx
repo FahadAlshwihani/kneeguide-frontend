@@ -114,7 +114,11 @@ const DoctorCalendar = () => {
   }, []);
 
   const monthGrid = useMemo(() => buildMonthGrid(currentDate), [currentDate]);
-  const weekdayLabels = useMemo(() => t("doctorAppointments.weekdaysShort", { returnObjects: true }), [t, i18n.language]);
+  const weekdayLabels = useMemo(
+    () => t("doctorAppointments.weekdaysShort", { returnObjects: true }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [t, i18n.language]
+  );
 
   const monthLabel = currentDate.toLocaleDateString(i18n.language, { month: "long", year: "numeric" });
   const todayKey = formatDateKey(new Date());
@@ -133,7 +137,12 @@ const DoctorCalendar = () => {
   const selectedDayAppointments = eventsByDateKey.get(selectedDate) || [];
   const selectedAppointment = appointments.find((appointment) => appointment.id === selectedAppointmentId) || null;
 
+  // Both read the shared store directly rather than deriving from the
+  // already-fetched `appointments` array — `appointments` is only the
+  // recompute trigger (a fresh reference each time the store changes).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const pendingRequests = useMemo(() => getPendingAppointmentRequests(), [appointments]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const todayAppointments = useMemo(() => getTodayAppointments(), [appointments]);
 
   const monthAppointments = useMemo(
