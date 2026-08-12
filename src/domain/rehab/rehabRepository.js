@@ -5,9 +5,24 @@ import { buildInitialAppointments } from "./demoData/appointments";
 import { buildInitialReports } from "./demoData/reports";
 import { buildInitialClinicalNotes } from "./demoData/clinicalNotes";
 import { buildInitialMedicalFiles } from "./demoData/medicalFiles";
-import { APPOINTMENT_STATUS, REPORT_STATUS, PRESCRIPTION_STATUS, NOTE_AUTHOR_ROLE, NOTE_VISIBILITY } from "./rehabEnums";
-import { generateReportMetrics } from "./rehabDerived";
+import { APPOINTMENT_STATUS, REPORT_STATUS, PRESCRIPTION_STATUS, NOTE_AUTHOR_ROLE, NOTE_VISIBILITY, ATTENTION_LEVEL } from "./rehabEnums";
+import {
+  generateReportMetrics,
+  computeAdherence,
+  derivePatientPriority,
+  deriveLatestPain,
+  derivePainTrend,
+  deriveLatestRom,
+  deriveRomTrend,
+  deriveTrendDirection,
+} from "./rehabDerived";
 import { loadRehabState, saveRehabState, clearLegacyKeys, resetRehabState } from "./rehabStorage";
+
+const PRIORITY_SORT_RANK = {
+  [ATTENTION_LEVEL.NEEDS_ATTENTION]: 0,
+  [ATTENTION_LEVEL.REVIEW_RECOMMENDED]: 1,
+  [ATTENTION_LEVEL.STABLE]: 2,
+};
 
 /**
  * THE single shared demo domain store (Section 3 of the brief) — one
@@ -151,6 +166,65 @@ export const getLatestPainLogEntry = (patientId) => {
   const logs = getPainLogs(patientId);
   return logs.length ? logs[logs.length - 1] : null;
 };
+
+/**
+ * ONE patient's full derived bundle — every field a Workspace tab, a
+ * Doctor Assistant insight, or a Doctor Home Assistant answer needs, all
+ * computed via rehabDerived.js exactly once per call. `useRehabPatient()`
+ * (useRehabDomain.js) is a thin reactive wrapper around this exact
+ * function; non-React callers (the Assistant action registry, which runs
+ * outside any component) call it directly — so there is only ONE place
+ * adherence/priority/trends are ever computed, never a second copy
+ * re-derived inside Assistant-specific code (Section 3/30 of the brief).
+ */
+export const getPatientBundle = (patientId) => {
+  const patient = getPatient(patientId);
+  if (!patient) return null;
+
+  const prescriptions = getPrescriptions(patientId, { activeOnly: false });
+  const activePrescriptions = prescriptions.filter((rx) => rx.status === PRESCRIPTION_STATUS.ACTIVE);
+  const sessions = getSessions(patientId);
+  const appointments = getAppointments(patientId);
+  const reports = getReports(patientId);
+  const clinicalNotes = getClinicalNotes(patientId);
+  const medicalFiles = getMedicalFiles(patientId);
+  const painLogs = getPainLogs(patientId);
+
+  const adherence = computeAdherence({ prescriptions: activePrescriptions, sessions });
+  const priority = derivePatientPriority({ prescriptions: activePrescriptions, sessions, appointments, reports, painLogs });
+  const latestPain = deriveLatestPain(painLogs);
+  const painTrend = derivePainTrend(painLogs);
+  const latestRom = deriveLatestRom(sessions);
+  const romTrend = deriveRomTrend(sessions);
+  const trendDirection = deriveTrendDirection(priority);
+
+  return {
+    patient,
+    prescriptions,
+    activePrescriptions,
+    sessions,
+    appointments,
+    reports,
+    clinicalNotes,
+    medicalFiles,
+    painLogs,
+    adherence,
+    priority,
+    latestPain,
+    painTrend,
+    latestRom,
+    romTrend,
+    trendDirection,
+  };
+};
+
+/** Every patient's worklist-summary bundle (Section 30 — computed once, shared by the Patients list, the Assistant's attention list, and the Doctor Home brief). */
+export const getWorklistBundles = () => getPatients().map((patient) => getPatientBundle(patient.id));
+
+export const getPatientsNeedingAttention = () =>
+  getWorklistBundles()
+    .filter((bundle) => bundle.priority.reasons.length > 0)
+    .sort((a, b) => PRIORITY_SORT_RANK[a.priority.level] - PRIORITY_SORT_RANK[b.priority.level]);
 
 // ---------------------------------------------------------------------
 // Mutations — domain actions (Section 52)
