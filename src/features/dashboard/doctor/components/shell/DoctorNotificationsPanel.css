@@ -1,0 +1,164 @@
+/* Global tokens only (index.css :root). Panel chrome (position/shadow) is
+   owned by components/ui/Popover.css — this file only styles the content. */
+
+.doctor-notif-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: min(60vh, 480px);
+  font-family: var(--font-product);
+}
+
+.doctor-notif-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.doctor-notif-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.doctor-notif-mark-all {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.doctor-notif-mark-all:hover:not(:disabled) {
+  background: var(--color-primary-soft);
+}
+
+.doctor-notif-mark-all:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.doctor-notif-mark-all:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.doctor-notif-empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.doctor-notif-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+}
+
+.doctor-notif-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
+  transition: background-color 160ms ease;
+}
+
+.doctor-notif-row:hover {
+  background: var(--color-surface-soft);
+}
+
+.doctor-notif-row:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.doctor-notif-row--unread {
+  background: var(--color-primary-soft);
+}
+
+.doctor-notif-row--unread:hover {
+  background: var(--color-primary-soft);
+}
+
+.doctor-notif-icon {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+}
+
+.doctor-notif-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.doctor-notif-icon--warning {
+  color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.doctor-notif-icon--attention {
+  color: var(--color-warning);
+  background: rgba(234, 179, 8, 0.12);
+}
+
+.doctor-notif-icon--info {
+  color: var(--color-info);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.doctor-notif-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doctor-notif-row-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.doctor-notif-row-message {
+  font-size: 0.78rem;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.doctor-notif-row-meta {
+  margin-top: 2px;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+}
+
+.doctor-notif-unread-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
