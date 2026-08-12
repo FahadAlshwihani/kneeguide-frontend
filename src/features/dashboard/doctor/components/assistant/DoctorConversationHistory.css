@@ -1,0 +1,275 @@
+/* Doctor conversation history — rail/drawer, reading exclusively from the
+   EXISTING global design tokens (index.css :root — --color-*, --radius-*,
+   --font-product, --z-*), never new Doctor-only tokens and never the
+   Patient-scoped --patient-* layer (deliberately out of reach here).
+   Logical properties throughout for RTL. */
+
+.doctor-history-rail {
+  --dch-rail-width: 240px;
+  --dch-rail-collapsed-width: 56px;
+  flex: 0 0 var(--dch-rail-width);
+  width: var(--dch-rail-width);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-inline-end: 1px solid var(--color-border);
+  padding-inline-end: 16px;
+  max-height: 100%;
+  min-height: 0;
+  font-family: var(--font-product);
+  transition: flex-basis 200ms ease, width 200ms ease;
+}
+
+.doctor-history-rail--collapsed {
+  flex-basis: var(--dch-rail-collapsed-width);
+  width: var(--dch-rail-collapsed-width);
+}
+
+@media (max-width: 1023.98px) {
+  .doctor-history-rail {
+    display: none;
+  }
+}
+
+.doctor-history-rail-top {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.doctor-history-rail--collapsed .doctor-history-rail-top {
+  flex-direction: column;
+}
+
+.doctor-history-rail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.doctor-history-rail-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.doctor-history-rail-body::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.doctor-history-new-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.doctor-history-new-chat:hover {
+  background: var(--color-surface-soft);
+  border-color: var(--color-primary-soft);
+}
+
+.doctor-history-new-chat:focus-visible,
+.doctor-history-collapse-toggle:focus-visible,
+.doctor-history-icon-button:focus-visible,
+.doctor-history-row:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.doctor-history-new-chat span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doctor-history-rail--collapsed .doctor-history-new-chat {
+  flex: 0 0 auto;
+  padding: 8px;
+  justify-content: center;
+}
+
+.doctor-history-new-chat svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.doctor-history-collapse-toggle,
+.doctor-history-icon-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.doctor-history-collapse-toggle:hover,
+.doctor-history-icon-button:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-heading);
+}
+
+.doctor-history-collapse-toggle svg,
+.doctor-history-icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.doctor-history-group + .doctor-history-group {
+  margin-top: 16px;
+}
+
+.doctor-history-group-label {
+  margin: 0 0 4px;
+  padding-inline: 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.doctor-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doctor-history-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.doctor-history-row:hover {
+  background: var(--color-surface-soft);
+}
+
+.doctor-history-row--active {
+  background: var(--color-primary-soft);
+  border-inline-start: 2px solid var(--color-primary);
+}
+
+.doctor-history-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  width: 100%;
+}
+
+.doctor-history-row-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doctor-history-row--active .doctor-history-row-title {
+  color: var(--color-heading);
+}
+
+.doctor-history-row-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+}
+
+.doctor-history-row-badge {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.doctor-history-empty {
+  margin: 16px 8px;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+/* ---------- Mobile drawer ---------- */
+.doctor-history-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: var(--z-modal, 400);
+}
+
+.doctor-history-drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: min(300px, 84vw);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-background);
+  border-inline-end: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  z-index: calc(var(--z-modal, 400) + 1);
+  font-family: var(--font-product);
+}
+
+.doctor-history-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.doctor-history-drawer-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.doctor-history-new-chat--drawer {
+  width: 100%;
+}
+
+.doctor-history-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

@@ -1,0 +1,196 @@
+/* Structured Doctor Assistant embeds — compact rows, not dashboard cards.
+   Global tokens only (index.css :root). */
+
+.doctor-attention-list,
+.doctor-appointment-list,
+.doctor-report-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ---------- Attention rows ---------- */
+.doctor-attention-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-inline-start: 3px solid var(--color-border);
+}
+
+.doctor-attention-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.doctor-attention-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.doctor-attention-badge {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+}
+
+.doctor-attention-badge--high {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.doctor-attention-badge--followUp {
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+  background: rgba(234, 179, 8, 0.1);
+}
+
+.doctor-attention-badge--positive {
+  color: var(--color-success);
+  border-color: var(--color-success);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.doctor-attention-row:has(.doctor-attention-badge--high) {
+  border-inline-start-color: var(--color-danger);
+}
+
+.doctor-attention-row:has(.doctor-attention-badge--followUp) {
+  border-inline-start-color: var(--color-warning);
+}
+
+.doctor-attention-row:has(.doctor-attention-badge--positive) {
+  border-inline-start-color: var(--color-success);
+}
+
+.doctor-attention-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.doctor-attention-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doctor-attention-metric-label {
+  font-size: 0.66rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.doctor-attention-metric-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.doctor-attention-open {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary-soft);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.doctor-attention-open:hover {
+  background: var(--color-primary-soft);
+}
+
+.doctor-attention-open:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Appointment rows ---------- */
+.doctor-appointment-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.doctor-appointment-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doctor-appointment-reason {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+.doctor-appointment-time {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ---------- Report rows ---------- */
+.doctor-report-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.doctor-report-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.doctor-report-summary {
+  font-size: 0.8rem;
+  color: var(--color-text);
+}
+
+@media (max-width: 480px) {
+  .doctor-appointment-row {
+    flex-wrap: wrap;
+  }
+
+  .doctor-attention-list,
+  .doctor-appointment-list,
+  .doctor-report-list {
+    max-width: 100%;
+  }
+}
