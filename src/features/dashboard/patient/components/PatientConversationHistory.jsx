@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "motion/react";
-import { LuPlus, LuX, LuPanelLeftClose, LuPanelLeftOpen, LuHistory } from "react-icons/lu";
+import { LuPlus, LuX, LuHistory } from "react-icons/lu";
+import { getSidebarToggleIcon } from "../../../../components/ui/sidebarToggleIcon";
 import "./PatientConversationHistory.css";
 
 const prefersReducedMotion = () =>
@@ -169,6 +170,12 @@ const PatientConversationHistory = ({
   }, [variant, isOpen, onClose]);
 
   if (variant === "rail") {
+    // The rail is always the first flex child of `.patient-home-workspace`
+    // (row direction, positioned by normal flow) — its physical side flips
+    // with direction on its own, so the icon that describes "collapse"/
+    // "expand" must too (see components/ui/sidebarToggleIcon.js).
+    const ToggleIcon = getSidebarToggleIcon({ isRTL, isCollapsed: collapsed });
+
     return (
       <nav
         className={`patient-history-rail${collapsed ? " patient-history-rail--collapsed" : ""}`}
@@ -196,7 +203,7 @@ const PatientConversationHistory = ({
               collapsed ? "patientDashboard.assistant.history.expand" : "patientDashboard.assistant.history.collapse"
             )}
           >
-            {collapsed ? <LuPanelLeftOpen aria-hidden="true" /> : <LuPanelLeftClose aria-hidden="true" />}
+            <ToggleIcon aria-hidden="true" />
           </button>
         </div>
 

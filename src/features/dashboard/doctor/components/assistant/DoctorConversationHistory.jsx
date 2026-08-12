@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "motion/react";
-import { LuPlus, LuX, LuPanelLeftClose, LuPanelLeftOpen, LuHistory } from "react-icons/lu";
+import { LuPlus, LuX, LuHistory } from "react-icons/lu";
+import { getSidebarToggleIcon } from "../../../../../components/ui/sidebarToggleIcon";
 import "./DoctorConversationHistory.css";
 
 const prefersReducedMotion = () =>
@@ -133,6 +134,10 @@ const DoctorConversationHistory = ({ variant, conversations, activeConversationI
   }, [variant, isOpen, onClose]);
 
   if (variant === "rail") {
+    // Same fix/reasoning as PatientConversationHistory.jsx's rail toggle —
+    // see components/ui/sidebarToggleIcon.js.
+    const ToggleIcon = getSidebarToggleIcon({ isRTL, isCollapsed: collapsed });
+
     return (
       <nav className={`doctor-history-rail${collapsed ? " doctor-history-rail--collapsed" : ""}`} aria-label={t("doctorDashboard.assistant.history.title")}>
         <div className="doctor-history-rail-top">
@@ -147,7 +152,7 @@ const DoctorConversationHistory = ({ variant, conversations, activeConversationI
             aria-label={t(collapsed ? "doctorDashboard.assistant.history.expand" : "doctorDashboard.assistant.history.collapse")}
             title={t(collapsed ? "doctorDashboard.assistant.history.expand" : "doctorDashboard.assistant.history.collapse")}
           >
-            {collapsed ? <LuPanelLeftOpen aria-hidden="true" /> : <LuPanelLeftClose aria-hidden="true" />}
+            <ToggleIcon aria-hidden="true" />
           </button>
         </div>
 

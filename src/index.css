@@ -437,6 +437,28 @@ body.ltr .public-root.auth-layout-root {
   font-family: var(--font-product);
 }
 
+/* Form controls don't inherit font-family from an ancestor by default
+   (browser UA stylesheets give button/input/select/textarea their own
+   platform UI font) — this is the exact reason Patient/Doctor dashboard
+   buttons, chips, and inputs were silently falling back to the browser's
+   default font instead of Tajawal, even though `.dashboard-root` above
+   already correctly sets it for ordinary text. `.public-root` already
+   solves this same problem for itself a few rules below (`.public-root
+   button/input/select/textarea { font-family: inherit }`) — this mirrors
+   that exact, already-proven pattern for the dashboard scope instead of
+   inventing a new one. Deliberately `font-family` only (not the full
+   `font` shorthand, and not `color`, unlike `.public-root`'s version):
+   this must never touch font-size/weight/line-height or text color, which
+   are still owned per-component (e.g. Patient's own `--patient-text-*`
+   tokens) and are outside this task's scope. */
+.dashboard-root button,
+.dashboard-root input,
+.dashboard-root select,
+.dashboard-root textarea,
+.dashboard-root option {
+  font-family: inherit;
+}
+
 .public-root {
   color: var(--color-text);
   background: var(--color-background);

@@ -7,7 +7,14 @@
   flex-direction: column;
   justify-content: space-between;
   color: #fff;
-  border-right: 1px solid #222;
+  /* Logical, not physical — `.doctor-layout` is a row-direction flex
+     container, so this sidebar (its first child) already sits on the
+     physical right in RTL automatically (flexbox's own direction-aware
+     "row" behavior); a hardcoded `border-right` would then draw the
+     separator on the sidebar's OUTER edge instead of the edge actually
+     facing the content area. `border-inline-end` always faces the content
+     regardless of direction. */
+  border-inline-end: 1px solid #222;
 }
 
 .sidebar-header {
