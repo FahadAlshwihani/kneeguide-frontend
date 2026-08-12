@@ -155,7 +155,11 @@ export const DoctorAssistantProvider = ({ children }) => {
   const runAction = (action, sourceText, explicitLanguage) => {
     const text = sourceText || t(action.labelKey);
     const language = explicitLanguage || deriveTurnLanguage(text);
-    const result = action.execute({ navigate, t, language });
+    // `query` is the raw matched text — most actions ignore it (they only
+    // need `t`/`language`), but a few (e.g. Reports' per-named-patient
+    // queries) use it to tell "ahmed's..." apart from "sara's..." within
+    // one registry entry instead of needing a separate action per name.
+    const result = action.execute({ navigate, t, language, query: text });
 
     appendUserMessage(text, language);
     appendAssistantMessage({ content: result.content, widget: result.widget, actions: result.actions });

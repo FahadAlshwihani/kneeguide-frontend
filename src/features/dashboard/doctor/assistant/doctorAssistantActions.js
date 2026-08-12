@@ -1,8 +1,8 @@
-import { LuUsers, LuCalendarClock, LuFileText, LuActivity, LuTrendingDown, LuCalendarPlus, LuCalendarCheck } from "react-icons/lu";
+import { LuUsers, LuCalendarClock, LuFileText, LuActivity, LuTrendingDown, LuTrendingUp, LuCalendarPlus, LuCalendarCheck } from "react-icons/lu";
 import { ROUTES } from "../../../../utils/routes";
 import { rehabRepository } from "../../../../domain/rehab/useRehabDomain";
-import { ATTENTION_REASON, ATTENTION_LEVEL_I18N_KEY } from "../../../../domain/rehab/rehabEnums";
-import { sessionAverageRom } from "../../../../domain/rehab/rehabDerived";
+import { ATTENTION_REASON, ATTENTION_LEVEL_I18N_KEY, REPORT_TREND } from "../../../../domain/rehab/rehabEnums";
+import { sessionAverageRom, compareReports, deriveReportTrend } from "../../../../domain/rehab/rehabDerived";
 import {
   getTodayAppointments,
   getNewReports,
@@ -10,6 +10,9 @@ import {
   getPatientProgressSummary,
   getPendingAppointmentRequests,
   getUpcomingScheduleConflicts,
+  getLatestReportTrendByPatient,
+  getPrioritizedReportForReview,
+  getPreviousReportForPatient,
 } from "./doctorClinicalInsights";
 
 /**
@@ -40,6 +43,24 @@ const AHMED_ROUTE_ID = "patient-ahmed";
 const ahmedProfileRoute = () => ROUTES.DOCTOR_PATIENT_PROFILE.replace(":id", AHMED_ROUTE_ID);
 const ahmedReportsRoute = () => `${ahmedProfileRoute()}?tab=reports`;
 const ahmedExercisesRoute = () => `${ahmedProfileRoute()}?tab=rehabilitation`;
+
+/**
+ * Resolves "ahmed"/"sara" out of the raw matched query text (Section 28 of
+ * the Doctor Reports brief — "show sara's latest report" needs a
+ * different patient than "show ahmed's latest report" from the SAME
+ * registry entry). Bounded to the two canonical first names these
+ * report-specific actions' own `patterns` below actually match on — same
+ * honest, no-real-NLP scoping already established for DOCTOR_PATIENT_PROGRESS/
+ * PATIENT_APPOINTMENTS (Ahmed-only) and PENDING_APPOINTMENT_REQUESTS-style
+ * matching, just extended to a second name where the brief explicitly
+ * asked for Sara by name.
+ */
+const resolveNamedPatientId = (query) => {
+  const normalized = (query || "").toLowerCase();
+  if (normalized.includes("sara")) return "patient-sara";
+  if (normalized.includes("ahmed")) return AHMED_ROUTE_ID;
+  return null;
+};
 
 const ADHERENCE_REASON_CODES = new Set([ATTENTION_REASON.MISSED_SESSIONS, ATTENTION_REASON.LOW_ADHERENCE]);
 
@@ -175,8 +196,18 @@ export const DOCTOR_ASSISTANT_ACTIONS = [
     icon: LuFileText,
     type: ASSISTANT_ACTION_TYPES.DISPLAY,
     patterns: {
-      en: ["summarize today's reports", "summarize reports", "new reports", "today's reports", "report summary"],
-      ar: ["لخص تقارير اليوم", "تقارير اليوم", "ملخص التقارير", "تقارير جديدة"],
+      en: [
+        "summarize today's reports",
+        "summarize reports",
+        "new reports",
+        "today's reports",
+        "report summary",
+        "which reports need my attention",
+        "reports need my attention",
+        "show reports awaiting review",
+        "reports awaiting review",
+      ],
+      ar: ["لخص تقارير اليوم", "تقارير اليوم", "ملخص التقارير", "تقارير جديدة", "أي تقارير تحتاج مراجعتي", "تقارير بانتظار المراجعة"],
     },
     execute: ({ t, language }) => {
       const entries = getNewReports();
@@ -202,6 +233,155 @@ export const DOCTOR_ASSISTANT_ACTIONS = [
           })),
         },
         actions: [{ id: "view-reports", labelKey: "doctorDashboard.assistant.responses.viewAllReports", routeTo: ROUTES.DOCTOR_REPORTS }],
+      };
+    },
+  },
+  {
+    id: "WHO_IMPROVED",
+    labelKey: "doctorDashboard.assistant.actions.whoImproved",
+    icon: LuTrendingUp,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["who improved", "who improved the most", "which patient improved the most", "who is improving"],
+      ar: ["مين تحسن", "مين تحسن أكثر", "أي مريض تحسن أكثر"],
+    },
+    execute: ({ t, language }) => {
+      const { improved } = getLatestReportTrendByPatient();
+      if (improved.length === 0) {
+        return { content: t("doctorDashboard.assistant.responses.noImprovedPatients", { lng: language }) };
+      }
+      return {
+        content: t("doctorDashboard.assistant.responses.whoImprovedIntro", { lng: language, count: improved.length }),
+        widget: {
+          type: "reportList",
+          items: improved.map(({ report, patient }) => ({
+            id: report.id,
+            patientName: patient.name,
+            summary:
+              report.painTrend && report.romTrend
+                ? t("doctorAssistantInsights.report.improvedSummary", { lng: language, painFrom: report.painTrend.from, painTo: report.painTrend.to, romFrom: report.romTrend.from, romTo: report.romTrend.to })
+                : t("doctorAssistantInsights.report.compactSummaryNoTrend", { lng: language, percent: report.adherencePercent }),
+          })),
+        },
+        actions: [{ id: "view-reports", labelKey: "doctorDashboard.assistant.responses.viewAllReports", routeTo: ROUTES.DOCTOR_REPORTS }],
+      };
+    },
+  },
+  {
+    id: "WHO_REGRESSED",
+    labelKey: "doctorDashboard.assistant.actions.whoRegressed",
+    icon: LuTrendingDown,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: [
+        "who is getting worse",
+        "who regressed",
+        "who has regressed",
+        "which patient had the biggest pain increase",
+        "biggest pain increase",
+        "any noteworthy changes",
+        "noteworthy changes",
+      ],
+      ar: ["مين وضعه يسوء", "مين تراجع", "أكبر زيادة في الألم", "فيه تغييرات مهمة"],
+    },
+    execute: ({ t, language }) => {
+      const { regressed } = getLatestReportTrendByPatient();
+      if (regressed.length === 0) {
+        return { content: t("doctorDashboard.assistant.responses.noRegressedPatients", { lng: language }) };
+      }
+      return {
+        content: t("doctorDashboard.assistant.responses.whoRegressedIntro", { lng: language, count: regressed.length }),
+        widget: {
+          type: "reportList",
+          items: regressed.map(({ report, patient }) => ({
+            id: report.id,
+            patientName: patient.name,
+            summary: t("doctorAssistantInsights.report.flagsSummary", { lng: language, flags: report.flags.map((flag) => t(`doctorPatientWorkspace.reports.flags.${flag}`, { lng: language })).join(", ") }),
+          })),
+        },
+        actions: [{ id: "view-reports", labelKey: "doctorDashboard.assistant.responses.viewAllReports", routeTo: ROUTES.DOCTOR_REPORTS }],
+      };
+    },
+  },
+  {
+    id: "HIGHEST_PRIORITY_REPORT",
+    labelKey: "doctorDashboard.assistant.actions.highestPriorityReport",
+    icon: LuFileText,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["open the highest-priority report", "highest priority report", "which report should i review first"],
+      ar: ["افتح أهم تقرير", "أهم تقرير للمراجعة", "أي تقرير أراجع أول"],
+    },
+    execute: ({ t, language }) => {
+      const top = getPrioritizedReportForReview();
+      if (!top) {
+        return { content: t("doctorDashboard.assistant.responses.noNewReports", { lng: language }) };
+      }
+      return {
+        content: t("doctorDashboard.assistant.responses.highestPriorityReportIntro", { lng: language, name: top.patient.name }),
+        actions: [{ id: "open-report", labelKey: "doctorDashboard.assistant.responses.viewAllReports", routeTo: `${ROUTES.DOCTOR_REPORTS}?openReport=${top.report.id}` }],
+      };
+    },
+  },
+  {
+    id: "PATIENT_LATEST_REPORT",
+    labelKey: "doctorDashboard.assistant.actions.ahmedLatestReport",
+    icon: LuFileText,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    // Ahmed/Sara scoped (see resolveNamedPatientId above).
+    patterns: {
+      en: ["ahmed's latest report", "sara's latest report", "show ahmed's latest report", "show sara's latest report", "ahmed's report", "sara's report"],
+      ar: ["آخر تقرير لأحمد", "آخر تقرير لسارة", "تقرير أحمد", "تقرير سارة"],
+    },
+    execute: ({ t, language, query }) => {
+      const patientId = resolveNamedPatientId(query);
+      const patient = patientId ? rehabRepository.getPatient(patientId) : null;
+      const reports = patientId ? rehabRepository.getReports(patientId) : [];
+      const latest = reports[reports.length - 1] || null;
+      if (!patient || !latest) {
+        return { content: t("doctorDashboard.assistant.responses.patientNoReports", { lng: language, name: patient?.name || "" }) };
+      }
+      const trend = deriveReportTrend(latest);
+      return {
+        content: t("doctorDashboard.assistant.responses.patientLatestReportIntro", {
+          lng: language,
+          name: patient.name,
+          trend: t(`rehabDomain.attentionLevel.${trend === REPORT_TREND.IMPROVING ? "improving" : trend === REPORT_TREND.NEEDS_ATTENTION ? "needsAttention" : "stable"}`, { lng: language }),
+        }),
+        actions: [{ id: "open-report", labelKey: "doctorDashboard.assistant.responses.viewAllReports", routeTo: `${ROUTES.DOCTOR_REPORTS}?openReport=${latest.id}` }],
+      };
+    },
+  },
+  {
+    id: "COMPARE_LATEST_REPORTS",
+    labelKey: "doctorDashboard.assistant.actions.compareLatestReports",
+    icon: LuFileText,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["compare ahmed's latest two reports", "compare sara's latest two reports", "compare ahmed's reports", "compare sara's reports"],
+      ar: ["قارن آخر تقريرين لأحمد", "قارن آخر تقريرين لسارة"],
+    },
+    execute: ({ t, language, query }) => {
+      const patientId = resolveNamedPatientId(query);
+      const patient = patientId ? rehabRepository.getPatient(patientId) : null;
+      const reports = patientId ? rehabRepository.getReports(patientId) : [];
+      const latest = reports[reports.length - 1] || null;
+      const previous = latest ? getPreviousReportForPatient(patientId, latest.id) : null;
+      if (!patient || !latest || !previous) {
+        return { content: t("doctorDashboard.assistant.responses.noComparableReports", { lng: language, name: patient?.name || "" }) };
+      }
+      const rows = compareReports(latest, previous);
+      if (rows.length === 0) {
+        return { content: t("doctorDashboard.assistant.responses.noComparableReports", { lng: language, name: patient.name }) };
+      }
+      const parts = rows.map((row) => {
+        const unit = row.metric === "rom" ? "°" : row.metric === "adherence" ? "%" : "";
+        const arrow = row.change === 0 ? "" : row.change > 0 ? "↑" : "↓";
+        return `${t(`doctorReports.detail.metrics.${row.metric}`, { lng: language })} ${row.previous}${unit} → ${row.current}${unit} (${arrow}${Math.abs(row.change)}${unit})`;
+      });
+      return {
+        content: t("doctorDashboard.assistant.responses.compareLatestReportsIntro", { lng: language, name: patient.name, comparison: parts.join(" · ") }),
+        actions: [{ id: "open-report", labelKey: "doctorDashboard.assistant.responses.viewAllReports", routeTo: `${ROUTES.DOCTOR_REPORTS}?openReport=${latest.id}` }],
       };
     },
   },

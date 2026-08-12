@@ -1,6 +1,6 @@
 import { rehabRepository } from "../../../../domain/rehab/useRehabDomain";
-import { sessionAverageRom } from "../../../../domain/rehab/rehabDerived";
-import { ATTENTION_LEVEL, APPOINTMENT_STATUS, REPORT_STATUS } from "../../../../domain/rehab/rehabEnums";
+import { sessionAverageRom, deriveReportTrend } from "../../../../domain/rehab/rehabDerived";
+import { ATTENTION_LEVEL, APPOINTMENT_STATUS, REPORT_STATUS, REPORT_TREND } from "../../../../domain/rehab/rehabEnums";
 
 /**
  * Pure, deterministic clinical-trend math for the Doctor Assistant — now
@@ -108,6 +108,83 @@ export const getUpcomingScheduleConflicts = (referenceDate = new Date()) => {
     }
   }
   return conflicts;
+};
+
+/**
+ * Every canonical report, across every patient, with its patient record
+ * and its own `deriveReportTrend` classification attached (Section 8/9 of
+ * the Doctor Reports brief) — the ONE list both the Global Reports page
+ * and every report-related Assistant action read, sourced from the exact
+ * same `bundle.reports` the Workspace Reports tab already renders.
+ */
+export const getAllReportsWithContext = () =>
+  rehabRepository
+    .getWorklistBundles()
+    .flatMap((bundle) => bundle.reports.map((report) => ({ report, patient: bundle.patient, trend: deriveReportTrend(report) })))
+    .sort((a, b) => new Date(b.report.periodEnd) - new Date(a.report.periodEnd));
+
+/**
+ * The chronologically previous report for the SAME patient (Section 19 —
+ * the report detail view's "previous vs current" comparison), or `null`
+ * when there isn't one. Never a fabricated baseline.
+ */
+export const getPreviousReportForPatient = (patientId, currentReportId) => {
+  const ordered = rehabRepository.getReports(patientId).sort((a, b) => new Date(a.periodEnd) - new Date(b.periodEnd));
+  const index = ordered.findIndex((report) => report.id === currentReportId);
+  if (index <= 0) return null;
+  return ordered[index - 1];
+};
+
+const REPORT_REVIEW_PRIORITY_RANK = {
+  [REPORT_TREND.NEEDS_ATTENTION]: 0,
+  [REPORT_TREND.STABLE]: 1,
+  [REPORT_TREND.IMPROVING]: 2,
+};
+
+/**
+ * The single awaiting-review report the Reports-page Assistant card
+ * should lead with — ranked first by the report's OWN trend
+ * (NEEDS_ATTENTION first, matching Section 13's "never an unexplained AI
+ * score" — the ranking key IS the same trend already shown on the row),
+ * tied-broken by the patient's live canonical priority level, then by
+ * report recency. Returns `null` when nothing is awaiting review.
+ */
+export const getPrioritizedReportForReview = () => {
+  const awaitingReview = getAllReportsWithContext().filter((entry) => entry.report.reviewStatus === REPORT_STATUS.AWAITING_REVIEW);
+  if (awaitingReview.length === 0) return null;
+
+  const ranked = [...awaitingReview].sort((a, b) => {
+    const trendDiff = REPORT_REVIEW_PRIORITY_RANK[a.trend] - REPORT_REVIEW_PRIORITY_RANK[b.trend];
+    if (trendDiff !== 0) return trendDiff;
+    const bundleA = rehabRepository.getPatientBundle(a.patient.id);
+    const bundleB = rehabRepository.getPatientBundle(b.patient.id);
+    const priorityDiff = PENDING_REQUEST_PRIORITY_RANK[bundleA.priority.level] - PENDING_REQUEST_PRIORITY_RANK[bundleB.priority.level];
+    if (priorityDiff !== 0) return priorityDiff;
+    return new Date(b.report.periodEnd) - new Date(a.report.periodEnd);
+  });
+  return ranked[0];
+};
+
+/**
+ * "Who improved?" / "Who regressed?" (Section 29-31) — looks only at each
+ * patient's SINGLE most recent report (an older improving report doesn't
+ * matter if a newer one shows regression) and groups by that report's own
+ * `deriveReportTrend` classification. No combined numeric score, no
+ * fabricated ranking beyond "does the most recent report show this
+ * trend" — ties within a group are left unranked (recency only, since the
+ * classification itself is already the ranking signal).
+ */
+export const getLatestReportTrendByPatient = () => {
+  const latestPerPatient = new Map();
+  getAllReportsWithContext().forEach((entry) => {
+    if (!latestPerPatient.has(entry.patient.id)) latestPerPatient.set(entry.patient.id, entry);
+  });
+  const entries = Array.from(latestPerPatient.values());
+  return {
+    improved: entries.filter((entry) => entry.trend === REPORT_TREND.IMPROVING),
+    regressed: entries.filter((entry) => entry.trend === REPORT_TREND.NEEDS_ATTENTION),
+    stable: entries.filter((entry) => entry.trend === REPORT_TREND.STABLE),
+  };
 };
 
 /**

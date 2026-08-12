@@ -38,7 +38,8 @@
     "attentionLevel": {
       "needsAttention": "Needs attention",
       "reviewRecommended": "Review recommended",
-      "stable": "Stable"
+      "stable": "Stable",
+      "improving": "Improving"
     },
     "attentionReason": {
       "painIncreased": "Pain increased",
@@ -261,7 +262,17 @@
       "awaitingReview": "{{name}} has a rehabilitation report awaiting review.",
       "awaitingReviewFlagged": "{{name}} has a rehabilitation report awaiting review, flagged for noteworthy changes this period.",
       "compactSummary": "{{percent}}% adherence · pain {{painFrom}} → {{painTo}}",
-      "compactSummaryNoTrend": "{{percent}}% adherence"
+      "compactSummaryNoTrend": "{{percent}}% adherence",
+      "improvedSummary": "pain {{painFrom}} → {{painTo}} · ROM {{romFrom}}° → {{romTo}}°",
+      "flagsSummary": "Flagged for: {{flags}}"
+    },
+    "reportsPage": {
+      "needsAttentionLead": "{{name}}'s report shows a noteworthy change and is awaiting your review.",
+      "awaitingReviewLead": "{{name}}'s report is awaiting your review.",
+      "flagSummary": "Flagged for: {{flag}}.",
+      "alsoAwaiting": "{{count}} other report(s) are also awaiting review.",
+      "noUpcomingAppointment": "No upcoming KneeGuide appointment is currently scheduled.",
+      "noneAwaiting": "No reports are currently awaiting review."
     },
     "appointment": {
       "requested": "{{name}} has requested an appointment.",
@@ -326,7 +337,12 @@
         "pendingRequests": "Any pending appointment requests?",
         "scheduleAppointment": "Schedule an appointment",
         "checkConflicts": "Check for scheduling conflicts",
-        "ahmedAppointments": "Show Ahmed's appointments"
+        "ahmedAppointments": "Show Ahmed's appointments",
+        "whoImproved": "Who improved?",
+        "whoRegressed": "Who is getting worse?",
+        "highestPriorityReport": "Which report should I review first?",
+        "ahmedLatestReport": "Show Ahmed's latest report",
+        "compareLatestReports": "Compare Ahmed's latest two reports"
       },
       "responses": {
         "attentionIntro": "{{count}} patients stand out in today's rehabilitation data:",
@@ -515,74 +531,63 @@
     }
   },
   "doctorReports": {
-    "header": {
-      "title": "Clinical Reports",
-      "subtitle": "Review and manage all patient reports in one place."
-    },
+    "title": "Clinical Reports",
+    "subtitle": "Review generated rehabilitation reports and clinical trends across your caseload.",
     "meta": {
-      "total": "Total: {{count}}",
-      "pending": "Pending: {{count}}"
+      "total": "{{count}} total",
+      "awaitingReview": "{{count}} awaiting review"
+    },
+    "overview": {
+      "label": "Report overview filters",
+      "awaitingReview": "Awaiting review"
     },
     "filters": {
       "searchPlaceholder": "Search by patient, report ID, or patient ID...",
+      "statusLabel": "Review status",
       "statusAll": "All statuses",
-      "statusPending": "Pending",
-      "statusReviewed": "Reviewed",
-      "severityAll": "All severity",
-      "severityLow": "Low",
-      "severityMedium": "Medium",
-      "severityHigh": "High"
+      "trendLabel": "Clinical trend",
+      "trendAll": "All trends"
     },
     "table": {
       "columns": {
         "report": "Report",
         "patient": "Patient",
-        "date": "Date",
-        "type": "Type",
+        "period": "Period",
         "pain": "Pain",
         "status": "Status",
-        "severity": "Severity",
-        "lastUpdated": "Last updated",
-        "actions": ""
+        "trend": "Clinical trend",
+        "updated": "Last updated"
       },
-      "noResults": "No reports match your filters."
+      "noResults": "No reports match your filters.",
+      "reviewAction": "Review",
+      "viewAction": "View"
     },
-    "status": {
-      "pendingShort": "Pending",
-      "reviewedShort": "Reviewed",
-      "pendingLong": "Pending clinical review",
-      "reviewedLong": "Reviewed"
-    },
-    "severity": {
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High",
-      "labelWithValue": "Severity: {{value}}"
-    },
-    "painPill": "Pain: {{value}} / 10",
-    "modal": {
-      "titlePrefix": "Report",
-      "summaryTitle": "Summary",
-      "detailsTitle": "Report Details",
-      "doctorNotesTitle": "Doctor Notes (mock)",
-      "doctorNotesBody": "In a real implementation, this section will contain full subjective and objective clinical notes from the backend.",
-      "doctorNotesBullets": {
-        "trackRehab": "Track rehabilitation progress over time.",
-        "comparePain": "Compare pain levels with previous clinical reports.",
-        "planNext": "Plan next visit and exercise load progression."
-      },
-      "details": {
-        "date": "Date",
-        "type": "Type",
-        "painLevel": "Pain level",
-        "lastUpdated": "Last updated"
-      },
-      "noSummary": "No summary available in this mock data.",
+    "assistant": {
       "actions": {
-        "markReviewed": "Mark as reviewed",
-        "close": "Close",
-        "view": "View"
+        "reviewReport": "Review report",
+        "compareWithPrevious": "Compare with previous"
       }
+    },
+    "detail": {
+      "title": "Report {{id}}",
+      "measurements": "Key measurements",
+      "comparison": "Comparison with previous report",
+      "noComparison": "No previous comparable report is available.",
+      "metric": "Metric",
+      "previous": "Previous",
+      "current": "Current",
+      "change": "Change",
+      "noChange": "No change",
+      "metrics": {
+        "pain": "Pain",
+        "rom": "Flexion ROM",
+        "adherence": "Adherence"
+      },
+      "viewSessions": "View sessions from this period",
+      "clinicianNote": "Clinician note",
+      "noClinicianNote": "No clinician note has been added for this report.",
+      "addNote": "Add a note (optional)",
+      "markReviewed": "Mark as reviewed"
     }
   },
   "doctorPatients": {

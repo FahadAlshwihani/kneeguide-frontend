@@ -1,4 +1,4 @@
-import { ATTENTION_LEVEL, ATTENTION_REASON, APPOINTMENT_STATUS, REPORT_STATUS } from "../../../../domain/rehab/rehabEnums";
+import { ATTENTION_LEVEL, ATTENTION_REASON, APPOINTMENT_STATUS, REPORT_STATUS, REPORT_TREND } from "../../../../domain/rehab/rehabEnums";
 import { sessionAverageRom } from "../../../../domain/rehab/rehabDerived";
 import { ROUTES } from "../../../../utils/routes";
 
@@ -321,6 +321,71 @@ export const buildAppointmentsPageInsight = ({ topRequest, todayAppointments, fo
     ],
     actionIds: next.patient ? ["viewToday", "openNextPatient"] : ["viewToday"],
     nextPatientId: next.patient?.id || null,
+  };
+};
+
+/**
+ * The Doctor Reports page's own compact Assistant card — same
+ * `{severity, lines, actionIds}` shape as `buildAppointmentsPageInsight`,
+ * fed by `doctorClinicalInsights.getPrioritizedReportForReview()` (the
+ * single awaiting-review report ranked by its OWN already-derived trend,
+ * never a new score) and `awaitingReviewCount`. When the top report's
+ * trend is NEEDS_ATTENTION, its `report.flags` (already computed by
+ * `generateReportMetrics`, never recomputed here) are translated into the
+ * second line via the SAME `doctorPatientWorkspace.reports.flags.*` keys
+ * the Workspace Reports tab already uses for that exact report shape.
+ * `translateFlag` is an injected `(flagCode) => string` — resolving a
+ * translation key needs `t()`, which (like `formatDateTime` in the
+ * Appointments-page insight above) this file deliberately never imports,
+ * so the caller passes its own translator instead. `hasUpcomingAppointment`
+ * (Section 26 — connecting Reports to the now-canonical Appointments
+ * domain) is a plain boolean the caller derives from
+ * `bundle.appointments`; when the top report needs attention and its
+ * patient has neither a pending request nor a future confirmed visit, the
+ * card offers "Schedule appointment" instead of "Open patient" — never
+ * phrased as medically required, only as an available workflow action.
+ */
+export const buildReportsPageInsight = ({ prioritizedReport, awaitingReviewCount, translateFlag, hasUpcomingAppointment }) => {
+  if (prioritizedReport) {
+    const { report, patient, trend } = prioritizedReport;
+    const lines = [
+      {
+        messageKey:
+          trend === REPORT_TREND.NEEDS_ATTENTION
+            ? "doctorAssistantInsights.reportsPage.needsAttentionLead"
+            : "doctorAssistantInsights.reportsPage.awaitingReviewLead",
+        values: { name: patient.firstName },
+      },
+    ];
+
+    const needsAttentionNoAppointment = trend === REPORT_TREND.NEEDS_ATTENTION && !hasUpcomingAppointment;
+
+    if (trend === REPORT_TREND.NEEDS_ATTENTION && report.flags.length > 0) {
+      lines.push({
+        messageKey: "doctorAssistantInsights.reportsPage.flagSummary",
+        values: { flag: translateFlag(report.flags[0]) },
+      });
+    } else if (awaitingReviewCount > 1) {
+      lines.push({ messageKey: "doctorAssistantInsights.reportsPage.alsoAwaiting", values: { count: awaitingReviewCount - 1 } });
+    }
+
+    if (needsAttentionNoAppointment) {
+      lines.push({ messageKey: "doctorAssistantInsights.reportsPage.noUpcomingAppointment", values: {} });
+    }
+
+    return {
+      severity: trend === REPORT_TREND.NEEDS_ATTENTION ? INSIGHT_SEVERITY.WARNING : INSIGHT_SEVERITY.INFO,
+      lines,
+      actionIds: needsAttentionNoAppointment ? ["reviewReport", "compareWithPrevious", "scheduleAppointment"] : ["reviewReport", "compareWithPrevious", "openPatient"],
+      topReportId: report.id,
+      topReportPatientId: patient.id,
+    };
+  }
+
+  return {
+    severity: INSIGHT_SEVERITY.SUCCESS,
+    lines: [{ messageKey: "doctorAssistantInsights.reportsPage.noneAwaiting", values: {} }],
+    actionIds: [],
   };
 };
 

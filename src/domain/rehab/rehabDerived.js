@@ -1,4 +1,4 @@
-import { ATTENTION_LEVEL, ATTENTION_REASON, APPOINTMENT_STATUS, REPORT_STATUS, TREND_DIRECTION } from "./rehabEnums";
+import { ATTENTION_LEVEL, ATTENTION_REASON, APPOINTMENT_STATUS, REPORT_STATUS, TREND_DIRECTION, REPORT_TREND } from "./rehabEnums";
 
 /**
  * Pure derivation functions over plain domain data — no React, no
@@ -174,4 +174,64 @@ export const generateReportMetrics = ({ prescriptions, sessions, periodStart, pe
     romTrend: romValues.length > 0 ? { from: romValues[0], to: romValues[romValues.length - 1] } : null,
     flags,
   };
+};
+
+/**
+ * A single report's OWN clinical trend (Doctor Reports brief, Section 8/9)
+ * — classified entirely from fields the report already stores
+ * (`flags`, `painTrend`, `romTrend`, all written once by
+ * `generateReportMetrics`/the seed fixtures, never recomputed here):
+ *   - any flag present (painSpike/romRegression/missed_sessions, whatever
+ *     the report actually carries)      -> NEEDS_ATTENTION
+ *   - no flags AND every trend the report DOES have moved the right
+ *     direction (pain down, ROM up)      -> IMPROVING
+ *   - anything else (no flags, no clearly positive trend, or a trend the
+ *     report doesn't carry at all)       -> STABLE
+ * A report with neither painTrend nor romTrend recorded can only ever be
+ * NEEDS_ATTENTION (via flags) or STABLE — it never claims IMPROVING
+ * without at least one real improving measurement.
+ */
+export const deriveReportTrend = (report) => {
+  if (report.flags && report.flags.length > 0) return REPORT_TREND.NEEDS_ATTENTION;
+
+  const painImproving = report.painTrend ? report.painTrend.to < report.painTrend.from : null;
+  const romImproving = report.romTrend ? report.romTrend.to > report.romTrend.from : null;
+
+  const hasAnyTrend = painImproving !== null || romImproving !== null;
+  const noneWorsened = (painImproving === null || painImproving === true) && (romImproving === null || romImproving === true);
+  const atLeastOneImproved = painImproving === true || romImproving === true;
+
+  if (hasAnyTrend && noneWorsened && atLeastOneImproved) return REPORT_TREND.IMPROVING;
+  return REPORT_TREND.STABLE;
+};
+
+/**
+ * Previous-vs-current report comparison rows (Doctor Reports brief,
+ * Section 18/19) — `current`/`previous`/`change` come straight from each
+ * report's own already-stored `painTrend.to`/`romTrend.to`/
+ * `adherencePercent` (the value at the END of each period), never
+ * recomputed from raw sessions here. A metric only produces a row when
+ * BOTH reports actually carry it — no fabricated baseline, no assumed
+ * zero. Returns `[]` (not `null`) when `previous` is falsy so callers can
+ * `.length === 0` check for "no previous comparable report" uniformly.
+ */
+export const compareReports = (current, previous) => {
+  if (!previous) return [];
+  const rows = [];
+  if (current.painTrend && previous.painTrend) {
+    rows.push({ metric: "pain", previous: previous.painTrend.to, current: current.painTrend.to, change: current.painTrend.to - previous.painTrend.to, improvingDirection: -1 });
+  }
+  if (current.romTrend && previous.romTrend) {
+    rows.push({ metric: "rom", previous: previous.romTrend.to, current: current.romTrend.to, change: current.romTrend.to - previous.romTrend.to, improvingDirection: 1 });
+  }
+  if (typeof current.adherencePercent === "number" && typeof previous.adherencePercent === "number") {
+    rows.push({
+      metric: "adherence",
+      previous: previous.adherencePercent,
+      current: current.adherencePercent,
+      change: current.adherencePercent - previous.adherencePercent,
+      improvingDirection: 1,
+    });
+  }
+  return rows;
 };

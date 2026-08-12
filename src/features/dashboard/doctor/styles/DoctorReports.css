@@ -1,478 +1,557 @@
-/* PAGE WRAPPER */
-.dr-page {
-  padding: 24px 28px;
-  color: #f5f5ff;
+/* Doctor Reports (Global) — tokens only (src/index.css), matching the
+   same restrained Doctor visual language as Appointments/Patient
+   Workspace (no purple accent, no box-shadow/glow, logical properties
+   for RTL, native scrollbar). */
+
+.drp-page {
+  min-height: 100vh;
+  background: var(--color-background);
+  padding: 28px 16px 40px;
+  display: flex;
+  justify-content: center;
+  color: var(--color-text);
 }
 
-/* HEADER */
-.dr-header {
+.drp-wrapper {
+  width: 100%;
+  max-width: 1160px;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+.drp-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: 16px;
-  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.dr-header h1 {
+.drp-header h1 {
   font-size: 26px;
   font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 4px;
 }
 
-.dr-header p {
-  color: #9ca3af;
-  margin-top: 4px;
+.drp-header p {
   font-size: 14px;
+  color: var(--color-muted);
 }
 
-.dr-header-meta {
+.drp-header-meta {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
-.dr-pill {
-  padding: 6px 10px;
+.drp-counter {
   border-radius: 999px;
-  background: rgba(125, 91, 255, 0.18);
-  border: 1px solid rgba(125, 91, 255, 0.5);
-  font-size: 12px;
+  border: 1px solid var(--color-border);
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--color-muted);
+  background: var(--color-surface);
 }
 
-.dr-pill-soft {
-  background: rgba(148, 163, 184, 0.15);
-  border-color: rgba(148, 163, 184, 0.5);
+/* Assistant card sits flush between header and the overview strip. */
+.drp-assistant-card {
+  margin-top: 14px;
 }
 
-/* FILTERS */
-.dr-filters {
+/* ===========================
+   CLINICAL OVERVIEW (restrained filter summary, Section 10)
+=========================== */
+.drp-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.drp-overview-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  cursor: pointer;
+  text-align: start;
+  transition: border-color var(--transition-fast);
+}
+
+.drp-overview-chip:hover {
+  border-color: var(--color-border-strong, var(--color-primary));
+}
+
+.drp-overview-chip.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.drp-overview-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.drp-overview-label {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.drp-overview-chip--attention.active {
+  border-color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.drp-overview-chip--improving.active {
+  border-color: var(--color-success);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+/* ===========================
+   CONTROLS
+=========================== */
+.drp-controls {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-top: 16px;
   flex-wrap: wrap;
 }
 
-.dr-search-box {
+.drp-search-box {
   flex: 1 1 260px;
 }
 
-.dr-search-box input {
+.drp-search-box input {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid #27272f;
-  background: #020617;
-  color: #e5e7eb;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 14px;
 }
 
-.dr-search-box input::placeholder {
-  color: #6b7280;
+.drp-search-box input::placeholder {
+  color: var(--color-muted);
 }
 
-.dr-search-box input:focus {
+.drp-search-box input:focus {
   outline: none;
-  border-color: #7d5bff;
+  border-color: var(--color-primary);
 }
 
-.dr-filter-group {
+.drp-filter-group {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.dr-filter-group select {
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid #27272f;
-  background: #020617;
-  color: #e5e7eb;
+.drp-filter-group select {
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 14px;
 }
 
-/* TABLE WRAPPER */
-.dr-table-wrapper {
-  margin-top: 8px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: radial-gradient(circle at top left, #111827, #020617 60%);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+/* ===========================
+   TABLE
+=========================== */
+.drp-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
 }
 
-/* TABLE */
-.dr-table {
+.drp-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
-}
-
-.dr-table thead {
-  background: rgba(15, 23, 42, 0.96);
-}
-
-.dr-table th,
-.dr-table td {
-  padding: 10px 14px;
-  text-align: left;
-}
-
-.dr-table th {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #9ca3af;
-  border-bottom: 1px solid rgba(55, 65, 81, 0.8);
-}
-
-.dr-table tbody tr:nth-child(even) {
-  background: rgba(15, 23, 42, 0.8);
-}
-
-.dr-table tbody tr:nth-child(odd) {
-  background: rgba(15, 23, 42, 0.6);
-}
-
-.dr-table tbody tr:hover {
-  background: rgba(55, 65, 81, 0.7);
-}
-
-/* SORTABLE HEADERS */
-.sortable {
-  cursor: pointer;
-}
-
-.sort-indicator {
-  margin-left: 6px;
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-/* CELLS */
-.dr-main-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.dr-report-id {
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.dr-note-preview {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.dr-patient-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.dr-patient-name {
-  font-weight: 500;
-}
-
-.dr-patient-id {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.dr-pain-pill {
-  display: inline-flex;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(248, 250, 252, 0.2);
-  font-size: 12px;
-}
-
-/* CHIPS */
-.dr-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.dr-chip-status-pending {
-  background: rgba(251, 191, 36, 0.18);
-  color: #fbbf24;
-  border: 1px solid rgba(251, 191, 36, 0.6);
-}
-
-.dr-chip-status-reviewed {
-  background: rgba(34, 197, 94, 0.15);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.7);
-}
-
-.dr-chip-severity-low {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.6);
-}
-
-.dr-chip-severity-medium {
-  background: rgba(251, 146, 60, 0.18);
-  color: #fdba74;
-  border: 1px solid rgba(251, 146, 60, 0.6);
-}
-
-.dr-chip-severity-high {
-  background: rgba(239, 68, 68, 0.18);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.6);
-}
-
-.dr-chip-soft {
-  background: rgba(148, 163, 184, 0.15);
-  color: #d1d5db;
-  border: 1px solid rgba(148, 163, 184, 0.4);
-}
-
-/* VIEW BUTTON */
-.dr-view-btn {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(125, 91, 255, 0.8);
-  background: rgba(15, 23, 42, 1);
-  color: #e5e7ff;
-  font-size: 12px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.dr-view-btn:hover {
-  background: rgba(125, 91, 255, 0.25);
-}
-
-/* EMPTY STATE */
-.dr-empty {
-  text-align: center;
-  padding: 18px;
-  color: #9ca3af;
-}
-
-/* MODAL BACKDROP */
-.dr-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 40;
-  animation: dr-fade-in 0.2s ease-out;
-}
-
-/* MODAL */
-.dr-modal {
-  width: 100%;
-  max-width: 720px;
-  max-height: 80vh;
-  background: radial-gradient(circle at top left, #111827, #020617 70%);
-  border-radius: 20px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-  padding: 20px 22px;
-  display: flex;
-  flex-direction: column;
-  animation: dr-scale-in 0.25s ease-out;
-}
-
-/* MODAL HEADER */
-.dr-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.dr-modal-header h2 {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.dr-modal-header p {
-  color: #9ca3af;
   font-size: 13px;
+  background: var(--color-surface);
 }
 
-.dr-modal-close {
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 18px;
+.drp-table thead {
+  background: var(--color-surface-soft);
+}
+
+.drp-table th,
+.drp-table td {
+  padding: 10px 14px;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.drp-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.drp-table th.sortable {
   cursor: pointer;
 }
 
-/* MODAL TAGS */
-.dr-modal-tags {
+.drp-sort-indicator {
+  margin-inline-start: 4px;
+  font-size: 10px;
+  color: var(--color-primary);
+}
+
+.drp-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.drp-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.drp-table tbody tr:hover,
+.drp-table tbody tr:focus-visible {
+  background: var(--color-surface-soft);
+  outline: none;
+}
+
+.drp-report-id {
+  font-weight: 600;
+  color: var(--color-text);
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.drp-patient-cell {
   display: flex;
+  flex-direction: column;
+  gap: 1px;
+  white-space: normal;
+}
+
+.drp-patient-name {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.drp-patient-id {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.drp-period-cell,
+.drp-updated-cell {
+  color: var(--color-muted);
+}
+
+.drp-row-action {
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.drp-row-action:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.drp-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-muted);
+  white-space: normal;
+}
+
+/* ===========================
+   BADGES (semantic only — status + clinical trend)
+=========================== */
+.drp-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.drp-badge--status-awaiting_review {
+  background: rgba(234, 179, 8, 0.14);
+  color: var(--color-warning);
+}
+
+.drp-badge--status-reviewed {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--color-success);
+}
+
+.drp-badge--trend-needs_attention {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-danger);
+}
+
+.drp-badge--trend-improving {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--color-success);
+}
+
+.drp-badge--trend-stable {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
+/* ===========================
+   REPORT DETAIL MODAL CONTENT
+   (chrome is the shared DoctorModal — see DoctorModal.css)
+=========================== */
+.drp-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
+}
+
+.drp-detail-patient-link {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+}
+
+.drp-detail-patient-link:hover {
+  text-decoration: underline;
+}
+
+.drp-detail-meta {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.drp-detail-period {
+  font-size: 12px;
+  color: var(--color-muted);
+  margin: 4px 0 10px;
+}
+
+.drp-detail-tags {
+  display: flex;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-/* MODAL BODY */
-.dr-modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 4px;
+.drp-detail-section {
+  margin-bottom: 18px;
 }
 
-.dr-modal-section {
-  margin-bottom: 16px;
-}
-
-.dr-modal-section h3,
-.dr-modal-section h4 {
-  font-size: 15px;
-  margin-bottom: 6px;
-}
-
-.dr-modal-section p {
+.drp-detail-section h3 {
   font-size: 13px;
-  color: #e5e7eb;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
 }
 
-.dr-muted {
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-.dr-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.dr-details-list {
+.drp-measurement-list {
   list-style: none;
   padding: 0;
   margin: 0;
   font-size: 13px;
 }
 
-.dr-details-list li {
+.drp-measurement-list li {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
-  border-bottom: 1px dashed rgba(55, 65, 81, 0.7);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
 }
 
-.dr-details-list li span:first-child {
-  color: #9ca3af;
+.drp-measurement-list li:last-child {
+  border-bottom: none;
 }
 
-.dr-bullet-list {
-  margin: 6px 0 0;
-  padding-left: 16px;
-  font-size: 13px;
-  color: #e5e7eb;
+.drp-measurement-list li span:first-child {
+  color: var(--color-muted);
 }
 
-.dr-bullet-list li {
-  margin-bottom: 4px;
-}
-
-/* MODAL FOOTER */
-.dr-modal-footer {
+.drp-flags {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
 }
 
-.dr-primary-btn {
-  padding: 8px 14px;
+.drp-flag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.1);
   border-radius: 999px;
-  border: none;
-  background: #7d5bff;
-  color: #f9fafb;
+  padding: 3px 10px;
+}
+
+.drp-muted {
+  color: var(--color-muted);
   font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s ease;
 }
 
-.dr-primary-btn:hover {
-  background: #6b49f9;
+.drp-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
 
-.dr-ghost-btn {
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.7);
+.drp-comparison-table th,
+.drp-comparison-table td {
+  text-align: start;
+  padding: 6px 8px;
+}
+
+.drp-comparison-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.drp-comparison-table td {
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.drp-comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+.drp-change--improved {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.drp-change--worsened {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.drp-related-session-link {
+  display: inline-block;
   background: transparent;
-  color: #e5e7eb;
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: 7px 14px;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  margin-bottom: 18px;
 }
 
-/* ANIMATIONS */
-@keyframes dr-fade-in {
-  from {
-    opacity: 0;
+.drp-related-session-link:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.drp-detail-note {
+  font-size: 13px;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+/* ===========================
+   MOBILE CARD LIST (hidden on desktop; replaces the table under 640px)
+=========================== */
+.drp-mobile-list {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .drp-table-wrapper {
+    display: none;
   }
-  to {
-    opacity: 1;
+
+  .drp-mobile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .drp-mobile-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: start;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+  }
+
+  .drp-mobile-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .drp-mobile-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  .drp-mobile-card-action {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-primary);
   }
 }
 
-@keyframes dr-scale-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+/* ===========================
+   RESPONSIVE
+=========================== */
+@media (max-width: 900px) {
+  .drp-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .dr-modal {
-    max-width: 92%;
-    padding: 16px;
-  }
-
-  .dr-modal-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dr-header {
+@media (max-width: 640px) {
+  .drp-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .dr-filters {
+  .drp-controls {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .dr-filter-group {
-    width: 100%;
-  }
-
-  .dr-filter-group select {
+  .drp-filter-group select {
     flex: 1 1 0;
   }
 }
-.doctor-report-table-wrapper {
-  width: 100%;
-  overflow-x: auto;   /* scroll يمين ويسار */
-  overflow-y: visible;
-  padding-bottom: 8px;
-  margin-top: 10px;
-}
-
-/* Native scrollbar only — the previous purple thumb/dark track here was
-   exactly the "colored scrollbar" pattern this pass removes (Section 15).
-   `.doctor-shell` is now globally excluded from the app's own gradient
-   ::-webkit-scrollbar rule (src/index.css), so simply not re-declaring
-   one here is enough to get the true OS-native scrollbar back. */

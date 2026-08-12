@@ -124,6 +124,33 @@ export const ATTENTION_LEVEL_I18N_KEY = {
   [ATTENTION_LEVEL.STABLE]: "stable",
 };
 
+/**
+ * A single REPORT's own clinical trend (Section 9 of the Doctor Reports
+ * brief) — deliberately NOT a duplicate of ATTENTION_LEVEL. A patient's
+ * `priority.level` describes their CURRENT overall standing from live
+ * session/appointment/report data; a report's trend describes only
+ * whether THAT specific report's own stored `flags`/`painTrend`/
+ * `romTrend` (already-derived fields, never recomputed here) show a
+ * negative, positive, or neutral change within its own period — a report
+ * can be IMPROVING even while the patient's live priority is still
+ * NEEDS_ATTENTION for an unrelated reason (e.g. a pending appointment),
+ * and vice versa. Where the concepts DO overlap (attention vs stable),
+ * the exact same string values and i18n keys are reused on purpose
+ * (`rehabDomain.attentionLevel.*`) — only the genuinely new positive tier
+ * needed a new key.
+ */
+export const REPORT_TREND = {
+  NEEDS_ATTENTION: ATTENTION_LEVEL.NEEDS_ATTENTION,
+  IMPROVING: "improving",
+  STABLE: ATTENTION_LEVEL.STABLE,
+};
+
+export const REPORT_TREND_I18N_KEY = {
+  [REPORT_TREND.NEEDS_ATTENTION]: "needsAttention",
+  [REPORT_TREND.IMPROVING]: "improving",
+  [REPORT_TREND.STABLE]: "stable",
+};
+
 export const ATTENTION_REASON_I18N_KEY = {
   [ATTENTION_REASON.PAIN_INCREASED]: "painIncreased",
   [ATTENTION_REASON.ROM_REGRESSION]: "romRegression",
