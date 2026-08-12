@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { rehabRepository } from "../../../../domain/rehab/useRehabDomain";
 import "./DoctorClinicalMessage.css";
 
 /**
@@ -83,6 +84,64 @@ export const DoctorAppointmentList = ({ items }) => {
           </span>
         </li>
       ))}
+    </ul>
+  );
+};
+
+/**
+ * Pending appointment requests, with a REAL one-click "Accept" (Section 18
+ * — mutates `rehabRepository.confirmAppointment` directly, immediately
+ * visible on the Global Appointments page / Workspace / Patient side via
+ * the shared reactive store, no refresh). Declining still requires opening
+ * the real reason modal on the Appointments page (Section 39: a decline
+ * always needs a real reason, never a one-click blind reject), so its
+ * button stays a navigation link into that page instead of mutating here.
+ *
+ * A chat transcript is a frozen record of what was said, not a live view
+ * (the same convention the existing `appointmentList`/`reportList` widgets
+ * already follow — their `reasonKey`/`timeIso` are also snapshots taken at
+ * response time) — so "accepted" is tracked as local, per-message-render
+ * UI state rather than re-deriving from the store on every keystroke
+ * elsewhere in the app.
+ */
+export const DoctorAppointmentRequestList = ({ items, onNavigate }) => {
+  const { t, i18n } = useTranslation();
+  const [acceptedIds, setAcceptedIds] = useState(() => new Set());
+
+  const handleAccept = (id) => {
+    rehabRepository.confirmAppointment(id);
+    setAcceptedIds((prev) => new Set(prev).add(id));
+  };
+
+  return (
+    <ul className="doctor-appointment-request-list">
+      {items.map((item) => {
+        const accepted = acceptedIds.has(item.id);
+        return (
+          <li key={item.id} className="doctor-appointment-request-row">
+            <div className="doctor-appointment-request-main">
+              <span className="doctor-appointment-name" dir="auto">
+                {item.name}
+              </span>
+              <span className="doctor-appointment-time" dir="ltr">
+                {new Date(item.timeIso).toLocaleTimeString(i18n.language, { hour: "2-digit", minute: "2-digit", month: "short", day: "numeric" })}
+              </span>
+            </div>
+            {accepted ? (
+              <span className="doctor-appointment-request-accepted">{t("doctorDashboard.assistant.responses.requestAccepted")}</span>
+            ) : (
+              <div className="doctor-appointment-request-actions">
+                <button type="button" className="doctor-appointment-request-accept" onClick={() => handleAccept(item.id)}>
+                  {t("doctorPatientWorkspace.appointments.accept")}
+                </button>
+                <button type="button" className="doctor-appointment-request-review" onClick={() => onNavigate(item.reviewRoute)}>
+                  {t("doctorDashboard.assistant.responses.reviewRequest")}
+                </button>
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 };

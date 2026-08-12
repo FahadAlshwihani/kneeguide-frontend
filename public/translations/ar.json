@@ -138,84 +138,91 @@
     "continue": "استمرار",
     "complete": "إنشاء الحساب"
   },
-  "calendar": {
-    "header": {
-      "title": "الجدول",
-      "subtitle": "إدارة جميع المواعيد في عرض تقويمي واحد.",
-      "totalEvents": "إجمالي المواعيد",
-      "newAppointment": "+ موعد جديد"
-    },
-    "controls": {
-      "month": "الشهر",
-      "agenda": "القائمة",
-      "prev": "←",
-      "next": "→"
-    },
-    "weekdays": {
-      "sun": "الأحد",
-      "mon": "الاثنين",
-      "tue": "الثلاثاء",
-      "wed": "الأربعاء",
-      "thu": "الخميس",
-      "fri": "الجمعة",
-      "sat": "السبت"
-    },
-    "sidepanel": {
-      "selectedDay": "اليوم المختار",
-      "noEvents": "لا توجد مواعيد لهذا اليوم.",
-      "addAppointment": "+ إضافة موعد لهذا اليوم",
-      "summary": "الملخص",
-      "confirmed": "مؤكّد",
-      "pending": "قيد الانتظار",
-      "cancelled": "ملغى"
+  "doctorAppointments": {
+    "title": "المواعيد",
+    "subtitle": "جدول واحد مشترك — طلبات المرضى، مواعيدك التي حددتها، وكل إجراءات المراجعة، في مكان واحد.",
+    "totalPill": "{{count}} موعد إجمالاً",
+    "newAppointment": "موعد جديد",
+    "prevMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
+    "viewToggleLabel": "عرض التقويم",
+    "viewMonth": "الشهر",
+    "viewAgenda": "القائمة",
+    "weekdaysShort": ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
+    "moreCount": "+{{count}} أخرى",
+    "insight": {
+      "withPending": "هناك {{pending}} طلب موعد بانتظار مراجعتك، و{{today}} موعد على جدول اليوم.",
+      "noPending": "لا توجد طلبات مواعيد بانتظار المراجعة. {{today}} موعد على جدول اليوم."
     },
     "agenda": {
-      "empty": "لا توجد مواعيد مجدولة."
+      "today": "اليوم",
+      "tomorrow": "غدًا",
+      "upcoming": "قادمة",
+      "empty": "لا توجد مواعيد قادمة مجدولة."
     },
-    "modal": {
-      "close": "إغلاق",
-      "details": {
-        "location": "الموقع",
-        "date": "التاريخ",
-        "patient": "المريض"
-      },
-      "notesTitle": "الملاحظات",
-      "notesEmpty": "لا توجد ملاحظات إضافية لهذا الموعد."
+    "requests": {
+      "title": "طلبات المواعيد",
+      "count": "{{count}} بالانتظار",
+      "propose": "اقترح وقتًا آخر",
+      "decline": "رفض"
     },
-    "createModal": {
-      "title": "موعد جديد",
-      "subtitle": "إنشاء تجريبي — يتم حفظه داخل الواجهة فقط.",
-      "form": {
-        "title": "العنوان",
-        "titlePlaceholder": "مثال: متابعة ACL",
-        "patientName": "اسم المريض",
-        "patientPlaceholder": "مثال: أحمد علي",
-        "date": "التاريخ",
-        "start": "وقت البدء",
-        "end": "وقت الانتهاء",
-        "type": "النوع",
-        "status": "الحالة",
-        "location": "الموقع",
-        "locationPlaceholder": "عيادة KneeGuide - الغرفة 1",
-        "notes": "ملاحظات",
-        "notesPlaceholder": "أي تفاصيل إضافية عن هذا الموعد..."
-      },
-      "buttons": {
-        "cancel": "إلغاء",
-        "save": "حفظ (تجريبي)"
-      }
+    "selectedDay": {
+      "title": "اليوم المختار",
+      "empty": "لا توجد مواعيد لهذا اليوم.",
+      "addAppointment": "إضافة موعد لهذا اليوم"
+    },
+    "summary": {
+      "title": "الملخص — {{month}}"
     },
     "status": {
-      "confirmed": "مؤكّد",
-      "pending": "قيد الانتظار",
-      "cancelled": "ملغى"
+      "REQUESTED": "مطلوب",
+      "CONFIRMED": "مؤكّد",
+      "ALTERNATIVE_PROPOSED": "تم اقتراح وقت جديد",
+      "DECLINED": "مرفوض",
+      "COMPLETED": "مكتمل",
+      "CANCELLED": "ملغى"
     },
-    "types": {
-      "followUp": "متابعة طبية",
-      "initial": "فحص أولي",
-      "postOp": "مراجعة بعد العملية",
-      "rehab": "جلسة تأهيل",
-      "check": "فحص تقدّم"
+    "details": {
+      "title": "تفاصيل الموعد",
+      "sourceDoctor": "حدده الطبيب",
+      "sourcePatient": "طلبه المريض",
+      "dateTime": "التاريخ والوقت",
+      "type": "النوع",
+      "reason": "السبب",
+      "location": "الموقع",
+      "note": "ملاحظة",
+      "yourProposal": "الوقت الذي اقترحته",
+      "awaitingPatient": "بانتظار رد المريض على هذا الوقت المقترح."
+    },
+    "decline": {
+      "title": "رفض طلب الموعد",
+      "confirm": "رفض الطلب",
+      "reasonLabel": "سبب الرفض",
+      "noteLabel": "ملاحظة إضافية (اختياري)"
+    },
+    "declineReasons": {
+      "schedule_conflict": "تعارض في الجدول",
+      "no_clinical_need_yet": "لا حاجة سريرية بعد",
+      "requested_time_unavailable": "الوقت المطلوب غير متاح",
+      "continue_current_plan": "الاستمرار بالبرنامج الحالي لفترة أطول",
+      "other": "أخرى"
+    },
+    "composer": {
+      "title": "موعد جديد",
+      "fields": {
+        "patient": "المريض",
+        "duration": "المدة",
+        "durationMinutes": "{{count}} دقيقة"
+      },
+      "errors": {
+        "patient": "الرجاء اختيار مريض.",
+        "conflict": "لديك موعد مؤكد بالفعل مع {{name}} الساعة {{time}} — اختر وقتًا آخر."
+      },
+      "patientPicker": {
+        "placeholder": "ابحث بالاسم أو رقم المريض أو التشخيص...",
+        "noResults": "لا يوجد مرضى مطابقون لبحثك.",
+        "change": "تغيير المريض"
+      }
     }
   },
   "doctorAssistantInsights": {
@@ -300,7 +307,10 @@
         "todayAppointments": "وش مواعيدي اليوم؟",
         "reportSummary": "لخص تقارير اليوم",
         "ahmedProgress": "كيف تقدم أحمد علي؟",
-        "adherenceRisk": "مين متأخر في التأهيل؟"
+        "adherenceRisk": "مين متأخر في التأهيل؟",
+        "pendingRequests": "فيه طلبات مواعيد بالانتظار؟",
+        "scheduleAppointment": "احجز موعد",
+        "checkConflicts": "تحقق من تعارض المواعيد"
       },
       "responses": {
         "attentionIntro": "في {{count}} مرضى يبرزون في بيانات التأهيل اليوم:",
@@ -319,7 +329,15 @@
         "adherenceRiskNone": "ما فيه مرضى يظهرون التزام ضعيف حالياً بناءً على بيانات هذا الأسبوع.",
         "adherenceRiskIntro": "فيه {{count}} من المرضى ممكن يكونون متأخرين في برنامج التأهيل هالأسبوع:",
         "unsupported": "أقدر أساعدك في مراجعة مرضاك، المواعيد، تقارير التأهيل، الألم، الالتزام وتقدم الحركة. جرّب تسألني عن مريض أو عن الحالات التي تحتاج مراجعة اليوم.",
-        "capabilityReschedule": "تغيير المواعيد مو متصل بنظام حجز حقيقي بعد في هذا العرض التجريبي — أقدر أعرض لك جدول اليوم، بس تغييره هنا مجرد عرض توضيحي، مو تحديث حقيقي."
+        "capabilityReschedule": "تغيير المواعيد مو متصل بنظام حجز حقيقي بعد في هذا العرض التجريبي — أقدر أعرض لك جدول اليوم، بس تغييره هنا مجرد عرض توضيحي، مو تحديث حقيقي.",
+        "noPendingRequests": "لا توجد طلبات مواعيد بالانتظار حالياً.",
+        "pendingRequestsIntro": "فيه {{count}} طلب موعد بانتظار مراجعتك:",
+        "requestAccepted": "تم القبول",
+        "reviewRequest": "مراجعة",
+        "scheduleAppointmentIntro": "لمين تحب تحجز موعد؟",
+        "noScheduleConflicts": "ما فيه تعارض بالمواعيد المؤكدة القادمة.",
+        "scheduleConflictsIntro": "فيه {{count}} زوج من مواعيدك المؤكدة القادمة متعارضة بالوقت — تستحق المراجعة:",
+        "viewAppointments": "عرض المواعيد"
       },
       "metrics": {
         "pain": "الألم",

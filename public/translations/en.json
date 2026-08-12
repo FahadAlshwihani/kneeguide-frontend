@@ -138,84 +138,91 @@
     "continue": "Continue",
     "complete": "Create Account"
   },
-  "calendar": {
-    "header": {
-      "title": "Schedule",
-      "subtitle": "Manage all your appointments in one calendar view.",
-      "totalEvents": "Total events",
-      "newAppointment": "+ New appointment"
-    },
-    "controls": {
-      "month": "Month",
-      "agenda": "Agenda",
-      "prev": "←",
-      "next": "→"
-    },
-    "weekdays": {
-      "sun": "Sun",
-      "mon": "Mon",
-      "tue": "Tue",
-      "wed": "Wed",
-      "thu": "Thu",
-      "fri": "Fri",
-      "sat": "Sat"
-    },
-    "sidepanel": {
-      "selectedDay": "Selected day",
-      "noEvents": "No events for this date.",
-      "addAppointment": "+ Add appointment on this day",
-      "summary": "Summary",
-      "confirmed": "Confirmed",
-      "pending": "Pending",
-      "cancelled": "Cancelled"
+  "doctorAppointments": {
+    "title": "Appointments",
+    "subtitle": "One shared schedule — patient requests, your own bookings, and every review action, all in one place.",
+    "totalPill": "{{count}} total appointments",
+    "newAppointment": "New appointment",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "viewToggleLabel": "Calendar view",
+    "viewMonth": "Month",
+    "viewAgenda": "Agenda",
+    "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "moreCount": "+{{count}} more",
+    "insight": {
+      "withPending": "{{pending}} appointment request(s) need your review, and {{today}} appointment(s) are on today's schedule.",
+      "noPending": "No pending appointment requests. {{today}} appointment(s) are on today's schedule."
     },
     "agenda": {
-      "empty": "No events scheduled."
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "upcoming": "Upcoming",
+      "empty": "No upcoming appointments scheduled."
     },
-    "modal": {
-      "close": "Close",
-      "details": {
-        "location": "Location",
-        "date": "Date",
-        "patient": "Patient"
-      },
-      "notesTitle": "Notes",
-      "notesEmpty": "No additional notes in this mock event."
+    "requests": {
+      "title": "Appointment requests",
+      "count": "{{count}} pending",
+      "propose": "Propose new time",
+      "decline": "Decline"
     },
-    "createModal": {
-      "title": "New appointment",
-      "subtitle": "Mock creation — saved in local state only.",
-      "form": {
-        "title": "Title",
-        "titlePlaceholder": "e.g. ACL follow-up",
-        "patientName": "Patient name",
-        "patientPlaceholder": "e.g. Ahmed Ali",
-        "date": "Date",
-        "start": "Start time",
-        "end": "End time",
-        "type": "Type",
-        "status": "Status",
-        "location": "Location",
-        "locationPlaceholder": "KneeGuide Clinic - Room 1",
-        "notes": "Notes",
-        "notesPlaceholder": "Any extra details about this appointment..."
-      },
-      "buttons": {
-        "cancel": "Cancel",
-        "save": "Save (mock)"
-      }
+    "selectedDay": {
+      "title": "Selected day",
+      "empty": "No appointments for this date.",
+      "addAppointment": "Add appointment on this day"
+    },
+    "summary": {
+      "title": "Summary — {{month}}"
     },
     "status": {
-      "confirmed": "Confirmed",
-      "pending": "Pending",
-      "cancelled": "Cancelled"
+      "REQUESTED": "Requested",
+      "CONFIRMED": "Confirmed",
+      "ALTERNATIVE_PROPOSED": "New time proposed",
+      "DECLINED": "Declined",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
     },
-    "types": {
-      "followUp": "Follow-up",
-      "initial": "Initial assessment",
-      "postOp": "Post-op review",
-      "rehab": "Rehab session",
-      "check": "Progress Check"
+    "details": {
+      "title": "Appointment details",
+      "sourceDoctor": "Clinician scheduled",
+      "sourcePatient": "Patient requested",
+      "dateTime": "Date & time",
+      "type": "Type",
+      "reason": "Reason",
+      "location": "Location",
+      "note": "Note",
+      "yourProposal": "Your proposed time",
+      "awaitingPatient": "Awaiting the patient's response to this proposed time."
+    },
+    "decline": {
+      "title": "Decline appointment request",
+      "confirm": "Decline request",
+      "reasonLabel": "Reason for declining",
+      "noteLabel": "Additional note (optional)"
+    },
+    "declineReasons": {
+      "schedule_conflict": "Schedule conflict",
+      "no_clinical_need_yet": "No clinical need yet",
+      "requested_time_unavailable": "Requested time unavailable",
+      "continue_current_plan": "Continue current plan a bit longer",
+      "other": "Other"
+    },
+    "composer": {
+      "title": "New appointment",
+      "fields": {
+        "patient": "Patient",
+        "duration": "Duration",
+        "durationMinutes": "{{count}} minutes"
+      },
+      "errors": {
+        "patient": "Please select a patient.",
+        "conflict": "You already have a confirmed appointment with {{name}} at {{time}} — choose a different time."
+      },
+      "patientPicker": {
+        "placeholder": "Search by name, patient ID, or diagnosis...",
+        "noResults": "No patients match your search.",
+        "change": "Change patient"
+      }
     }
   },
   "doctorAssistantInsights": {
@@ -300,7 +307,10 @@
         "todayAppointments": "What are my appointments today?",
         "reportSummary": "Summarize today's reports",
         "ahmedProgress": "How is Ahmed Ali progressing?",
-        "adherenceRisk": "Who is falling behind on rehab?"
+        "adherenceRisk": "Who is falling behind on rehab?",
+        "pendingRequests": "Any pending appointment requests?",
+        "scheduleAppointment": "Schedule an appointment",
+        "checkConflicts": "Check for scheduling conflicts"
       },
       "responses": {
         "attentionIntro": "{{count}} patients stand out in today's rehabilitation data:",
@@ -319,7 +329,15 @@
         "adherenceRiskNone": "No patients currently show reduced adherence based on this week's data.",
         "adherenceRiskIntro": "{{count}} patient(s) may be falling behind on their rehab program this week:",
         "unsupported": "I can help you review patients, appointments, rehabilitation reports, pain trends, adherence, and movement progress. Ask me about a patient or who may need review today.",
-        "capabilityReschedule": "Rescheduling isn't connected to a real booking system yet in this demo — I can show today's schedule, but changing it here is only a visual demonstration, not a real update."
+        "capabilityReschedule": "Rescheduling isn't connected to a real booking system yet in this demo — I can show today's schedule, but changing it here is only a visual demonstration, not a real update.",
+        "noPendingRequests": "There are no pending appointment requests right now.",
+        "pendingRequestsIntro": "{{count}} appointment request(s) are waiting for your review:",
+        "requestAccepted": "Accepted",
+        "reviewRequest": "Review",
+        "scheduleAppointmentIntro": "Who would you like to schedule an appointment for?",
+        "noScheduleConflicts": "No scheduling conflicts found among your upcoming confirmed appointments.",
+        "scheduleConflictsIntro": "{{count}} pair(s) of your upcoming confirmed appointments overlap in time — worth a look:",
+        "viewAppointments": "View appointments"
       },
       "metrics": {
         "pain": "Pain",
@@ -392,28 +410,6 @@
       "exercise": "Exercise",
       "progress": "Progress",
       "difficulty": "Difficulty"
-    }
-  },
-  "doctorNewAppointment": {
-    "header": {
-      "title": "New Appointment",
-      "subtitle": "Create an appointment for patient ID:"
-    },
-    "section": {
-      "title": "Appointment Details",
-      "subtitle": "Fill the required information below."
-    },
-    "form": {
-      "date": "Date",
-      "time": "Time",
-      "visitType": "Visit Type",
-      "notes": "Notes",
-      "submit": "Create Appointment"
-    },
-    "types": {
-      "initial": "Initial Assessment",
-      "follow": "Follow-up",
-      "rehab": "Rehab Session"
     }
   },
   "doctorPatientProfile": {
@@ -1321,6 +1317,13 @@
       "deviceIssue": "Device / sensor issue",
       "generalFollowUp": "General follow-up",
       "other": "Other"
+    },
+    "declineReasons": {
+      "schedule_conflict": "Your clinician has a scheduling conflict at this time.",
+      "no_clinical_need_yet": "Your clinician doesn't see a clinical need for this visit yet.",
+      "requested_time_unavailable": "The requested time isn't available.",
+      "continue_current_plan": "Your clinician suggests continuing your current program a bit longer first.",
+      "other": "Your clinician declined this request."
     },
     "request": {
       "cta": "Request appointment",

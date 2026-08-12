@@ -1,9 +1,16 @@
-import { LuUsers, LuCalendarClock, LuFileText, LuActivity, LuTrendingDown } from "react-icons/lu";
+import { LuUsers, LuCalendarClock, LuFileText, LuActivity, LuTrendingDown, LuCalendarPlus, LuCalendarCheck } from "react-icons/lu";
 import { ROUTES } from "../../../../utils/routes";
 import { rehabRepository } from "../../../../domain/rehab/useRehabDomain";
 import { ATTENTION_REASON, ATTENTION_LEVEL_I18N_KEY } from "../../../../domain/rehab/rehabEnums";
 import { sessionAverageRom } from "../../../../domain/rehab/rehabDerived";
-import { getTodayAppointments, getNewReports, getPatientsNeedingAttention, getPatientProgressSummary } from "./doctorClinicalInsights";
+import {
+  getTodayAppointments,
+  getNewReports,
+  getPatientsNeedingAttention,
+  getPatientProgressSummary,
+  getPendingAppointmentRequests,
+  getUpcomingScheduleConflicts,
+} from "./doctorClinicalInsights";
 
 /**
  * The Doctor Assistant action registry — the doctor-side counterpart to
@@ -226,6 +233,78 @@ export const DOCTOR_ASSISTANT_ACTIONS = [
           { id: "ahmed-report", labelKey: "doctorDashboard.assistant.responses.viewLatestReport", routeTo: ahmedReportsRoute() },
           { id: "ahmed-rehab", labelKey: "doctorDashboard.assistant.responses.reviewRehabProgram", routeTo: ahmedExercisesRoute() },
         ],
+      };
+    },
+  },
+  {
+    id: "PENDING_APPOINTMENT_REQUESTS",
+    labelKey: "doctorDashboard.assistant.actions.pendingRequests",
+    icon: LuCalendarCheck,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["pending appointment requests", "appointment requests", "who is waiting for an appointment", "new appointment requests", "requests waiting"],
+      ar: ["طلبات المواعيد", "طلبات مواعيد بالانتظار", "مين ينتظر موعد", "طلبات جديدة للمواعيد"],
+    },
+    execute: ({ t, language }) => {
+      const pending = getPendingAppointmentRequests();
+      if (pending.length === 0) {
+        return { content: t("doctorDashboard.assistant.responses.noPendingRequests", { lng: language }) };
+      }
+      return {
+        content: t("doctorDashboard.assistant.responses.pendingRequestsIntro", { lng: language, count: pending.length }),
+        widget: {
+          type: "appointmentRequestList",
+          items: pending.map(({ appointment, patient }) => ({
+            id: appointment.id,
+            name: patient?.name || "",
+            timeIso: appointment.startAt,
+            reviewRoute: `${ROUTES.APPOINTMENTS}?openAppointment=${appointment.id}`,
+          })),
+        },
+      };
+    },
+  },
+  {
+    id: "SCHEDULE_APPOINTMENT",
+    labelKey: "doctorDashboard.assistant.actions.scheduleAppointment",
+    icon: LuCalendarPlus,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["schedule an appointment", "book an appointment", "create an appointment", "schedule appointment", "new appointment"],
+      ar: ["احجز موعد", "جدولة موعد", "أضف موعد", "موعد جديد"],
+    },
+    execute: ({ t, language }) => {
+      const patients = rehabRepository.getPatients();
+      return {
+        content: t("doctorDashboard.assistant.responses.scheduleAppointmentIntro", { lng: language }),
+        // Each button opens the SAME canonical composer the Global
+        // Appointments page and the Workspace both use, locked to that
+        // patient (Section 17 — never a separate Assistant-only form).
+        actions: patients.map((patient) => ({
+          id: `schedule-${patient.id}`,
+          label: patient.name,
+          routeTo: `${ROUTES.APPOINTMENTS}?composeFor=${patient.id}`,
+        })),
+      };
+    },
+  },
+  {
+    id: "CHECK_SCHEDULE_CONFLICTS",
+    labelKey: "doctorDashboard.assistant.actions.checkConflicts",
+    icon: LuCalendarClock,
+    type: ASSISTANT_ACTION_TYPES.DISPLAY,
+    patterns: {
+      en: ["check for scheduling conflicts", "any scheduling conflicts", "double booked", "schedule conflicts", "overlapping appointments"],
+      ar: ["فيه تعارض بالمواعيد", "مواعيد متعارضة", "تحقق من تعارض الجدول"],
+    },
+    execute: ({ t, language }) => {
+      const conflicts = getUpcomingScheduleConflicts();
+      if (conflicts.length === 0) {
+        return { content: t("doctorDashboard.assistant.responses.noScheduleConflicts", { lng: language }) };
+      }
+      return {
+        content: t("doctorDashboard.assistant.responses.scheduleConflictsIntro", { lng: language, count: conflicts.length }),
+        actions: [{ id: "view-appointments", labelKey: "doctorDashboard.assistant.responses.viewAppointments", routeTo: ROUTES.APPOINTMENTS }],
       };
     },
   },

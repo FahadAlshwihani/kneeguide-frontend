@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
 import TypewriterText from "../../../patient/components/TypewriterText";
-import { DoctorAttentionList, DoctorAppointmentList, DoctorReportList } from "./DoctorClinicalMessage";
+import { DoctorAttentionList, DoctorAppointmentList, DoctorReportList, DoctorAppointmentRequestList } from "./DoctorClinicalMessage";
 
 /**
  * One conversation turn — the ONE message renderer shared by the full
@@ -86,11 +86,22 @@ const DoctorConversationTurn = ({ message, scrollRef, reducedMotion, onTypedComp
         </div>
       )}
 
+      {!compact && message.widget?.type === "appointmentRequestList" && (
+        <div className="doctor-chat-widget">
+          <DoctorAppointmentRequestList items={message.widget.items} onNavigate={onNavigate} />
+        </div>
+      )}
+
+      {/* Action buttons are normally a navigation `{ id, labelKey, routeTo }`
+          descriptor; SCHEDULE_APPOINTMENT's per-patient buttons instead
+          carry a pre-resolved `label` (a real patient name, not a
+          translation key — i18next has no key for "Ahmed Ali"), so the
+          renderer prefers `label` when present. */}
       {!compact && message.actions && message.actions.length > 0 && (
         <div className="doctor-chat-actions">
           {message.actions.map((action) => (
             <button key={action.id} type="button" className="doctor-chat-action-btn" onClick={() => onNavigate(action.routeTo)}>
-              {t(action.labelKey)}
+              {action.label || t(action.labelKey)}
             </button>
           ))}
         </div>
