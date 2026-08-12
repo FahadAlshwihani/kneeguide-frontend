@@ -209,6 +209,8 @@
   inset: 0;
   z-index: var(--z-modal, 400);
   background: rgba(5, 7, 11, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .doctor-sidebar--drawer {
@@ -218,8 +220,10 @@
   width: min(260px, 82vw);
   flex-basis: auto;
   z-index: calc(var(--z-modal, 400) + 1);
+  background: rgba(5, 5, 5, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-inline-end: 1px solid var(--color-border);
-  box-shadow: var(--shadow-soft);
 }
 
 @media (min-width: 1024px) {

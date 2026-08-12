@@ -1,7 +1,13 @@
+/* Overlay/backdrop architecture (Section 8-9 of the visual-polish brief):
+   a semi-transparent dark scrim + a blur, so depth comes from what's
+   BEHIND the modal being obscured, not a shadow cast by the modal
+   itself. Every Doctor modal shares this exact backdrop treatment. */
 .doctor-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,7 +24,6 @@
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-lg);
 }
 
 .doctor-modal-header {

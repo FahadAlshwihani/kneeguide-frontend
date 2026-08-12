@@ -9,8 +9,14 @@
   inset: 0;
   z-index: var(--z-modal, 400);
   background: rgba(5, 7, 11, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
+/* Semi-transparent elevated surface + backdrop blur instead of a box
+   shadow (Section 18 of the visual-polish brief) — the panel reads as a
+   frosted layer floating over the page, not a card with a fake drop
+   shadow underneath it. */
 .doctor-assistant-drawer {
   position: fixed;
   inset-block: 0;
@@ -19,9 +25,10 @@
   display: flex;
   flex-direction: column;
   z-index: calc(var(--z-modal, 400) + 1);
-  background: var(--color-background);
+  background: rgba(5, 5, 5, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-inline-start: 1px solid var(--color-border);
-  box-shadow: var(--shadow-soft);
   font-family: var(--font-product);
 }
 

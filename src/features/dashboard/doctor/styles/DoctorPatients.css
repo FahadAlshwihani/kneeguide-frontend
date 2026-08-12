@@ -205,14 +205,13 @@
   font-family: inherit;
   color: inherit;
   cursor: pointer;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .dp-card:hover,
 .dp-card:focus-visible {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  background: var(--color-surface-soft);
 }
 
 .dp-card-top {
