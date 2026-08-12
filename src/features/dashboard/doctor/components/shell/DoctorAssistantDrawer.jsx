@@ -109,7 +109,7 @@ const DoctorAssistantDrawer = ({ isOpen, onClose, triggerRef }) => {
             transition={{ duration: reducedMotion ? 0.15 : 0.26, ease: [0.22, 0.61, 0.36, 1] }}
           >
             <div className="doctor-assistant-drawer-header">
-              <DoctorClinicalOrb state={orbState} size="compact" className="doctor-assistant-drawer-orb" />
+              <DoctorClinicalOrb state={orbState} size="tiny" className="doctor-assistant-drawer-orb" />
               <span className="doctor-assistant-drawer-title">{t("doctorDashboard.assistant.orbLabel")}</span>
               <button type="button" className="doctor-assistant-drawer-close" onClick={onClose} aria-label={t("doctorShell.assistantDrawer.close")}>
                 <LuX aria-hidden="true" />

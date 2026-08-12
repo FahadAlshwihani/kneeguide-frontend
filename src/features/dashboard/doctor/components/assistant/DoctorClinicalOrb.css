@@ -14,6 +14,15 @@
   height: clamp(88px, 8vw, 120px);
 }
 
+/* Fixed-size, not clamp()-based like the other two — this variant only
+   ever appears in small fixed-height chrome (Assistant Drawer header,
+   Topbar launcher), never a viewport-proportional layout, so a fixed
+   pixel size is the correct choice here, not an oversight. */
+.doctor-clinical-orb--tiny {
+  width: 34px;
+  height: 34px;
+}
+
 @media (max-width: 480px) {
   .doctor-clinical-orb--large {
     width: clamp(160px, 44vw, 210px);
