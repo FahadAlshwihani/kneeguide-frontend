@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { LuCalendarClock } from "react-icons/lu";
+import { LuStethoscope } from "react-icons/lu";
 import KneeGuideInsightCard from "../exercises/KneeGuideInsightCard";
 import PatientButton from "../PatientButton";
 import { ROUTES } from "../../../../../utils/routes";
@@ -75,7 +75,7 @@ const ProfileOverviewTab = ({ user, adherence, clinician, nextAppointment, insig
         </h2>
         <div className="pfl-care-team-row">
           <div className="pfl-care-team-avatar" aria-hidden="true">
-            <LuCalendarClock />
+            <LuStethoscope />
           </div>
           <div className="pfl-care-team-body">
             <p className="pfl-care-team-name">{clinician.name}</p>
