@@ -61,8 +61,8 @@ const RecoveryInsight = ({ insight, facts, onViewTrends }) => {
                   {t(painImproved ? "patientReports.insight.painImproving" : "patientReports.insight.painChanging")}
                 </p>
                 <p className="recovery-signal-value" dir="ltr">
-                  {facts.newestPain - facts.oldestPain > 0 ? "+" : ""}
-                  {facts.newestPain - facts.oldestPain}
+                  {Math.round((facts.newestPain - facts.oldestPain) * 10) / 10 > 0 ? "+" : ""}
+                  {Math.round((facts.newestPain - facts.oldestPain) * 10) / 10}
                 </p>
               </div>
             </div>

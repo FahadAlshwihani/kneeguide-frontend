@@ -145,6 +145,11 @@ const PatientExercises = () => {
         durationMs: getExerciseElapsedMs(exercise, Date.now()),
       })),
     });
+    // Only re-run when the session actually TRANSITIONS to COMPLETED, not
+    // on every intermediate exercise/pain field mutation — those already
+    // sit inside the same `sessionState` object read above at the moment
+    // this fires, so the values are correct without listing them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionState.status, sessionState.completedAt, todayId]);
 
   // ONE lightweight visible-clock mechanism for the whole page (Section
