@@ -1,0 +1,27 @@
+.doctor-clinical-orb {
+  margin-inline: auto;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.doctor-clinical-orb--large {
+  width: clamp(220px, 18vw, 300px);
+  height: clamp(220px, 18vw, 300px);
+}
+
+.doctor-clinical-orb--compact {
+  width: clamp(88px, 8vw, 120px);
+  height: clamp(88px, 8vw, 120px);
+}
+
+@media (max-width: 480px) {
+  .doctor-clinical-orb--large {
+    width: clamp(160px, 44vw, 210px);
+    height: clamp(160px, 44vw, 210px);
+  }
+
+  .doctor-clinical-orb--compact {
+    width: clamp(64px, 20vw, 88px);
+    height: clamp(64px, 20vw, 88px);
+  }
+}
