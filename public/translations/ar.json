@@ -412,28 +412,6 @@
       "difficulty": "الصعوبة"
     }
   },
-  "doctorNewAppointment": {
-    "header": {
-      "title": "موعد جديد",
-      "subtitle": "إنشاء موعد للمريض رقم:"
-    },
-    "section": {
-      "title": "تفاصيل الموعد",
-      "subtitle": "قم بتعبئة البيانات المطلوبة أدناه."
-    },
-    "form": {
-      "date": "التاريخ",
-      "time": "الوقت",
-      "visitType": "نوع الزيارة",
-      "notes": "ملاحظات",
-      "submit": "إنشاء الموعد"
-    },
-    "types": {
-      "initial": "التقييم الأولي",
-      "follow": "متابعة",
-      "rehab": "جلسة علاجية"
-    }
-  },
   "doctorPatientProfile": {
     "header": {
       "patientIdLabel": "رقم المريض:",
@@ -1339,6 +1317,13 @@
       "deviceIssue": "مشكلة في الجهاز / الحساس",
       "generalFollowUp": "متابعة عامة",
       "other": "أخرى"
+    },
+    "declineReasons": {
+      "schedule_conflict": "يوجد تعارض في جدول طبيبك بهذا الوقت.",
+      "no_clinical_need_yet": "لا يرى طبيبك حاجة سريرية لهذه الزيارة بعد.",
+      "requested_time_unavailable": "الوقت المطلوب غير متاح.",
+      "continue_current_plan": "يقترح طبيبك الاستمرار على برنامجك الحالي لفترة أطول أولاً.",
+      "other": "رفض طبيبك هذا الطلب."
     },
     "request": {
       "cta": "طلب موعد",
