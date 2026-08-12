@@ -1,33 +1,29 @@
-import { TODAY_EXERCISES } from "./patientExercisesData";
+import { getExerciseById } from "./patientExercisesData";
+import { rehabRepository } from "../../../../domain/rehab/useRehabDomain";
+import { computeAdherence as deriveAdherence } from "../../../../domain/rehab/rehabDerived";
+import { PATIENT_PROFILE_PATIENT_ID } from "../../../../domain/rehab/demoData/patients";
 
 /**
- * The REHAB ASSIGNMENT layer — sits between the exercise CATALOG
- * (patientExercisesData.js, read directly by the Exercise Library, the
- * KneeGuide Assistant's SHOW_EXERCISES action, and the Exercise Details
- * modal — untouched by this module) and SESSION EXECUTION state
- * (session/patientSessionEngine.js):
+ * The REHAB ASSIGNMENT layer, now sourced from the shared rehab domain
+ * (src/domain/rehab/) instead of a private hardcoded plan — this is what
+ * makes a Doctor's "Edit rehabilitation plan" change appear here
+ * immediately (Section 17 of the Doctor Patients module brief:
+ * "exact same prescription appears" on the Patient side). Every function
+ * below keeps its pre-refactor name/return shape so
+ * PatientExercises.jsx, patientProfileInsights.js, SessionHero.jsx, and
+ * SessionExerciseSequence.jsx are unchanged.
  *
- *   catalog (what an exercise IS: name, description, instructions, cues
- *            — intrinsic, doesn't change per day)
- *     -> plan (what's PRESCRIBED today: sets/reps/target ROM/duration)
- *       -> session execution (what actually HAPPENED: completed sets,
- *          timestamps, metrics — see patientSessionEngine.js)
- *
- * Note the qualitative "target/focus" of an exercise (e.g. "Knee
- * extension control") now lives on the CATALOG entry itself
- * (`targetKey` in patientExercisesData.js) — it's a property of the
- * exercise, not of today's prescription. This layer only owns the
- * NUMERIC target ROM range (`targetRomMin`/`targetRomMax`), which
- * genuinely is session-specific.
- *
- * This separation is what lets a real "GET today's rehab day" endpoint
- * replace `getTodaySessionPlan`/`getRehabWeek` later without the session
- * engine or any UI component changing shape — they only ever consume the
- * plain data shape returned here, never this module's internals.
- *
- * Everything below is deterministic mock data (no `Math.random`), so a
- * demo session/day summary looks identical on every load — intentional,
- * not an oversight.
+ * `estimatedMinutes`/`baseRom` are execution-pacing flavor constants for
+ * the mock sensor-metrics generator (session/patientSessionMetrics.js) —
+ * NOT a prescribed or historical fact, so they intentionally stay static
+ * heuristics here rather than being derived from real session history
+ * (deriving them from the patient's actual last-session ROM would make
+ * every new session's mock metrics start near/at the target ROM
+ * immediately, flattening the felt "progress within a session" pacing
+ * this UI was designed around). `previous` (last real session's
+ * quality/ROM/pain for this exercise), by contrast, IS a fact the Doctor
+ * needs to see too — it's now derived from the shared canonical session
+ * history, not a second hardcoded copy.
  */
 
 export const REHAB_DAY_STATUS = {
@@ -36,55 +32,53 @@ export const REHAB_DAY_STATUS = {
   UPCOMING: "upcoming",
 };
 
-// One prescription per catalog exercise for "today's" session. A real
-// assignment engine would vary this per day; this mock keeps one plan
-// definition every day in the visible week reuses, which is exactly the
-// shape a day-specific GET could later return without this file's
-// consumers changing.
-const SESSION_EXERCISE_PLAN = [
-  {
-    exerciseId: "quadSets",
-    sets: 3,
-    repsPerSet: 12,
-    estimatedMinutes: 4,
-    baseRom: 74,
-    targetRomMin: 70,
-    targetRomMax: 80,
-    previous: { qualityKey: "good", rom: 78, painAfter: 3 },
-  },
-  {
-    exerciseId: "legRaises",
-    sets: 3,
-    repsPerSet: 10,
-    estimatedMinutes: 6,
-    baseRom: 68,
-    targetRomMin: 65,
-    targetRomMax: 75,
-    previous: { qualityKey: "good", rom: 71, painAfter: 3 },
-  },
-  {
-    exerciseId: "heelSlides",
-    sets: 3,
-    repsPerSet: 15,
-    estimatedMinutes: 5,
-    baseRom: 90,
-    targetRomMin: 85,
-    targetRomMax: 100,
-    previous: { qualityKey: "excellent", rom: 94, painAfter: 2 },
-  },
-];
+const PACING_DEFAULTS = {
+  quadSets: { estimatedMinutes: 4, baseRom: 74 },
+  legRaises: { estimatedMinutes: 6, baseRom: 68 },
+  heelSlides: { estimatedMinutes: 5, baseRom: 90 },
+  hamstring: { estimatedMinutes: 3, baseRom: 20 },
+  calfRaises: { estimatedMinutes: 4, baseRom: 40 },
+};
+
+const pacingFor = (exerciseId, targetRomMin) =>
+  PACING_DEFAULTS[exerciseId] || { estimatedMinutes: 4, baseRom: targetRomMin || 60 };
+
+/** Most recent completed session that recorded this exercise, for the "previous session" comparison shown mid-session. */
+const findPreviousExerciseResult = (sessions, exerciseId) => {
+  for (let i = sessions.length - 1; i >= 0; i -= 1) {
+    const entry = sessions[i].exercises.find((exercise) => exercise.id === exerciseId);
+    if (entry) {
+      return { qualityKey: entry.qualityKey || "good", rom: entry.rom ?? 0, painAfter: sessions[i].painAfter ?? null };
+    }
+  }
+  return { qualityKey: "good", rom: 0, painAfter: null };
+};
 
 /**
- * Today's session plan, each entry joined with its catalog definition
- * (name/description/media) — the one place that join happens, so every
- * consumer (session engine, UI) gets one already-complete object instead
- * of re-looking-up the catalog itself.
+ * Today's session plan, each active prescription joined with its catalog
+ * definition — the one place that join happens (unchanged from before).
  */
-export const getTodaySessionPlan = () =>
-  SESSION_EXERCISE_PLAN.map((plan) => ({
-    ...plan,
-    catalog: TODAY_EXERCISES.find((exercise) => exercise.id === plan.exerciseId) || null,
-  }));
+export const getTodaySessionPlan = () => {
+  const prescriptions = rehabRepository.getPrescriptions(PATIENT_PROFILE_PATIENT_ID, { activeOnly: true });
+  const sessions = rehabRepository.getSessions(PATIENT_PROFILE_PATIENT_ID);
+
+  return prescriptions.map((rx) => {
+    const pacing = pacingFor(rx.exerciseId, rx.targetRomMin);
+    return {
+      exerciseId: rx.exerciseId,
+      sets: rx.sets,
+      repsPerSet: rx.repsPerSet,
+      durationSeconds: rx.durationSeconds,
+      holdSeconds: rx.holdSeconds,
+      estimatedMinutes: pacing.estimatedMinutes,
+      baseRom: pacing.baseRom,
+      targetRomMin: rx.targetRomMin,
+      targetRomMax: rx.targetRomMax,
+      previous: findPreviousExerciseResult(sessions, rx.exerciseId),
+      catalog: getExerciseById(rx.exerciseId),
+    };
+  });
+};
 
 export const getSessionTotals = (plan = getTodaySessionPlan()) => ({
   exerciseCount: plan.length,
@@ -93,20 +87,37 @@ export const getSessionTotals = (plan = getTodaySessionPlan()) => ({
 });
 
 /**
- * Mock program-adherence snapshot — moved here from PatientDashboard.jsx
- * (its own inline `adherence` object, unchanged values) so the Assistant's
- * REHAB_PROGRESS action, PatientDashboard.jsx, and Profile V2's Rehab
- * insight (profile/patientProfileInsights.js) all read the SAME numbers
- * instead of PatientDashboard owning a private copy nothing else could see
- * (exactly the kind of duplicate mock Section 31 flags). No real adherence
- * tracking exists anywhere in this project — this stays a plain constant,
- * not a computed/derived value, until a real backend can supply it.
+ * Program-adherence snapshot — now DERIVED from real completed sessions
+ * vs. the active prescriptions' weekly frequency (Section 18: "Adherence
+ * should be DERIVED... completed prescribed sessions / expected
+ * sessions"), not a hardcoded constant. `streakDays` is the count of
+ * consecutive calendar days, ending at the most recent completed session,
+ * that each have a completed session.
  */
-export const getAdherence = () => ({
-  streakDays: 5,
-  completionPercentage: 76,
-  missedThisWeek: 1,
-});
+export const getAdherence = () => {
+  const prescriptions = rehabRepository.getPrescriptions(PATIENT_PROFILE_PATIENT_ID, { activeOnly: true });
+  const sessions = rehabRepository.getSessions(PATIENT_PROFILE_PATIENT_ID);
+  const adherence = deriveAdherence({ prescriptions, sessions });
+
+  let streakDays = 0;
+  if (sessions.length > 0) {
+    const days = [...new Set(sessions.map((session) => new Date(session.date).toDateString()))]
+      .map((label) => new Date(label))
+      .sort((a, b) => b - a);
+    streakDays = 1;
+    for (let i = 0; i < days.length - 1; i += 1) {
+      const diffDays = Math.round((days[i] - days[i + 1]) / 86400000);
+      if (diffDays === 1) streakDays += 1;
+      else break;
+    }
+  }
+
+  return {
+    streakDays,
+    completionPercentage: adherence.percent ?? 0,
+    missedThisWeek: adherence.missed,
+  };
+};
 
 const toDayId = (date) => {
   const year = date.getFullYear();
@@ -119,15 +130,7 @@ const BASE_SESSION_NUMBER = 6;
 
 /**
  * The visible rehab week — always the Monday-start week CONTAINING the
- * real current date, so "Today" in the rail is always genuinely today,
- * not a hardcoded calendar date that goes stale the day after this was
- * written. Days before today are `completed`, days after are `upcoming`
- * — a deliberately simple two-state-plus-today model (Section 3's own
- * "this is a rehab timeline, not a calendar app" direction), not a real
- * per-day completion ledger (that lives in each day's own persisted
- * session state — see patientSessionEngine.js/patientSessionStorage.js
- * for "today", and getCompletedDaySummary below for read-only mock
- * history of earlier days).
+ * real current date (unchanged from before this refactor).
  */
 export const getRehabWeek = (referenceDate = new Date()) => {
   const today = new Date(referenceDate);
@@ -157,12 +160,9 @@ export const getRehabWeek = (referenceDate = new Date()) => {
 };
 
 /**
- * A plausible "Week N" label — there is no real enrollment-date/program-
- * start field anywhere in this project (audited before writing this), so
- * this derives a stable, deterministic number from the calendar's own
- * ISO week-of-year rather than inventing a fake persisted program-start
- * date. Purely flavor text (Section 4's own "Week 3" example) — nothing
- * else in the UI depends on its exact value.
+ * A plausible "Week N" label — still purely flavor text derived from the
+ * calendar's ISO week-of-year (unchanged; there is still no persisted
+ * program-start-relative week counter anywhere in the canonical domain).
  */
 export const getWeekLabel = (date = new Date()) => {
   const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
@@ -178,10 +178,11 @@ const COMPLETED_DAY_SUMMARY_POOL = [
 ];
 
 /**
- * Read-only mock summary for an already-completed PAST day (never
- * today — today's real summary comes from the actual persisted session
- * state once it completes). Deterministic by day id so the same past day
- * always shows the same numbers.
+ * Read-only mock summary for an already-completed PAST day within the
+ * CURRENT visible week that has no matching real seeded session (the rail
+ * shows 7 days; the canonical seed only covers the days sessions.js
+ * actually populated) — unchanged deterministic fallback so every past
+ * day in the rail still has something to show.
  */
 export const getCompletedDaySummary = (dayId) => {
   let hash = 0;
