@@ -1,0 +1,37 @@
+/* The Doctor application shell — global tokens only. Row-direction flex
+   (sidebar + main column) is what makes the sidebar automatically sit on
+   the physical right in RTL (see DoctorSidebar.css's own comment) without
+   any manual mirroring here. */
+
+.doctor-shell {
+  /* Read by DoctorTopbar.css (its own height) AND
+     pages/DoctorDashboard.css (subtracted from its conversation-mode
+     height bound) — ONE value instead of the same pixel number guessed
+     twice in two files. */
+  --doctor-topbar-height: 60px;
+
+  display: flex;
+  height: 100vh;
+  background: var(--color-background);
+}
+
+.doctor-shell-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.doctor-shell-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+@media (max-width: 480px) {
+  .doctor-shell-content {
+    padding: 16px;
+  }
+}

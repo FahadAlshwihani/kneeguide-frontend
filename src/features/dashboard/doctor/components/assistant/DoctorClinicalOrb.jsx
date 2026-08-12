@@ -25,12 +25,16 @@ const STATE_CONFIG = {
 
 // Doctor Home has no theme/appearance system (out of scope for this task —
 // only Patient has one, see preferences/PatientPreferencesContext.jsx) —
-// this is simply DoctorLayout.css's own current page background
-// (`.doctor-layout { background: #0f0f0f }`), matched here for the same
-// reason KneeGuideAssistantOrb.jsx matches --patient-surface-page: Orb.jsx
-// blends its shader output by background luminance, so a mismatched value
-// would show a visible box around the Orb instead of a seamless blend.
-const DOCTOR_ORB_BACKGROUND = "#0f0f0f";
+// this matches the shell's own page background (`--color-background`,
+// index.css :root, `.doctor-shell` in DoctorDashboardShell.css), for the
+// same reason KneeGuideAssistantOrb.jsx matches --patient-surface-page:
+// Orb.jsx blends its shader output by background luminance, so a
+// mismatched value would show a visible box around the Orb instead of a
+// seamless blend. Kept as a literal hex (not a CSS var lookup) since the
+// shader needs a numeric value, not a custom property — see
+// KneeGuideAssistantOrb.jsx's own identical reasoning for its light/dark
+// pair.
+const DOCTOR_ORB_BACKGROUND = "#050505";
 
 /**
  * Doctor-specific semantic layer around the generic Orb primitive —

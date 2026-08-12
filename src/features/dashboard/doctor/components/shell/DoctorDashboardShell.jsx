@@ -64,11 +64,7 @@ const DoctorDashboardShell = ({ active, children }) => {
           <div className="doctor-shell-content">{children}</div>
         </div>
 
-        <DoctorAssistantDrawer
-          isOpen={activeOverlay === "assistant"}
-          onClose={closeOverlay}
-          triggerRef={activeOverlay === "assistant" ? overlayTriggerRef : null}
-        />
+        <DoctorAssistantDrawer isOpen={activeOverlay === "assistant"} onClose={closeOverlay} triggerRef={overlayTriggerRef} />
       </div>
     </DoctorAssistantProvider>
   );

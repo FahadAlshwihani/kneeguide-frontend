@@ -15,24 +15,25 @@
 /* Conversation Mode only (DoctorDashboard.jsx mirrors DoctorHomeAssistant's
    own mode via onModeChange) — the page becomes a height-BOUNDED shell so
    only the transcript inside DoctorHomeAssistant scrolls, never
-   `.doctor-content` (DoctorLayout.css) itself. `.doctor-content` already
-   spans the full `.doctor-layout` height (`height: 100vh` there) with
-   30px padding on every side — 60px is that padding, subtracted here
+   `.doctor-shell-content` (shell/DoctorDashboardShell.css) itself.
+   `.doctor-shell-content` spans `.doctor-shell-main`'s own height (100vh
+   minus the Topbar's `--doctor-topbar-height`, both from
+   shell/DoctorDashboardShell.css) with 24px padding on every side — 48px
+   is that padding. Both amounts are read from the real values/tokens
    rather than guessed, so this container exactly fills what's actually
-   available and `.doctor-content`'s own `overflow-y: auto` never
+   available and `.doctor-shell-content`'s own `overflow-y: auto` never
    actually triggers a second scrollbar. Welcome Mode is deliberately
    untouched (`.doctor-dashboard` alone keeps normal, unbounded flow). */
 .doctor-dashboard--conversation {
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--doctor-topbar-height, 60px) - 48px);
   min-height: 0;
   overflow: hidden;
 }
 
 @media (max-width: 480px) {
   .doctor-dashboard--conversation {
-    /* DoctorLayout.css's own padding doesn't currently shrink on mobile —
-       matched here rather than guessed, so this stays exact instead of
-       leaving a stray gap or clipping content by a few pixels. */
-    height: calc(100vh - 60px);
+    /* `.doctor-shell-content`'s own padding drops to 16px per side (32px
+       total) below 480px — matched here rather than guessed. */
+    height: calc(100vh - var(--doctor-topbar-height, 60px) - 32px);
   }
 }
