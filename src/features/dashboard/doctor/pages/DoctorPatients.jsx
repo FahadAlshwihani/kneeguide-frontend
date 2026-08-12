@@ -140,7 +140,6 @@ const DoctorPatients = () => {
             </div>
           );
         })()}
-        </div>
 
         <div className="dp-controls">
           <div className="dp-search-box">
