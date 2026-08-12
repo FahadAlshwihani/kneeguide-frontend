@@ -28,6 +28,7 @@ const buildActivityFeed = (bundle) => {
 const OverviewTab = ({ bundle }) => {
   const { t, i18n } = useTranslation();
   const { patient, adherence, priority, latestPain, latestRom, trendDirection, sessions } = bundle;
+  const doctorProfile = useDoctorProfile();
 
   const activity = useMemo(() => buildActivityFeed(bundle), [bundle]);
   const week = useMemo(() => weekNumber(patient.programStartDate), [patient.programStartDate]);
@@ -54,7 +55,7 @@ const OverviewTab = ({ bundle }) => {
             </div>
             <div>
               <dt>{t("doctorPatientWorkspace.overview.clinician")}</dt>
-              <dd>{DEFAULT_CLINICIAN.name}</dd>
+              <dd>{doctorProfile.name}</dd>
             </div>
           </dl>
         </section>
