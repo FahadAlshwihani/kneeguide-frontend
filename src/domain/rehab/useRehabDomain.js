@@ -38,4 +38,11 @@ export const useRehabAppointments = () => {
   return useMemo(() => repo.getAllAppointments(), [version]);
 };
 
+/** The canonical doctor profile (Doctor Profile brief) — reactive, so Topbar/AccountMenu/Profile/Appointments never disagree. */
+export const useDoctorProfile = () => {
+  const version = useRehabStoreVersion();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => repo.getDoctorProfile(), [version]);
+};
+
 export { repo as rehabRepository };

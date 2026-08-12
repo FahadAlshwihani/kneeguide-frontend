@@ -2,9 +2,10 @@ import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { LuSparkles, LuBell, LuMenu } from "react-icons/lu";
-import { useAuth } from "../../../../../context/AuthContext";
 import { useDoctorAssistant } from "../../assistant/DoctorAssistantContext";
 import { useDoctorNotifications } from "../../assistant/useDoctorNotifications";
+import { useDoctorProfile } from "../../../../../domain/rehab/useRehabDomain";
+import { deriveInitialsFromName } from "../../../../../domain/rehab/rehabDerived";
 import { ROUTES } from "../../../../../utils/routes";
 import Popover from "../../../../../components/ui/Popover";
 import DoctorNotificationsPanel from "./DoctorNotificationsPanel";
@@ -35,15 +36,21 @@ const ROUTE_TITLE_KEYS = {
 const DoctorTopbar = ({ activeOverlay, onOpenOverlay, onCloseOverlay, onOpenMobileNav, onLogout }) => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const { user } = useAuth();
   const { displayName, greetingKey } = useDoctorAssistant();
   const { notifications, readIds, unreadCount, markRead, markAllRead } = useDoctorNotifications();
+  const doctorProfile = useDoctorProfile();
 
   const assistantTriggerRef = useRef(null);
   const notificationsTriggerRef = useRef(null);
   const accountTriggerRef = useRef(null);
 
-  const initials = (user?.first_name?.[0] || "").concat(user?.last_name?.[0] || "").toUpperCase() || displayName.slice(0, 2).toUpperCase();
+  // The Topbar avatar/account-menu show the doctor's PROFESSIONAL identity
+  // (Doctor Profile brief, Section 2 — one identity powering Profile,
+  // Topbar avatar, and account menu), derived from the canonical
+  // `doctorProfile` record rather than the raw login user — distinct on
+  // purpose from `displayName` above, which stays the personal "Good
+  // morning, {{name}}" greeting tied to whoever is logged in.
+  const professionalInitials = deriveInitialsFromName(doctorProfile.name);
 
   const pageTitleKey = ROUTE_TITLE_KEYS[pathname];
   const contextLabel = pageTitleKey ? t(pageTitleKey) : t(`doctorDashboard.greeting.${greetingKey}`, { name: displayName });
@@ -111,10 +118,14 @@ const DoctorTopbar = ({ activeOverlay, onOpenOverlay, onCloseOverlay, onOpenMobi
             aria-label={t("doctorShell.account.menuLabel")}
             aria-expanded={activeOverlay === "account"}
           >
-            <span aria-hidden="true">{initials}</span>
+            {doctorProfile.avatarDataUrl ? (
+              <img src={doctorProfile.avatarDataUrl} alt="" className="doctor-topbar-avatar-img" />
+            ) : (
+              <span aria-hidden="true">{professionalInitials}</span>
+            )}
           </button>
           <Popover isOpen={activeOverlay === "account"} onClose={onCloseOverlay} triggerRef={accountTriggerRef} ariaLabel={t("doctorShell.account.menuLabel")}>
-            <DoctorAccountMenu displayName={displayName} initials={initials} onClose={onCloseOverlay} onLogout={onLogout} />
+            <DoctorAccountMenu displayName={doctorProfile.name} initials={professionalInitials} avatarDataUrl={doctorProfile.avatarDataUrl} onClose={onCloseOverlay} onLogout={onLogout} />
           </Popover>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { DEFAULT_CLINICIAN } from "../../../../../domain/rehab/demoData/clinicians";
+import { useDoctorProfile } from "../../../../../domain/rehab/useRehabDomain";
 import { TREND_DIRECTION_I18N_KEY, ATTENTION_REASON_I18N_KEY } from "../../../../../domain/rehab/rehabEnums";
 import "./OverviewTab.css";
 

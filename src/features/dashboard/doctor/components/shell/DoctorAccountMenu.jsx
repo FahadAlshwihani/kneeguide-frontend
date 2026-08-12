@@ -17,7 +17,7 @@ import "./DoctorAccountMenu.css";
  * updates direction/body classes globally, so this never touches DOM
  * attributes directly.
  */
-const DoctorAccountMenu = ({ displayName, initials, onClose, onLogout }) => {
+const DoctorAccountMenu = ({ displayName, initials, avatarDataUrl, onClose, onLogout }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ const DoctorAccountMenu = ({ displayName, initials, onClose, onLogout }) => {
     <div className="doctor-account-menu">
       <div className="doctor-account-menu-header">
         <span className="doctor-account-menu-avatar" aria-hidden="true">
-          {initials}
+          {avatarDataUrl ? <img src={avatarDataUrl} alt="" className="doctor-account-menu-avatar-img" /> : initials}
         </span>
         <span className="doctor-account-menu-name" dir="auto">
           {displayName}

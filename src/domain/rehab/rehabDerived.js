@@ -205,6 +205,27 @@ export const deriveReportTrend = (report) => {
   return REPORT_TREND.STABLE;
 };
 
+// Title tokens stripped before computing initials — "Dr. Sarah Ahmed"
+// must produce "SA", not "DS" (Doctor Profile brief, Section 9). Kept as
+// a short literal list rather than a locale-aware title parser; this
+// demo only ever has one clinician name to format.
+const NAME_TITLE_TOKENS = new Set(["dr", "dr.", "prof", "prof."]);
+
+/**
+ * Two-letter initials from a canonical display name (Doctor Profile
+ * brief, Section 9) — the ONE implementation Profile/Topbar/AccountMenu
+ * all call, so the avatar fallback can never disagree with itself across
+ * surfaces.
+ */
+export const deriveInitialsFromName = (name) => {
+  const words = (name || "").trim().split(/\s+/).filter((word) => word && !NAME_TITLE_TOKENS.has(word.toLowerCase()));
+  return words
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+};
+
 /**
  * Which of a set of (already-CONFIRMED, future) appointments would fall
  * OUTSIDE a candidate `workingHours` schedule (Doctor Profile brief,
