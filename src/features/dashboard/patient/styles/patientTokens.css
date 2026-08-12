@@ -104,6 +104,15 @@
   --patient-color-focus: var(--patient-color-primary);
   --patient-color-nav-active: var(--patient-color-primary);
 
+  /* Danger button variant (PatientButton.css) and the fixed Dock panel's
+     own background (PatientDock.css) — pulled out as tokens (rather than
+     left as literals in those files) specifically so the light-mode block
+     above can redeclare just these two values instead of forking either
+     component's stylesheet. */
+  --patient-btn-danger-text: #fca5a5;
+  --patient-btn-danger-border: rgba(239, 68, 68, 0.4);
+  --patient-dock-bg: rgba(11, 14, 23, 0.88);
+
   /* ---------- Radii ---------- */
   --patient-radius-card: var(--radius-lg, 18px);
   --patient-radius-control: var(--radius-sm, 8px);
@@ -152,6 +161,60 @@
   color: var(--patient-color-text);
   background: var(--patient-surface-page);
   font-family: var(--patient-font);
+}
+
+/* ============================================================
+   LIGHT MODE — Profile V2 (Section 18-26)
+   ============================================================
+   `resolvedTheme` (see preferences/PatientPreferencesContext.jsx) is
+   stamped as `data-patient-theme` on this same `.patient-shell` element by
+   PatientLayout.jsx — this selector only ever wins when that attribute is
+   literally "light", so the default (no attribute yet, during the
+   synchronous first paint, or `resolvedTheme === "dark"`) keeps the
+   original dark values above completely untouched. This EXTENDS the token
+   layer rather than patching individual components: every consumer below
+   (PatientButton, PatientDock, Assistant, Reports charts, ...) already
+   reads `var(--patient-*)`, so redefining the custom properties here is
+   what makes them repaint correctly with zero component-level `.light
+   .card {}` rules anywhere in the codebase.
+
+   Values follow the task's own light-mode visual direction (Section 22):
+   soft off-white page, white/very-soft-blue-gray surfaces, near-black
+   heading text, slate secondary/muted text, hairline neutral borders — the
+   same KneeGuide blue primary is reused unchanged (only truly
+   theme-dependent tokens are redeclared here). A few accent colors
+   (warning/info/danger) are deliberately darkened a step from their dark-
+   mode values, since the dark-mode shades were tuned for contrast against
+   a near-black surface and would fail contrast against a white one
+   (Section 36) — the hue stays the same family, only the value changes. */
+.patient-shell[data-patient-theme="light"] {
+  --patient-surface-page: #f8f8f8;
+  --patient-surface-card: #ffffff;
+  --patient-surface-elevated: #f4f6fa;
+  --patient-surface-hover: rgba(16, 24, 40, 0.04);
+  --patient-surface-subtle: rgba(16, 24, 40, 0.03);
+  --patient-border: #e4e7ec;
+  --patient-divider: #eaecf0;
+  --patient-shadow-card: 0 10px 30px rgba(16, 24, 40, 0.08);
+  --patient-shadow-elevated: 0 18px 45px rgba(16, 24, 40, 0.12);
+
+  --patient-color-text: #344054;
+  --patient-color-heading: #101828;
+  --patient-color-muted: #667085;
+  --patient-color-faint: #98a2b3;
+
+  --patient-color-success: #16a34a;
+  --patient-color-warning: #b45309;
+  --patient-color-danger: #dc2626;
+  --patient-color-info: #0284c7;
+
+  --patient-assistant-suggestion-bg: rgba(16, 24, 40, 0.04);
+  --patient-assistant-suggestion-bg-hover: rgba(16, 24, 40, 0.07);
+
+  --patient-dock-bg: rgba(255, 255, 255, 0.85);
+
+  --patient-btn-danger-text: #b42318;
+  --patient-btn-danger-border: rgba(180, 35, 24, 0.35);
 }
 
 /* Same technique as index.css's `.public-root .visually-hidden` — that

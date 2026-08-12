@@ -93,8 +93,8 @@
 
 .patient-btn--danger {
   background: transparent;
-  color: #fca5a5;
-  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--patient-btn-danger-text);
+  border-color: var(--patient-btn-danger-border);
 }
 
 .patient-btn--danger:hover:not(:disabled) {
