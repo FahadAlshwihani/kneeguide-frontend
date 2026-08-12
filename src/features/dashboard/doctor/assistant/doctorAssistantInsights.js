@@ -246,6 +246,85 @@ export const buildOverviewInsight = (bundle) => {
 };
 
 /**
+ * The Doctor Appointments (Global Calendar) page's own compact Assistant
+ * card — the SAME `{severity, lines, actionIds}` shape every other surface
+ * in this file already produces, just fed by pre-fetched CROSS-patient
+ * facts (`topRequest` from doctorClinicalInsights.getPrioritizedPending
+ * AppointmentRequest, `todayAppointments` from getTodayAppointments)
+ * instead of one patient's bundle. `actionIds` are semantic strings
+ * (never JSX/navigation) — the page component maps them onto its own
+ * local handlers (open the details modal, mutate via rehabRepository,
+ * navigate to the Workspace), so this function stays a pure derivation
+ * with no DOM/routing concerns, exactly like every other builder here.
+ *
+ * When the top request's patient ALSO has a live clinical reason
+ * (`bundle.priority.reasons`), a second line is added by reusing
+ * `buildClinicalInsight`'s own messageKey/values for that same reason —
+ * never a new clinical sentence invented here (Section 9/15 of the
+ * brief: no duplicated clinical logic, no fabricated urgency).
+ *
+ * `formatDateTime` is an injected `(isoString) => string` — locale-aware
+ * date formatting needs `i18n.language`, which this file deliberately
+ * never imports (every other builder here leaves locale formatting to
+ * its caller too; see doctorAssistantActions.js's own inline
+ * `toLocaleTimeString` calls), so the caller (DoctorCalendar.jsx) passes
+ * its own formatter instead of this module reaching for React context.
+ */
+export const buildAppointmentsPageInsight = ({ topRequest, todayAppointments, formatDateTime }) => {
+  if (topRequest) {
+    const { appointment, patient, bundle } = topRequest;
+    const lines = [
+      { messageKey: "doctorAssistantInsights.appointmentsPage.pendingRequest", values: { name: patient.firstName, dateTime: formatDateTime(appointment.startAt) } },
+    ];
+
+    // Pick the strongest already-derived clinical reason, same precedence
+    // buildClinicalInsight itself checks (pain, then ROM, then adherence) —
+    // this only SELECTS which existing fact to mention, it never computes
+    // a new one.
+    const clinicalReasonKey = { [ATTENTION_REASON.PAIN_INCREASED]: "pain", [ATTENTION_REASON.ROM_REGRESSION]: "rom", [ATTENTION_REASON.MISSED_SESSIONS]: "missedSessions" };
+    const topClinicalReason = bundle.priority.reasons.find((reason) => clinicalReasonKey[reason.code]);
+    if (topClinicalReason) {
+      lines.push({
+        messageKey: `doctorAssistantInsights.appointmentsPage.clinicalContext.${clinicalReasonKey[topClinicalReason.code]}`,
+        values: { name: patient.firstName },
+      });
+    } else if (todayAppointments.length > 0) {
+      lines.push({ messageKey: "doctorAssistantInsights.appointmentsPage.alsoToday", values: { count: todayAppointments.length } });
+    }
+
+    return {
+      severity: bundle.priority.level === ATTENTION_LEVEL.NEEDS_ATTENTION ? INSIGHT_SEVERITY.WARNING : INSIGHT_SEVERITY.INFO,
+      lines,
+      actionIds: ["reviewRequest", "accept", "proposeNewTime"],
+      topRequestAppointmentId: appointment.id,
+      topRequestPatientId: patient.id,
+    };
+  }
+
+  if (todayAppointments.length === 0) {
+    return {
+      severity: INSIGHT_SEVERITY.INFO,
+      lines: [{ messageKey: "doctorAssistantInsights.appointmentsPage.noneToday", values: {} }],
+      actionIds: ["scheduleAppointment"],
+    };
+  }
+
+  const sorted = [...todayAppointments].sort((a, b) => new Date(a.startAt) - new Date(b.startAt));
+  const next = sorted[0];
+  return {
+    severity: INSIGHT_SEVERITY.INFO,
+    lines: [
+      {
+        messageKey: "doctorAssistantInsights.appointmentsPage.todaySummary",
+        values: { count: todayAppointments.length, nextName: next.patient?.name || "", time: formatDateTime(next.startAt, { timeOnly: true }) },
+      },
+    ],
+    actionIds: next.patient ? ["viewToday", "openNextPatient"] : ["viewToday"],
+    nextPatientId: next.patient?.id || null,
+  };
+};
+
+/**
  * ONE summary descriptor for the whole caseload (Section 23) — counts
  * only; per-patient reasoning belongs in the Workspace, not a paragraph on
  * the list page (Section 23/24's own "restrained" requirement).

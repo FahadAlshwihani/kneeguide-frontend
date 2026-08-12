@@ -6,6 +6,7 @@ import "../../styles/DoctorPatientWorkspace.css";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
 import { DEFAULT_CLINICIAN_ID } from "../../../../../domain/rehab/demoData/patients";
 import { APPOINTMENT_TYPE } from "../../../../../domain/rehab/demoData/appointments";
+import { getPendingAppointmentRequests } from "../../assistant/doctorClinicalInsights";
 
 const DURATION_OPTIONS_MINUTES = [30, 45, 60];
 
@@ -21,7 +22,7 @@ const DURATION_OPTIONS_MINUTES = [30, 45, 60];
  * always CONFIRMED immediately, never a doctor-chosen value), and a real
  * pre-submit scheduling-conflict check against `findSchedulingConflict`.
  */
-const DoctorAppointmentComposer = ({ isOpen, onClose, patientId: lockedPatientId, initialDate, initialTime, onScheduled }) => {
+const DoctorAppointmentComposer = ({ isOpen, onClose, patientId: lockedPatientId, initialDate, initialTime, onScheduled, onReviewExisting }) => {
   const { t } = useTranslation();
   const [patientId, setPatientId] = useState(lockedPatientId || null);
   const [date, setDate] = useState(initialDate || "");
@@ -44,6 +45,17 @@ const DoctorAppointmentComposer = ({ isOpen, onClose, patientId: lockedPatientId
     setConflict(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, lockedPatientId, initialDate, initialTime]);
+
+  // Whichever entry point opened this composer (the Assistant's "Schedule
+  // appointment", the page's own "New appointment", or Workspace's
+  // "Schedule appointment"), the doctor is told about an existing pending
+  // request for the SAME patient before creating a possible duplicate
+  // (Section 8, Step 2 of the Assistant-integration brief) — one shared
+  // check inside the one shared composer, not a separate warning step
+  // bolted onto only the chat flow.
+  const existingPendingForPatient = patientId
+    ? getPendingAppointmentRequests().find((entry) => entry.appointment.patientId === patientId)
+    : null;
 
   const handleClose = () => {
     onClose();

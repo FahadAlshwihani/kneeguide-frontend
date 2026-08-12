@@ -58,6 +58,33 @@ export const getPendingAppointmentRequests = (referenceDate = new Date()) =>
     .map((appointment) => ({ appointment, patient: rehabRepository.getPatient(appointment.patientId) }))
     .sort((a, b) => new Date(a.appointment.startAt) - new Date(b.appointment.startAt));
 
+const PENDING_REQUEST_PRIORITY_RANK = {
+  [ATTENTION_LEVEL.NEEDS_ATTENTION]: 0,
+  [ATTENTION_LEVEL.REVIEW_RECOMMENDED]: 1,
+  [ATTENTION_LEVEL.STABLE]: 2,
+};
+
+/**
+ * The single pending request the Appointments-page Assistant card should
+ * lead with (Section 10 of the Assistant-integration brief) — ranked by
+ * each requester's own canonical `priority.level`
+ * (rehabRepository.getPatientBundle -> rehabDerived.derivePatientPriority,
+ * the EXACT same ranking the Patients worklist already uses), not a new
+ * hidden severity score. Ties break on soonest requested time. Returns
+ * `null` when there is nothing pending — the caller decides what to say
+ * instead, this function only ever answers "which one, if any."
+ */
+export const getPrioritizedPendingAppointmentRequest = () => {
+  const pending = getPendingAppointmentRequests();
+  if (pending.length === 0) return null;
+  const enriched = pending.map(({ appointment, patient }) => ({ appointment, patient, bundle: rehabRepository.getPatientBundle(patient.id) }));
+  enriched.sort((a, b) => {
+    const rankDiff = PENDING_REQUEST_PRIORITY_RANK[a.bundle.priority.level] - PENDING_REQUEST_PRIORITY_RANK[b.bundle.priority.level];
+    return rankDiff !== 0 ? rankDiff : new Date(a.appointment.startAt) - new Date(b.appointment.startAt);
+  });
+  return enriched[0];
+};
+
 /**
  * Real, derived pairs of upcoming CONFIRMED appointments whose times
  * actually overlap (Section 19/38 — never a fabricated "gap" suggestion).

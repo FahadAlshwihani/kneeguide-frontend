@@ -1,15 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { LuChevronLeft, LuChevronRight, LuPlus, LuCalendarClock } from "react-icons/lu";
+import { LuChevronLeft, LuChevronRight, LuPlus } from "react-icons/lu";
 import DoctorLayout from "../components/DoctorLayout";
 import DoctorModal from "../components/workspace/DoctorModal";
 import DoctorAppointmentComposer from "../components/workspace/DoctorAppointmentComposer";
 import ProposeAlternativeModal from "../components/workspace/ProposeAlternativeModal";
 import DeclineAppointmentModal from "../components/workspace/DeclineAppointmentModal";
+import AssistantInsightCard from "../components/workspace/AssistantInsightCard";
 import { useRehabAppointments, rehabRepository } from "../../../../domain/rehab/useRehabDomain";
 import { APPOINTMENT_STATUS, APPOINTMENT_SOURCE } from "../../../../domain/rehab/rehabEnums";
-import { getPendingAppointmentRequests, getTodayAppointments } from "../assistant/doctorClinicalInsights";
+import { getPendingAppointmentRequests, getPrioritizedPendingAppointmentRequest } from "../assistant/doctorClinicalInsights";
+import { buildAppointmentsPageInsight } from "../assistant/doctorAssistantInsights";
 import { ROUTES } from "../../../../utils/routes";
 import "../styles/DoctorCalendar.css";
 
@@ -137,13 +139,25 @@ const DoctorCalendar = () => {
   const selectedDayAppointments = eventsByDateKey.get(selectedDate) || [];
   const selectedAppointment = appointments.find((appointment) => appointment.id === selectedAppointmentId) || null;
 
-  // Both read the shared store directly rather than deriving from the
+  // Reads the shared store directly rather than deriving from the
   // already-fetched `appointments` array — `appointments` is only the
   // recompute trigger (a fresh reference each time the store changes).
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const pendingRequests = useMemo(() => getPendingAppointmentRequests(), [appointments]);
+
+  // The Assistant card's own cross-patient inputs (Section 2 of the
+  // Assistant-integration brief) — `topRequest` ranked by each requester's
+  // real canonical priority (getPrioritizedPendingAppointmentRequest, which
+  // itself just reuses rehabRepository.getPatientBundle's already-derived
+  // priority — no new severity system), `todayAppointmentsForInsight`
+  // filtered from the SAME already-patient-enriched `appointments` this
+  // page already computed above (never a second, differently-shaped fetch).
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const todayAppointments = useMemo(() => getTodayAppointments(), [appointments]);
+  const topRequest = useMemo(() => getPrioritizedPendingAppointmentRequest(), [appointments]);
+  const todayAppointmentsForInsight = useMemo(
+    () => appointments.filter((appointment) => formatDateKey(new Date(appointment.startAt)) === todayKey),
+    [appointments, todayKey]
+  );
 
   const monthAppointments = useMemo(
     () =>
@@ -208,12 +222,61 @@ const DoctorCalendar = () => {
 
   const timeFormatter = new Intl.DateTimeFormat(i18n.language, { hour: "2-digit", minute: "2-digit" });
   const dateTimeFormatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short" });
+  const formatInsightDateTime = (isoString, { timeOnly = false } = {}) =>
+    timeOnly ? timeFormatter.format(new Date(isoString)) : dateTimeFormatter.format(new Date(isoString));
 
-  const insightSeverity = pendingRequests.length > 0 ? "warning" : "info";
-  const insightText =
-    pendingRequests.length > 0
-      ? t("doctorAppointments.insight.withPending", { pending: pendingRequests.length, today: todayAppointments.length })
-      : t("doctorAppointments.insight.noPending", { today: todayAppointments.length });
+  // The compact KneeGuide Assistant card (Section 2-4 of the Assistant-
+  // integration brief) — reuses the SAME `AssistantInsightCard` component
+  // the Patient Workspace already established (Orb "face" + content, one
+  // restrained severity accent, RTL-safe via flex-direction: row), fed by
+  // the pure `buildAppointmentsPageInsight` derivation above. `actionIds`
+  // are semantic strings the derivation returns; they're mapped onto this
+  // page's own existing handlers right here — Accept/Propose/Decline call
+  // the exact same rehabRepository mutations the Requests rail uses,
+  // "Schedule appointment" opens the exact same composer, "Open patient"
+  // is a real navigation. No second mutation path, no second form.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const appointmentsInsight = useMemo(
+    () => buildAppointmentsPageInsight({ topRequest, todayAppointments: todayAppointmentsForInsight, formatDateTime: formatInsightDateTime }),
+    [topRequest, todayAppointmentsForInsight, i18n.language]
+  );
+
+  const ACTION_BUILDERS = {
+    reviewRequest: () => ({
+      id: "reviewRequest",
+      labelKey: "doctorAppointments.assistant.actions.reviewRequest",
+      onSelect: () => openDetails({ ...topRequest.appointment, patient: topRequest.patient }),
+    }),
+    accept: () => ({
+      id: "accept",
+      labelKey: "doctorPatientWorkspace.appointments.accept",
+      onSelect: () => acceptAppointment(topRequest.appointment.id),
+    }),
+    proposeNewTime: () => ({
+      id: "proposeNewTime",
+      labelKey: "doctorAppointments.requests.propose",
+      onSelect: () => openProposeFor({ ...topRequest.appointment, patient: topRequest.patient }),
+    }),
+    scheduleAppointment: () => ({
+      id: "scheduleAppointment",
+      labelKey: "doctorAppointments.newAppointment",
+      onSelect: () => openComposer(null),
+    }),
+    viewToday: () => ({
+      id: "viewToday",
+      labelKey: "doctorAppointments.assistant.actions.viewToday",
+      onSelect: () => {
+        setCurrentDate(new Date());
+        setSelectedDate(todayKey);
+      },
+    }),
+    openNextPatient: () => ({
+      id: "openNextPatient",
+      labelKey: "doctorAssistantInsights.actions.openPatient",
+      routeTo: `${ROUTES.DOCTOR_PATIENT_PROFILE.replace(":id", appointmentsInsight.nextPatientId)}?tab=appointments`,
+    }),
+  };
+  const assistantActions = appointmentsInsight.actionIds.map((id) => ACTION_BUILDERS[id]());
 
   return (
     <DoctorLayout active="appointments">
@@ -232,10 +295,13 @@ const DoctorCalendar = () => {
             </div>
           </header>
 
-          <div className={`dc-insight-strip dc-insight-strip--${insightSeverity}`}>
-            <LuCalendarClock aria-hidden="true" />
-            <span>{insightText}</span>
-          </div>
+          <AssistantInsightCard
+            titleKey="doctorAssistantInsights.cardTitle"
+            severity={appointmentsInsight.severity}
+            lines={appointmentsInsight.lines}
+            actions={assistantActions}
+            className="dc-assistant-card"
+          />
 
           <div className="dc-controls-row">
             <div className="dc-month-nav">

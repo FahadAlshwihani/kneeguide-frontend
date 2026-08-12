@@ -26,7 +26,13 @@ import "./AssistantInsightCard.css";
  * per sentence — see doctorAssistantInsights.js's own message-key
  * catalog) without concatenating raw strings here; every piece still
  * resolves through `t()`. `actions` is the same `{ id, labelKey, routeTo }`
- * shape used throughout the Assistant.
+ * shape used throughout the Assistant, with one addition: an action may
+ * carry `onSelect` instead of `routeTo` for an in-place mutation (e.g. the
+ * Doctor Appointments page's "Accept" — it calls the exact same
+ * `rehabRepository.confirmAppointment` the Requests rail uses, right where
+ * the doctor already is, rather than forcing a navigation for something
+ * that isn't a navigation). Every existing Workspace caller only ever
+ * passes `routeTo`, so this is additive, not a breaking change.
  *
  * This component is rendered ONCE per Workspace (DoctorPatientWorkspace.jsx
  * hoists it above the swapped tab content specifically so the Orb/WebGL
@@ -38,6 +44,14 @@ const AssistantInsightCard = ({ titleKey = "doctorAssistantInsights.cardTitle", 
   const navigate = useNavigate();
 
   if (!lines || lines.length === 0) return null;
+
+  const handleActionClick = (action) => {
+    if (action.onSelect) {
+      action.onSelect();
+      return;
+    }
+    navigate(action.routeTo);
+  };
 
   return (
     <section className={`assistant-insight-card assistant-insight-card--${severity} ${className}`.trim()} aria-label={t(titleKey)}>
@@ -59,7 +73,7 @@ const AssistantInsightCard = ({ titleKey = "doctorAssistantInsights.cardTitle", 
         {actions.length > 0 && (
           <div className="assistant-insight-card-actions">
             {actions.map((action) => (
-              <button key={action.id} type="button" className="assistant-insight-card-action" onClick={() => navigate(action.routeTo)}>
+              <button key={action.id} type="button" className="assistant-insight-card-action" onClick={() => handleActionClick(action)}>
                 {t(action.labelKey)}
               </button>
             ))}
