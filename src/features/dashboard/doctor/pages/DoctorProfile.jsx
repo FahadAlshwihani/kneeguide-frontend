@@ -1,298 +1,344 @@
-// src/pages/DoctorProfile.jsx
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-
+import { useNavigate } from "react-router-dom";
+import { LuCamera } from "react-icons/lu";
 import DoctorLayout from "../components/DoctorLayout";
+import { useDoctorProfile, rehabRepository } from "../../../../domain/rehab/useRehabDomain";
+import { deriveInitialsFromName, findAppointmentsOutsideWorkingHours } from "../../../../domain/rehab/rehabDerived";
+import { DOCTOR_AVAILABILITY_STATUS, WEEKDAY_ORDER, APPOINTMENT_STATUS } from "../../../../domain/rehab/rehabEnums";
+import { ROUTES } from "../../../../utils/routes";
 import "../styles/DoctorProfile.css";
 
-// 🔥 أضف هذا السطر
-import LanguageDropdown from "../../../../components/common/LanguageDropdown";
+const ACCEPTED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_AVATAR_BYTES = 1.5 * 1024 * 1024; // 1.5MB — a real ceiling for a base64 value going into localStorage-backed canonical state.
+const MAX_BIO_LENGTH = 500;
 
-const initialDoctor = {
-  name: "Dr. Sarah Ahmed",
-  specialty: "Orthopedic Surgeon - Knee & Sports Injuries",
-  yearsExperience: 12,
-  licenseNumber: "MOH-4589321",
-  clinicName: "KneeGuide Specialized Clinic",
-  email: "sarah.ahmed@kneeguide.com",
-  phone: "+966 55 123 4567",
-  location: "Riyadh, Saudi Arabia",
-  bio: "Specialized in ACL reconstruction, meniscus injuries, and post-operative rehabilitation with a focus on evidence-based protocols.",
-  availabilityStatus: "available",
-  workHours: [
-    "Sunday - Wednesday: 2:00 PM - 8:00 PM",
-    "Thursday: 3:00 PM - 7:00 PM",
-  ],
-};
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^\+?[0-9()\-.\s]{7,20}$/;
 
+/**
+ * Doctor Profile brief — the canonical `doctorProfile` (rehabRepository)
+ * is the same identity Topbar/AccountMenu/Workspace already read; this
+ * page is a form over ONE local draft of it, committed only on Save
+ * (Section 20 — a local draft is the correct pattern here, unlike every
+ * other page in this app, precisely BECAUSE Cancel needs to mean
+ * something).
+ */
 const DoctorProfile = () => {
-  const { t } = useTranslation();
-  const [form, setForm] = useState(initialDoctor);
-  const [saving, setSaving] = useState(false);
-  const [savedMessage, setSavedMessage] = useState("");
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const savedProfile = useDoctorProfile();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    setSavedMessage("");
+  const [draft, setDraft] = useState(savedProfile);
+  const [errors, setErrors] = useState({});
+  const [savedMessage, setSavedMessage] = useState(false);
+  const [avatarError, setAvatarError] = useState(null);
+  const [hoursConflict, setHoursConflict] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(savedProfile), [draft, savedProfile]);
+  const initials = deriveInitialsFromName(draft.name);
+
+  const setField = (name, value) => {
+    setDraft((prev) => ({ ...prev, [name]: value }));
+    setSavedMessage(false);
+    setHoursConflict(null);
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    setSaving(true);
-
-    setTimeout(() => {
-      setSaving(false);
-      setSavedMessage(t("doctorProfile.saveMockMessage"));
-    }, 800);
+  const setWorkingHoursField = (day, patch) => {
+    setDraft((prev) => ({ ...prev, workingHours: { ...prev.workingHours, [day]: { ...prev.workingHours[day], ...patch } } }));
+    setSavedMessage(false);
+    setHoursConflict(null);
+    if (errors.workingHours) setErrors((prev) => ({ ...prev, workingHours: null }));
   };
 
-  const handleReset = () => {
-    setForm(initialDoctor);
-    setSavedMessage("");
+  const copySundayToOpenDays = () => {
+    const sunday = draft.workingHours.sunday;
+    setDraft((prev) => ({
+      ...prev,
+      workingHours: Object.fromEntries(
+        WEEKDAY_ORDER.map((day) => [day, prev.workingHours[day].enabled ? { ...prev.workingHours[day], start: sunday.start, end: sunday.end } : prev.workingHours[day]])
+      ),
+    }));
+    setSavedMessage(false);
+  };
+
+  const handleAvatarPick = () => fileInputRef.current?.click();
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    if (!ACCEPTED_AVATAR_TYPES.includes(file.type)) {
+      setAvatarError(t("doctorProfile.avatar.errors.type"));
+      return;
+    }
+    if (file.size > MAX_AVATAR_BYTES) {
+      setAvatarError(t("doctorProfile.avatar.errors.size"));
+      return;
+    }
+
+    setAvatarError(null);
+    const reader = new FileReader();
+    reader.onload = () => setField("avatarDataUrl", reader.result);
+    reader.onerror = () => setAvatarError(t("doctorProfile.avatar.errors.type"));
+    reader.readAsDataURL(file);
+  };
+
+  const removeAvatar = () => {
+    setField("avatarDataUrl", null);
+    setAvatarError(null);
+  };
+
+  const validate = () => {
+    const next = {};
+    if (!draft.name.trim()) next.name = t("doctorProfile.errors.required");
+    if (!draft.specialty.trim()) next.specialty = t("doctorProfile.errors.required");
+
+    const experience = Number(draft.yearsExperience);
+    if (draft.yearsExperience === "" || !Number.isInteger(experience) || experience < 0 || experience > 70) {
+      next.yearsExperience = t("doctorProfile.errors.yearsExperience");
+    }
+
+    if (!draft.licenseNumber.trim() || draft.licenseNumber.trim().length < 3) next.licenseNumber = t("doctorProfile.errors.licenseNumber");
+    if (!draft.clinicName.trim()) next.clinicName = t("doctorProfile.errors.required");
+    if (!EMAIL_PATTERN.test(draft.email.trim())) next.email = t("doctorProfile.errors.email");
+    if (!PHONE_PATTERN.test(draft.phone.trim())) next.phone = t("doctorProfile.errors.phone");
+    if (!draft.location.trim()) next.location = t("doctorProfile.errors.required");
+    if (draft.bio.length > MAX_BIO_LENGTH) next.bio = t("doctorProfile.errors.bioLength", { max: MAX_BIO_LENGTH });
+
+    const invalidDay = WEEKDAY_ORDER.find((day) => draft.workingHours[day].enabled && draft.workingHours[day].start >= draft.workingHours[day].end);
+    if (invalidDay) next.workingHours = t("doctorProfile.errors.workingHours");
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const commitSave = () => {
+    rehabRepository.updateDoctorProfile(draft);
+    setSavedMessage(true);
+    setHoursConflict(null);
+  };
+
+  const handleSave = () => {
+    if (!validate()) return;
+
+    const workingHoursChanged = JSON.stringify(draft.workingHours) !== JSON.stringify(savedProfile.workingHours);
+    if (workingHoursChanged) {
+      const futureConfirmed = rehabRepository.getAllAppointments().filter((appt) => appt.status === APPOINTMENT_STATUS.CONFIRMED && new Date(appt.startAt) > new Date());
+      const outside = findAppointmentsOutsideWorkingHours(draft.workingHours, futureConfirmed);
+      if (outside.length > 0) {
+        setHoursConflict(outside);
+        return;
+      }
+    }
+
+    commitSave();
+  };
+
+  const handleCancel = () => {
+    setDraft(savedProfile);
+    setErrors({});
+    setAvatarError(null);
+    setSavedMessage(false);
+    setHoursConflict(null);
+  };
+
+  const timeFormatter = useMemo(() => new Intl.DateTimeFormat(i18n.language, { hour: "numeric", minute: "2-digit" }), [i18n.language]);
+  const formatHoursTime = (hhmm) => {
+    const [h, m] = hhmm.split(":").map(Number);
+    const date = new Date();
+    date.setHours(h, m, 0, 0);
+    return timeFormatter.format(date);
   };
 
   return (
     <DoctorLayout active="profile">
       <div className="dprof-page">
-
-        {/* HEADER */}
-        <div className="dprof-header">
-          <div>
-            <h1>{t("doctorProfile.title")}</h1>
-            <p>{t("doctorProfile.subtitle")}</p>
-          </div>
-
-          <div className="dprof-header-meta">
-            <span className="dprof-pill dprof-pill-live">
-              {t("doctorProfile.liveProfile")}
-            </span>
-            <span className="dprof-pill-soft">
-              {t("doctorProfile.lastSynced")}
-            </span>
-          </div>
-        </div>
-
-        {/* SUCCESS MESSAGE */}
-        {savedMessage && (
-          <div className="dprof-alert">
-            {savedMessage}
-          </div>
-        )}
-
-        {/* GRID */}
-        <div className="dprof-grid">
-
-          {/* LEFT COL */}
-          <div className="dprof-col">
-
-            {/* Avatar */}
-            <div className="dprof-card dprof-card-main">
-              <div className="dprof-avatar-block">
-                <div className="dprof-avatar-circle">
-                  {form.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
-                </div>
-
-                <div className="dprof-avatar-text">
-                  <h2>{form.name}</h2>
-                  <p>{form.specialty}</p>
-
-                  <span className={`dprof-status-badge status-${form.availabilityStatus}`}>
-                    {t(`doctorProfile.status.${form.availabilityStatus}`)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="dprof-avatar-actions">
-                <button type="button" className="dprof-ghost-btn">
-                  {t("doctorProfile.changePhoto")}
-                </button>
-              </div>
+        <div className="dprof-wrapper">
+          <header className="dprof-header">
+            <div>
+              <h1>{t("doctorProfile.title")}</h1>
+              <p>{t("doctorProfile.subtitle")}</p>
             </div>
+          </header>
 
-            {/* PROFESSIONAL DETAILS */}
-            <div className="dprof-card">
-              <div className="dprof-section-header">
-                <h3>{t("doctorProfile.professionalDetails")}</h3>
-                <span className="dprof-tag">
-                  {t("doctorProfile.visibleToAdmins")}
+          {savedMessage && <div className="dprof-alert">{t("doctorProfile.saveSuccess")}</div>}
+
+          <div className="dprof-identity">
+            <div className="dprof-avatar-wrap">
+              {draft.avatarDataUrl ? (
+                <img src={draft.avatarDataUrl} alt="" className="dprof-avatar-img" />
+              ) : (
+                <span className="dprof-avatar-circle" aria-hidden="true">
+                  {initials}
                 </span>
-              </div>
+              )}
+            </div>
+            <div className="dprof-identity-text">
+              <h2 dir="auto">{draft.name}</h2>
+              <p dir="auto">{draft.specialty}</p>
+              <span className={`dprof-status-badge dprof-status-badge--${draft.availabilityStatus}`}>
+                {t(`doctorProfile.status.${draft.availabilityStatus}`)}
+              </span>
+            </div>
+            <div className="dprof-avatar-actions">
+              <input ref={fileInputRef} type="file" accept={ACCEPTED_AVATAR_TYPES.join(",")} className="dprof-visually-hidden" onChange={handleAvatarChange} aria-hidden="true" tabIndex={-1} />
+              <button type="button" className="dprof-btn-secondary" onClick={handleAvatarPick}>
+                <LuCamera aria-hidden="true" /> {t("doctorProfile.avatar.change")}
+              </button>
+              {draft.avatarDataUrl && (
+                <button type="button" className="dprof-btn-text" onClick={removeAvatar}>
+                  {t("doctorProfile.avatar.remove")}
+                </button>
+              )}
+            </div>
+          </div>
+          {avatarError && <p className="dprof-field-error dprof-avatar-error">{avatarError}</p>}
 
-              <div className="dprof-form-grid">
-
-                <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.fullName")}</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.specialty")}</label>
-                  <input
-                    type="text"
-                    name="specialty"
-                    value={form.specialty}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.yearsExperience")}</label>
-                  <input
-                    type="number"
-                    min="0"
-                    name="yearsExperience"
-                    value={form.yearsExperience}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.licenseNumber")}</label>
-                  <input
-                    type="text"
-                    name="licenseNumber"
-                    value={form.licenseNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.clinicName")}</label>
-                  <input
-                    type="text"
-                    name="clinicName"
-                    value={form.clinicName}
-                    onChange={handleChange}
-                  />
-                </div>
-
+          <div className="dprof-grid">
+            <section className="dprof-section">
+              <div className="dprof-section-header">
+                <h3>{t("doctorProfile.professionalInfo")}</h3>
+                <p className="dprof-section-hint">{t("doctorProfile.visibleToAdmins")}</p>
               </div>
 
               <div className="dprof-field">
-                <label>{t("doctorProfile.labels.bio")}</label>
-                <textarea
-                  rows="4"
-                  name="bio"
-                  value={form.bio}
-                  onChange={handleChange}
-                  placeholder={t("doctorProfile.placeholders.bio")}
-                />
+                <label htmlFor="dprof-name">{t("doctorProfile.labels.fullName")}</label>
+                <input id="dprof-name" type="text" value={draft.name} onChange={(event) => setField("name", event.target.value)} aria-invalid={!!errors.name} aria-describedby={errors.name ? "dprof-name-error" : undefined} />
+                {errors.name && <p id="dprof-name-error" className="dprof-field-error">{errors.name}</p>}
               </div>
-            </div>
-          </div>
 
-          {/* RIGHT COL */}
-          <div className="dprof-col">
+              <div className="dprof-field">
+                <label htmlFor="dprof-specialty">{t("doctorProfile.labels.specialty")}</label>
+                <input id="dprof-specialty" type="text" value={draft.specialty} onChange={(event) => setField("specialty", event.target.value)} aria-invalid={!!errors.specialty} />
+                {errors.specialty && <p className="dprof-field-error">{errors.specialty}</p>}
+              </div>
 
-            <div className="dprof-card">
+              <div className="dprof-field-row">
+                <div className="dprof-field">
+                  <label htmlFor="dprof-experience">{t("doctorProfile.labels.yearsExperience")}</label>
+                  <input id="dprof-experience" type="number" min="0" max="70" step="1" value={draft.yearsExperience} onChange={(event) => setField("yearsExperience", event.target.value === "" ? "" : Number(event.target.value))} aria-invalid={!!errors.yearsExperience} />
+                  {errors.yearsExperience && <p className="dprof-field-error">{errors.yearsExperience}</p>}
+                </div>
+                <div className="dprof-field">
+                  <label htmlFor="dprof-license">{t("doctorProfile.labels.licenseNumber")}</label>
+                  <input id="dprof-license" type="text" value={draft.licenseNumber} onChange={(event) => setField("licenseNumber", event.target.value)} aria-invalid={!!errors.licenseNumber} />
+                  {errors.licenseNumber && <p className="dprof-field-error">{errors.licenseNumber}</p>}
+                </div>
+              </div>
+
+              <div className="dprof-field">
+                <label htmlFor="dprof-clinic">{t("doctorProfile.labels.clinicName")}</label>
+                <input id="dprof-clinic" type="text" value={draft.clinicName} onChange={(event) => setField("clinicName", event.target.value)} aria-invalid={!!errors.clinicName} />
+                {errors.clinicName && <p className="dprof-field-error">{errors.clinicName}</p>}
+              </div>
+
+              <div className="dprof-field">
+                <label htmlFor="dprof-bio">{t("doctorProfile.labels.bio")}</label>
+                <textarea id="dprof-bio" rows={4} maxLength={MAX_BIO_LENGTH + 50} value={draft.bio} onChange={(event) => setField("bio", event.target.value)} aria-invalid={!!errors.bio} />
+                <p className="dprof-field-hint" dir="ltr">{draft.bio.length}/{MAX_BIO_LENGTH}</p>
+                {errors.bio && <p className="dprof-field-error">{errors.bio}</p>}
+              </div>
+            </section>
+
+            <section className="dprof-section">
               <div className="dprof-section-header">
                 <h3>{t("doctorProfile.contactAvailability")}</h3>
               </div>
 
-              <div className="dprof-form-grid">
-
+              <div className="dprof-field-row">
                 <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.email")}</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                  />
+                  <label htmlFor="dprof-email">{t("doctorProfile.labels.email")}</label>
+                  <input id="dprof-email" type="email" dir="ltr" value={draft.email} onChange={(event) => setField("email", event.target.value)} aria-invalid={!!errors.email} />
+                  {errors.email && <p className="dprof-field-error">{errors.email}</p>}
                 </div>
-
                 <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.phone")}</label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                  />
+                  <label htmlFor="dprof-phone">{t("doctorProfile.labels.phone")}</label>
+                  <input id="dprof-phone" type="tel" dir="ltr" value={draft.phone} onChange={(event) => setField("phone", event.target.value)} aria-invalid={!!errors.phone} />
+                  {errors.phone && <p className="dprof-field-error">{errors.phone}</p>}
                 </div>
+              </div>
 
+              <div className="dprof-field-row">
                 <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.location")}</label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={form.location}
-                    onChange={handleChange}
-                  />
+                  <label htmlFor="dprof-location">{t("doctorProfile.labels.location")}</label>
+                  <input id="dprof-location" type="text" value={draft.location} onChange={(event) => setField("location", event.target.value)} aria-invalid={!!errors.location} />
+                  {errors.location && <p className="dprof-field-error">{errors.location}</p>}
                 </div>
-
                 <div className="dprof-field">
-                  <label>{t("doctorProfile.labels.availabilityStatus")}</label>
-                  <select
-                    name="availabilityStatus"
-                    value={form.availabilityStatus}
-                    onChange={handleChange}
-                  >
-                    <option value="available">{t("doctorProfile.status.available")}</option>
-                    <option value="busy">{t("doctorProfile.status.busy")}</option>
-                    <option value="away">{t("doctorProfile.status.away")}</option>
+                  <label htmlFor="dprof-availability">{t("doctorProfile.labels.availabilityStatus")}</label>
+                  <select id="dprof-availability" value={draft.availabilityStatus} onChange={(event) => setField("availabilityStatus", event.target.value)}>
+                    {Object.values(DOCTOR_AVAILABILITY_STATUS).map((status) => (
+                      <option key={status} value={status}>
+                        {t(`doctorProfile.status.${status}`)}
+                      </option>
+                    ))}
                   </select>
                 </div>
-
               </div>
 
-              <div className="dprof-workhours">
-                <h4>{t("doctorProfile.workHoursTitle")}</h4>
+              <div className="dprof-working-hours">
+                <div className="dprof-working-hours-header">
+                  <h4>{t("doctorProfile.workingHours.title")}</h4>
+                  <button type="button" className="dprof-btn-text" onClick={copySundayToOpenDays}>
+                    {t("doctorProfile.workingHours.copySunday")}
+                  </button>
+                </div>
 
-                <ul>
-                  {form.workHours.map((line, idx) => (
-                    <li key={idx}>{line}</li>
-                  ))}
-                </ul>
+                <div className="dprof-hours-list">
+                  {WEEKDAY_ORDER.map((day) => {
+                    const value = draft.workingHours[day];
+                    return (
+                      <div key={day} className="dprof-hours-row">
+                        <label className="dprof-hours-day">
+                          <input type="checkbox" checked={value.enabled} onChange={(event) => setWorkingHoursField(day, { enabled: event.target.checked })} />
+                          <span>{t(`doctorProfile.workingHours.days.${day}`)}</span>
+                        </label>
+                        {value.enabled ? (
+                          <div className="dprof-hours-times">
+                            <input type="time" aria-label={t("doctorProfile.workingHours.startLabel", { day: t(`doctorProfile.workingHours.days.${day}`) })} value={value.start} onChange={(event) => setWorkingHoursField(day, { start: event.target.value })} />
+                            <span className="dprof-hours-sep">–</span>
+                            <input type="time" aria-label={t("doctorProfile.workingHours.endLabel", { day: t(`doctorProfile.workingHours.days.${day}`) })} value={value.end} onChange={(event) => setWorkingHoursField(day, { end: event.target.value })} />
+                            <span className="dprof-hours-display" dir="ltr">
+                              {formatHoursTime(value.start)} – {formatHoursTime(value.end)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="dprof-hours-closed">{t("doctorProfile.workingHours.closed")}</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {errors.workingHours && <p className="dprof-field-error">{errors.workingHours}</p>}
+              </div>
+            </section>
+          </div>
 
-                <p className="dprof-note">
-                  {t("doctorProfile.workHoursNote")}
-                </p>
+          {hoursConflict && (
+            <div className="dprof-conflict-banner">
+              <p>{t("doctorProfile.workingHours.conflictWarning", { count: hoursConflict.length })}</p>
+              <div className="dprof-conflict-actions">
+                <button type="button" className="dprof-btn-secondary" onClick={() => navigate(ROUTES.APPOINTMENTS)}>
+                  {t("doctorProfile.workingHours.reviewAppointments")}
+                </button>
+                <button type="button" className="dprof-btn-primary" onClick={commitSave}>
+                  {t("doctorProfile.workingHours.saveAnyway")}
+                </button>
               </div>
             </div>
+          )}
 
-            {/* ACTIONS */}
-            <div className="dprof-card dprof-actions-card">
-              <div className="dprof-actions-header">
-                <h3>{t("doctorProfile.saveChangesTitle")}</h3>
-                <p>{t("doctorProfile.saveChangesSubtitle")}</p>
-              </div>
-
-              <div className="dprof-actions-buttons">
-                <button
-                  className="dprof-primary-btn"
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  {saving ? t("doctorProfile.saving") : t("doctorProfile.saveProfile")}
-                </button>
-
-                <button
-                  type="button"
-                  className="dprof-ghost-btn"
-                  onClick={handleReset}
-                  disabled={saving}
-                >
-                  {t("doctorProfile.reset")}
-                </button>
-              </div>
-
-              <p className="dprof-small-note">
-                {t("doctorProfile.mockNote")}
-              </p>
-            </div>
-
+          <div className="dprof-save-bar">
+            <button type="button" className="dprof-btn-secondary" onClick={handleCancel} disabled={!dirty}>
+              {t("doctorProfile.cancel")}
+            </button>
+            <button type="button" className="dprof-btn-primary" onClick={handleSave} disabled={!dirty}>
+              {t("doctorProfile.saveChanges")}
+            </button>
           </div>
         </div>
       </div>
