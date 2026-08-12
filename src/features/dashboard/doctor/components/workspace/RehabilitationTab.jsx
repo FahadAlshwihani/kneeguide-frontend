@@ -5,6 +5,8 @@ import DoctorModal from "./DoctorModal";
 import { ALL_EXERCISES } from "../../../../../domain/rehab/demoData/exercises";
 import { EXERCISE_MODE } from "../../../../../domain/rehab/rehabEnums";
 import { rehabRepository } from "../../../../../domain/rehab/useRehabDomain";
+import { buildClinicalInsight } from "../../assistant/doctorAssistantInsights";
+import AssistantInsightCard from "./AssistantInsightCard";
 import "./RehabilitationTab.css";
 
 const emptyDraft = (exerciseId) => {

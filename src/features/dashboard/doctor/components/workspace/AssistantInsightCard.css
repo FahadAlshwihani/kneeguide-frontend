@@ -1,0 +1,88 @@
+/* KneeGuide Assistant insight — a restrained "clinical decision support"
+   surface, not a chatbot card. Dark Doctor Dashboard tokens only
+   (src/index.css); logical properties for RTL. Severity communicated by
+   a thin border-inline-start accent, matching the same semantic colors
+   already used for attention badges (danger/warning/info/success) — no
+   new color vocabulary. */
+
+.assistant-insight-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-inline-start: 3px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-block-end: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.assistant-insight-card--danger {
+  border-inline-start-color: var(--color-danger);
+}
+
+.assistant-insight-card--warning {
+  border-inline-start-color: var(--color-warning);
+}
+
+.assistant-insight-card--info {
+  border-inline-start-color: var(--color-info);
+}
+
+.assistant-insight-card--success {
+  border-inline-start-color: var(--color-success);
+}
+
+.assistant-insight-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assistant-insight-card-orb {
+  flex: 0 0 auto;
+}
+
+.assistant-insight-card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.assistant-insight-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assistant-insight-card-body p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.assistant-insight-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.assistant-insight-card-action {
+  background: transparent;
+  border: 1px solid var(--color-primary-soft);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.assistant-insight-card-action:hover,
+.assistant-insight-card-action:focus-visible {
+  background: var(--color-primary-soft);
+}
