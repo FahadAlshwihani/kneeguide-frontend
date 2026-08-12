@@ -218,6 +218,45 @@
       "check": "Progress Check"
     }
   },
+  "doctorAssistantInsights": {
+    "cardTitle": "KneeGuide Assistant",
+    "actions": {
+      "reviewSession": "Review latest session",
+      "reviewReport": "Review latest report",
+      "reviewPlan": "Review rehabilitation plan",
+      "reviewAppointment": "Review appointment request",
+      "openPatient": "Open patient"
+    },
+    "clinical": {
+      "painRomCombo": "{{name}} completed all prescribed sessions this period, but the latest session showed a pain increase (from {{painFrom}}/10 to {{painTo}}/10) and a small ROM regression (from {{romFrom}}° to {{romTo}}°). It may be worth reviewing the session before progressing the program.",
+      "painOnly": "{{name}}'s latest session showed a notable pain increase, from {{painFrom}}/10 to {{painTo}}/10. Consider reviewing the latest session.",
+      "romOnly": "{{name}}'s latest flexion measurement decreased from {{romFrom}}° to {{romTo}}°, compared with the previous session.",
+      "lowAdherence": "{{name}} completed {{completed}} of {{expected}} prescribed sessions this period.",
+      "goodProgress": "{{name}} is progressing consistently: pain is trending down and flexion has improved over the latest sessions.",
+      "stable": "Current adherence and ROM trend are stable. No immediate program change is suggested from the available data."
+    },
+    "report": {
+      "awaitingReview": "{{name}} has a rehabilitation report awaiting review.",
+      "awaitingReviewFlagged": "{{name}} has a rehabilitation report awaiting review, flagged for noteworthy changes this period.",
+      "compactSummary": "{{percent}}% adherence · pain {{painFrom}} → {{painTo}}",
+      "compactSummaryNoTrend": "{{percent}}% adherence"
+    },
+    "appointment": {
+      "requested": "{{name}} has requested an appointment.",
+      "alternativeProposed": "You proposed a new time for {{name}}'s appointment — awaiting their response.",
+      "clinicalContext": "The recent session changes may be relevant when reviewing this request."
+    },
+    "clinicalRecord": {
+      "latestNote": "There is a recent clinician-only note on file for {{name}}."
+    },
+    "worklist": {
+      "allStable": "All patients are currently stable — no reports or appointment requests need attention right now.",
+      "summary": "{{attentionCount}} patient(s) need attention, {{reportCount}} report(s) are awaiting review, and {{appointmentCount}} appointment request(s) are pending.",
+      "showAttention": "Show attention patients",
+      "showReports": "Show pending reports",
+      "showAppointments": "Show appointment requests"
+    }
+  },
   "doctorDashboard": {
     "greeting": {
       "morning": "Good morning, {{name}}.",
