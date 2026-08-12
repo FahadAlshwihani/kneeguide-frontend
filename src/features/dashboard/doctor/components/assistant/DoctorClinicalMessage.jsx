@@ -14,10 +14,15 @@ import "./DoctorClinicalMessage.css";
  * `{ id, labelKey, routeTo }` descriptor (see doctorAssistantStorage.js).
  */
 
+// `item.severityKey` is the canonical ATTENTION_LEVEL_I18N_KEY value
+// (needsAttention/reviewRecommended/stable, domain/rehab/rehabEnums.js) —
+// the SAME vocabulary the Doctor Patients list badges already use, so a
+// patient's severity word never differs between the worklist and an
+// Assistant response about that same patient.
 const SEVERITY_TONE_CLASS = {
-  high: "doctor-attention-badge--high",
-  followUp: "doctor-attention-badge--followUp",
-  positive: "doctor-attention-badge--positive",
+  needsAttention: "doctor-attention-badge--needsAttention",
+  reviewRecommended: "doctor-attention-badge--reviewRecommended",
+  stable: "doctor-attention-badge--stable",
 };
 
 export const DoctorAttentionList = ({ items, onNavigate }) => {
@@ -32,7 +37,7 @@ export const DoctorAttentionList = ({ items, onNavigate }) => {
               {item.name}
             </span>
             <span className={`doctor-attention-badge ${SEVERITY_TONE_CLASS[item.severityKey] || ""}`}>
-              {t(`doctorDashboard.assistant.attention.severity.${item.severityKey}`)}
+              {t(`rehabDomain.attentionLevel.${item.severityKey}`)}
             </span>
           </div>
 

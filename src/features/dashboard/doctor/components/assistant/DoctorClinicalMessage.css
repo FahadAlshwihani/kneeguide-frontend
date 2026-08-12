@@ -49,33 +49,33 @@
   color: var(--color-muted);
 }
 
-.doctor-attention-badge--high {
+.doctor-attention-badge--needsAttention {
   color: var(--color-danger);
   border-color: var(--color-danger);
   background: rgba(239, 68, 68, 0.1);
 }
 
-.doctor-attention-badge--followUp {
+.doctor-attention-badge--reviewRecommended {
   color: var(--color-warning);
   border-color: var(--color-warning);
   background: rgba(234, 179, 8, 0.1);
 }
 
-.doctor-attention-badge--positive {
+.doctor-attention-badge--stable {
   color: var(--color-success);
   border-color: var(--color-success);
   background: rgba(34, 197, 94, 0.1);
 }
 
-.doctor-attention-row:has(.doctor-attention-badge--high) {
+.doctor-attention-row:has(.doctor-attention-badge--needsAttention) {
   border-inline-start-color: var(--color-danger);
 }
 
-.doctor-attention-row:has(.doctor-attention-badge--followUp) {
+.doctor-attention-row:has(.doctor-attention-badge--reviewRecommended) {
   border-inline-start-color: var(--color-warning);
 }
 
-.doctor-attention-row:has(.doctor-attention-badge--positive) {
+.doctor-attention-row:has(.doctor-attention-badge--stable) {
   border-inline-start-color: var(--color-success);
 }
 

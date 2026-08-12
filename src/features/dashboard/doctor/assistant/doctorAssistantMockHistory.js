@@ -1,7 +1,6 @@
-import { getAhmedTrend, getPatientAttention, getPatientsNeedingAttention } from "./doctorClinicalInsights";
+import { getPatientProgressSummary, getPatientAttention, getPatientsNeedingAttention } from "./doctorClinicalInsights";
 import { buildAttentionItems } from "./doctorAssistantActions";
 import { ROUTES } from "../../../../utils/routes";
-import { getPatientById } from "../data/doctorClinicalMockData";
 
 /**
  * Static conversation-history FIXTURES for the Doctor Assistant — three
@@ -9,32 +8,21 @@ import { getPatientById } from "../data/doctorClinicalMockData";
  * intended interaction style.
  *
  * LOCALIZATION ARCHITECTURE: every message stores a `contentKey` +
- * `values` pair (resolved through i18next at RENDER time by
- * DoctorHomeAssistant.jsx's ConversationTurn), never an already-rendered
- * `content` string — the opposite of a "one-language mock object". This is
- * what makes switching the dashboard language re-render these seeded
- * conversations immediately, in place, with zero special-casing: the
- * renderer already calls `useTranslation()`, so React re-renders it
- * whenever the active language changes, exactly like every other
- * `t()`-driven string in the app. Conversation titles work the same way
- * (`titleKey`, resolved by DoctorConversationHistory.jsx).
+ * `values` pair (resolved through i18next at RENDER time), never an
+ * already-rendered `content` string.
  *
- * This intentionally does NOT set a per-conversation `language` field
- * (unlike a live/runtime conversation) — these conversations don't have
- * one fixed language anymore; they always follow whichever language is
- * currently active. `pending: false` on every message still applies (so
- * it renders as static text immediately, never replaying the Typewriter
- * reveal), and these are still never re-processed through
- * matchAssistantAction/execute once seeded.
- *
- * CLINICAL VALUES: `{{placeholders}}` in the translation strings are always
- * filled from the SAME numbers driving the Clinical Brief/live assistant
- * answers/attention widget (getAhmedTrend/getPatientAttention over
- * data/doctorClinicalMockData.js) — locale changes only the surrounding
- * prose, never the numbers themselves. Frozen `createdAt`/`updatedAt`
- * timestamps are unchanged from before — this is a record of a past
- * conversation, so it should read the same regardless of when "today"
- * actually is.
+ * CLINICAL VALUES: `{{placeholders}}` are filled from the SAME canonical
+ * rehab domain (src/domain/rehab/) driving the Clinical Brief, the live
+ * assistant answers, and the Doctor Patients worklist — via
+ * doctorClinicalInsights.js, never a second hand-authored Ahmed/Sara
+ * record (the old data/doctorClinicalMockData.js dependency is gone).
+ * These values are resolved once, when `createDoctorMockHistoryConversations()`
+ * runs (DoctorAssistantContext.jsx, on provider mount) — a deliberate,
+ * pre-existing design choice (Section 17's "store action/query intent +
+ * patient ID and derive the message dynamically"): the transcript's
+ * PROSE is frozen as a historical record, but its NUMBERS still trace to
+ * one live source rather than becoming a second, independently-drifting
+ * copy. Frozen `createdAt`/`updatedAt` timestamps are unchanged.
  */
 
 const staticMessage = (id, role, contentKey, values = {}, extra = {}) => ({
@@ -53,8 +41,7 @@ const ahmedReportsRoute = `${ahmedProfileRoute}?tab=reports`;
 const ahmedExercisesRoute = `${ahmedProfileRoute}?tab=rehabilitation`;
 
 const buildAhmedProgressConversation = () => {
-  const ahmed = getPatientById("ahmed-ali");
-  const trend = getAhmedTrend(ahmed);
+  const summary = getPatientProgressSummary("patient-ahmed");
 
   return {
     id: "mock-doctor-ahmed-progress",
@@ -66,13 +53,13 @@ const buildAhmedProgressConversation = () => {
     messages: [
       staticMessage("mock-dap-1", "user", "doctorDashboard.assistant.demo.ahmedProgress.q1"),
       staticMessage("mock-dap-2", "assistant", "doctorDashboard.assistant.demo.ahmedProgress.a1", {
-        completed: ahmed.sessionsCompletedThisWeek,
-        prescribed: ahmed.sessionsPrescribedThisWeek,
-        percent: trend.adherencePercent,
-        flexionOldest: trend.flexionOldest,
-        flexionLatest: trend.flexionLatest,
-        painRecentAverage: trend.painRecentAverage,
-        sessionDelta: Math.abs(trend.flexionLatestSessionDelta),
+        completed: summary.completed,
+        prescribed: summary.prescribed,
+        percent: summary.percent,
+        flexionOldest: summary.flexionOldest,
+        flexionLatest: summary.flexionLatest,
+        painRecentAverage: summary.painRecentAverage,
+        sessionDelta: Math.abs(summary.flexionLatestSessionDelta ?? 0),
       }),
       staticMessage("mock-dap-3", "user", "doctorDashboard.assistant.demo.ahmedProgress.q2"),
       staticMessage(
@@ -93,8 +80,11 @@ const buildAhmedProgressConversation = () => {
 };
 
 const buildTodayAppointmentsConversation = () => {
-  const ahmed = getPatientById("ahmed-ali");
-  const trend = getAhmedTrend(ahmed);
+  // This historical conversation's own appointment count/names are frozen
+  // narrative flavor (a specific PAST day's schedule, not derivable from
+  // "today"'s live calendar) — only the clinical pain numbers below trace
+  // to the canonical domain, per this file's own header comment.
+  const summary = getPatientProgressSummary("patient-ahmed");
 
   return {
     id: "mock-doctor-today-appointments",
@@ -114,11 +104,11 @@ const buildTodayAppointmentsConversation = () => {
       }),
       staticMessage("mock-dta-3", "user", "doctorDashboard.assistant.demo.todayAppointments.q2"),
       // Same Ahmed pain numbers as the progress-review conversation
-      // (getAhmedTrend, not hand-copied) — one source of truth across
-      // both seeded conversations.
+      // (getPatientProgressSummary, not hand-copied) — one source of
+      // truth across both seeded conversations.
       staticMessage("mock-dta-4", "assistant", "doctorDashboard.assistant.demo.todayAppointments.a2", {
-        painLatest: trend.painLatest,
-        painRecentAverage: trend.painRecentAverage,
+        painLatest: summary.painLatest,
+        painRecentAverage: summary.painRecentAverage,
       }),
       staticMessage("mock-dta-5", "user", "doctorDashboard.assistant.demo.todayAppointments.q3"),
       staticMessage("mock-dta-6", "assistant", "doctorDashboard.assistant.demo.todayAppointments.a3"),
@@ -127,9 +117,8 @@ const buildTodayAppointmentsConversation = () => {
 };
 
 const buildAttentionConversation = () => {
-  const entries = getPatientsNeedingAttention();
-  const sara = getPatientById("sara-almutairi");
-  const saraAttention = getPatientAttention(sara);
+  const bundles = getPatientsNeedingAttention();
+  const saraAttention = getPatientAttention("patient-sara");
 
   return {
     id: "mock-doctor-attention",
@@ -144,12 +133,12 @@ const buildAttentionConversation = () => {
         "mock-dpa-2",
         "assistant",
         "doctorDashboard.assistant.demo.attention.a1",
-        { count: entries.length },
-        { widget: { type: "attentionList", items: buildAttentionItems(entries) } }
+        { count: bundles.length },
+        { widget: { type: "attentionList", items: buildAttentionItems(bundles) } }
       ),
       staticMessage("mock-dpa-3", "user", "doctorDashboard.assistant.demo.attention.q2"),
       staticMessage("mock-dpa-4", "assistant", "doctorDashboard.assistant.demo.attention.a2", {
-        adherence: saraAttention.trend.adherencePercent,
+        adherence: saraAttention?.adherence?.percent ?? 0,
       }),
       staticMessage("mock-dpa-5", "user", "doctorDashboard.assistant.demo.attention.q3"),
       staticMessage("mock-dpa-6", "assistant", "doctorDashboard.assistant.demo.attention.a3"),
