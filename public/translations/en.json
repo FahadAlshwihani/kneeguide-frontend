@@ -1097,6 +1097,7 @@
       "title": "Knee Sensor Device",
       "subtitle": "Connect your KneeGuide Bluetooth sensor to sync your movement data.",
       "connected": "Connected",
+      "primarySensor": "Primary knee sensor",
       "disconnect": "Disconnect",
       "emptyTitle": "No knee sensor connected",
       "emptyCopy": "Scan for nearby devices to connect your KneeGuide sensor and start syncing movement data.",

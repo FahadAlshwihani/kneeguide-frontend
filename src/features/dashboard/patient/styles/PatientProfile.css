@@ -447,6 +447,21 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  /* Device rows: keep icon + name/metadata on the first line, let the
+     action column (Connect/Connecting/Disconnect, and the Connected badge)
+     drop to its own full-width, right-aligned line instead of squeezing
+     into the row or overflowing horizontally. */
+  .pfl-device-row {
+    flex-wrap: wrap;
+  }
+
+  .pfl-device-row-action {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-end;
+  }
 }
 
 @media (max-width: 380px) {
