@@ -156,3 +156,8 @@
 [  238268ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/static/js/bundle.js:73724
 [  250113ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/static/js/bundle.js:73724
 [  315060ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/static/js/bundle.js:73724
+[  339820ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/static/js/bundle.js:73724
+[  356012ms] [ERROR] WebSocket connection to 'ws://localhost:3000/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/static/js/bundle.js:186316
+[  360411ms] [ERROR] WebSocket connection to 'ws://localhost:3000/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/static/js/bundle.js:186316
+[  366826ms] [ERROR] WebSocket connection to 'ws://localhost:3000/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/static/js/bundle.js:186316
+[  377187ms] [ERROR] WebSocket connection to 'ws://localhost:3000/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/static/js/bundle.js:186316
