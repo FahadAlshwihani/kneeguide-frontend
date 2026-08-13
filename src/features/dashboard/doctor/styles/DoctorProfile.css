@@ -335,11 +335,6 @@
   color: var(--color-muted);
 }
 
-.dprof-hours-display {
-  font-size: 0.75rem;
-  color: var(--color-muted);
-}
-
 .dprof-hours-closed {
   font-size: 0.8rem;
   color: var(--color-muted);
@@ -461,6 +456,15 @@
   .dprof-identity {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* `.dprof-identity-text`'s `flex: 1 1 220px` sizes along the main axis —
+     220px of WIDTH in the normal row layout, but once `.dprof-identity`
+     switches to `flex-direction: column` here, the same basis becomes
+     220px of HEIGHT, leaving a large empty gap under the status badge. */
+  .dprof-identity-text {
+    flex: none;
+    width: 100%;
   }
 
   .dprof-avatar-actions {

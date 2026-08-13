@@ -25,7 +25,7 @@ const PHONE_PATTERN = /^\+?[0-9()\-.\s]{7,20}$/;
  * something).
  */
 const DoctorProfile = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const savedProfile = useDoctorProfile();
 
@@ -144,14 +144,6 @@ const DoctorProfile = () => {
     setAvatarError(null);
     setSavedMessage(false);
     setHoursConflict(null);
-  };
-
-  const timeFormatter = useMemo(() => new Intl.DateTimeFormat(i18n.language, { hour: "numeric", minute: "2-digit" }), [i18n.language]);
-  const formatHoursTime = (hhmm) => {
-    const [h, m] = hhmm.split(":").map(Number);
-    const date = new Date();
-    date.setHours(h, m, 0, 0);
-    return timeFormatter.format(date);
   };
 
   return (
@@ -302,9 +294,6 @@ const DoctorProfile = () => {
                             <input type="time" aria-label={t("doctorProfile.workingHours.startLabel", { day: t(`doctorProfile.workingHours.days.${day}`) })} value={value.start} onChange={(event) => setWorkingHoursField(day, { start: event.target.value })} />
                             <span className="dprof-hours-sep">–</span>
                             <input type="time" aria-label={t("doctorProfile.workingHours.endLabel", { day: t(`doctorProfile.workingHours.days.${day}`) })} value={value.end} onChange={(event) => setWorkingHoursField(day, { end: event.target.value })} />
-                            <span className="dprof-hours-display" dir="ltr">
-                              {formatHoursTime(value.start)} – {formatHoursTime(value.end)}
-                            </span>
                           </div>
                         ) : (
                           <span className="dprof-hours-closed">{t("doctorProfile.workingHours.closed")}</span>
