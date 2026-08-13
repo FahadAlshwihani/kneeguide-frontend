@@ -221,7 +221,12 @@
         "change": "تغيير المريض"
       },
       "existingPending": "لدى {{name}} طلب موعد بانتظار المراجعة بالفعل لـ {{time}}.",
-      "reviewExisting": "مراجعة الطلب الحالي"
+      "reviewExisting": "مراجعة الطلب الحالي",
+      "availabilityWarnings": {
+        "status": "حالة {{name}} حاليًا \"{{status}}\" وقد لا يكون متاحًا لمواعيد جديدة.",
+        "closed": "لا يعمل {{name}} عادةً يوم {{day}}.",
+        "outsideHours": "هذا الوقت خارج ساعات عمل {{name}} المعتادة ({{start}}–{{end}})."
+      }
     },
     "assistant": {
       "actions": {
@@ -816,11 +821,9 @@
   },
   "doctorProfile": {
     "title": "ملف الطبيب",
-    "subtitle": "إدارة معلوماتك المهنية وبيانات التواصل والتواجد.",
-    "liveProfile": "الملف مباشر",
-    "lastSynced": "آخر مزامنة: قبل دقيقتين (تجريبي)",
-    "saveMockMessage": "تم حفظ البيانات (تجريبي). سيتم الحفظ في السيرفر لاحقاً.",
-    "professionalDetails": "المعلومات المهنية",
+    "subtitle": "إدارة معلوماتك المهنية وبيانات التواصل ومواعيد تواجدك.",
+    "saveSuccess": "تم تحديث الملف الشخصي.",
+    "professionalInfo": "المعلومات المهنية",
     "visibleToAdmins": "مرئي لمسؤولي العيادة",
     "contactAvailability": "التواصل والتواجد",
     "labels": {
@@ -835,23 +838,49 @@
       "location": "الموقع / المدينة",
       "availabilityStatus": "حالة التواجد"
     },
-    "placeholders": {
-      "bio": "صف خبراتك ومجالاتك ونقاط تركيزك."
+    "errors": {
+      "required": "هذا الحقل مطلوب.",
+      "yearsExperience": "أدخل رقمًا صحيحًا بين 0 و70.",
+      "licenseNumber": "أدخل رقم ترخيص صالح (3 أحرف على الأقل).",
+      "email": "أدخل بريدًا إلكترونيًا صالحًا.",
+      "phone": "أدخل رقم جوال صالح.",
+      "bioLength": "اجعل نبذتك أقل من {{max}} حرفًا.",
+      "workingHours": "يجب أن يكون وقت الانتهاء لكل يوم مفتوح بعد وقت البداية."
     },
     "status": {
       "available": "متاح للمواعيد",
       "busy": "مشغول / في جلسات",
       "away": "غير متواجد"
     },
-    "workHoursTitle": "ساعات العمل (تجريبي)",
-    "workHoursNote": "لاحقاً ستكون ساعات العمل قابلة للتعديل ومتصلة بنظام حجز المواعيد.",
-    "saveChangesTitle": "حفظ التغييرات",
-    "saveChangesSubtitle": "هذه الإعدادات تؤثر على ظهور ملفك داخل نظام KneeGuide.",
-    "saveProfile": "حفظ الملف",
-    "saving": "جاري الحفظ...",
-    "reset": "إعادة التعيين للوضع الافتراضي (تجريبي)",
-    "changePhoto": "تغيير الصورة (تجريبي)",
-    "mockNote": "* هذه الصفحة تعتمد على بيانات تجريبية فقط، وسيتم ربطها بالنظام الفعلي لاحقاً."
+    "avatar": {
+      "change": "تغيير الصورة",
+      "remove": "إزالة الصورة",
+      "errors": {
+        "type": "الرجاء اختيار صورة بصيغة JPG أو PNG أو WEBP.",
+        "size": "الرجاء اختيار صورة أصغر من 1.5 ميجابايت."
+      }
+    },
+    "workingHours": {
+      "title": "ساعات العمل",
+      "copySunday": "نسخ ساعات الأحد لبقية الأيام المفتوحة",
+      "closed": "مغلق",
+      "startLabel": "وقت بداية {{day}}",
+      "endLabel": "وقت نهاية {{day}}",
+      "conflictWarning": "يوجد {{count}} موعد قائم يقع خارج ساعات العمل المحدثة.",
+      "reviewAppointments": "مراجعة المواعيد",
+      "saveAnyway": "حفظ على أي حال",
+      "days": {
+        "sunday": "الأحد",
+        "monday": "الاثنين",
+        "tuesday": "الثلاثاء",
+        "wednesday": "الأربعاء",
+        "thursday": "الخميس",
+        "friday": "الجمعة",
+        "saturday": "السبت"
+      }
+    },
+    "cancel": "إلغاء",
+    "saveChanges": "حفظ التغييرات"
   },
   "patientDashboard": {
     "greeting": {

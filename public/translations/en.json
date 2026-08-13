@@ -221,7 +221,12 @@
         "change": "Change patient"
       },
       "existingPending": "{{name}} already has a pending appointment request for {{time}}.",
-      "reviewExisting": "Review existing request"
+      "reviewExisting": "Review existing request",
+      "availabilityWarnings": {
+        "status": "{{name}} is currently marked as \"{{status}}\" and may not be accepting new appointments.",
+        "closed": "{{name}} does not usually work on {{day}}.",
+        "outsideHours": "This time is outside {{name}}'s usual working hours ({{start}}–{{end}})."
+      }
     },
     "assistant": {
       "actions": {
