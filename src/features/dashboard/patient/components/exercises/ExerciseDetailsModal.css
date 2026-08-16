@@ -108,6 +108,7 @@
   margin: 0;
   font: var(--patient-text-body);
   color: var(--patient-color-text);
+  overflow-wrap: anywhere;
 }
 
 .exercise-details-list {
@@ -118,6 +119,7 @@
   gap: 4px;
   font: var(--patient-text-body);
   color: var(--patient-color-text);
+  overflow-wrap: anywhere;
 }
 
 .exercise-details-list--numbered {
