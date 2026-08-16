@@ -177,6 +177,10 @@ const Login = () => {
         </PrimaryButton>
       </AuthCardItem>
 
+      <AuthCardItem as="div">
+        <DemoAccess onUseDemo={handleUseDemo} />
+      </AuthCardItem>
+
       <AuthCardItem as="div" className="login-extra">
         <p>
           {t("login.no_account")}{" "}
