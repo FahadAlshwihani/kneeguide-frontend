@@ -42,22 +42,15 @@
   flex-direction: column;
 }
 
+/* The conversation list's own legitimate inner scroll region (Section 3's
+   "unless functionally required" carve-out — this is genuinely a
+   separately-scrollable list, decoupled from the main page scroll) —
+   native browser/OS scrollbar, no custom width/color/thumb styling. */
 .doctor-history-rail-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
-}
-
-.doctor-history-rail-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.doctor-history-rail-body::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-lg);
 }
 
 .doctor-history-new-chat {

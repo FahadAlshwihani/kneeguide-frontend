@@ -62,6 +62,25 @@
   gap: 16px;
 }
 
+/* Root cause of the viewport-dependent blank-space bug: `.doctor-home-workspace`
+   is a row-flex container with the default `align-items: stretch`, and
+   `.doctor-dashboard` (DoctorDashboard.css) sets `min-height: 100%` so a
+   short Welcome screen still "fills the viewport naturally" per design.
+   Stretch + that min-height meant `.doctor-assistant` was forced to the
+   FULL available height even in Welcome Mode, but its own children (a
+   column with no `justify-content`) only ever filled it from the top —
+   leaving a dead gap below on any viewport taller than the Welcome
+   content's natural height. Centering the flex ITEM (not its own
+   children) makes the exact same "may fill the viewport" space read as
+   an intentional centered composition instead of a bug: when content is
+   short, whitespace is distributed evenly above/below; when content is
+   tall enough to need it, `.doctor-shell-content`'s own scroll still
+   takes over exactly as before (align-self only matters when there's
+   slack to distribute, never when content already exceeds the box). */
+.doctor-assistant--welcome {
+  align-self: center;
+}
+
 /* ---------- Welcome: Orb + greeting + Clinical Brief ---------- */
 .doctor-assistant-intro {
   display: flex;
@@ -157,27 +176,14 @@
   text-align: start;
 }
 
+/* The one legitimate inner scroll region in Conversation Mode — native
+   browser/OS scrollbar, no custom width/color/thumb styling. */
 .doctor-assistant--conversation .doctor-chat-history {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding-block: 8px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
-}
-
-.doctor-assistant--conversation .doctor-chat-history::-webkit-scrollbar {
-  width: 6px;
-}
-
-.doctor-assistant--conversation .doctor-chat-history::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.doctor-assistant--conversation .doctor-chat-history::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-lg);
 }
 
 .doctor-chat-turn {

@@ -6,6 +6,13 @@
   position: relative;
 }
 
+/* Frosted overlay surface, not a card with a drop shadow — the same
+   "temporary layer floating over the page" language already established
+   for the Doctor shell's drawers (Assistant Drawer, mobile Sidebar
+   drawer, conversation-history drawer all use this exact background +
+   blur pairing instead of box-shadow). A border is what actually
+   separates the panel from the page; the blur is what reads as "this is
+   above everything else", not an elevation shadow. */
 .ui-popover-panel {
   position: absolute;
   inset-inline-end: 0;
@@ -13,10 +20,11 @@
   z-index: var(--z-modal, 400);
   min-width: 280px;
   max-width: min(360px, calc(100vw - 32px));
-  background: var(--color-surface);
+  background: rgba(5, 5, 5, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
   overflow: hidden;
 }
 
