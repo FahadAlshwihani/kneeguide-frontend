@@ -54,22 +54,13 @@
   flex-direction: column;
 }
 
+/* This list's own legitimate inner scroll region — native browser/OS
+   scrollbar, no custom width/color/thumb styling. */
 .patient-history-rail-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--patient-border) transparent;
-}
-
-.patient-history-rail-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.patient-history-rail-body::-webkit-scrollbar-thumb {
-  background: var(--patient-border);
-  border-radius: var(--patient-radius-button);
 }
 
 /* ---------- New chat + collapse controls ---------- */
@@ -264,7 +255,6 @@
   padding: var(--patient-space-md);
   background: var(--patient-surface-page);
   border-inline-end: 1px solid var(--patient-border);
-  box-shadow: var(--patient-shadow-elevated);
   z-index: calc(var(--z-modal, 60) + 1);
 }
 

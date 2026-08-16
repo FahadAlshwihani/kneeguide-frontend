@@ -19,7 +19,6 @@
   border-radius: var(--patient-radius-card);
   background: var(--patient-surface-elevated);
   border: 1px solid var(--patient-border);
-  box-shadow: var(--patient-shadow-elevated);
 }
 
 /* Mobile: a tall bottom sheet instead of a centered card — anchored to

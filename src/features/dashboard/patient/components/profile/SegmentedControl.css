@@ -34,7 +34,6 @@
 .pfl-segmented-option--active {
   background: var(--patient-surface-card);
   color: var(--patient-color-heading);
-  box-shadow: var(--patient-shadow-card);
 }
 
 .pfl-segmented-icon {

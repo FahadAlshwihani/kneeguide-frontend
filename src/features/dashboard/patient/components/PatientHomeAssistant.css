@@ -127,6 +127,8 @@
   text-align: start;
 }
 
+/* The one legitimate inner scroll region in Conversation Mode — native
+   browser/OS scrollbar, no custom width/color/thumb styling. */
 .patient-assistant--conversation .patient-chat-history {
   flex: 1;
   min-height: 0;
@@ -136,24 +138,6 @@
      margins — keeps the first/last message from touching the header or
      footer edge-to-edge while scrolled to either extreme. */
   padding-block: var(--patient-space-2xs);
-  /* Subtle, dark-theme-appropriate scrollbar — visible/discoverable
-     (unlike the suggestion rail's intentionally hidden one below), just
-     restrained: a thin muted thumb, no bright/oversized native chrome. */
-  scrollbar-width: thin;
-  scrollbar-color: var(--patient-border) transparent;
-}
-
-.patient-assistant--conversation .patient-chat-history::-webkit-scrollbar {
-  width: 6px;
-}
-
-.patient-assistant--conversation .patient-chat-history::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.patient-assistant--conversation .patient-chat-history::-webkit-scrollbar-thumb {
-  background: var(--patient-border);
-  border-radius: var(--patient-radius-button);
 }
 
 .patient-chat-turn {
@@ -473,20 +457,14 @@
    horizontally-scrollable row, per the task's own explicit "never wrap,
    scroll instead" requirement. Welcome Mode's starting suggestions keep
    their existing centered-wrap behavior (unchanged) since it isn't a
-   fixed footer competing for vertical space there. Scrollbar hidden
-   (same established pattern the old mobile-only rule already used) —
-   scrolling/keyboard access both still work without it. */
+   fixed footer competing for vertical space there. Native scrollbar,
+   no custom hiding — scrolling/keyboard access both still work. */
 .patient-assistant--conversation .patient-assistant-suggestions {
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
   justify-content: flex-start;
-  scrollbar-width: none;
   padding-bottom: 2px;
-}
-
-.patient-assistant--conversation .patient-assistant-suggestions::-webkit-scrollbar {
-  display: none;
 }
 
 .patient-assistant--conversation .patient-assistant-chip {
@@ -506,12 +484,7 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
-    scrollbar-width: none;
     padding-bottom: 2px;
-  }
-
-  .patient-assistant-suggestions::-webkit-scrollbar {
-    display: none;
   }
 
   .patient-assistant-chip {

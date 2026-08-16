@@ -33,7 +33,7 @@
   --dock-icon-size: var(--patient-dock-icon-size);
   --dock-bg: var(--patient-dock-bg);
   --dock-border: var(--patient-border);
-  --dock-shadow: var(--patient-shadow-elevated);
+  --dock-shadow: none;
   --dock-item-radius: var(--patient-radius-control);
   --dock-item-bg: transparent;
   --dock-item-bg-hover: var(--patient-surface-hover);
