@@ -1,6 +1,6 @@
 /* Compact "Demo Access" surface — reads as part of the existing Auth
-   system (AuthForm.css's --auth-space-* rhythm, index.css's --color-*/
-   --radius-* tokens), not a new visual language. No box-shadow, no glow,
+   system (AuthForm.css's --auth-space token rhythm, index.css's color and
+   radius tokens), not a new visual language. No box-shadow, no glow,
    no gradient — hierarchy comes from the same subtle border + low-opacity
    surface tint every other Auth field already uses (see .auth-input in
    AuthForm.css). Logical properties throughout; no LTR/RTL forks. */
