@@ -10,7 +10,7 @@ async function shot(page, name) { await page.screenshot({ path: `${OUT}/${name}.
 
 // ---------- Desktop LTR: Login collapsed -> expanded -> use demo -> copy ----------
 {
-  const context = await browser.newContext({ viewport: { width: 480, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 480, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
   const page = await context.newPage();
   page.on("pageerror", (e) => errors.push("[pageerror] " + e.message));
   page.on("console", (m) => { if (m.type() === "error") errors.push("[console] " + m.text()); });
@@ -50,10 +50,14 @@ async function shot(page, name) { await page.screenshot({ path: `${OUT}/${name}.
   // Copy button feedback
   const copyBtn = page.locator(".demo-copy-btn").first();
   await copyBtn.click();
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
   await shot(page, "04-login-copy-feedback");
   const liveRegionText = await page.locator("[aria-live='polite']").textContent();
   console.log("aria-live announcement:", JSON.stringify(liveRegionText));
+  const clipboardContent = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "read-failed: " + e.message);
+  console.log("actual clipboard content:", clipboardContent);
+  const checkIconVisible = await page.locator(".demo-copy-btn").first().locator("svg").count();
+  console.log("copy btn icon count (check or copy):", checkIconVisible);
 
   // Collapse/reopen — check for AuthCard blank/flicker
   await trigger.click(); // collapse
