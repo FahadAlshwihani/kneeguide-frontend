@@ -1,0 +1,197 @@
+/* Compact "Demo Access" surface — reads as part of the existing Auth
+   system (AuthForm.css's --auth-space-* rhythm, index.css's --color-*/
+   --radius-* tokens), not a new visual language. No box-shadow, no glow,
+   no gradient — hierarchy comes from the same subtle border + low-opacity
+   surface tint every other Auth field already uses (see .auth-input in
+   AuthForm.css). Logical properties throughout; no LTR/RTL forks. */
+
+.demo-access {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--auth-space-md);
+}
+
+/* Full-width, quiet row — one line when collapsed, exactly per the task's
+   "only one quiet row visible" requirement. Text-button treatment (no
+   border/surface of its own), same restrained hover language as
+   .auth-switch-link. */
+.demo-access-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 2px;
+  border: none;
+  background: none;
+  color: var(--color-muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.demo-access-trigger:hover,
+.demo-access-trigger:focus-visible {
+  color: var(--color-heading);
+}
+
+.demo-access-trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.demo-access-chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.demo-access-chevron--open {
+  transform: rotate(180deg);
+}
+
+.demo-access-panel {
+  overflow: hidden;
+}
+
+.demo-access-panel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-sm);
+  padding-top: var(--auth-space-sm);
+}
+
+.demo-account-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-space-xs);
+  padding: var(--auth-space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.demo-account-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.demo-account-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.demo-account-description {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--color-muted);
+}
+
+.demo-credential-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.demo-credential-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.demo-credential-value-row {
+  display: flex;
+  align-items: center;
+  gap: var(--auth-space-2xs);
+}
+
+/* Flex items default to `min-width: auto` — without this the value
+   refuses to shrink below its own intrinsic width and can push the copy
+   button (or the whole row) past the card's edge on narrow phones.
+   `overflow-wrap: anywhere` lets the email/password wrap mid-string
+   rather than force horizontal scroll if it ever needs to. Monospace for
+   the value only (not the label) — this is credential-shaped content,
+   not body copy. `dir="ltr"` set on the element itself (DemoAccess.jsx)
+   keeps the value reading correctly inside an RTL card. */
+.demo-credential-value {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.82rem;
+  color: var(--color-heading);
+}
+
+.demo-copy-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.demo-copy-btn:hover {
+  color: var(--color-heading);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.demo-copy-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.demo-copy-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Deliberately not a filled/solid button — this sits directly under the
+   page's real PrimaryButton submit action and must read as a lower-
+   emphasis, secondary path, never compete with it. */
+.demo-use-account-btn {
+  width: 100%;
+  margin-top: 2px;
+  padding: 9px var(--auth-space-sm);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-primary-hover, var(--color-primary));
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.demo-use-account-btn:hover {
+  background: var(--color-primary-soft);
+}
+
+.demo-use-account-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-access-trigger,
+  .demo-access-chevron,
+  .demo-copy-btn,
+  .demo-use-account-btn {
+    transition-duration: 1ms;
+  }
+}
