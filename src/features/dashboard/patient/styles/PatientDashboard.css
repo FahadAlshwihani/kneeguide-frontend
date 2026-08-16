@@ -4,8 +4,18 @@
    color/spacing/radius value comes from patientTokens.css (--patient-*),
    never a raw hex/px here. */
 
+/* min-height excludes the fixed PatientDock's own reserved clearance
+   (the same --patient-dock-clearance token PatientLayout.css already
+   spends as .patient-shell-content's padding-bottom), not a flat 100vh —
+   otherwise centering Welcome Mode's content (see .pd-page--welcome
+   .pd-inner below) within the FULL viewport height can place the
+   composer's bottom edge inside the Dock's fixed on-screen rectangle on
+   short mobile viewports, since the Dock covers the last ~104px of the
+   viewport regardless of how tall `.pd-page` itself claims to be. 100dvh
+   (not 100vh), matching `.pd-page--conversation` below, so this tracks
+   the actual visible viewport as mobile browser chrome shows/hides. */
 .pd-page {
-  min-height: 100vh;
+  min-height: calc(100dvh - var(--patient-dock-clearance) - env(safe-area-inset-bottom, 0px));
   display: flex;
   justify-content: center;
   padding-inline: var(--patient-page-padding-inline);
