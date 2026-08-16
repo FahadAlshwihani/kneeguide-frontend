@@ -247,6 +247,20 @@
   color: var(--color-heading);
 }
 
+/* Contextual role guidance (Register.jsx, Step 1) — same subtle
+   bordered-surface language as .review-box below, one step down in
+   presence since this is a supporting note, not a data summary. */
+.register-role-hint {
+  margin: 0;
+  padding: var(--auth-space-xs) var(--auth-space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 480px) {
   .role-picker,
   .form-two-column {

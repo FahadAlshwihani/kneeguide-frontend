@@ -300,6 +300,21 @@ const Register = () => {
                 <p>{t("register.roleDoctorDesc")}</p>
               </button>
             </div>
+
+            {/* Contextual, role-aware only — never both blocks at once,
+                never shown before a role is picked (Section 11 of the
+                task this was built for). */}
+            {role === "patient" && (
+              <p className="register-role-hint">{t("auth.demo.patientRegisterHint")}</p>
+            )}
+            {role === "doctor" && (
+              <p className="register-role-hint">
+                {t("auth.demo.doctorApprovalHint")}{" "}
+                <Link to={ROUTES.LOGIN} className="auth-switch-link">
+                  {t("register.goToLogin")}
+                </Link>
+              </p>
+            )}
           </Step>
 
           {/* STEP 2 — name */}
