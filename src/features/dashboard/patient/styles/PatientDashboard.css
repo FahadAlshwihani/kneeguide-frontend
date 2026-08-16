@@ -63,9 +63,10 @@
    chrome shows/hides, keeping the bound accurate instead of occasionally
    taller than what's really visible.
 
-   Welcome Mode is deliberately untouched — `.pd-page` alone (no
-   modifier) keeps its original `min-height: 100vh` + normal flow, exactly
-   as before this task, per "don't force Welcome into the same compact
+   Welcome Mode keeps `.pd-page`'s own normal, unbounded flow (only its
+   `min-height` accounts for the Dock clearance, per the comment above —
+   it isn't otherwise height-bound or overflow-clipped like Conversation
+   Mode is here), per "don't force Welcome into the same compact
    layout". */
 .pd-page--conversation {
   min-height: 0;
