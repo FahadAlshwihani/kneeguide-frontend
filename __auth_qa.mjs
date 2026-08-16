@@ -85,17 +85,20 @@ for (const width of [320, 430]) {
   await context.close();
 }
 
-// ---------- Arabic RTL: Login (via the real Header language toggle) ----------
+// ---------- Arabic RTL: Login (switch via desktop topbar toggle, then resize) ----------
 for (const width of [375, 320]) {
-  const context = await browser.newContext({ viewport: { width, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 900, height: 900 } });
   const page = await context.newPage();
   page.on("pageerror", (e) => errors.push(`[rtl-${width} pageerror] ` + e.message));
   await page.goto(BASE + "/login", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
-  await page.locator(".header-lang-toggle--topbar, .header-lang-toggle").first().click();
+  await page.locator(".header-lang-toggle--topbar").click();
   await page.waitForTimeout(400);
   const dir = await page.evaluate(() => document.documentElement.dir);
   console.log(`[w${width}] doc dir after language toggle:`, dir);
+
+  await page.setViewportSize({ width, height: 900 });
+  await page.waitForTimeout(200);
   await shot(page, `08-login-rtl-w${width}-collapsed`);
 
   await page.locator(".demo-access-trigger").click();
@@ -107,7 +110,6 @@ for (const width of [375, 320]) {
   }));
   console.log(`[w${width}] RTL overflow:`, JSON.stringify(overflow), overflow.docScrollWidth > overflow.docClientWidth ? "*** OVERFLOW ***" : "OK");
 
-  // credential value dir check
   const valueDir = await page.evaluate(() => document.querySelector(".demo-credential-value")?.getAttribute("dir"));
   console.log(`[w${width}] credential value dir attr:`, valueDir);
 
