@@ -1,6 +1,12 @@
-/* Backdrop/base panel/close button live in PatientDialog.css. */
+/* Backdrop/base panel/close button live in PatientDialog.css.
+   `min(560px, 100%)`, not a flat 560px — see ExerciseDetailsModal.css's
+   identical comment: an un-media-queried `max-width` here has EQUAL
+   specificity to PatientDialog.css's `@media (max-width: 640px)` mobile
+   override on the same element, so whichever rule compiles later wins
+   regardless of viewport. `min()` makes this rule safe on its own,
+   independent of stylesheet order. */
 .appointment-request-panel {
-  max-width: 560px;
+  max-width: min(560px, 100%);
 }
 
 .appointment-request-header {

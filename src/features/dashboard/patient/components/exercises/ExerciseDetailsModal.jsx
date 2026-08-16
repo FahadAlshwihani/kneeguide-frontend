@@ -72,7 +72,7 @@ const ExerciseDetailsModal = ({ isOpen, onClose, exercise }) => {
       panelClassName="exercise-details-panel"
     >
       <div className="exercise-details-header">
-        <div>
+        <div className="exercise-details-header-text">
           <p className="exercise-details-eyebrow">{t("patientExercises.session.details.title")}</p>
           <h2 id="exercise-details-title" className="exercise-details-title" dir="auto">
             {exercise.name}
