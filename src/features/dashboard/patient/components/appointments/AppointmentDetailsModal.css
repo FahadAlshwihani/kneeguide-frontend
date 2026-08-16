@@ -36,6 +36,7 @@
   margin: 0 0 var(--patient-space-2xs);
   font: var(--patient-text-section-heading);
   color: var(--patient-color-heading);
+  overflow-wrap: anywhere;
 }
 
 .appointment-details-status {
