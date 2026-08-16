@@ -134,6 +134,28 @@
       "genericFail": "Registration failed. Try again."
     }
   },
+  "auth": {
+    "demo": {
+      "trigger": "Preview demo accounts",
+      "patient": {
+        "title": "Patient",
+        "description": "Explore the Patient dashboard and the full rehabilitation experience."
+      },
+      "doctor": {
+        "title": "Doctor",
+        "description": "Explore the Doctor clinical workspace."
+      },
+      "email": "Email",
+      "password": "Password",
+      "copyEmailFor": "Copy {{role}} email",
+      "copyPasswordFor": "Copy {{role}} password",
+      "copied": "Copied",
+      "usePatient": "Use Patient demo",
+      "useDoctor": "Use Doctor demo",
+      "patientRegisterHint": "You can also create your own Patient account — sample rehabilitation data will still be available so you can explore the full experience.",
+      "doctorApprovalHint": "Doctor accounts require administrator approval before activation. For immediate preview access, use the Doctor demo account."
+    }
+  },
   "buttons": {
     "back": "Back",
     "continue": "Continue",
