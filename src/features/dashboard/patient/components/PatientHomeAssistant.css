@@ -465,6 +465,10 @@
   overflow-y: hidden;
   justify-content: flex-start;
   padding-bottom: 2px;
+  /* Trailing gutter so the last chip never sits flush against the
+     viewport/container edge — without it, a cut-off chip mid-word reads
+     as a broken layout instead of an intentional "more to scroll" row. */
+  padding-inline-end: var(--patient-space-sm);
 }
 
 .patient-assistant--conversation .patient-assistant-chip {
@@ -485,6 +489,7 @@
     overflow-x: auto;
     justify-content: flex-start;
     padding-bottom: 2px;
+    padding-inline-end: var(--patient-space-sm);
   }
 
   .patient-assistant-chip {
