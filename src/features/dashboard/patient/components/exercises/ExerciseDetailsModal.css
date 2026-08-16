@@ -21,6 +21,13 @@
   margin-bottom: var(--patient-space-sm);
 }
 
+/* Flex items default to `min-width: auto` — without this, a long
+   exercise name/target refuses to shrink below its own intrinsic width
+   and can push the close button past the panel's edge on narrow phones. */
+.exercise-details-header-text {
+  min-width: 0;
+}
+
 .exercise-details-eyebrow {
   margin: 0 0 2px;
   font: var(--patient-text-caption);
@@ -34,12 +41,14 @@
   margin: 0;
   font: var(--patient-text-section-heading);
   color: var(--patient-color-heading);
+  overflow-wrap: anywhere;
 }
 
 .exercise-details-target {
   margin: 2px 0 0;
   font: var(--patient-text-caption);
   color: var(--patient-color-faint);
+  overflow-wrap: anywhere;
 }
 
 /* ---------- Media ---------- */

@@ -55,7 +55,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment, onAcceptAlterna
   return (
     <PatientDialog isOpen={isOpen} onClose={onClose} ariaLabelledBy="appointment-details-title" panelClassName="appointment-details-panel">
       <div className="appointment-details-header">
-        <div>
+        <div className="appointment-details-header-text">
           <p className="appointment-details-eyebrow">{t("patientAppointments.details.eyebrow")}</p>
           <h2 id="appointment-details-title" className="appointment-details-title">
             {appointment.startAt.toLocaleDateString(i18n.language, { weekday: "long", month: "long", day: "numeric" })}
