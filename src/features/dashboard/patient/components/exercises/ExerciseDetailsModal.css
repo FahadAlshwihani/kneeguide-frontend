@@ -1,6 +1,16 @@
-/* Backdrop/base panel/close button live in PatientDialog.css. */
+/* Backdrop/base panel/close button live in PatientDialog.css.
+   `max-width: 720px` and PatientDialog.css's own
+   `@media (max-width: 640px) { .patient-dialog-panel { max-width: 100% } }`
+   both target this SAME element (it carries both classes) with EQUAL
+   specificity (one class selector each) — whichever rule is later in the
+   compiled stylesheet wins, regardless of which one the media query
+   "should" logically override. `min(720px, 100%)` makes this rule
+   self-sufficient: it can never exceed the backdrop's own available
+   width (which is already correctly padding-adjusted for both the
+   desktop-centered and mobile-bottom-sheet layouts) no matter what order
+   the two stylesheets end up in. */
 .exercise-details-panel {
-  max-width: 720px;
+  max-width: min(720px, 100%);
 }
 
 .exercise-details-header {
