@@ -17,10 +17,15 @@
   margin-bottom: var(--patient-space-md);
 }
 
+/* Flex items default to `min-width: auto` — without this, a long title
+   string refuses to shrink below its own intrinsic width and can push
+   the close button past the panel's edge on narrow phones. */
 .appointment-request-title {
   margin: 0;
   font: var(--patient-text-section-heading);
   color: var(--patient-color-heading);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .appointment-request-step {

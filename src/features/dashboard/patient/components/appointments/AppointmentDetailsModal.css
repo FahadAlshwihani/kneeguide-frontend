@@ -16,6 +16,13 @@
   margin-bottom: var(--patient-space-sm);
 }
 
+/* Flex items default to `min-width: auto` — without this, a long date
+   string/status label refuses to shrink below its own intrinsic width
+   and can push the close button past the panel's edge on narrow phones. */
+.appointment-details-header-text {
+  min-width: 0;
+}
+
 .appointment-details-eyebrow {
   margin: 0 0 2px;
   font: var(--patient-text-caption);
