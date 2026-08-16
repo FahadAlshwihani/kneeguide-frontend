@@ -85,27 +85,32 @@ for (const width of [320, 430]) {
   await context.close();
 }
 
-// ---------- Arabic RTL: Login ----------
-{
-  const context = await browser.newContext({ viewport: { width: 375, height: 900 }, locale: "ar" });
+// ---------- Arabic RTL: Login (via the real Header language toggle) ----------
+for (const width of [375, 320]) {
+  const context = await browser.newContext({ viewport: { width, height: 900 } });
   const page = await context.newPage();
-  await page.goto(BASE + "/login?lng=ar", { waitUntil: "networkidle" }).catch(() => {});
-  // force language via localStorage + reload since app doesn't read ?lng
-  await page.evaluate(() => localStorage.setItem("i18nextLng", "ar"));
+  page.on("pageerror", (e) => errors.push(`[rtl-${width} pageerror] ` + e.message));
   await page.goto(BASE + "/login", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
-  // If localStorage lng isn't respected (matches earlier Doctor/Patient finding), fall back:
-  const dir = await page.evaluate(() => document.documentElement.dir);
-  console.log("doc dir after localStorage attempt:", dir);
-  await shot(page, "08-login-rtl-attempt-collapsed");
-  await page.locator(".demo-access-trigger").click().catch(() => {});
+  await page.locator(".header-lang-toggle--topbar, .header-lang-toggle").first().click();
   await page.waitForTimeout(400);
-  await shot(page, "09-login-rtl-attempt-expanded");
+  const dir = await page.evaluate(() => document.documentElement.dir);
+  console.log(`[w${width}] doc dir after language toggle:`, dir);
+  await shot(page, `08-login-rtl-w${width}-collapsed`);
+
+  await page.locator(".demo-access-trigger").click();
+  await page.waitForTimeout(400);
+  await shot(page, `09-login-rtl-w${width}-expanded`);
   const overflow = await page.evaluate(() => ({
     docScrollWidth: document.documentElement.scrollWidth,
     docClientWidth: document.documentElement.clientWidth,
   }));
-  console.log("RTL-attempt overflow:", JSON.stringify(overflow));
+  console.log(`[w${width}] RTL overflow:`, JSON.stringify(overflow), overflow.docScrollWidth > overflow.docClientWidth ? "*** OVERFLOW ***" : "OK");
+
+  // credential value dir check
+  const valueDir = await page.evaluate(() => document.querySelector(".demo-credential-value")?.getAttribute("dir"));
+  console.log(`[w${width}] credential value dir attr:`, valueDir);
+
   await context.close();
 }
 
