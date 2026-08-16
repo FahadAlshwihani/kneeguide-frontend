@@ -129,6 +129,11 @@
   font: var(--patient-text-supporting);
   font-weight: 600;
   color: var(--patient-color-heading);
+  /* Grid items default to `min-width: auto` (same gotcha as flex) — a
+     long note/reason string would otherwise refuse to shrink below its
+     own intrinsic width and widen its track past the panel's edge. */
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* ---------- Submitted confirmation ---------- */
