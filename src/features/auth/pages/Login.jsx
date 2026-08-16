@@ -9,6 +9,7 @@ import PrimaryButton from "../../../components/ui/PrimaryButton";
 import { AuthCardItem } from "../components/AuthCard";
 import PasswordField from "../components/PasswordField";
 import AuthAlert from "../components/AuthAlert";
+import DemoAccess from "../components/DemoAccess";
 import "../styles/Login.css";
 
 const prefersReducedMotion = () =>
@@ -50,6 +51,13 @@ const Login = () => {
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  // Fills the SAME controlled state a real user typing into the fields
+  // would — never a separate code path, never calls login() itself. The
+  // user still has to press the real submit button, same as always.
+  const handleUseDemo = ({ email, password }) => {
+    setForm({ email, password });
   };
 
   const handleSubmit = async (e) => {
