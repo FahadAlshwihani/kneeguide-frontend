@@ -17,17 +17,6 @@
   display: flex;
   gap: var(--patient-space-2xs);
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--patient-border) transparent;
-}
-
-.rehab-day-rail-list::-webkit-scrollbar {
-  height: 6px;
-}
-
-.rehab-day-rail-list::-webkit-scrollbar-thumb {
-  background: var(--patient-border);
-  border-radius: var(--patient-radius-button);
 }
 
 .rehab-day-chip {

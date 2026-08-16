@@ -45,12 +45,7 @@
   .recovery-signals {
     flex-wrap: nowrap;
     overflow-x: auto;
-    scrollbar-width: none;
     padding-bottom: 2px;
-  }
-
-  .recovery-signals::-webkit-scrollbar {
-    display: none;
   }
 
   .recovery-signal {

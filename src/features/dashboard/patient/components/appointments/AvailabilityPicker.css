@@ -18,8 +18,6 @@
   display: flex;
   gap: var(--patient-space-2xs);
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--patient-border) transparent;
 }
 
 .availability-day-chip {

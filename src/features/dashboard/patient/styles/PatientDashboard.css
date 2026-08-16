@@ -20,6 +20,27 @@
   align-items: center;
 }
 
+/* Root cause of a viewport-dependent blank-space bug in Welcome Mode,
+   identical in shape to the one fixed on Doctor Home: `.pd-page` is a row
+   flex container with the default `align-items: stretch`, so its own
+   `min-height: 100vh` (intentional — a short Welcome screen should still
+   "fill the viewport naturally") was forcing `.pd-inner` to the FULL
+   available height. `.pd-inner` is itself a column with no
+   `justify-content`, so its content (the rail + `.patient-assistant`,
+   via `.patient-home-workspace`) only ever filled it from the top,
+   leaving a dead gap below on any viewport taller than the Welcome
+   content's natural height. Centering here makes the exact same "may
+   fill the viewport" slack read as an intentional centered composition:
+   short content centers with even space above/below; content tall
+   enough to need it still scrolls the document exactly as before
+   (`justify-content` only matters when there's slack to distribute).
+   Conversation Mode is unaffected — `.pd-page--conversation .pd-inner`
+   already sets `height: 100%; min-height: 0` with no slack left to
+   redistribute once `.patient-home-workspace` is stretched to fill it. */
+.pd-page--welcome .pd-inner {
+  justify-content: center;
+}
+
 /* Conversation Mode only (PatientDashboard.jsx mirrors
    PatientHomeAssistant's own mode via onModeChange) — the page becomes a
    height-BOUNDED shell instead of normal, unbounded document flow, so the
