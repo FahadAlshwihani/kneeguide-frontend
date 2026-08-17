@@ -1,70 +1,71 @@
-# Getting Started with Create React App
+# KneeGuide Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+KneeGuide is a knee-rehabilitation telehealth web app: a marketing/public site plus separate patient and doctor dashboards for exercise plans, appointments, session tracking, and recovery reports. Built with [Create React App](https://github.com/facebook/create-react-app) (react-scripts 5) and React 19.
 
-## Available Scripts
+## Getting started
 
-In the project directory, you can run:
+```bash
+npm install
+npm start
+```
+
+Open [http://localhost:3000](http://localhost:3000). The page reloads on changes; lint errors show in the console.
+
+## Environment configuration
+
+The app reads its backend base URL from `REACT_APP_API_BASE_URL` (see `src/api/axios.js`):
+
+- `.env.development` — local backend (`http://127.0.0.1:8000/api/`)
+- `.env.production` — deployed backend, used by `npm run build`
+
+Override either with a `.env.local`/`.env.development.local` file (already gitignored) instead of editing the committed `.env.*` files directly.
+
+## Available scripts
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Runs the app in development mode.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs the Jest test suite once with `--watchAll=false`-style CI behavior when `CI=true`, or in interactive watch mode otherwise.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Builds a production bundle to `build/`, minified with content-hashed filenames.
 
 ### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+One-way: copies the CRA build config (webpack, Babel, ESLint) into the project for full control. Not needed for normal development.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+src/
+  api/                 axios client + REST calls (auth, reports, exercises, appointments)
+  app/                 App root + top-level route composition
+  components/          shared UI primitives (buttons, popovers, dock, stepper, three.js viewer)
+  context/              AuthContext (session/auth state)
+  domain/rehab/         demo-data-backed rehab domain layer (patients, plans, sessions, reports)
+  features/
+    auth/                Login, Register, OTP verification
+    dashboard/doctor/     doctor-facing dashboard, patient workspace, clinical assistant
+    dashboard/patient/    patient-facing dashboard, exercises, appointments, reports, profile
+    public/               marketing site (home, about, features, how-it-works, technology, contact)
+  layouts/               route-level layout shells (public, auth, patient/doctor dashboard)
+  routes/                react-router route definitions
+  utils/                 small cross-cutting helpers (roles, storage, direction/RTL)
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Internationalization
 
-## Learn More
+UI copy is bilingual (English/Arabic) via `i18next` + `react-i18next`. Translation bundles live in `public/translations/{en,ar}.json` and are fetched at runtime (`src/i18n.js`); both languages are always preloaded so language-specific lookups work regardless of the active UI language. RTL/LTR document direction is applied automatically on language change (`src/utils/dir.js`).
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Testing
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Tests live alongside the code they cover (`*.test.js`). Run them with `npm test`. Components that transitively pull in the app's ESM-only dependencies (react-router-dom, three.js/ogl, motion) aren't covered by unit tests under this project's Jest 27 toolchain without deeper Jest config changes — current coverage focuses on pure utility/logic modules (`src/utils/`, `src/features/auth/utils/`).
 
-### Code Splitting
+## Learn more
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started)
+- [React documentation](https://reactjs.org/)
