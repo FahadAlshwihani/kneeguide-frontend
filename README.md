@@ -34,6 +34,10 @@ Runs the Jest test suite once with `--watchAll=false`-style CI behavior when `CI
 
 Builds a production bundle to `build/`, minified with content-hashed filenames.
 
+### `npm run lint`
+
+Runs ESLint over `src/` using the project's `eslintConfig` (same rules `npm start`/`npm run build` already check inline).
+
 ### `npm run eject`
 
 One-way: copies the CRA build config (webpack, Babel, ESLint) into the project for full control. Not needed for normal development.
