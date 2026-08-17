@@ -74,7 +74,12 @@ const SessionsTab = ({ bundle }) => {
                     role="button"
                     tabIndex={0}
                     onClick={() => openSession(session)}
-                    onKeyDown={(event) => event.key === "Enter" && openSession(session)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        openSession(session);
+                      }
+                    }}
                   >
                     <td>{dateFormatter.format(new Date(session.date))}</td>
                     <td>

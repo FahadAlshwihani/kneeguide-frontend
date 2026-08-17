@@ -387,7 +387,19 @@ const DoctorCalendar = () => {
                       <div key={group.key} className="dc-agenda-day">
                         <div className="dc-agenda-date">{t(group.labelKey)}</div>
                         {group.items.map((event) => (
-                          <div key={event.id} className="dc-agenda-item" onClick={() => openDetails(event)} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && openDetails(event)}>
+                          <div
+                            key={event.id}
+                            className="dc-agenda-item"
+                            onClick={() => openDetails(event)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                openDetails(event);
+                              }
+                            }}
+                          >
                             <div className="dc-agenda-main">
                               <span className="dc-agenda-time" dir="ltr">
                                 {dateTimeFormatter.format(new Date(event.startAt))}
@@ -456,7 +468,19 @@ const DoctorCalendar = () => {
                 ) : (
                   <div className="dc-side-events-list">
                     {selectedDayAppointments.map((event) => (
-                      <div key={event.id} className="dc-side-event-row" onClick={() => openDetails(event)} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && openDetails(event)}>
+                      <div
+                        key={event.id}
+                        className="dc-side-event-row"
+                        onClick={() => openDetails(event)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            openDetails(event);
+                          }
+                        }}
+                      >
                         <div>
                           <div className="dc-side-event-title" dir="auto">
                             {event.patient?.name}
