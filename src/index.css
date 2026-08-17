@@ -129,37 +129,6 @@ a:hover {
   border-radius: 999px;
 }
 
-/* Generic layout helpers */
-
-.app-shell {
-  min-height: 100vh;
-  display: flex;
-  background: radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
-  color: var(--color-text-main);
-}
-
-.app-main {
-  flex: 1;
-  padding: 24px;
-}
-
-.app-container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-/* Card */
-.card {
-  background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.12), transparent 55%),
-    linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: var(--shadow-soft);
-  padding: 24px;
-  backdrop-filter: blur(22px);
-}
-
 /* Forms */
 input,
 select,
@@ -185,54 +154,6 @@ textarea:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.5);
   background: rgba(15, 23, 42, 0.95);
-}
-
-/* Page titles */
-.page-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  margin: 0 0 6px;
-}
-
-.page-subtitle {
-  margin: 0 0 24px;
-  font-size: 0.95rem;
-  color: var(--color-text-soft);
-}
-
-/* Simple fade-in animation for pages */
-.page {
-  animation: pageFadeIn 0.35s ease-out;
-}
-
-@keyframes pageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* RTL Support for inputs */
-body.rtl .form-group input {
-  text-align: right !important;
-}
-
-body.ltr .form-group input {
-  text-align: left !important;
-}
-
-/* Labels تتحول تلقائيًا */
-body.rtl .form-group label {
-  text-align: right;
-}
-
-body.ltr .form-group label {
-  text-align: left;
 }
 
 /* =====================================================
@@ -517,12 +438,6 @@ body.ltr .public-root.auth-layout-root {
 }
 
 /* Typography scale */
-.public-root .text-display {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  line-height: 1.1;
-}
-
 .public-root h1 {
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
@@ -547,26 +462,9 @@ body.ltr .public-root.auth-layout-root {
   line-height: 1.3;
 }
 
-.public-root .text-body-lg {
-  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
-  line-height: 1.6;
-}
-
-.public-root p,
-.public-root .text-body {
+.public-root p {
   font-size: 1rem;
   line-height: 1.6;
-}
-
-.public-root .text-small {
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.public-root .text-caption {
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: var(--color-muted);
 }
 
 /* Utilities */
@@ -587,25 +485,9 @@ body.ltr .public-root.auth-layout-root {
   margin-bottom: 12px;
 }
 
-.public-root .section-subtitle {
-  font-size: clamp(1rem, 1.5vw, 1.15rem);
-  color: var(--color-muted);
-  margin-bottom: 32px;
-}
-
 .public-root .grid {
   display: grid;
   gap: 24px;
-}
-
-.public-root .flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.public-root .text-center {
-  text-align: center;
 }
 
 .public-root .hidden {
