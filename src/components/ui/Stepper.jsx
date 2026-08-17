@@ -1,4 +1,4 @@
-import React, { useState, Children, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, Children, useCallback, useEffect, useRef, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import "../../styles/Stepper.css";
 import { useTranslation } from "react-i18next";
@@ -152,6 +152,7 @@ function StepContentWrapper({ isCompleted, currentStep, direction, children, cla
   const [height, setHeight] = useState(0);
   const wrapperRef = useRef(null);
   const prevStepRef = useRef(null);
+  const handleHeightReady = useCallback((h) => setHeight(h), []);
 
   // Moves focus into the new step (its own heading — see the
   // `data-step-heading` attribute callers put on each Step's own <h3>,
@@ -184,7 +185,7 @@ function StepContentWrapper({ isCompleted, currentStep, direction, children, cla
     >
       <AnimatePresence initial={false} custom={direction} mode="sync">
         {!isCompleted && (
-          <SlideTransition key={currentStep} direction={direction} onHeightReady={(h) => setHeight(h)}>
+          <SlideTransition key={currentStep} direction={direction} onHeightReady={handleHeightReady}>
             {children}
           </SlideTransition>
         )}
@@ -198,7 +199,7 @@ function SlideTransition({ children, direction, onHeightReady }) {
 
   useLayoutEffect(() => {
     if (ref.current) onHeightReady(ref.current.offsetHeight);
-  }, [children]);
+  }, [children, onHeightReady]);
 
   return (
     <motion.div
