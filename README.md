@@ -13,7 +13,7 @@
   <p>
     <a href="https://knee.fyaa.io/">Live Platform</a> ·
     <a href="https://kneeguide-backend.onrender.com/">Backend API</a> ·
-    <a href="https://github.com/FahadAlshwihani/kneeguide-backend">Backend Repository</a> ·
+    <a href="https://github.com/KneeGuide-Team/kneeguide-backend">Backend Repository</a> ·
     <a href="https://fyaa.io/">Developer Portfolio</a>
   </p>
 </div>
@@ -353,7 +353,7 @@ Brand assets used here are copied from the existing project logo solely for stab
 - Optional: the KneeGuide Django backend running locally.
 
 ```bash
-git clone https://github.com/FahadAlshwihani/kneeguide-frontend.git
+git clone https://github.com/KneeGuide-Team/kneeguide-frontend.git
 cd kneeguide-frontend
 npm ci
 npm start
